@@ -1,0 +1,3 @@
+# Single zoom level with world-pixel coordinates
+
+Every scene has one zoom level and one coordinate system, world pixels, on every device. Devices differ only in a render scale fixed for the session (1.0 desktop, about 0.6 phone), never in what a world pixel means. We chose this over pinch or wheel zoom because cursor positions are broadcast to every visitor in the room and must mean the same thing on every screen, and because one camera model (edge-push, drag, joystick) then works unchanged across desktop, touch, overworld and sub-scenes. The cost is that phones see a keyhole into the scene and must pan more; that is accepted and mitigated by the wider push band and the small overworld.
