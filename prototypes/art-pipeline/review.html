@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art pipeline review (PROTOTYPE)</title>
+<style>
+  :root { --ink:#222; --paper:#faf7f0; --line:#d9d2c3; --accent:#1f7a8c; --warn:#b5451b; --ok:#3a7d44; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui, sans-serif; color:var(--ink); background:var(--paper); }
+  header { padding:10px 16px; background:#2b2620; color:#f3ead8; display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; }
+  header b { font-size:16px; }
+  header .tag { background:var(--warn); color:#fff; padding:1px 8px; border-radius:3px; font-size:12px; }
+  nav { display:flex; gap:4px; padding:8px 16px 0; border-bottom:1px solid var(--line); background:#f1ece0; }
+  nav button { border:1px solid var(--line); border-bottom:none; background:#e6dfd0; padding:8px 14px; cursor:pointer; border-radius:6px 6px 0 0; font:inherit; }
+  nav button.active { background:var(--paper); font-weight:600; }
+  section { display:none; padding:16px; }
+  section.active { display:block; }
+  h2 { margin:0 0 8px; font-size:16px; }
+  p.hint { color:#5a544a; margin:0 0 12px; max-width:80ch; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:12px; }
+  .slot { border:1px solid var(--line); border-radius:6px; padding:8px; background:#fff; }
+  .slot label { display:block; font-weight:600; margin-bottom:6px; }
+  .slot .thumb { width:100%; height:120px; background:repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0/16px 16px; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:4px; }
+  .slot .thumb img { max-width:100%; max-height:100%; }
+  .slot .facts { font-size:12px; color:#5a544a; margin-top:6px; min-height:3.6em; white-space:pre-line; }
+  .bad { color:var(--warn); } .good { color:var(--ok); }
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+  .row label { display:flex; gap:4px; align-items:center; }
+  input[type=number] { width:80px; }
+  canvas { display:block; background:#fff; border:1px solid var(--line); border-radius:4px; max-width:100%; }
+  .two { display:grid; grid-template-columns:1fr 260px; gap:12px; align-items:start; }
+  @media (max-width:800px) { .two { grid-template-columns:1fr; } }
+  .status { font-family:ui-monospace, monospace; font-size:12px; white-space:pre-line; background:#fff; border:1px solid var(--line); padding:8px; border-radius:4px; margin-top:8px; }
+  .pal { display:flex; margin:4px 0 10px; height:44px; border-radius:4px; overflow:hidden; border:1px solid var(--line); }
+  .pal div { flex:1; display:flex; align-items:flex-end; justify-content:center; font-size:10px; font-family:ui-monospace, monospace; padding-bottom:2px; text-shadow:0 0 2px #fff; }
+  .styleimgs { display:flex; gap:8px; overflow:auto; }
+  .styleimgs img { height:180px; border:1px solid var(--line); }
+  table { border-collapse:collapse; width:100%; background:#fff; }
+  td, th { border:1px solid var(--line); padding:5px 8px; text-align:left; vertical-align:top; }
+  textarea { width:100%; min-height:260px; font:12px ui-monospace, monospace; }
+  button.act { font:inherit; padding:6px 12px; border:1px solid var(--accent); background:var(--accent); color:#fff; border-radius:4px; cursor:pointer; }
+  button.ghost { font:inherit; padding:6px 12px; border:1px solid var(--line); background:#fff; border-radius:4px; cursor:pointer; }
+</style>
+</head>
+<body>
+<header>
+  <b>Art pipeline review</b>
+  <span class="tag">PROTOTYPE, throwaway</span>
+  <span>Ticket 07 · nothing is saved, a reload clears everything · state prints under each tab</span>
+</header>
+<nav id="tabs">
+  <button data-tab="assets" class="active">1 Assets</button>
+  <button data-tab="style">2 Style</button>
+  <button data-tab="scene">3 Scene</button>
+  <button data-tab="moose">4 Moose</button>
+  <button data-tab="verdict">5 Verdict</button>
+</nav>
+
+<section id="assets" class="active">
+  <h2>Load the generated assets</h2>
+  <p class="hint">Pick the <code>assets/</code> folder to fill every slot by filename (see recipe.md), or load slots one at a time. Facts under each slot: dimensions against the target, file size, and for cut-outs the share of edge pixels that are semi-transparent (fringe) and how many of those are near-white or magenta (halo or leftover key).</p>
+  <div class="row">
+    <label>Folder <input type="file" id="folder" webkitdirectory multiple></label>
+    <span id="folderMsg" class="hint"></span>
+  </div>
+  <div class="grid" id="slots"></div>
+</section>
+
+<section id="style">
+  <h2>Does the district match the sub-scene, and both match the reference?</h2>
+  <p class="hint">Eight dominant colours per image (sampled, merged when closer than Δ48 in RGB). The similarity line counts how many of the Maplewood colours have a near match in the lobby, and each against the reference. Your eye is the judge; the strips only make the comparison concrete.</p>
+  <div id="styleOut"></div>
+</section>
+
+<section id="scene">
+  <h2>Maplewood at world scale, with the props on it</h2>
+  <p class="hint">The background is stretched to the district footprint width in world px. Drag props to place them; drag the crosshair to the arrival point (the welcome sign). The frame is the camera at arrival, clamped to the district like the real camera; it must contain the whole signpost on the portrait phone. The magnifier shows the pixels the device would actually draw at the chosen render scale and DPR, enlarged 4x with no smoothing, so softness and edge fringe are visible.</p>
+  <div class="row">
+    <label>Footprint width <input type="number" id="footW" value="1400" step="50"></label>
+    <label>Render scale <select id="rscale"><option value="1">desktop 1.0</option><option value="0.6" selected>phone 0.6</option></select></label>
+    <label>Frame <select id="frame"><option value="390x844" selected>phone portrait 390x844</option><option value="844x390">phone landscape 844x390</option><option value="1440x900">desktop 1440x900</option><option value="none">none</option></select></label>
+    <label>DPR <select id="dpr"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></label>
+    <label>Prop scale <input type="number" id="propScale" value="1" step="0.05" min="0.1"></label>
+    <label><input type="checkbox" id="checker"> checkerboard instead of background</label>
+  </div>
+  <div class="two">
+    <canvas id="sceneCv" width="1000" height="714"></canvas>
+    <div>
+      <canvas id="mag" width="240" height="240"></canvas>
+      <div class="status" id="sceneStatus">Load a background.</div>
+    </div>
+  </div>
+</section>
+
+<section id="moose">
+  <h2>Do the four moose parts assemble and move as one?</h2>
+  <p class="hint">Drag a part to move it. Hold Shift and click on a part to set its pivot (drawn as a ring). Antlers and eye are children of the head; the head is a child of the body. Play the reactions and look for gaps opening at the neck and at the antler bases. Reduced motion freezes the idle breathing but still plays click reactions, as in ADR 0002.</p>
+  <div class="row">
+    <button class="ghost" data-anim="headTurn">Head turn</button>
+    <button class="ghost" data-anim="wobble">Antler wobble</button>
+    <button class="ghost" data-anim="blink">Blink</button>
+    <label><input type="checkbox" id="idle" checked> idle breathing</label>
+    <label><input type="checkbox" id="reduced"> reduced motion</label>
+    <label>Background <select id="mooseBg"><option value="checker">checker</option><option value="#fff">white</option><option value="#2b2620">dark</option><option value="#e9c46a">mustard</option></select></label>
+    <label>Scale <input type="number" id="mooseScale" value="1" step="0.05" min="0.1"></label>
+  </div>
+  <div class="two">
+    <canvas id="mooseCv" width="900" height="600"></canvas>
+    <div class="status" id="rigOut">Rig JSON appears here as you place parts. The rendering prototype can reuse it.</div>
+  </div>
+</section>
+
+<section id="verdict">
+  <h2>Go or no-go</h2>
+  <p class="hint">Fill this in, then copy the markdown into ticket 07 under <code>## Answer</code>. Measured facts from the other tabs are appended automatically.</p>
+  <table id="criteria">
+    <tr><th>Criterion</th><th>Result</th><th>Notes</th></tr>
+  </table>
+  <h2 style="margin-top:16px">Per asset</h2>
+  <table id="perAsset">
+    <tr><th>Asset</th><th>Tool kept</th><th>Retries</th><th>Cleanup minutes</th></tr>
+  </table>
+  <div class="row" style="margin-top:12px">
+    <label>Verdict <select id="go"><option value="">choose</option><option>GO</option><option>GO with conditions</option><option>NO-GO</option></select></label>
+    <label style="flex:1">Conditions or reasons <input id="goWhy" style="width:100%"></label>
+  </div>
+  <div class="row">
+    <button class="act" id="gen">Generate markdown</button>
+    <button class="ghost" id="copy">Copy</button>
+  </div>
+  <textarea id="md" placeholder="Markdown appears here."></textarea>
+</section>
+
+<script>
+// ---------- shared state (in memory only) ----------
+const SLOTS = [
+  { key:'ref',      label:'Style reference (old site screenshots)', files:/^ref/i, multiple:true },
+  { key:'maplewood',label:'Maplewood district background', files:/^maplewood(?!@)/i, target:{w:1400,h:1000} },
+  { key:'lobby',    label:'Moosylvania lobby interior', files:/^lobby/i, target:{w:2845,h:1600} },
+  { key:'signpost', label:'Prop: signpost', files:/^signpost/i, cut:true },
+  { key:'welcome',  label:'Prop: welcome sign', files:/^welcome/i, cut:true },
+  { key:'door',     label:'Prop: door', files:/^door/i, cut:true },
+  { key:'body',     label:'Moose: body', files:/^moose-body/i, cut:true },
+  { key:'head',     label:'Moose: head', files:/^moose-head/i, cut:true },
+  { key:'antlers',  label:'Moose: antlers', files:/^moose-antlers/i, cut:true },
+  { key:'eye',      label:'Moose: eye', files:/^moose-eye/i, cut:true },
+];
+const A = { ref:[] };           // key -> asset {img,name,w,h,bytes,type,alpha,fringe,halo}
+const facts = {};               // key -> facts string for the verdict
+
+// ---------- tabs ----------
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('active', x === b));
+  document.querySelectorAll('section').forEach(s => s.classList.toggle('active', s.id === b.dataset.tab));
+  if (b.dataset.tab === 'style') renderStyle();
+  if (b.dataset.tab === 'scene') drawScene();
+  if (b.dataset.tab === 'verdict') buildVerdict();
+});
+
+// ---------- assets tab ----------
+const slotsEl = document.getElementById('slots');
+for (const s of SLOTS) {
+  const d = document.createElement('div'); d.className = 'slot'; d.id = 'slot-' + s.key;
+  d.innerHTML = `<label>${s.label}</label><input type="file" accept="image/*" ${s.multiple ? 'multiple' : ''}><div class="thumb"></div><div class="facts">empty</div>`;
+  d.querySelector('input').addEventListener('change', ev => { for (const f of ev.target.files) loadInto(s, f); });
+  slotsEl.appendChild(d);
+}
+document.getElementById('folder').addEventListener('change', ev => {
+  let n = 0;
+  for (const f of ev.target.files) {
+    if (!/\.(png|webp|jpe?g)$/i.test(f.name)) continue;
+    const s = SLOTS.find(s => s.files.test(f.name)); if (!s) continue;
+    loadInto(s, f); n++;
+  }
+  document.getElementById('folderMsg').textContent = n ? `${n} files matched slots.` : 'No filenames matched; see recipe.md for the names.';
+});
+
+function loadInto(slot, file) {
+  const img = new Image();
+  img.onload = () => {
+    const asset = { img, name:file.name, w:img.naturalWidth, h:img.naturalHeight, bytes:file.size, type:file.type };
+    if (slot.cut) Object.assign(asset, alphaStats(img));
+    if (slot.multiple) A[slot.key].push(asset); else A[slot.key] = asset;
+    describe(slot, asset);
+    if (slot.key === 'maplewood' || slot.cut) drawScene();
+    if (['body','head','antlers','eye'].includes(slot.key)) placeMooseDefault(slot.key);
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function alphaStats(img) {
+  const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height).data, W = c.width, H = c.height;
+  let semi = 0, boundary = 0, halo = 0, key = 0, transparent = 0;
+  const a = i => d[i * 4 + 3];
+  for (let y = 0; y < H; y++) for (let xx = 0; xx < W; xx++) {
+    const i = y * W + xx, al = a(i);
+    if (al === 0) { transparent++; continue; }
+    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
+    if (al < 255) {
+      semi++;
+      if (r > 225 && g > 225 && b > 225) halo++;
+      if (r > 180 && b > 180 && g < 110) key++;
+    } else {
+      const nb = (xx > 0 && a(i-1) < 255) || (xx < W-1 && a(i+1) < 255) || (y > 0 && a(i-W) < 255) || (y < H-1 && a(i+W) < 255);
+      if (nb) boundary++;
+      if (r > 180 && b > 180 && g < 110) key++;
+    }
+  }
+  const edge = semi + boundary;
+  return { alpha: transparent > 0, semi, boundary, fringe: edge ? semi / edge : 0, halo: semi ? halo / semi : 0, key };
+}
+
+function describe(slot, asset) {
+  const el = document.getElementById('slot-' + slot.key);
+  const t = el.querySelector('.thumb'); t.innerHTML = ''; const im = new Image(); im.src = asset.img.src; t.appendChild(im);
+  const lines = [`${asset.name}: ${asset.w}x${asset.h}, ${(asset.bytes/1024).toFixed(0)} KB, ${asset.type.replace('image/','')}`];
+  if (slot.target) {
+    const okW = asset.w >= slot.target.w, ratio = (asset.w / slot.target.w).toFixed(2);
+    const aspect = (asset.w / asset.h).toFixed(2), want = (slot.target.w / slot.target.h).toFixed(2);
+    lines.push(`${okW ? 'covers' : 'UNDER'} ${slot.target.w}x${slot.target.h}: ${ratio} image px per world px at 1.0 scale`);
+    lines.push(`aspect ${aspect} (target ${want})${Math.abs(aspect - want) > 0.2 ? ' MISMATCH' : ''}`);
+  }
+  if (slot.cut) {
+    if (!asset.alpha) lines.push('NO TRANSPARENCY: not keyed yet');
+    else lines.push(`fringe ${(asset.fringe*100).toFixed(1)}% of edge · white halo ${(asset.halo*100).toFixed(0)}% of fringe · magenta px ${asset.key}`);
+  }
+  el.querySelector('.facts').innerHTML = lines.map(l => /UNDER|MISMATCH|NO TRANS/.test(l) ? `<span class="bad">${l}</span>` : l).join('\n');
+  facts[slot.key + (slot.multiple ? ':' + asset.name : '')] = lines.join('; ');
+}
+
+// ---------- style tab ----------
+function palette(img, n = 8) {
+  const c = document.createElement('canvas'); const s = Math.min(1, 400 / img.naturalWidth);
+  c.width = Math.max(1, Math.round(img.naturalWidth * s)); c.height = Math.max(1, Math.round(img.naturalHeight * s));
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0, c.width, c.height);
+  const d = x.getImageData(0, 0, c.width, c.height).data, buckets = new Map();
+  let sat = 0, lum = 0, cnt = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i+3] < 128) continue;
+    const r = d[i], g = d[i+1], b = d[i+2];
+    const k = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+    const e = buckets.get(k) || { r:0, g:0, b:0, n:0 }; e.r += r; e.g += g; e.b += b; e.n++; buckets.set(k, e);
+    const mx = Math.max(r,g,b), mn = Math.min(r,g,b), l = (mx + mn) / 510; lum += l; sat += mx === mn ? 0 : (mx - mn) / (255 - Math.abs(2*l*255 - 255) || 1); cnt++;
+  }
+  const sorted = [...buckets.values()].map(e => [e.r/e.n, e.g/e.n, e.b/e.n, e.n]).sort((p, q) => q[3] - p[3]);
+  const out = [];
+  for (const p of sorted) { if (out.every(o => dist(o, p) >= 48)) out.push(p); if (out.length >= n) break; }
+  return { colors: out, sat: cnt ? sat / cnt : 0, lum: cnt ? lum / cnt : 0 };
+}
+const dist = (a, b) => Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+const hex = p => '#' + [0,1,2].map(i => Math.round(p[i]).toString(16).padStart(2,'0')).join('');
+function matches(pa, pb) { return pa.colors.filter(c => pb.colors.some(o => dist(c, o) < 48)).length; }
+
+function renderStyle() {
+  const out = document.getElementById('styleOut'); out.innerHTML = '';
+  const items = [];
+  for (const r of A.ref) items.push(['reference: ' + r.name, r]);
+  if (A.maplewood) items.push(['Maplewood', A.maplewood]);
+  if (A.lobby) items.push(['lobby', A.lobby]);
+  if (!items.length) { out.innerHTML = '<p class="hint">Load a reference, the Maplewood background and the lobby first.</p>'; return; }
+  const pals = {};
+  const imgs = document.createElement('div'); imgs.className = 'styleimgs';
+  for (const [label, asset] of items) {
+    const p = palette(asset.img); pals[label] = p;
+    const h = document.createElement('div');
+    h.innerHTML = `<b>${label}</b> · saturation ${(p.sat*100).toFixed(0)}% · lightness ${(p.lum*100).toFixed(0)}%`;
+    const strip = document.createElement('div'); strip.className = 'pal';
+    for (const c of p.colors) { const sw = document.createElement('div'); sw.style.background = hex(c); sw.textContent = hex(c); strip.appendChild(sw); }
+    out.appendChild(h); out.appendChild(strip);
+    const im = new Image(); im.src = asset.img.src; imgs.appendChild(im);
+  }
+  out.appendChild(imgs);
+  const lines = [];
+  if (pals.Maplewood && pals.lobby) lines.push(`Maplewood vs lobby: ${matches(pals.Maplewood, pals.lobby)} of 8 colours shared`);
+  for (const r of A.ref) {
+    const k = 'reference: ' + r.name;
+    if (pals.Maplewood) lines.push(`Maplewood vs ${r.name}: ${matches(pals.Maplewood, pals[k])} of 8 shared`);
+    if (pals.lobby) lines.push(`lobby vs ${r.name}: ${matches(pals.lobby, pals[k])} of 8 shared`);
+  }
+  const st = document.createElement('div'); st.className = 'status'; st.textContent = lines.join('\n') || 'Load two images to compare.';
+  out.appendChild(st); facts.style = lines.join('; ');
+}
+
+// ---------- scene tab ----------
+const sceneCv = document.getElementById('sceneCv'), sx = sceneCv.getContext('2d');
+const mag = document.getElementById('mag'), mx = mag.getContext('2d');
+const scene = { arrival:{x:400, y:600}, props:{}, pointer:null, drag:null };
+const PROP_KEYS = ['signpost','welcome','door'];
+const defaults = { signpost:{x:520, y:560}, welcome:{x:320, y:560}, door:{x:420, y:520} };
+for (const k of PROP_KEYS) scene.props[k] = { ...defaults[k] };
+['footW','rscale','frame','dpr','propScale','checker'].forEach(id => document.getElementById(id).addEventListener('input', drawScene));
+
+function world() { const bg = A.maplewood; const W = +document.getElementById('footW').value || 1400; return { W, H: bg ? Math.round(W * bg.h / bg.w) : Math.round(W * 1000 / 1400) }; }
+function frameWorld() {
+  const f = document.getElementById('frame').value; if (f === 'none') return null;
+  const [cw, ch] = f.split('x').map(Number), rs = +document.getElementById('rscale').value;
+  const { W, H } = world(); const fw = Math.min(W, cw / rs), fh = Math.min(H, ch / rs);
+  let x = scene.arrival.x - fw / 2, y = scene.arrival.y - fh / 2;
+  x = Math.max(0, Math.min(W - fw, x)); y = Math.max(0, Math.min(H - fh, y));      // hard clamp, like the camera
+  return { x, y, w:fw, h:fh, label:f };
+}
+function propRect(k) {
+  const a = A[k]; if (!a) return null; const s = +document.getElementById('propScale').value || 1;
+  const p = scene.props[k]; return { x:p.x, y:p.y, w:a.w * s, h:a.h * s };
+}
+function paintWorld(ctx, vs, ox, oy, ow, oh) {
+  // draws world region [ox,oy,ow,oh] at vs canvas px per world px, origin top-left
+  const { W, H } = world(); const checker = document.getElementById('checker').checked;
+  ctx.save(); ctx.scale(vs, vs); ctx.translate(-ox, -oy);
+  if (A.maplewood && !checker) ctx.drawImage(A.maplewood.img, 0, 0, W, H);
+  else { ctx.fillStyle = '#e8e8e8'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fff'; const t = 32; for (let y = 0; y < H; y += t) for (let x = ((y / t) % 2) * t; x < W; x += 2 * t) ctx.fillRect(x, y, t, t); }
+  for (const k of PROP_KEYS) { const r = propRect(k); if (r) ctx.drawImage(A[k].img, r.x, r.y, r.w, r.h); }
+  ctx.restore();
+}
+function drawScene() {
+  const { W, H } = world(); const vs = sceneCv.width / W; sceneCv.height = Math.round(H * vs);
+  sx.clearRect(0, 0, sceneCv.width, sceneCv.height);
+  paintWorld(sx, vs, 0, 0, W, H);
+  const f = frameWorld();
+  if (f) { sx.save(); sx.scale(vs, vs); sx.strokeStyle = '#1f7a8c'; sx.lineWidth = 3 / vs; sx.setLineDash([8 / vs, 6 / vs]); sx.strokeRect(f.x, f.y, f.w, f.h); sx.restore(); }
+  // arrival crosshair
+  const ax = scene.arrival.x * vs, ay = scene.arrival.y * vs;
+  sx.strokeStyle = '#b5451b'; sx.lineWidth = 2; sx.beginPath(); sx.moveTo(ax - 12, ay); sx.lineTo(ax + 12, ay); sx.moveTo(ax, ay - 12); sx.lineTo(ax, ay + 12); sx.stroke();
+  sx.beginPath(); sx.arc(ax, ay, 8, 0, 7); sx.stroke();
+  // prop labels
+  sx.font = '12px system-ui'; sx.fillStyle = '#b5451b';
+  for (const k of PROP_KEYS) { const r = propRect(k); if (r) sx.fillText(k, r.x * vs + 2, r.y * vs - 3); }
+  // status
+  const lines = [];
+  const bg = A.maplewood;
+  if (bg) {
+    const rs = +document.getElementById('rscale').value, dpr = +document.getElementById('dpr').value;
+    const have = bg.w / W, need = rs * dpr;
+    lines.push(`world ${W}x${H} from ${bg.w}x${bg.h} → ${have.toFixed(2)} image px per world px`);
+    lines.push(`device needs ${need.toFixed(2)} (scale ${rs} × DPR ${dpr}): ${have >= need ? 'sharp' : 'SOFT, ×' + (have / need).toFixed(2)}`);
+  } else lines.push('no background loaded');
+  if (f) {
+    lines.push(`frame ${f.label} at ${document.getElementById('rscale').value} = ${Math.round(f.w)}x${Math.round(f.h)} world px, centred on arrival (${Math.round(scene.arrival.x)}, ${Math.round(scene.arrival.y)})`);
+    const r = propRect('signpost');
+    if (r) { const fits = r.x >= f.x && r.y >= f.y && r.x + r.w <= f.x + f.w && r.y + r.h <= f.y + f.h; lines.push(`signpost ${fits ? 'FITS' : 'DOES NOT FIT'} the frame`); }
+    else lines.push('signpost not loaded');
+  }
+  for (const k of PROP_KEYS) { const r = propRect(k); if (r) lines.push(`${k} at (${Math.round(r.x)}, ${Math.round(r.y)}) ${Math.round(r.w)}x${Math.round(r.h)} world px`); }
+  document.getElementById('sceneStatus').textContent = lines.join('\n'); facts.scene = lines.join('; ');
+  drawMag();
+}
+function drawMag() {
+  mx.imageSmoothingEnabled = false; mx.fillStyle = '#eee'; mx.fillRect(0, 0, 240, 240);
+  if (!scene.pointer) { mx.fillStyle = '#666'; mx.fillText('hover the scene', 80, 120); return; }
+  const rs = +document.getElementById('rscale').value, dpr = +document.getElementById('dpr').value, dev = rs * dpr;
+  const zoom = 4, side = 240 / zoom;                         // 60 device px window
+  const off = document.createElement('canvas'); off.width = side; off.height = side;
+  const ox = off.getContext('2d'); ox.imageSmoothingEnabled = true;
+  const ww = side / dev;                                     // world px covered
+  paintWorld(ox, dev, scene.pointer.x - ww / 2, scene.pointer.y - ww / 2, ww, ww);
+  mx.drawImage(off, 0, 0, 240, 240);
+  mx.strokeStyle = '#b5451b'; mx.strokeRect(118, 118, 4, 4);
+  mx.fillStyle = '#222'; mx.font = '11px system-ui'; mx.fillText(`${side}×${side} device px, 4x`, 6, 234);
+}
+function scenePt(e) { const r = sceneCv.getBoundingClientRect(); const vs = sceneCv.width / world().W; return { x:(e.clientX - r.left) * (sceneCv.width / r.width) / vs, y:(e.clientY - r.top) * (sceneCv.height / r.height) / vs }; }
+sceneCv.addEventListener('pointerdown', e => {
+  const p = scenePt(e); scene.drag = null;
+  for (const k of [...PROP_KEYS].reverse()) { const r = propRect(k); if (r && p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) { scene.drag = { k, dx:p.x - r.x, dy:p.y - r.y }; break; } }
+  if (!scene.drag) scene.drag = { k:'arrival', dx:0, dy:0 };
+  sceneCv.setPointerCapture(e.pointerId);
+});
+sceneCv.addEventListener('pointermove', e => {
+  const p = scenePt(e); scene.pointer = p;
+  if (scene.drag) { if (scene.drag.k === 'arrival') scene.arrival = p; else { scene.props[scene.drag.k].x = p.x - scene.drag.dx; scene.props[scene.drag.k].y = p.y - scene.drag.dy; } drawScene(); }
+  else drawMag();
+});
+sceneCv.addEventListener('pointerup', () => { scene.drag = null; });
+sceneCv.addEventListener('pointerleave', () => { if (!scene.drag) { scene.pointer = null; drawMag(); } });
+
+// ---------- moose tab ----------
+const mooseCv = document.getElementById('mooseCv'), mc = mooseCv.getContext('2d');
+const PARTS = ['body','antlers','head','eye'];                 // draw order
+const rig = { body:{x:250,y:150,px:0.5,py:1}, head:{x:520,y:120,px:0.15,py:0.85}, antlers:{x:560,y:40,px:0.5,py:0.95}, eye:{x:600,y:150,px:0.5,py:0.5} };
+const parent = { head:'body', antlers:'head', eye:'head' };
+const anim = { headTurn:0, wobble:0, blink:0, t0:performance.now() };
+let mdrag = null;
+function placeMooseDefault(k) { const a = A[k]; if (a && rig[k].w == null) { rig[k].w = a.w; rig[k].h = a.h; } }
+function partRect(k) { const a = A[k]; if (!a) return null; const s = +document.getElementById('mooseScale').value || 1; return { x:rig[k].x, y:rig[k].y, w:a.w * s, h:a.h * s }; }
+function pivotOf(k) { const r = partRect(k); return { x:r.x + r.w * rig[k].px, y:r.y + r.h * rig[k].py }; }
+function partTransform(k, t) {
+  // returns {angle, sx, sy} for part k at time t (seconds)
+  const reduced = document.getElementById('reduced').checked, idle = document.getElementById('idle').checked && !reduced;
+  const ease = (v, d) => v > 0 ? Math.max(0, 1 - (t - v) / d) : 0;
+  if (k === 'body') { const b = idle ? 1 + 0.012 * Math.sin(t * 2.2) : 1; return { angle:0, sx:1, sy:b }; }
+  if (k === 'head') { const e = ease(anim.headTurn, 1.2); const idleTurn = idle ? 0.03 * Math.sin(t * 0.7) : 0; return { angle: idleTurn - 0.18 * Math.sin(Math.PI * (1 - e)) * (e > 0 ? 1 : 0), sx:1, sy:1 }; }
+  if (k === 'antlers') { const e = ease(anim.wobble, 2.5); return { angle: e > 0 ? 0.12 * Math.sin((t - anim.wobble) * 22) * e : 0, sx:1, sy:1 }; }
+  if (k === 'eye') { const e = ease(anim.blink, 0.22); return { angle:0, sx:1, sy: e > 0 ? Math.max(0.08, Math.abs(Math.cos(Math.PI * (1 - e)))) : 1 }; }
+}
+function applyChain(k, t) {
+  if (parent[k]) applyChain(parent[k], t);
+  const p = pivotOf(k), tr = partTransform(k, t);
+  mc.translate(p.x, p.y); mc.rotate(tr.angle); mc.scale(tr.sx, tr.sy); mc.translate(-p.x, -p.y);
+}
+function drawMoose(now) {
+  const t = (now - anim.t0) / 1000; const bg = document.getElementById('mooseBg').value;
+  mc.setTransform(1, 0, 0, 1, 0, 0); mc.clearRect(0, 0, mooseCv.width, mooseCv.height);
+  if (bg === 'checker') { mc.fillStyle = '#e8e8e8'; mc.fillRect(0, 0, mooseCv.width, mooseCv.height); mc.fillStyle = '#fff'; for (let y = 0; y < mooseCv.height; y += 24) for (let x = ((y / 24) % 2) * 24; x < mooseCv.width; x += 48) mc.fillRect(x, y, 24, 24); }
+  else { mc.fillStyle = bg; mc.fillRect(0, 0, mooseCv.width, mooseCv.height); }
+  for (const k of PARTS) {
+    const r = partRect(k); if (!r) continue;
+    mc.save(); applyChain(k, t); mc.drawImage(A[k].img, r.x, r.y, r.w, r.h); mc.restore();
+  }
+  for (const k of PARTS) { const r = partRect(k); if (!r) continue; const p = pivotOf(k); mc.strokeStyle = '#b5451b'; mc.lineWidth = 2; mc.beginPath(); mc.arc(p.x, p.y, 6, 0, 7); mc.stroke(); mc.fillStyle = '#b5451b'; mc.font = '12px system-ui'; mc.fillText(k, r.x + 2, r.y - 3); }
+  if (!PARTS.some(k => A[k])) { mc.fillStyle = '#666'; mc.font = '14px system-ui'; mc.fillText('Load the four moose parts on the Assets tab.', 20, 30); }
+  requestAnimationFrame(drawMoose);
+}
+requestAnimationFrame(drawMoose);
+document.querySelectorAll('[data-anim]').forEach(b => b.addEventListener('click', () => { anim[b.dataset.anim] = (performance.now() - anim.t0) / 1000; }));
+function moosePt(e) { const r = mooseCv.getBoundingClientRect(); return { x:(e.clientX - r.left) * (mooseCv.width / r.width), y:(e.clientY - r.top) * (mooseCv.height / r.height) }; }
+mooseCv.addEventListener('pointerdown', e => {
+  const p = moosePt(e);
+  for (const k of [...PARTS].reverse()) {
+    const r = partRect(k); if (!r || p.x < r.x || p.x > r.x + r.w || p.y < r.y || p.y > r.y + r.h) continue;
+    if (e.shiftKey) { rig[k].px = (p.x - r.x) / r.w; rig[k].py = (p.y - r.y) / r.h; rigOut(); return; }
+    mdrag = { k, dx:p.x - r.x, dy:p.y - r.y }; mooseCv.setPointerCapture(e.pointerId); return;
+  }
+});
+mooseCv.addEventListener('pointermove', e => { if (!mdrag) return; const p = moosePt(e); rig[mdrag.k].x = p.x - mdrag.dx; rig[mdrag.k].y = p.y - mdrag.dy; rigOut(); });
+mooseCv.addEventListener('pointerup', () => { mdrag = null; });
+function rigOut() {
+  const o = {};
+  for (const k of PARTS) if (A[k]) o[k] = { parent: parent[k] || null, x: Math.round(rig[k].x), y: Math.round(rig[k].y), w: A[k].w, h: A[k].h, pivot: [+rig[k].px.toFixed(3), +rig[k].py.toFixed(3)] };
+  const s = JSON.stringify(o, null, 1); document.getElementById('rigOut').textContent = s; facts.rig = s;
+}
+
+// ---------- verdict tab ----------
+const CRITERIA = [
+  'Style consistency: district and sub-scene read as one illustrator, and both read as the old Moosylvania site',
+  'Camera angle and light direction match across every asset',
+  'Props cut cleanly: no fringe or halo visible at 4x on the real background',
+  'Resolution: background sharp at desktop 1.0 / DPR 2, or acceptable after a 2x upscale',
+  'Phone: signpost fits the portrait frame at 0.6 with the camera on the arrival point',
+  'Moose parts assemble with no gaps and move as one through head turn, wobble and blink',
+  'Repeatability: the recipe reproduces the style on a second run without new prompt surgery',
+  'Effort: total cleanup for the nine assets is under about two hours',
+];
+const ASSET_ROWS = ['maplewood','lobby','signpost','welcome','door','moose-body','moose-head','moose-antlers','moose-eye'];
+let verdictBuilt = false;
+function buildVerdict() {
+  if (verdictBuilt) return; verdictBuilt = true;
+  const ct = document.getElementById('criteria');
+  CRITERIA.forEach((c, i) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${c}</td><td><select data-c="${i}"><option value="">?</option><option>pass</option><option>soft</option><option>fail</option></select></td><td><input data-n="${i}" style="width:100%"></td>`; ct.appendChild(tr); });
+  const pa = document.getElementById('perAsset');
+  ASSET_ROWS.forEach(a => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${a}</td><td><select data-t="${a}"><option value="">?</option><option>ChatGPT</option><option>Nano Banana</option><option>both</option><option>neither</option></select></td><td><input type="number" data-r="${a}" min="0" value="0"></td><td><input type="number" data-m="${a}" min="0" value="0"></td>`; pa.appendChild(tr); });
+}
+document.getElementById('gen').addEventListener('click', () => {
+  const q = s => document.querySelector(s);
+  const go = q('#go').value || 'UNDECIDED';
+  let md = `Resolved ${new Date().toISOString().slice(0,10)} with the art pipeline prototype on branch \`prototype/art-pipeline\` (\`prototypes/art-pipeline/\`).\n\n**Verdict: ${go}.** ${q('#goWhy').value}\n\n### Criteria\n\n| Criterion | Result | Notes |\n| --- | --- | --- |\n`;
+  CRITERIA.forEach((c, i) => { md += `| ${c} | ${q(`[data-c="${i}"]`).value || '?'} | ${q(`[data-n="${i}"]`).value} |\n`; });
+  md += `\n### Per asset\n\n| Asset | Tool kept | Retries | Cleanup min |\n| --- | --- | --- | --- |\n`;
+  let total = 0;
+  ASSET_ROWS.forEach(a => { const m = +q(`[data-m="${a}"]`).value || 0; total += m; md += `| ${a} | ${q(`[data-t="${a}"]`).value || '?'} | ${q(`[data-r="${a}"]`).value} | ${m} |\n`; });
+  md += `| **total** | | | **${total}** |\n\n### Measured in the harness\n\n`;
+  for (const [k, v] of Object.entries(facts)) if (k !== 'rig') md += `- ${k}: ${v}\n`;
+  if (facts.rig) md += `\n### Moose rig\n\n\`\`\`json\n${facts.rig}\n\`\`\`\n`;
+  q('#md').value = md;
+});
+document.getElementById('copy').addEventListener('click', () => navigator.clipboard.writeText(document.getElementById('md').value));
+</script>
+</body>
+</html>

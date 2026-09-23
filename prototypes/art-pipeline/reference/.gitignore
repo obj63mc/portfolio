@@ -1,0 +1,3 @@
+# Style references are not assets; keep them out of the repo unless it is private.
+*
+!.gitignore
