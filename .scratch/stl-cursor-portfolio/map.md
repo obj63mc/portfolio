@@ -14,7 +14,7 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 - Skills per ticket type: research → `research`; prototype → `prototype`; grilling → `grilling` + `domain-modeling`.
 - Standing preferences (settled while charting, detail in the charting ticket):
   - Frontend: SvelteKit, static adapter. CSS is native modern CSS with nesting, no preprocessor.
-  - No PartyKit. Realtime backend to be chosen. Total hosting ceiling $25/month with a hard spend cap.
+  - No PartyKit. Realtime backend to be chosen. Hosting ceiling $25/month with a hard spend cap; tool subscriptions used while authoring assets are outside that ceiling.
   - Multiplayer is a hard requirement; the scene must degrade to single-player when the socket is down.
   - Rendering is hybrid: artwork drawn on canvas, props clickable like Cursor Camp with real HTML underneath for SEO and screen readers, cursors on an overlay.
   - Mobile is considered from the start: on-screen joystick plus drag-to-pan (drag scene left, view moves right). Not a later phase.
@@ -22,6 +22,7 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
   - Sub-scenes are separate rooms. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
   - Only a small set of props are shared, server-authoritative state; the rest are local.
   - Sound: ambient per district plus prop sounds, off by default. Depth effects are a later phase after art.
+  - ADRs so far: 0001 single zoom with world coordinates, 0002 canvas-native props.
 
 ## Decisions so far
 
@@ -35,6 +36,7 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 - [How big is the overworld, where does each district sit, and how does the camera move?](issues/06-world-layout-and-camera.md): 4800 x 2700 overworld (up to about 5400 wide), districts west to east Maplewood, Central West End, Midtown, river, Belleville with Carondelet Park south, symbolic scenery between; single zoom with per-device render scale; one camera model with a wide prop-aware push band, continuous pan, drag, wheel, keys and joystick; sub-scenes 2845 x 1600 with fade in, exit door and back button, URL per scene. ADR 0001.
 - [Which props are shared and server-authoritative, and what is their state model?](issues/10-shared-props.md): one shared prop, the Foundry screen, idle or playing a title from a server time; poster click sends the op, server drops ops while busy, first accepted wins, no optimistic change, in-memory only, reset on empty room, snapshot plus server time on join; over-cap visitors get a spectator socket; bike track is a local lap timer with a personal top-ten in localStorage; shared prop and local prop added to the glossary.
 - [What does a visitor's cursor look like, and which cosmetics exist?](issues/11-cursor-identity-and-cosmetics.md): 32 px drawn arrow, no names, server-assigned flag badge with the St. Louis flag as fallback, own cursor gets a blue halo and a fading "you" tag; seven cosmetics with ids and granting props, one worn at a time, granted on first click (poster click for the glasses, eye blink on the MonsterCommerce logo for the monster ears), gold cursor body once all seven are earned; presence carries flag, cosmetic id and gold bit, drawn from a local sprite atlas; off-screen peers are not drawn or interpolated, idle peers never fade; localStorage keeps worn id and earned set.
+- [Rive, canvas-native, or a mix for animated props?](issues/13-animation-approach.md): canvas-native for every prop, Rive not adopted; moving props are pivoted WebP layers tweened in the scene loop, sprite sheets only for frame cycles; Rive admitted later only for bone or mesh deformation inside a sub-scene; reduced motion freezes ambient motion and keeps click reactions; ambient motion and reaction added to the glossary. ADR 0002.
 
 ## Not yet specified
 

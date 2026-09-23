@@ -12,3 +12,5 @@ Build a throwaway SvelteKit static prototype with the artwork on a canvas, click
 ## Comments
 
 2026-09-23, from the cursor identity ticket (11): cursors are a 32 world px drawn arrow with three cosmetic anchors (head, face, side), a flag badge lower right, a halo on the visitor's own cursor, and a gold body variant. All drawn from one sprite atlas by cosmetic id. Peers outside the camera are not drawn or interpolated at all. Whether the overlay is DOM or canvas is this prototype's call.
+
+2026-09-23, from the animation approach ticket (13): no Rive runtime. The animated prop is a layered raster prop (separate parts, one pivot each) tweened in the scene loop, plus one sprite-sheet loop for the track rider. Include the reduced-motion behaviour: ambient motion freezes, click reactions play, hover reactions become a highlight. Measure the layered props on the phone alongside the camera. See ADR 0002.

@@ -59,6 +59,16 @@ _Avoid_: completionist, achievement, 100%
 The place in the overworld where every visitor first appears: the Moosylvania welcome sign.
 _Avoid_: spawn, spawn point, home, start
 
+### Motion
+
+**Ambient motion**:
+Motion a prop plays with no visitor input, such as the rider looping the track or the marquee lights chasing. Under reduced motion it freezes on a resting frame.
+_Avoid_: idle animation, loop, background animation
+
+**Reaction**:
+Motion a prop plays in response to a visitor's hover or click, such as the MonsterCommerce eye blinking or the moose's antlers wobbling. Click reactions still play under reduced motion; hover reactions become a plain highlight.
+_Avoid_: interaction, effect, trigger, animation
+
 ### People
 
 **Visitor**:
