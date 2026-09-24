@@ -26,6 +26,7 @@ export function drawCursors(g: CanvasRenderingContext2D, e: Engine) {
 	const psc = fx.includes('D') ? e.settings.peerk : 1;
 	for (const p of e.peers.drawn) one(p.x, p.y, p.flag, p.cos, p.gold, false, psc);
 
+	if (!e.showOwn) return; // ticket 22: no own cursor before the first Join
 	const o = e.own, osc = fx.includes('B') ? e.settings.ownk : 1;
 	const sx = (o.x - e.cam.x) * k, sy = (o.y - e.cam.y) * k; // tip, device px
 	if (fx.includes('C')) {

@@ -19,5 +19,7 @@ export const ui = $state({
 	card: null as null | { title: string; body: string },
 	toast: '',
 	touch: false,
+	lock: 'free' as 'free' | 'gate' | 'locked' | 'paused', // ticket 22
+	lockMsg: '',
 	bench: { running: false, status: '', rows: [] as BenchRow[], soak: [] as string[] }
 });

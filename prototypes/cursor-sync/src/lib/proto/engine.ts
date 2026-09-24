@@ -1,6 +1,11 @@
 // The scene loop shared by every variant: camera rules from ticket 06, input, background tiles, own
 // cursor, peers, prop motion and stats. Variants (renderers/) only decide where props and cursors are
 // drawn and hit-tested.
+// PROTOTYPE (ticket 22): desktop pointer lock. A Join click locks the pointer to the stage; mouse
+// movement then drives the drawn cursor, held inside the viewport. Esc, blur or a hidden tab drops
+// the lock and pauses (cursor frozen, camera stopped) until Resume. Desktop drag and wheel panning are
+// gone; keys still pan. A stand-in Mississippi on the overworld carries cursors south (?current=150)
+// and puts anyone washed out of view back at the Arch. ?lock=0 turns the gate off to compare.
 import { SCENES, multiplyProps, type SceneDef, type SceneId } from './scenes';
 import { newProp, updateProp, hitProp, type PropState } from './props';
 import { loadSprites, type Sprites } from './sprites';
@@ -40,6 +45,9 @@ export interface Settings {
 	own: string; // ticket 15: own-cursor treatment letters, e.g. 'A' or 'BE'
 	ownk: number; // ticket 15: own cursor scale for treatment B
 	peerk: number; // ticket 15: peer cursor scale for treatment D
+	lock: boolean; // ticket 22: Join gate and pointer lock on desktop
+	current: number; // ticket 22: river current, world px/s
+	pdrift: boolean; // ticket 22: keep drifting while paused
 }
 
 // PROTOTYPE (ticket 15): the floating switcher cycles these; combos go through the settings panel.
@@ -75,7 +83,10 @@ export function readSettings(q: URLSearchParams): Settings {
 		ws: q.get('ws') ?? `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`,
 		own: (q.get('own') ?? 'BD').toUpperCase().replace(/[^A-E]/g, '') || 'A',
 		ownk: num('ownk', 1.25),
-		peerk: num('peerk', 0.75)
+		peerk: num('peerk', 0.75),
+		lock: q.get('lock') !== '0',
+		current: num('current', 150),
+		pdrift: q.get('pdrift') === '1'
 	};
 }
 
@@ -97,6 +108,17 @@ export interface Script {
 }
 
 const TILE = 512;
+
+// PROTOTYPE (ticket 22): stand-in Mississippi between Midtown and Belleville. The real mask comes from
+// the art pass (ticket 18); this is a rectangle with the bridge deck cut out.
+export const RIVER = { x: 3980, w: 220, bridge: { x: 3950, y: 1180, w: 280, h: 110 }, arch: { x: 3880, y: 1235 } };
+const inWater = (x: number, y: number) => {
+	const b = RIVER.bridge;
+	if (x < RIVER.x || x > RIVER.x + RIVER.w) return false;
+	return !(x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+};
+
+export type LockMode = 'free' | 'gate' | 'locked' | 'paused';
 const MANIFEST: Record<string, { cols: number; rows: number }> = {
 	overworld: { cols: 11, rows: 6 },
 	lobby: { cols: 6, rows: 4 }
@@ -124,6 +146,11 @@ export class Engine {
 	focused: string | null = null;
 	script: Script | null = null;
 	t = 0;
+	mode: LockMode = 'free';
+	joined = false; // desktop: nothing is sent until the first Join
+	drifting = false;
+	private washing = false;
+	private lockAt: { x: number; y: number } | null = null;
 
 	canvas: HTMLCanvasElement;
 	ctx: CanvasRenderingContext2D;
@@ -155,6 +182,7 @@ export class Engine {
 		this.tileLayer.hidden = settings.bg !== 'dom';
 		this.bindInput();
 		this.setTouch(matchMedia('(pointer: coarse)').matches);
+		if (!this.touchMode && settings.lock && 'requestPointerLock' in root) this.setMode('gate');
 		(window as unknown as { __eng: Engine }).__eng = this; // PROTOTYPE: poke from devtools
 		this.resize();
 	}
@@ -226,7 +254,8 @@ export class Engine {
 		this.own.y = at.y;
 		this.own.youUntil = this.t + 4;
 		this.centreOn(at.x, at.y);
-		if (!this.touchMode) this.pointer.inside = false; // no push until the mouse moves again
+		if (this.mode === 'locked') this.pointer = { ...this.ownScreen, inside: true }; // the lock survives the hop
+		else if (!this.touchMode) this.pointer.inside = false; // no push until the mouse moves again
 	}
 
 	// ---- geometry ---------------------------------------------------------------------------------
@@ -270,7 +299,88 @@ export class Engine {
 
 	/** True when the cursor is driven by something other than a real mouse (joystick or bench). */
 	get virtualCursor() {
-		return !!this.script || (this.touchMode && this.joy.active);
+		return !!this.script || (this.touchMode && this.joy.active) || this.mode === 'locked';
+	}
+
+	/** Whether the visitor's own cursor exists yet: not before the first Join on desktop. */
+	get showOwn() {
+		return this.mode === 'free' || this.touchMode || this.joined;
+	}
+
+	// ---- pointer lock (ticket 22) -----------------------------------------------------------------
+
+	private setMode(m: LockMode) {
+		this.mode = m;
+		ui.lock = m;
+		this.root.classList.toggle('locked', m === 'locked');
+	}
+
+	/** Join or Resume. Join puts the drawn cursor where the button was clicked; Resume where it froze. */
+	lockPointer(cx?: number, cy?: number) {
+		ui.lockMsg = '';
+		this.lockAt = this.joined ? this.ownScreen : cx || cy ? { x: cx!, y: cy! } : { x: this.vw / 2, y: this.vh / 2 };
+		const r = this.root.requestPointerLock() as unknown as Promise<void> | undefined;
+		r?.catch?.(() => this.lockRefused());
+	}
+
+	private lockRefused() {
+		// Chrome refuses for about a second after Esc, and always in a background tab
+		ui.lockMsg = "The browser didn't lock the mouse. Wait a moment and try again.";
+	}
+
+	private onLockChange = () => {
+		if (document.pointerLockElement === this.root) {
+			const at = this.lockAt ?? this.ownScreen;
+			this.pointer = { x: at.x, y: at.y, inside: true };
+			if (!this.joined) {
+				this.joined = true;
+				this.own.x = this.cam.x + at.x / this.s;
+				this.own.y = this.cam.y + at.y / this.s;
+				this.own.youUntil = this.t + 4;
+			}
+			this.setMode('locked');
+		} else if (this.mode === 'locked') {
+			this.pointer.inside = false;
+			this.keys.clear();
+			this.setMode('paused');
+		}
+	};
+
+	/** A click while locked lands on whatever sits under the drawn cursor. */
+	private clickUnderCursor() {
+		const { x, y } = this.pointer;
+		const hit = document.elementFromPoint(x, y) as HTMLElement | null;
+		const control = hit?.closest<HTMLElement>('.ui button, .ui a, .ui input, .ui select, .ui textarea');
+		if (control) {
+			if (control.matches('input, select, textarea')) { document.exitPointerLock(); control.focus(); }
+			else control.click();
+			return;
+		}
+		if (this.renderer.hitTest) {
+			const p = this.renderer.hitTest(this.own.x, this.own.y);
+			if (p) this.activate(p, false);
+			return;
+		}
+		hit?.closest<HTMLElement>('[data-prop]')?.click();
+	}
+
+	/** Carried out of view by the river: fade (a cut under reduced motion) and put back at the Arch. */
+	private async washOut() {
+		if (this.washing) return;
+		this.washing = true;
+		const rm = this.settings.rm;
+		if (!rm) { this.fade.style.opacity = '1'; await wait(220); }
+		const a = RIVER.arch;
+		this.own.x = a.x;
+		this.own.y = a.y;
+		this.centreOn(a.x, a.y);
+		this.pointer.x = this.ownScreen.x;
+		this.pointer.y = this.ownScreen.y;
+		this.own.youUntil = this.t + 4;
+		ui.toast = 'The current carried you off. Back at the Arch.';
+		setTimeout(() => (ui.toast = ''), 2200);
+		if (!rm) this.fade.style.opacity = '0';
+		this.washing = false;
 	}
 
 	// ---- input ------------------------------------------------------------------------------------
@@ -284,6 +394,10 @@ export class Engine {
 		const r = this.root;
 		this.on(window, 'resize', () => this.resize());
 		this.on(r, 'pointerdown', (e) => {
+			if (this.mode === 'locked' && e.pointerType === 'mouse') {
+				if (e.button === 0) this.clickUnderCursor();
+				return;
+			}
 			if ((e.target as HTMLElement).closest('.ui')) return;
 			this.setTouch(e.pointerType !== 'mouse');
 			if (this.drag) return;
@@ -293,13 +407,22 @@ export class Engine {
 		this.on(window, 'pointermove', (e) => {
 			if (e.pointerType === 'mouse') {
 				this.setTouch(false);
-				this.pointer.x = e.clientX;
-				this.pointer.y = e.clientY;
-				this.pointer.inside = true;
+				if (this.mode === 'locked') {
+					// locked: movement drives the drawn cursor 1:1 (OS acceleration kept), held inside the viewport
+					this.pointer.x = Math.max(0, Math.min(this.vw - 1, this.pointer.x + e.movementX));
+					this.pointer.y = Math.max(0, Math.min(this.vh - 1, this.pointer.y + e.movementY));
+					return;
+				}
+				if (this.mode === 'free') {
+					this.pointer.x = e.clientX;
+					this.pointer.y = e.clientY;
+					this.pointer.inside = true;
+				}
 			}
 			const d = this.drag;
 			if (!d || d.id !== e.pointerId) return;
-			if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) > 6) d.moved = true;
+			// drag-to-pan is touch only (ticket 22); a mouse press never pans
+			if (d.touch && !d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) > 6) d.moved = true;
 			if (d.moved) {
 				this.cam.x -= (e.clientX - d.x) / this.s;
 				this.cam.y -= (e.clientY - d.y) / this.s;
@@ -335,15 +458,11 @@ export class Engine {
 		}, { capture: true });
 		this.on(window, 'mouseout', (e) => { if (!e.relatedTarget) this.pointer.inside = false; });
 		this.on(window, 'blur', () => { this.pointer.inside = false; this.keys.clear(); });
-		this.on(r, 'wheel', (e) => {
-			e.preventDefault();
-			if (e.ctrlKey) return; // pinch: no zoom (ADR 0001)
-			const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? this.vh : 1;
-			const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX, dy = e.shiftKey && !e.deltaX ? 0 : e.deltaY;
-			this.cam.x += (dx * k) / this.s;
-			this.cam.y += (dy * k) / this.s;
-			this.clamp();
-		}, { passive: false });
+		// wheel and trackpad no longer pan (ticket 22); still swallowed so pinch never zooms (ADR 0001)
+		this.on(r, 'wheel', (e) => e.preventDefault(), { passive: false });
+		const doc = document as unknown as Window;
+		this.on(doc, 'pointerlockchange' as keyof WindowEventMap, this.onLockChange);
+		this.on(doc, 'pointerlockerror' as keyof WindowEventMap, () => this.lockRefused());
 		const KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'd', 'w', 's'];
 		this.on(window, 'keydown', (e) => {
 			if ((e.target as HTMLElement).closest('input,select,textarea')) return;
@@ -423,13 +542,20 @@ export class Engine {
 				this.own.x = Math.max(0, Math.min(this.scene.w, this.own.x + this.joy.x * st.joy * dt));
 				this.own.y = Math.max(0, Math.min(this.scene.h, this.own.y + this.joy.y * st.joy * dt));
 			}
-			const pushing = !this.drag && (this.touchMode ? this.joy.active : this.pointer.inside);
+			// river current: drift south in world space; the camera does not follow (ticket 18)
+			const moving = this.touchMode || this.mode === 'locked' || (this.mode === 'paused' && st.pdrift);
+			this.drifting = this.scene.id === 'overworld' && this.showOwn && moving && !this.washing && inWater(this.own.x, this.own.y);
+			if (this.drifting) {
+				if (this.mode === 'locked') this.pointer.y += st.current * dt * this.s;
+				else this.own.y += st.current * dt;
+			}
+			const pushing = !this.drag && !this.drifting && (this.touchMode ? this.joy.active : this.pointer.inside);
 			if (pushing && !this.nearProp()) {
 				const p = this.touchMode ? this.ownScreen : this.pointer;
 				vx += edge(p.x, this.vw, this.band) * st.push;
 				vy += edge(p.y, this.vh, this.band) * st.push;
 			}
-			const k = this.keys;
+			const k = this.mode === 'paused' ? new Set<string>() : this.keys; // paused: the camera stops
 			vx += ((k.has('ArrowRight') || k.has('d') ? 1 : 0) - (k.has('ArrowLeft') || k.has('a') ? 1 : 0)) * 800;
 			vy += ((k.has('ArrowDown') || k.has('s') ? 1 : 0) - (k.has('ArrowUp') || k.has('w') ? 1 : 0)) * 800;
 			if (!this.drag && (this.inertia.vx || this.inertia.vy)) {
@@ -441,7 +567,7 @@ export class Engine {
 			this.cam.x += vx * dt;
 			this.cam.y += vy * dt;
 			this.clamp();
-			if (this.touchMode) {
+			if (this.touchMode && !this.drifting) {
 				// touch drag pans without moving the cursor in world space, but never loses it off screen
 				const m = 16 / this.s;
 				this.own.x = Math.max(this.cam.x + m, Math.min(this.cam.x + this.viewW - m, this.own.x));
@@ -450,7 +576,8 @@ export class Engine {
 				this.own.x = this.cam.x + this.pointer.x / this.s;
 				this.own.y = this.cam.y + this.pointer.y / this.s;
 			}
-			this.net.move(this.own.x, this.own.y);
+			if (this.drifting && (this.own.y > this.cam.y + this.viewH || this.own.x < this.cam.x || this.own.x > this.cam.x + this.viewW)) this.washOut();
+			if (this.showOwn) this.net.move(this.own.x, this.own.y);
 		}
 
 		// visibility, hover, motion
@@ -555,6 +682,7 @@ export class Engine {
 				if (bmp) g.drawImage(bmp, x0, y0, x1 - x0, y1 - y0);
 				else { g.fillStyle = '#a9cf86'; g.fillRect(x0, y0, x1 - x0, y1 - y0); }
 			}
+		if (this.scene.id === 'overworld') drawRiver(g, k, this.cam);
 		if (this.scene.id === 'theatre') { g.fillStyle = 'rgb(10 8 20 / 0.7)'; g.fillRect(0, 0, this.canvas.width, this.canvas.height); } // lights down
 	}
 
@@ -589,6 +717,7 @@ export class Engine {
 	private hud() {
 		const r = this.stats.recent(), st = this.settings;
 		ui.hud =
+			`lock ${this.mode}${this.joined ? '' : ' (not joined)'}${this.drifting ? ' · drifting' : ''} · current ${st.current} px/s${st.pdrift ? ' (also paused)' : ''}\n` +
 			`${st.variant} · own ${st.own}${st.own.includes('B') ? ` own ×${st.ownk}` : ''}${st.own.includes('D') ? ` peers ×${st.peerk}` : ''} · bg ${st.bg}${st.rm ? ' · reduced motion' : ''}\n` +
 			`${r.fps} fps (${r.refresh} Hz) · p95 ${r.p95} ms · missed ${r.jank}% · js p95 ${r.jsP95} ms\n` +
 			this.net.hud() + '\n' +
@@ -603,6 +732,30 @@ function edge(pos: number, size: number, band: number) {
 	if (pos < b) { const t = 1 - pos / b; return -t * t; }
 	if (pos > size - b) { const t = 1 - (size - pos) / b; return t * t; }
 	return 0;
+}
+
+function drawRiver(g: CanvasRenderingContext2D, k: number, cam: { x: number; y: number }) {
+	const X = (x: number) => (x - cam.x) * k, Y = (y: number) => (y - cam.y) * k;
+	g.fillStyle = 'rgb(58 118 176 / 0.85)';
+	g.fillRect(X(RIVER.x), Y(0), RIVER.w * k, 2700 * k);
+	g.strokeStyle = 'rgb(255 255 255 / 0.35)';
+	g.lineWidth = 2 * k;
+	for (let y = 40; y < 2700; y += 120)
+		for (const dx of [40, 130]) { g.beginPath(); g.moveTo(X(RIVER.x + dx), Y(y)); g.lineTo(X(RIVER.x + dx + 30), Y(y + 18)); g.stroke(); }
+	const b = RIVER.bridge;
+	g.fillStyle = '#8a7a66';
+	g.fillRect(X(b.x), Y(b.y), b.w * k, b.h * k);
+	g.fillStyle = '#6d5f4f';
+	g.fillRect(X(b.x), Y(b.y), b.w * k, 10 * k);
+	g.fillRect(X(b.x), Y(b.y + b.h - 10), b.w * k, 10 * k);
+	// the Arch, where a washed-out visitor lands
+	const a = RIVER.arch;
+	g.strokeStyle = '#c9ced6';
+	g.lineWidth = 9 * k;
+	g.beginPath(); g.moveTo(X(a.x - 70), Y(a.y + 40)); g.quadraticCurveTo(X(a.x), Y(a.y - 260), X(a.x + 70), Y(a.y + 40)); g.stroke();
+	g.fillStyle = '#fff';
+	g.font = `600 ${14 * k}px system-ui, sans-serif`;
+	g.fillText('stand-in Mississippi', X(RIVER.x + 10), Y(b.y - 20));
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string) {

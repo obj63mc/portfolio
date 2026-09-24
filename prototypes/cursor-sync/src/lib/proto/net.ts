@@ -295,6 +295,8 @@ export class Net {
 				if (rt >= p.st[i] && rt <= p.st[j] && p.st[j] > p.st[i]) {
 					const u = (rt - p.st[i]) / (p.st[j] - p.st[i]);
 					x = p.sx[i] + (p.sx[j] - p.sx[i]) * u; y = p.sy[i] + (p.sy[j] - p.sy[i]) * u;
+					// ticket 18: a jump over 400 world px (the Arch reset, a door) snaps instead of gliding
+					if (Math.hypot(p.sx[j] - p.sx[i], p.sy[j] - p.sy[i]) > 400) { x = p.sx[j]; y = p.sy[j]; }
 					break;
 				}
 			}

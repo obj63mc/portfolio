@@ -5,6 +5,9 @@
 	peers are shared by every variant so the variants differ only in rendering and hit testing.
 	Ticket 15: the floating switcher now cycles own-cursor treatments (?own=A..E, combos like ?own=BE
 	via the gear panel); the renderer variant stays on B (?variant= still works).
+	Ticket 22: desktop pointer lock. A Join card over the live scene locks the pointer; Esc or leaving
+	the window shows a Paused card, and Resume re-locks with the cursor where it froze. ?lock=0 turns it
+	off, ?current= sets the river speed, ?pdrift=1 keeps drifting while paused.
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
@@ -30,7 +33,8 @@
 		form = {
 			bots: String(s.bots), bg: s.bg, scale: String(s.scale), dpr: String(s.dprCap), rm: s.rm ? '1' : '0',
 			props: String(s.props), tiles: String(s.tiles), push: String(s.push), joy: String(s.joy), tau: String(s.tau), band: String(s.band),
-			hz: String(s.hz), delay: String(s.delay), ts: s.turnstile ? '1' : '0', own: s.own, ownk: String(s.ownk), peerk: String(s.peerk)
+			hz: String(s.hz), delay: String(s.delay), ts: s.turnstile ? '1' : '0', own: s.own, ownk: String(s.ownk), peerk: String(s.peerk),
+			lock: s.lock ? '1' : '0', current: String(s.current), pdrift: s.pdrift ? '1' : '0'
 		};
 		own = s.own;
 		const e = new Engine(stage, s, (path, back) => {
@@ -141,6 +145,9 @@
 		<p class="hint">Rooms at different rates are separate, so everyone comparing must pick the same rate.</p>
 		<h2>Settings <small>(reloads)</small></h2>
 		<div class="grid">
+			<label>Pointer lock <select bind:value={form.lock}><option value="1">on</option><option value="0">off</option></select></label>
+			<label>River current px/s <input bind:value={form.current} inputmode="numeric" /></label>
+			<label>Drift while paused <select bind:value={form.pdrift}><option value="0">no</option><option value="1">yes</option></select></label>
 			<label>Own cursor (letters, e.g. BE) <input bind:value={form.own} /></label>
 			<label>Own scale for B <select bind:value={form.ownk}>{#each ['1.25', '1.4', '1.5', '1.75'] as v}<option>{v}</option>{/each}</select></label>
 			<label>Peer scale for D <select bind:value={form.peerk}>{#each ['0.6', '0.75', '0.8', '1'] as v}<option>{v}</option>{/each}</select></label>
@@ -180,3 +187,21 @@
 {/if}
 
 {#if ui.bench.running}<div class="ui status">{ui.bench.status}</div>{/if}
+
+{#if ui.lock === 'gate' || (ui.lock === 'paused' && !panel)}
+	<!-- ticket 22: the live scene keeps running behind this; keyboard users can still Tab to props -->
+	<div class="ui lockgate">
+		<div class="gatecard" role="dialog" aria-labelledby="gate-title">
+			{#if ui.lock === 'gate'}
+				<h2 id="gate-title">St. Louis, by cursor</h2>
+				<p>Join to explore with everyone else here. Press Esc any time to get your mouse back.</p>
+				<button disabled={!eng} onclick={(ev) => eng?.lockPointer(ev.clientX, ev.clientY)}>Join</button>
+			{:else}
+				<h2 id="gate-title">Paused</h2>
+				<p>Your cursor is waiting where you left it.</p>
+				<button onclick={() => eng?.lockPointer()}>Resume</button>
+			{/if}
+			{#if ui.lockMsg}<p class="hint">{ui.lockMsg}</p>{/if}
+		</div>
+	</div>
+{/if}
