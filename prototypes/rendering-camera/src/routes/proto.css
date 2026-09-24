@@ -1,0 +1,89 @@
+/* PROTOTYPE styles. Native CSS with nesting. */
+:root { color-scheme: light; font: 14px/1.4 system-ui, sans-serif; }
+html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; background: #1d2b3a; }
+
+.stage {
+	position: fixed; inset: 0; overflow: clip; touch-action: none; user-select: none; -webkit-user-select: none;
+	-webkit-touch-callout: none; cursor: none;
+	&.touch { cursor: auto; }
+	&.canvas-hit.over-prop { cursor: none; }
+
+	> * { position: absolute; left: 0; top: 0; }
+	.tile-layer { transform-origin: 0 0; will-change: transform; z-index: 0;
+		img { position: absolute; display: block; }
+	}
+	.scene-canvas { z-index: 1; }
+	.world { transform-origin: 0 0; will-change: transform; z-index: 2; }
+	.cursor-layer, .cursor-canvas { z-index: 3; pointer-events: none; }
+	.fade { inset: 0; width: 100%; height: 100%; background: #000; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 4; }
+}
+
+/* variant A: DOM props */
+.prop {
+	position: absolute; left: 0; top: 0; padding: 0; margin: 0; border: 0; background: none; cursor: inherit;
+	transform-origin: 0 0; -webkit-tap-highlight-color: transparent;
+	img, .sheet { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: none; }
+	.sheet { width: 100%; height: 100%; }
+	.spot {
+		position: absolute; left: -15%; bottom: -14px; width: 130%; height: 30px; opacity: 0; transition: opacity 0.15s;
+		background: radial-gradient(closest-side, rgb(255 250 210 / 0.95), rgb(255 250 210 / 0));
+	}
+	&.hover .spot { opacity: 1; }
+	.bulb { position: absolute; left: 0; top: 0; width: 7px; height: 7px; border-radius: 50%; background: #6b5a2a; &.on { background: #ffd84a; } }
+	&:focus-visible { outline: 3px solid #1f5fd1; outline-offset: 4px; }
+}
+.cur { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;
+	.cell { position: absolute; inset: 0; }
+	.you { position: absolute; left: 38px; top: 12px; font: 600 12px system-ui; color: #1f5fd1; }
+}
+
+/* variant B: transparent hit targets */
+.hit {
+	position: absolute; left: 0; top: 0; padding: 0; margin: 0; border: 0; background: none; cursor: inherit;
+	-webkit-tap-highlight-color: transparent;
+	&:focus-visible { outline: 3px solid #1f5fd1; outline-offset: 4px; }
+}
+
+.sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* overlay UI (not part of the design under test) */
+.ui { position: fixed; z-index: 10; cursor: auto; font: 13px/1.35 system-ui, sans-serif; }
+.hud {
+	left: 8px; top: 8px; max-width: calc(100vw - 16px); padding: 6px 8px; border: 0; border-radius: 6px; text-align: left;
+	background: rgb(0 0 0 / 0.72); color: #b8ffb8; font: 11px/1.35 ui-monospace, monospace; white-space: pre-wrap;
+}
+.hud-min { left: 8px; top: 8px; padding: 4px 8px; border: 0; border-radius: 6px; background: rgb(0 0 0 / 0.6); color: #fff; }
+.switcher {
+	left: 50%; bottom: 16px; translate: -50% 0; display: flex; gap: 6px; align-items: center; padding: 6px 8px;
+	border-radius: 999px; background: #111; color: #fff; box-shadow: 0 4px 16px rgb(0 0 0 / 0.4); white-space: nowrap;
+	&.touch { left: 12px; translate: none; bottom: calc(16px + env(safe-area-inset-bottom)); max-width: calc(100vw - 170px); overflow: hidden;
+		span { overflow: hidden; text-overflow: ellipsis; }
+	}
+	button { border: 0; background: #333; color: #fff; border-radius: 999px; padding: 4px 9px; font-size: 13px; }
+}
+.panel {
+	right: 8px; top: 8px; width: min(420px, calc(100vw - 16px)); max-height: calc(100dvh - 90px); overflow: auto;
+	padding: 10px 12px; border-radius: 10px; background: #fff; color: #111; box-shadow: 0 6px 24px rgb(0 0 0 / 0.4);
+	h2 { font-size: 14px; margin: 6px 0; small { font-weight: 400; color: #666; } }
+	.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-bottom: 8px; }
+	label { display: grid; font-size: 12px; color: #444; }
+	input, select { font-size: 16px; }
+	.hint { color: #555; font-size: 12px; margin: 4px 0 8px; }
+	table { border-collapse: collapse; margin-top: 8px; width: 100%; font: 12px ui-monospace, monospace; }
+	th, td { border-bottom: 1px solid #ddd; padding: 2px 4px; text-align: right; }
+	.soak { font: 12px ui-monospace, monospace; }
+}
+.card {
+	left: 50%; top: 16px; translate: -50% 0; width: min(360px, calc(100vw - 32px)); padding: 12px 14px; border-radius: 10px;
+	background: #fffdf5; color: #1d2b3a; box-shadow: 0 6px 24px rgb(0 0 0 / 0.35);
+	h2 { margin: 0 0 4px; font-size: 16px; }
+	p { margin: 0 0 8px; }
+}
+.toast { left: 50%; top: 50%; translate: -50% 0; padding: 6px 12px; border-radius: 999px; background: #1f5fd1; color: #fff; pointer-events: none; }
+.back { left: 8px; bottom: 70px; padding: 6px 10px; border: 0; border-radius: 999px; background: #fff; }
+.status { left: 50%; top: 40%; translate: -50% 0; padding: 8px 14px; border-radius: 8px; background: rgb(0 0 0 / 0.75); color: #fff; pointer-events: none; }
+.joy {
+	right: calc(20px + env(safe-area-inset-right)); bottom: calc(20px + env(safe-area-inset-bottom)); width: 120px; height: 120px;
+	border-radius: 50%; background: rgb(255 255 255 / 0.25); border: 2px solid rgb(255 255 255 / 0.6); touch-action: none;
+	.knob { position: absolute; left: 34px; top: 34px; width: 52px; height: 52px; border-radius: 50%; background: rgb(255 255 255 / 0.85); pointer-events: none; }
+}

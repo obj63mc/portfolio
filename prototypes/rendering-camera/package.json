@@ -1,0 +1,22 @@
+{
+  "name": "rendering-camera-prototype",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "PROTOTYPE, throwaway. Ticket 08: hybrid canvas rendering and camera on phones.",
+  "scripts": {
+    "art": "bash scripts/build-art.sh",
+    "dev": "vite dev --host",
+    "phone": "vite build && vite preview --host --port 4173",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.70.3",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^24.13.6",
+    "svelte": "^5.57.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.0"
+  }
+}

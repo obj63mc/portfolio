@@ -1,0 +1,8 @@
+{
+  "tile": 512,
+  "scenes": {
+    "overworld": { "w": 5400, "h": 2700, "cols": 11, "rows": 6 },
+    "lobby": { "w": 2845, "h": 1600, "cols": 6, "rows": 4 }
+  },
+  "densities": [1.25, 2]
+}
