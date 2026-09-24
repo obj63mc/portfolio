@@ -3,7 +3,7 @@
 // echo latency (its own move coming back in a server frame, so it includes the server tick wait) and
 // downlink per bot. Prints a line every 10 s and a cost projection at the end.
 //
-//   node scripts/bots.mjs --url wss://cursor-sync-proto.joe-3ed.workers.dev --room overworld --n 20 --hz 15 --secs 120
+//   node scripts/bots.mjs --url wss://cursor-sync-proto.barmadden.workers.dev --room overworld --n 20 --hz 15 --secs 120
 import { parseArgs } from 'node:util';
 
 const { values: a } = parseArgs({

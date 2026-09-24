@@ -5,7 +5,7 @@ Durable Objects feel right and degrade safely?** Built on the ticket 08 renderer
 props, DOM hit targets, cursor overlay canvas), with its simulated peers swapped for a real socket.
 Nothing here ships. The branch `prototype/cursor-sync` is the primary source; the ticket holds the verdict.
 
-Live at **https://cursor-sync-proto.joe-3ed.workers.dev** (Workers Paid, `joe-3ed` account).
+Live at **https://cursor-sync-proto.barmadden.workers.dev** (Workers Paid, `barmadden` account).
 
 ## Run it
 
@@ -14,7 +14,7 @@ cd prototypes/cursor-sync
 npm install
 npm run deploy                       # build, then wrangler deploy (static assets + Worker + Durable Object)
 npm run local                        # the same on http://localhost:8787 (and the LAN) via wrangler dev
-npm run bots -- --url wss://cursor-sync-proto.joe-3ed.workers.dev --n 20 --hz 15 --secs 60
+npm run bots -- --url wss://cursor-sync-proto.barmadden.workers.dev --n 20 --hz 15 --secs 60
 ```
 
 ## What's here
