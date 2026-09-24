@@ -16,7 +16,7 @@ Resolved 2026-09-24. Joe did the dashboard steps; the agent checked them with wr
 **Provisioned**
 
 - One Cloudflare account on **Workers Paid ($5/month)**. Joe confirmed the plan in the dashboard; wrangler's token can't read billing.
-- workers.dev subdomain **`joe-3ed.workers.dev`**, confirmed through the API. Prototypes deploy here, and no custom domain is needed yet.
+- workers.dev subdomain **`barmadden.workers.dev`**, confirmed through the API. Prototypes deploy here, and no custom domain is needed yet.
 - Account ID `3edd4b87aa844db287c56527fb8dba69`. This is not a secret. Put it in a prototype's `wrangler.toml` as `account_id`, or leave it out and wrangler picks it up from the login.
 - No Pages project and no Durable Object namespace yet. Both are created on the first `wrangler deploy` of the sync prototype.
 
@@ -44,3 +44,5 @@ Resolved 2026-09-24. Joe did the dashboard steps; the agent checked them with wr
 ## Comments
 
 2026-09-23, from the animation approach ticket (13): Rive is not adopted, so no Rive plan. Cloudflare only.
+
+2026-09-24: Joe renamed the workers.dev subdomain from `joe-3ed` to `barmadden`. Docs on `main` and the READMEs and bot script on `prototype/cursor-sync` and `prototype/own-cursor` now use `barmadden.workers.dev`; the cursor sync worker is at https://cursor-sync-proto.barmadden.workers.dev.

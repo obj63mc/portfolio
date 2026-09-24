@@ -11,7 +11,7 @@ Build a throwaway prototype on the recommended backend: one overworld room and o
 
 ## Answer
 
-Resolved 2026-09-24. **GO on Cloudflare Durable Objects**, with one object hosting every scene's room (ADR 0004). The prototype is on branch `prototype/cursor-sync` at `prototypes/cursor-sync/`, live at https://cursor-sync-proto.joe-3ed.workers.dev. Its README has the run steps and measurements.
+Resolved 2026-09-24. **GO on Cloudflare Durable Objects**, with one object hosting every scene's room (ADR 0004). The prototype is on branch `prototype/cursor-sync` at `prototypes/cursor-sync/`, live at https://cursor-sync-proto.barmadden.workers.dev. Its README has the run steps and measurements.
 
 ### Rate and feel
 
@@ -63,9 +63,9 @@ The first accepted `play` wins, ops are dropped while the reel is busy, there is
 
 2026-09-24, from the rendering prototype ticket (08): cursors are drawn on an overlay canvas above the prop button layer (ADR 0003). The rendering prototype on branch `prototype/rendering-camera` already has the client half of this: simulated peers sent at 15 Hz, drawn 100 ms behind with interpolation, off-camera peers culled (`src/lib/proto/peers.ts`), plus the atlas drawing (`renderers/draw-cursors.ts`) and the lobby URL handoff. Swap the simulated peers for the real socket rather than rebuilding the renderer.
 
-2026-09-24, from the provisioning ticket (12): the account is ready. It is on Workers Paid, deploys to `joe-3ed.workers.dev`, and has a $20 budget alert that only notifies. Wrangler is logged in locally through OAuth; use `npx wrangler@4` because wrangler isn't installed globally. The prototype's `wrangler.toml` needs a Durable Object binding with a `new_sqlite_classes` migration. For Turnstile, use the test site key `1x00000000000000000000AA`.
+2026-09-24, from the provisioning ticket (12): the account is ready. It is on Workers Paid, deploys to `barmadden.workers.dev`, and has a $20 budget alert that only notifies. Wrangler is logged in locally through OAuth; use `npx wrangler@4` because wrangler isn't installed globally. The prototype's `wrangler.toml` needs a Durable Object binding with a `new_sqlite_classes` migration. For Turnstile, use the test site key `1x00000000000000000000AA`.
 
-2026-09-24, prototype built (claimed, awaiting Joe's phone run): branch `prototype/cursor-sync`, `prototypes/cursor-sync/`, live at https://cursor-sync-proto.joe-3ed.workers.dev. It is ticket 08's variant B with the simulated peers swapped for a real socket, plus a Worker (Turnstile and Origin check on join, GeoIP from `request.cf.country`) and one `Room` Durable Object per scene per rate, with no storage calls. The Foundry theatre at `/midtown/foundry` has the shared screen, and the spectator overflow is in. The wire format is hand-packed binary for moves (5 bytes up, 3 + 6n bytes per frame down) and JSON for the rare control messages, not MessagePack. The bots measured this against the deployed edge (20 bots, 45 s):
+2026-09-24, prototype built (claimed, awaiting Joe's phone run): branch `prototype/cursor-sync`, `prototypes/cursor-sync/`, live at https://cursor-sync-proto.barmadden.workers.dev. It is ticket 08's variant B with the simulated peers swapped for a real socket, plus a Worker (Turnstile and Origin check on join, GeoIP from `request.cf.country`) and one `Room` Durable Object per scene per rate, with no storage calls. The Foundry theatre at `/midtown/foundry` has the shared screen, and the spectator overflow is in. The wire format is hand-packed binary for moves (5 bytes up, 3 + 6n bytes per frame down) and JSON for the rare control messages, not MessagePack. The bots measured this against the deployed edge (20 bots, 45 s):
 
 | rate | echo p50 / p95 | down per visitor | inbound msgs per visitor-hour |
 | --- | --- | --- | --- |

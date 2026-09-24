@@ -51,6 +51,10 @@ _Avoid_: popup, modal, tooltip, reveal
 Non-interactive artwork in a scene, such as the Arch, the river, roads and parks between districts. Scenery never carries content and is never shared state.
 _Avoid_: background, decoration, set dressing, filler
 
+**Foreground scenery**:
+Scenery drawn in front of every cursor, the visitor's own included, such as a near tree or the bridge railing. Never a prop, and never covers one.
+_Avoid_: occluder, foreground layer, overlay, z-index
+
 **Cosmetic**:
 A decoration a prop grants to a visitor's cursor, such as a graduation cap or antlers, visible to everyone in the room. A cursor wears one cosmetic at a time, the most recently granted; earning a new one replaces the worn one.
 _Avoid_: badge, item, unlock, accessory
@@ -72,6 +76,10 @@ _Avoid_: idle animation, loop, background animation
 **Reaction**:
 Motion a prop plays in response to a visitor's hover or click, such as the MonsterCommerce eye blinking or the moose's antlers wobbling. Click reactions still play under reduced motion; hover reactions become a plain highlight.
 _Avoid_: interaction, effect, trigger, animation
+
+**River current**:
+The pull that carries a cursor downstream while it is over the Mississippi, off the bridge. A visitor carried out of their camera's view is put back at the Arch.
+_Avoid_: water drag, drift zone, hazard
 
 ### People
 

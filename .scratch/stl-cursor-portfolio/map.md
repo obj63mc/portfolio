@@ -21,7 +21,7 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
   - Art is AI-generated (ChatGPT, Nano Banana) in the flat vector style of the old Moosylvania site; original assets are style references only. Animated props via Rive.
   - Sub-scenes are separate rooms. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
   - Only a small set of props are shared, server-authoritative state; the rest are local.
-  - Sound: ambient per district plus prop sounds, off by default. Depth effects are a later phase after art.
+  - Sound: ambient per district plus prop sounds, off by default. Depth is horizon scaling, foreground scenery and the river current, with no general Z-sorting.
   - ADRs so far: 0001 single zoom with world coordinates, 0002 canvas-native props, 0003 canvas-drawn props with DOM hit targets, 0004 one Durable Object for every room.
 
 ## Decisions so far
@@ -42,20 +42,18 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 
 - [Does cursor sync on the chosen backend feel right and degrade safely?](issues/09-cursor-sync-prototype.md): GO on Durable Objects. Sync runs at 20 Hz both ways (Joe found 10 and 15 Hz jumpy on a phone) with 100 ms interpolation. One object hosts every room (ADR 0004), with 60 live cursors site-wide and spectators past that, for a worst case of about $17 a month. Moves and frames are hand-packed binary and control messages are JSON. Turnstile and a token bucket guard the socket, and nothing touches storage. Degradation, the shared screen and room handoff all verified; 60 bots in one object held at 52 / 77 ms. Prototype on branch `prototype/cursor-sync`.
 
-- [Provision the backend accounts](issues/12-provision-accounts.md): Cloudflare account on Workers Paid with a $20 budget alert (notification only; the in-code 15 Hz / 60-cursor limits are the real cap), subdomain `joe-3ed.workers.dev`, wrangler OAuth token outside the repo; no CI token or Turnstile widget yet.
+- [Provision the backend accounts](issues/12-provision-accounts.md): Cloudflare account on Workers Paid with a $20 budget alert (notification only; the in-code 15 Hz / 60-cursor limits are the real cap), subdomain `barmadden.workers.dev`, wrangler OAuth token outside the repo; no CI token or Turnstile widget yet.
 
 - [How is the prop button layer structured for crawlers, screen readers and keyboards?](issues/14-accessible-html-layer.md): prerendered at build with `adapter-static`, fully static after deploy, with a plain-document fallback before the engine starts; `<h1>` per scene, `<h2>` per district and `<h3>` per venue, placed over the painted signs; each prop is a button plus its own prerendered `<dialog>` card; signpost contact arrows, venue doors and exit doors are links, and everything else is a button; tab order runs west to east and focus pans the camera; canvases are `aria-hidden`, and a live region covers only the visitor's own events. Card added to the glossary.
 
 - [How does your own cursor stand out in a crowd on a phone?](issues/15-own-cursor-in-a-crowd.md): your own cursor is drawn at 1.25x and every peer at 0.75x at full opacity, on your own screen only (nothing on the wire), on top of the existing halo and fading tag; beacon ring, persistent bubble, faded peers and edge arrow not adopted. Amends the cursor identity ticket. Prototype on branch `prototype/own-cursor`.
+- [What does the visitor's localStorage look like, and how is it versioned?](issues/16-persistence-schema.md): one key `stl-portfolio` holding `{ v, worn, earned, laps: { track, best }, sound }`, owned by a single Svelte 5 rune module; fields validated one by one, unknown earned ids kept but ignored, gold derived as every cosmetic the build knows, laps dropped on a track version change; write on every change with read-merge first; memory fallback when storage throws; `storage` event syncs other tabs live. Last scene, camera, visited cards and a reset control are not stored.
+- [What does Google Analytics track, and how does it load without hurting the scene?](issues/17-analytics.md): GA4 with enhanced measurement off; manual `page_view` on each pathname change including the first load, plus `card_open`, `contact_click`, `cosmetic_earned`, `gold_cursor` and `screen_play`; gtag.js deferred behind a bundled queue until after the first frame, production only via `PUBLIC_GA_ID`; European timezones get a top consent bar (Allow / No thanks) and GA stays off until Allow, with a region-denied consent default as backstop; an analytics icon next to the sound toggle reopens the bar; GPC blocks loading; the choice is stored as `analytics` in the persistence schema; CSP allowances handed to the deploy ticket.
+- [Which depth effects ship, and what must the art provide for them?](issues/18-depth-effects.md): horizon scaling in the first build (d from 1.0 at a region's foreground line to 0.85 at its horizon, own 1.25 × d, peers 0.75 × d, computed locally); no general Z-sorting, instead foreground scenery drawn over every cursor including your own; a river current drifts cursors south over the Mississippi and resets anyone carried out of view to the Arch, with the desktop pointer offset graduated to a prototype; the art pass delivers depth region rects, foreground cut-outs, the river mask and the Arch point. Foreground scenery and river current added to the glossary.
 
 ## Not yet specified
 
-- Depth effects: horizon scaling of cursors, Z-sorting behind buildings, water drag. Depends on art having defined depth bands.
-- Sound design: what each district and prop sounds like, toggle UI.
-- Persistence schema in localStorage: key naming and versioning for the worn cosmetic id and earned set (fields decided in the cursor identity ticket) plus the bike track's personal top-ten lap times and any other progress.
-- Deploy pipeline and domain on Cloudflare Pages plus Workers (including a scoped CI API token), and how the in-code spend cap is monitored beyond the $20 budget alert. The ~$17 worst case holds only while 20 Hz, 60 live cursors and one object hold (cursor sync ticket).
-- Analytics, if any.
-- Final spec assembly and hand-off to `/to-tickets`.
+- Nothing left in the fog; every remaining decision is an open ticket.
 
 ## Out of scope
 
