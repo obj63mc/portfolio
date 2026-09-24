@@ -39,7 +39,7 @@ function processInto(asset: Asset, input: string, outputRoot: string): Processed
   const file = `${asset.id}/image.webp`;
   let trim = { x: 0, y: 0, w: source.w, h: source.h };
   const result: ProcessedAsset = { id: asset.id, scene: asset.scene, kind: asset.kind, file, world: asset.world,
-    source, trim, width: 0, height: 0, rig: asset.rig };
+    source, trim, width: 0, height: 0, rig: asset.rig, registration: asset.registration };
   if (asset.kind === 'background') {
     if (!asset.world) throw new Error(`${asset.id}: background requires a world rect`);
     // Resize once before tiling; integer pixel boundaries at both densities prevent seams.
@@ -75,6 +75,13 @@ function processInto(asset: Asset, input: string, outputRoot: string): Processed
     }
     trim = { x, y, w, h };
     result.trim = trim;
+    if (asset.registration) {
+      const r = asset.registration.rect;
+      if (Math.abs(source.w/source.h-r.w/r.h) > .02) throw new Error(`${asset.id}: extraction canvas aspect ratio changed`);
+      // A reviewed world rect anchors the trimmed object to its real fixture.
+      // Otherwise preserve the extraction's original position within the crop.
+      result.world = asset.world ?? { x: r.x+x/source.w*r.w, y: r.y+y/source.h*r.h, w: w/source.w*r.w, h: h/source.h*r.h };
+    }
     magick([keyed, '-trim', '+repage', '-define', 'webp:lossless=true', join(outputRoot, file)]);
   }
   const size = dimensions(join(outputRoot, file));

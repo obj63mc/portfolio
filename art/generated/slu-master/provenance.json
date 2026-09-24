@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "1c13161c7855d3674c085813a58dce888f4ba88fcc122b9080478f37954aef7d",
+  "run": "art/runs/slu-master/2026-09-24T20-25-37.527Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

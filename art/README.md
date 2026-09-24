@@ -1,64 +1,68 @@
 # Scene artwork pipeline
 
-Issue 02 turns the prototype recipe into the same terminal workflow for Codex, Claude Code and a human builder. The CLI uses the authenticated **Codex image-generation tool**, with reference images attached through `codex exec -i`. It does not automate ChatGPT in a browser. A live probe on 2026-09-24 with Codex CLI 0.156.1 produced a raster PNG with a reference attached and no API key.
+Issue 02 provides the same terminal workflow for Codex, Claude Code and a human builder. `codex exec -i` calls authenticated Codex image generation with references attached. No ChatGPT browser session or OpenAI API key is needed for this provider. Generation was exercised with Codex CLI 0.156.1 on 2026-09-24.
 
-Requirements: Node 24 or newer, ImageMagick 7 (`magick`), and an installed, authenticated Codex CLI with image generation available. Run commands from the repository root. `npm install` installs the existing TypeScript tooling; there are no new JavaScript dependencies.
+Requirements: Node 24+, ImageMagick 7 (`magick`), and authenticated Codex CLI with image generation. Run from the repository root. `npm install` installs the existing TypeScript tooling.
 
 ```sh
-# One command: generate → key/erode/trim → WebP → both tile densities.
-npm run art -- generate maplewood
-npm run art -- generate door
-npm run art -- generate scene:maplewood
-
-# Starter assets for all six scenes, plus the standalone Maplewood proof.
-npm run art -- generate all
 npm run art -- list
-
-# Offline operations on saved source files.
-npm run art -- process door --force
+# Generate missing assets, in dependency order.
+npm run art -- generate all
+# Revise layers while preserving the approved composition.
+npm run art -- generate scene:moosylvania --force --keep-masters
+npm run art -- generate brennans-chair --force
+# Reprocess saved local PNGs after correcting placement (no generation).
+npm run art -- process brennans-chair --force
 npm run art -- process door --source /absolute/path/to/door.png --force
-npm run art:check
-npm run art:validate
 npm run art:review
 python3 -m http.server 4174 --bind 127.0.0.1
 ```
 
-Open [the scene workshop](http://127.0.0.1:4174/art/review.html). The original [prototype harness](../prototypes/art-pipeline/review.html) remains available for its magnifier, palette comparison and rig-placement tools; it links to the new workshop.
+Open [the scene workshop](http://127.0.0.1:4174/art/review.html). There are **six scenes**: the overworld and five interiors. Maplewood is a district within the overworld. The original prototype remains a historical style reference; it is not a seventh scene.
 
-`generate backgrounds` selects the seven plates; `generate furnishings` selects the interior props and foreground scenery. Dependencies generate first. Existing outputs are kept unless `--force` is present. Changing a prompt or reference requires `--force` on the affected asset and its dependent props. Run one generator per asset at a time. Different scenes may run independently after shared dependencies exist.
+## Compose first, then separate layers
 
-`generate <asset> --dry-run` writes the complete prompt and checks references without making a generation call. Its references must already exist; generate dependencies before dry-running a dependent asset. A failed command exits nonzero and points to the run folder. Restarting `generate all` keeps completed entries and retries missing ones. Processing takes place in a temporary folder before replacing an asset, so failed processing leaves the previous asset intact.
+Each `*-master` reference is a complete composition. Location photos supply architectural details; the original daytime illustration supplies the brighter cyan, green, cream and coral palette. See [landmarks.md](landmarks.md) and [the source ledger](references/locations.json). Photos and satellite screenshots are local references, never shipped artwork. Recreating a master on another machine requires restoring the selected images to the listed `art/references/local/` paths. Missing references produce a clear error; committed outputs and the workshop work without this local photo pack.
 
-## Files and coordinate contract
+1. Generate and inspect a master: `npm run art -- generate moosylvania-master --force`. Judge it against the real room photographs before extracting anything.
+2. Choose each movable object's crop in the master. `registration.rect` is that crop in scene world coordinates. The pipeline attaches the exact crop as the final reference. Background edits remove those objects while preserving the room, furniture, perspective and illumination.
+3. Generate the layers with `--force --keep-masters`. Do not regenerate an approved master accidentally. An explicit `world` rectangle anchors the trimmed object to measured fixture bounds; otherwise placement derives from its source crop and trim offset. Inspect both: models sometimes recenter or resize extracted objects despite the prompt.
+4. For precise extraction without redrawing, `deriveFrom` plus `registration.mask` copies the original composition pixels through a measured polygon matte. Mask points are normalized to the registration crop. The SLU chair and one lobby monitor use this path after generated cutouts lost interior pixels. `deriveFrom` without a mask copies the composition, as used by the overworld.
+5. Reprocess after a rectangle change; regenerate dependent layers after a master change, then inspect all placements again. Coordinate annotations belong to that composition, not to arbitrary future camera angles.
 
-- `manifest.json` contains the asset inventory, individual prompts, dependencies, target world rects and rig metadata. `style.txt` begins with the prototype's style paragraph unchanged.
-- `sources/` holds original generated PNGs locally. `runs/<asset>/<timestamp>/` retains prompt, raw output, CLI events and result. These are ignored; preserve them locally to reprocess without another generation.
-- `generated/<asset>/image.webp` is the retained plate or tightly trimmed transparent cut-out. `asset.json` records source dimensions and SHA-256, trim offsets, output dimensions and tile inventory. Committed WebPs and JSONs are the portable deliverables.
-- Backgrounds have a desktop plate at **2 image px/world px**, an `upscale.webp` comparison at 2× source resolution (1.7× for the lobby), and **512 world px tiles** at **1.25×** and **2×**. Partial tiles record their actual world sizes. The raster is resized before cutting; adjacent tile boundaries share exact integer coordinates. Upscaling adds pixels, not new illustration detail.
-- Props use the recipe's **10% magenta key and 1 px alpha erosion**, then lossless WebP. Alpha endpoints are clamped at 2%/98% to remove almost-invisible generated specks and almost-opaque interior noise; meaningful intermediate alpha survives. A part's trim offset stays in the untrimmed master's coordinate frame; trimming never silently recenters it.
-- `generated/moose-rig.json` and `rider-rig.json` retain the prototype's `{parent,x,y,w,h,pivot}` shape, with a `file` path added. Pivots are normalized within each trimmed part. The renderer applies ancestor transforms in master space. Source frames must match; the validator catches mismatches, and the judge checks joint overlap.
-- `generated/composites/` holds assembled review images and a contact sheet. These never replace the separable layers. `npm run art:review` rebuilds them.
+The four Moosylvania computer targets are four monitors on existing desks. They are not four cloned furniture sprites. Foreground seats face the Alamo screen; the Side Project tap bank rests on the bar; the Brennan's chair meets the rug and floor in the original perspective. Room furniture may naturally occlude the bottom of another object; the workshop reports bounding-box overlaps for inspection, not as proof that an interactive face is obscured.
 
-Production scene overlays are exported directly from `src/lib/scenes/overworld.ts` and the five modules in `src/lib/scenes/index.ts`. The standalone proof uses `art/scenes/maplewood.ts`, deriving its artwork rectangles from the manifest. Rig placements and draw order are shared by the workshop and saved composites; overlap checks include the rider's full travel range. Draft placement rects from the manifest can also be shown, separately from production hit targets. Tickets **04 and 05** own promoting the accepted art, aligning production prop rects and settling final river geometry. The first batch is a scene and asset starter set; it is not a completed content-prop inventory for those tickets.
+`generate backgrounds` selects six plates; `generate furnishings` selects interior props and foreground. Existing outputs are retained unless `--force` is present. `--keep-masters` preserves reference assets even with `--force`. Run one generator per asset at a time; independent scenes may run concurrently after shared dependencies exist. `generate <asset> --dry-run` writes its full prompt and checks available references. Processing stages outputs before replacement so failure leaves the previous asset intact.
 
-## Judge and regenerate — Codex or Claude
+## Files and coordinates
 
-1. Read `manifest.json`, `style.txt`, `landmarks.md` and the latest notes in `reviews/`. View the reference images before choosing changes. Every Maplewood district, lobby and Side Project prompt automatically includes the arrival mock. A prop with `opening` automatically receives a fresh crop from its parent plate.
-2. Run `npm run art -- generate <asset>` (or `--force` for a revision). Claude invokes exactly the same command; Codex handles image generation behind that boundary. No browser, model-specific Claude image feature, or manual download is required.
-3. Run `npm run art:review` and open the workshop. Compare the prototype and current plate; inspect the full scene and **both tile densities**, then the first **390 × 844 / 0.6** phone frame. Its world coverage is 650 × 1406⅔, with the camera clamped to scene bounds.
-4. Toggle prop/foreground rects, depth, the water mask, bridge deck, south-end line and Arch reset point. Solid overlays are production geometry; dashed overlays are draft asset placements. The river overlay explicitly clears the deck. Do not accept placeholder production rects just because a background looks finished.
-5. Inspect cut-outs on the checkerboard and in the assembled scene. Reject visible magenta/white fringes, wrong door silhouettes, texture/style drift or foreground over a prop. Inspect the parts in motion and at rest; reduced motion freezes ambient animation but the click-reaction button still works. Check all four lobby desk placements, not just a single desk image.
-6. Record a concrete verdict and the next correction in the notes panel, download it into `art/reviews/`, and keep the source hashes with the verdict. Change only the failing asset prompt or its placement; rerun the same command with `--force`. If a plate changes, regenerate opening-filling props and any parts whose reference geometry changed.
-7. Run `npm run art:check`, `npm run art:validate`, the site checks and build-output tests. A mechanical pass establishes dimensions, complete tile coverage, alpha and frame compatibility; **visual acceptance remains a separate decision**. Commit retained outputs, prompts, scene data and judge notes together.
+- `manifest.json`: prompts, dependencies, crop registration, reviewed placement and overworld rig layout. `style.txt`: brighter location-aware art direction.
+- `sources/` and `runs/<asset>/<timestamp>/`: ignored original PNGs, prompts and execution logs. Preserve locally for offline reprocessing.
+- `generated/<asset>/image.webp` and `asset.json`: portable retained pixels, source SHA-256, trim offsets, placement and tile inventory. `provenance.json` records the matching generation run or derivation; generated prompts use `<repo>` instead of an absolute machine path.
+- Background plates: **2 image px/world px**, plus `upscale.webp` at 2× source size (1.7× for the lobby), and **512 world px tiles** at **1.25×** and **2×**. The raster is resized before tiling. Upscaling adds pixels, not illustration detail.
+- Cutouts: existing alpha, 10% magenta key, 2%/98% alpha endpoint clamp, 1 px erosion, tight trim, lossless WebP. Trim offsets remain in the source frame.
+- `moose-rig.json` and `rider-rig.json`: prototype-compatible `{parent,x,y,w,h,pivot}` parts plus file paths. Pivots are normalized within the trimmed part; ancestor transforms operate in master space. Both rigs are placed in the overworld.
+- `generated/composites/`: stitched inspection images and contact sheet; these do not replace separable layers.
 
-If a provider cannot attach references or return a raster file, stop the run visibly. Do not substitute SVGs or code-drawn placeholders and call them generated artwork.
+Production geometry overlays come from `src/lib/scenes/overworld.ts` and the five interior modules. Dashed draft rectangles follow the actual assembled artwork. **Production hit targets and river collisions still use the earlier scene data.** Issues 04/05 own promoting artwork and reconciling that geometry; this revision does not switch the production route. The artwork is a coherent starter asset set, not the complete content inventory for those tickets.
+
+## Judge and regenerate — either agent
+
+View each selected reference before judging. Compare **Composition reference** with **Assembled scene**, then both tile densities. Click the scene to inspect a **390 × 844 / 0.6** phone crop. Check props on their furniture, foot contact, perspective, alpha interiors, edges and foreground ordering. Use the geometry toggles to find remaining production alignment work. Inspect moose/rider movement and reduced motion in the overworld. The historical prototype supplies the palette comparison.
+
+If a crop has a hole, fringe or changed shape, reject it even if the validator passes. Correct its prompt, mask or measured bounds and rerun the same command. Save notes and asset hashes under `art/reviews/`. The latest revision supersedes the first batch's visual verdict.
+
+```sh
+npm run art:check
+npm run art:test
+npm run art:validate
+npm run check
+npm run build
+npm test
+```
+
+Mechanical checks establish geometry metadata, complete tile coverage, alpha and compatible rig frames. Visual acceptance is a separate decision. Commit accepted layers, prompts, metadata and review notes together. If generation is unavailable, report the failure; do not substitute code-drawn illustrations.
 
 ## Explicit API fallback
 
-```sh
-npm run art -- generate maplewood --provider api --force
-```
-
-This calls the installed imagegen skill's maintained `scripts/image_gen.py` using `gpt-image-2`, with the same prompt and references. It requires `OPENAI_API_KEY` set locally and the CLI's Python dependencies (`openai`, Pillow). `IMAGE_GEN_CLI` can point to that script; `ART_PYTHON` selects the Python interpreter. Codex home defaults to `~/.codex` and honors `CODEX_HOME`. Never put a key in a manifest, prompt or repository file. API generation uses separately billed API usage; there is no automatic provider or model switch. This batch was generated through Codex, not the API fallback.
-
-The official [Codex CLI documentation](https://learn.chatgpt.com/docs/codex/cli) covers the CLI; the installed `codex exec --help` and imagegen skill are the execution contract verified for this pipeline.
+`npm run art -- generate moosylvania-master --provider api --force` invokes the installed imagegen skill's maintained `image_gen.py`, using the same references and `gpt-image-2`. It requires a locally configured `OPENAI_API_KEY` and the CLI's Python dependencies. `IMAGE_GEN_CLI` overrides the script path; `ART_PYTHON` selects Python. API usage is separately billed; there is no automatic provider switch. Never put credentials in manifests, prompts or committed files.

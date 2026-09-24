@@ -1,6 +1,6 @@
 {
   "id": "moose-antlers",
-  "scene": "maplewood",
+  "scene": "overworld",
   "kind": "part",
   "file": "moose-antlers/image.webp",
   "source": {

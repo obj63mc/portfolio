@@ -1,25 +1,34 @@
 {
   "id": "door",
-  "scene": "maplewood",
+  "scene": "overworld",
   "kind": "prop",
   "file": "door/image.webp",
   "world": {
-    "x": 987,
-    "y": 374,
-    "w": 44,
-    "h": 60
+    "x": 834.814453125,
+    "y": 1590.966796875,
+    "w": 20.947265625,
+    "h": 27.83203125
   },
   "source": {
-    "w": 1254,
-    "h": 1254,
-    "sha256": "e801b15be508b8297b5d95c1291706cbc282b6d433538a702f3d4fd7083d61f6"
+    "w": 1024,
+    "h": 1024,
+    "sha256": "fa558d5f7b77519440f2fd55801e7bfb87f3204218bb7d8edd4ddd087aa4f843"
   },
   "trim": {
-    "x": 266,
-    "y": 127,
-    "w": 722,
-    "h": 994
+    "x": 195,
+    "y": 285,
+    "w": 143,
+    "h": 190
   },
-  "width": 722,
-  "height": 994
+  "width": 143,
+  "height": 190,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 806.25,
+      "y": 1549.21875,
+      "w": 150,
+      "h": 150
+    }
+  }
 }

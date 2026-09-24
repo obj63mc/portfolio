@@ -1,13 +1,13 @@
 {
   "id": "signpost",
-  "scene": "maplewood",
+  "scene": "overworld",
   "kind": "prop",
   "file": "signpost/image.webp",
   "world": {
-    "x": 840,
-    "y": 475,
-    "w": 85,
-    "h": 160
+    "x": 926,
+    "y": 1677,
+    "w": 32,
+    "h": 60
   },
   "source": {
     "w": 1254,

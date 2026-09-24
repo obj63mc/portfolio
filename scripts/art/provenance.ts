@@ -14,7 +14,8 @@ export function saveProvenance(root: string, asset: ProcessedAsset) {
     const dir = join(root, 'art/generated', asset.id);
     writeFileSync(join(dir, 'prompt.txt'), readFileSync(prompt, 'utf8').replaceAll(root+'/', '<repo>/'));
     writeFileSync(join(dir, 'provenance.json'), JSON.stringify({ sourceSha256: asset.source.sha256,
-      run: relative(root, run), provider: existsSync(join(run, 'codex.jsonl')) ? 'codex' : 'api',
+      run: relative(root, run), provider: existsSync(join(run, 'derivation.json')) ? 'derived' : existsSync(join(run, 'codex.jsonl')) ? 'codex' : 'api',
+      derivation: existsSync(join(run, 'derivation.json')) ? JSON.parse(readFileSync(join(run, 'derivation.json'),'utf8')) : undefined,
       note: 'Prompt references use <repo> as the repository root. Run files and original PNG remain local.' }, null, 2)+'\n');
     return;
   }

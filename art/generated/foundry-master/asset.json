@@ -1,0 +1,25 @@
+{
+  "id": "foundry-master",
+  "scene": "foundry",
+  "kind": "reference",
+  "file": "foundry-master/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 2845,
+    "h": 1600
+  },
+  "source": {
+    "w": 2048,
+    "h": 1152,
+    "sha256": "bfee15e7a259fa1b389e3ef20ed5e54f23200a2cb35c83503df970e42047a4b1"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 2048,
+    "h": 1152
+  },
+  "width": 2048,
+  "height": 1152
+}

@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "2f93703977649f1e494bcd2a35e628dc40a5b815a08d12b1e67d50ebd6f29426",
+  "run": "art/runs/side-project-master/2026-09-24T20-27-02.746Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

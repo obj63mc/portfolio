@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "a4c2dbbd1313471370be5f3a6b8b2da22ae29935213c52989adefa7878dceffb",
+  "run": "art/runs/lobby-desk-3/2026-09-24T20-50-26.559Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "moosylvania-master",
+    "referenceSha256": "0c1444a9567600f7929881217e49d1bd262d57125aee5683ba8efa5ac1b5ecc5",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

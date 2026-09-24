@@ -12,6 +12,7 @@ import type { Asset, Manifest } from './art/types.ts';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { positionals, values } = parseArgs({ allowPositionals: true, options: {
   provider: { type: 'string', default: 'codex' }, source: { type: 'string' }, force: { type: 'boolean' },
+  'keep-masters': { type: 'boolean' },
   'dry-run': { type: 'boolean' }, manifest: { type: 'string', default: 'art/manifest.json' }
 } });
 const [command = 'help', id] = positionals;
@@ -36,7 +37,7 @@ try {
     if (values.provider !== 'codex' && values.provider !== 'api') throw new Error('--provider must be codex or api');
     const provider: 'codex' | 'api' = values.provider;
     const selected = id === 'all' ? manifest.assets : id === 'backgrounds' ? manifest.assets.filter(a => a.kind === 'background') :
-      id === 'furnishings' ? manifest.assets.filter(a => a.scene !== 'maplewood' && ['prop', 'foreground'].includes(a.kind)) :
+      id === 'furnishings' ? manifest.assets.filter(a => a.scene !== 'overworld' && ['prop', 'foreground'].includes(a.kind)) :
       id?.startsWith('scene:') ? manifest.assets.filter(a => a.scene === id.slice(6)) : manifest.assets.filter(a => a.id === id);
     if (!selected.length) throw new Error(`Unknown asset ${id}; run node scripts/art.ts list`);
     if (values.source && selected.length !== 1) throw new Error('--source requires exactly one asset');
@@ -49,11 +50,11 @@ try {
       for (const dep of asset.dependsOn ?? []) {
         const dependency = manifest.assets.find(a => a.id === dep);
         if (!dependency) throw new Error(`${asset.id}: unknown dependency ${dep}`);
-        if (!existsSync(join(outputRoot, dep, 'asset.json'))) run(dependency);
+        if (!existsSync(join(outputRoot, dep, 'asset.json')) || (values.force && selected.some(a => a.id === dep))) run(dependency);
       }
       visiting.delete(asset.id);
-      if (existsSync(join(outputRoot, asset.id, 'asset.json')) && !values.force) {
-        console.log(`Keep ${asset.id} (use --force to regenerate)`); complete.add(asset.id); return;
+      if (existsSync(join(outputRoot, asset.id, 'asset.json')) && (!values.force || (values['keep-masters'] && asset.kind === 'reference'))) {
+        console.log(`Keep ${asset.id}${values['keep-masters'] && asset.kind === 'reference' ? ' (--keep-masters)' : ' (use --force to regenerate)'}`); complete.add(asset.id); return;
       }
       const runDir = join(root, 'art/runs', asset.id, new Date().toISOString().replaceAll(':', '-'));
       mkdirSync(runDir, { recursive: true });
@@ -62,7 +63,7 @@ try {
         console.log(`${asset.id}: ${runDir}/prompt.txt (${prepared.references.length} references)`);
         complete.add(asset.id); return;
       }
-      console.log(`${command} ${asset.id} (${provider})`);
+      console.log(`${command} ${asset.id} (${asset.deriveFrom ? 'derived' : provider})`);
       const source = values.source && selected[0].id === asset.id ? resolve(values.source) : join(root, 'art/sources', `${asset.id}.png`);
       const input = command === 'generate' && !values.source ? generate(asset, manifest, root, provider, runDir) : source;
       if (!existsSync(input)) throw new Error(`Missing source ${input}`);
@@ -81,7 +82,7 @@ try {
   } else {
     console.log('Art pipeline (Node 24+, ImageMagick 7, authenticated Codex CLI)\n' +
       '  node scripts/art.ts list\n' +
-      '  node scripts/art.ts generate <asset|backgrounds|scene:name|all> [--provider codex|api] [--force] [--dry-run]\n' +
+      '  node scripts/art.ts generate <asset|backgrounds|furnishings|scene:name|all> [--provider codex|api] [--force] [--keep-masters] [--dry-run]\n' +
       '  node scripts/art.ts process <asset> [--source file.png] [--force]\n' +
       '  node scripts/art.ts review\n\nReview: serve the repository with python3 -m http.server 4174 --bind 127.0.0.1\nOpen http://127.0.0.1:4174/art/review.html');
     if (command !== 'help') process.exitCode = 1;

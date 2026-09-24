@@ -24,3 +24,13 @@ Implemented in `scripts/art.ts` and `art/`. Authenticated Codex CLI image genera
 The workshop at `art/review.html` assembles layers, reads scene geometry, previews phone/tile/rig states, and compares Maplewood with the prototype. See `art/README.md` for the identical Codex/Claude command workflow, `art/landmarks.md` for references, and `art/reviews/2026-09-24-assets.json` for the visual verdict and source hashes. Assembled images are in `art/generated/composites/`.
 
 The broader scene set is a starter draft. Issues 04/05 still own production promotion, complete content props, exact hit-target placement and final river geometry. No production route was switched to draft artwork.
+
+## Comments
+
+### Location-fidelity revision — 2026-09-24
+
+User feedback supersedes the standalone Maplewood proof and first batch's room direction. The current deliverable has **six scenes, 40 assets and 372 tiles**: Maplewood is part of the overworld, with five photo-guided interiors. References now use the specified Moosylvania, Side Project Cellar, Brennan's, Foundry/Alamo and **McDonnell Douglas Hall** locations, plus satellite views for the Arch/highway relationship and district placement.
+
+Composed masters establish perspective before layers are separated. Registration crops and measured fixture bounds place props back into their rooms; precise crop mattes preserve original pixels where model extraction damaged dark interiors. The workshop compares the master and assembled scene, and displays both rigs on the overworld. The palette returns to brighter cyan, green, cream and coral with localized wood/brick colors.
+
+The current visual verdict and source hashes are in `art/reviews/2026-09-24-location-fidelity.json`; earlier review files are historical. Actual photo sources/attribution are recorded in `art/references/locations.json`. `art/README.md` documents the identical Codex/Claude workflow, including preserving masters during layer revisions. Production geometry promotion remains in issues 04/05.

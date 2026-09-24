@@ -1,0 +1,25 @@
+{
+  "id": "slu-master",
+  "scene": "slu",
+  "kind": "reference",
+  "file": "slu-master/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 2845,
+    "h": 1600
+  },
+  "source": {
+    "w": 2048,
+    "h": 1152,
+    "sha256": "1c13161c7855d3674c085813a58dce888f4ba88fcc122b9080478f37954aef7d"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 2048,
+    "h": 1152
+  },
+  "width": 2048,
+  "height": 1152
+}

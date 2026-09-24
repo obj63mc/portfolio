@@ -1,13 +1,13 @@
 {
   "id": "welcome",
-  "scene": "maplewood",
+  "scene": "overworld",
   "kind": "prop",
   "file": "welcome/image.webp",
   "world": {
-    "x": 1080,
-    "y": 515,
-    "w": 170,
-    "h": 105
+    "x": 998,
+    "y": 1680,
+    "w": 62,
+    "h": 40
   },
   "source": {
     "w": 1024,

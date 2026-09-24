@@ -1,25 +1,34 @@
 {
   "id": "maplewood-tree",
-  "scene": "maplewood",
+  "scene": "overworld",
   "kind": "foreground",
   "file": "maplewood-tree/image.webp",
   "world": {
-    "x": 100,
-    "y": 735,
-    "w": 110,
-    "h": 160
+    "x": 1214.0625,
+    "y": 1722.509765625,
+    "w": 39.990234375,
+    "h": 40.576171875
   },
   "source": {
-    "w": 1254,
-    "h": 1254,
-    "sha256": "9b1e96f8a5faa1ff6ae077000f9f13601fd1e8b97d00a2934640b9dbe13dea4f"
+    "w": 1024,
+    "h": 1024,
+    "sha256": "cfe3f4351cf57f44b48efa4bcc08dfac4e3529995283be22357fbcb8c4091544"
   },
   "trim": {
-    "x": 226,
-    "y": 148,
-    "w": 833,
-    "h": 949
+    "x": 448,
+    "y": 159,
+    "w": 273,
+    "h": 277
   },
-  "width": 833,
-  "height": 949
+  "width": 273,
+  "height": 277,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 1148.4375,
+      "y": 1699.21875,
+      "w": 150,
+      "h": 150
+    }
+  }
 }

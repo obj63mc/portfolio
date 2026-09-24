@@ -6,23 +6,10 @@
   ],
   "assets": [
     {
-      "id": "maplewood",
-      "scene": "maplewood",
-      "kind": "background",
-      "prompt": "A coherent 1400 by 1000 district plate, elevated 3/4 view. A compact two-block Marietta Avenue. Right half the actual Moosylvania church in reference 1: tall pointed gable, dark brick, cream mullions in large arched window, paired square corner towers with cream caps, short wing. Keep church within x 760..1280 and y 180..680 in world coordinates. Arched double-door opening centered around x 990 y 570, roughly 95 wide and 95 tall, empty wall-colored opening without door. Left half Side Project Cellar: modest narrow charcoal storefront with tall rectangular windows and patio, rows of small Maplewood shops behind it. Street sweeps across middle lower third, crosswalk. Two empty grass patches near each other in front of church for welcome sign and fingerpost, x 890..1170 y 700..890. Do NOT draw signs, moose or interactive props. Leave foreground corners empty for separate tree/planter scenery. All four outer edges must finish in one exact cream ground color #E9DFBF with 5 percent empty margin: this is a district on a larger continuous landscape, not a framed postcard. No sky band, no horizon line, no clipped roads or buildings. FLAT SOLID COLOR FILLS, NO TEXTURE OR GRADIENT.",
-      "world": {
-        "x": 0,
-        "y": 0,
-        "w": 1400,
-        "h": 1000
-      },
-      "size": "1792x1280"
-    },
-    {
       "id": "overworld",
       "scene": "overworld",
       "kind": "background",
-      "prompt": "One continuous explorable St Louis overworld, landscape 2:1. Elevated 3/4 illustration with open walkable cream ground #E9DFBF, all landmarks at consistent small scale. West to east: Maplewood lower left with dark red brick Moosylvania converted church (match arrival reference) and a charcoal Side Project storefront across a short street; Central West End upper middle-left with red-brick Euclid storefronts and corner bar; Midtown upper middle-right with SLU campus brick buildings and cream clock tower, City Foundry red-brick industrial sawtooth halls with smokestack and blank marquee; a wide teal Mississippi river near the right, running vertically north to south; slender silver Gateway Arch on its west bank, Eads Bridge crossing left to right at middle height; Belleville east bank with a small redbrick downtown square, Victorian county courthouse silhouette and generic early internet commerce office. Carondelet Park lower middle beneath CWE and Midtown with lake, pavilion and continuous looping cycling track. Forest Park green strip connects west neighborhoods, highway 40/64 as a restrained gray east-west strip. Leave large quiet spaces between districts while paths connect them naturally. No hard rectangular district borders, no floating labels, no text, no icons, no people, no moose, no cyclist. Foreground trees sparse so routes remain legible. River x about 76 percent, Carondelet x 48 percent y 77 percent. Consistent palette, perspective, light and scale across the ENTIRE scene.",
+      "prompt": "Use the final approved overworld composition unchanged, preserving all geography, bright palette, architecture and framing. The Arch is on green land between I-44 on its west and the river on its east; Eads Bridge north, Poplar Street highway bridge south. No new objects or text.",
       "world": {
         "x": 0,
         "y": 0,
@@ -31,14 +18,18 @@
       },
       "size": "2304x1152",
       "references": [
-        "prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png"
-      ]
+        "art/generated/overworld-master/image.webp"
+      ],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "deriveFrom": "overworld-master"
     },
     {
       "id": "moosylvania",
       "scene": "moosylvania",
       "kind": "background",
-      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An airy creative agency lobby inside the converted brick church: warm terracotta rear wall, tall cream pointed arch windows, visible dark timber ceiling beams, reception counter at left rear. Four separate clear floor positions for identical desks arranged across the middle (do NOT draw desks or computers). Clear wall space for sign. Right wall plain empty door opening. Broad uncluttered cream floor across foreground. Olive plant at far rear only. Architectural cues from arrival reference, not a corporate glass skyscraper. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "prompt": "PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved moosylvania room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:\nlobby-desk: the large foreground teal computer monitor with pale frame, its stand and base on the nearest right-hand communal desk. Retain only the monitor, not the desk or chair (original 2048x1152 pixels x=1740 y=590 w=240 h=240)\nlobby-desk-2: the teal monitor and its stand on the back-center desk, left of the little yellow angled lamp (original 2048x1152 pixels x=805 y=545 w=130 h=130)\nlobby-desk-3: the teal monitor and its stand on the back-center desk, right of the orange chair (original 2048x1152 pixels x=1000 y=550 w=130 h=130)\nlobby-desk-4: the dark teal monitor and its stand on the left window-side desk, just behind the teal task chair (original 2048x1152 pixels x=410 y=540 w=130 h=130)\nlobby-plant: the entire large broad-leaf plant and white cylindrical planter at the far-left foreground. Keep the left-edge clipping exactly (original 2048x1152 pixels x=0 y=375 w=300 h=690)\nThe extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.",
       "world": {
         "x": 0,
         "y": 0,
@@ -48,14 +39,17 @@
       "size": "2048x1152",
       "upscale": 1.7,
       "references": [
-        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+        "art/generated/moosylvania-master/image.webp"
+      ],
+      "dependsOn": [
+        "moosylvania-master"
       ]
     },
     {
       "id": "slu",
       "scene": "slu",
       "kind": "background",
-      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. A Saint Louis University computer science teaching lab: cream and terracotta brick walls, tall arched windows with simplified campus clock tower visible outside, olive desks along side walls, teal monitors with blank screens. Leave middle room empty. A large empty cream wall patch at upper left for diploma, center rear blank whiteboard frame area, right-of-center clear floor for a single interactive workstation. Right wall plain empty exit opening. No actual diagrams or text. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "prompt": "PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved slu room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:\nslu-workstation: the front bright cyan computer monitor, its black frame and stand seen through the classroom glass on the LEFT of the double doors. No glass mullions, no desk, no chair (original 2048x1152 pixels x=1245 y=395 w=160 h=160)\nslu-diploma: the small framed cream diploma on the lobby wall to the left of the large dark display (original 2048x1152 pixels x=350 y=265 w=160 h=180)\nslu-chair: the single blue upholstered lounge chair at lower left, including its four wood feet. No coffee table, carpet or sofa (original 2048x1152 pixels x=90 y=610 w=400 h=400)\nThe extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.",
       "world": {
         "x": 0,
         "y": 0,
@@ -65,14 +59,17 @@
       "size": "2048x1152",
       "upscale": 2,
       "references": [
-        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+        "art/generated/slu-master/image.webp"
+      ],
+      "dependsOn": [
+        "slu-master"
       ]
     },
     {
       "id": "foundry",
       "scene": "foundry",
       "kind": "background",
-      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. A boutique cinema inside City Foundry industrial brick hall: terracotta brick side walls, exposed dark roof trusses, warm mustard sconces. Large blank near-black screen centered on rear wall with clear rectangular bounds, three empty portrait poster panels on left wall, a small plain exit opening right. Sparse rear audience seats; foreground seats reserved for a separate cutout and do NOT draw them. No viewers, no moose, no film imagery, no lettering. Wide open center aisle. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "prompt": "PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved foundry room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:\nfoundry-projector: the charcoal ceiling-mounted projector clipped by the top edge. Keep that exact clipped silhouette and position, no ceiling or wall (original 2048x1152 pixels x=245 y=0 w=250 h=150)\nfoundry-seats: ALL cinema chair backs, chairs and attached dine-in tables in this foreground crop as ONE aligned seating layer. Preserve the stair aisle as transparent and remove walls, screen, ceiling and floor visible between the rows. Keep every seat in the exact original pixel position; never rearrange rows (original 2048x1152 pixels x=0 y=384 w=2048 h=768)\nThe extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.",
       "world": {
         "x": 0,
         "y": 0,
@@ -82,14 +79,17 @@
       "size": "2048x1152",
       "upscale": 2,
       "references": [
-        "prototypes/art-pipeline/reference/ref-scene-3-theatre.png"
+        "art/generated/foundry-master/image.webp"
+      ],
+      "dependsOn": [
+        "foundry-master"
       ]
     },
     {
       "id": "side-project",
       "scene": "side-project",
       "kind": "background",
-      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An intimate craft-beer cellar tasting room inspired by Side Project Cellar on Marietta: charcoal back bar, cream walls, warm oak bar counter with big uninterrupted flat planes, bottle shelves holding simple blank dark bottle silhouettes, olive seating, broad cream floor. Leave a clear space in middle of countertop for separate taps; empty dark chalkboard patch left; right wall door opening. No patrons, no branded labels, no text. Foreground bottom corners left clear for independent stool scenery. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "prompt": "PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved side-project room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:\nside-project-taps: the complete narrow silver row of beer taps with drip tray mounted on the bar, no wood counter or back wall (original 2048x1152 pixels x=470 y=510 w=340 h=170)\nside-project-stool: the ONE white-metal stool with honey wood back and seat that is second from the LEFT in the front bar row. Keep its clipped lower feet as shown; exclude every neighboring stool and the countertop (original 2048x1152 pixels x=430 y=675 w=320 h=477)\nThe extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.",
       "world": {
         "x": 0,
         "y": 0,
@@ -99,14 +99,17 @@
       "size": "2048x1152",
       "upscale": 2,
       "references": [
-        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+        "art/generated/side-project-master/image.webp"
+      ],
+      "dependsOn": [
+        "side-project-master"
       ]
     },
     {
       "id": "brennans",
       "scene": "brennans",
       "kind": "background",
-      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An intimate Central West End brick bar and cigar lounge inspired by Brennan’s on Euclid: deep olive paneled walls, terracotta brick, mustard lamplight represented as flat colored shapes, cream ceiling. A large empty rectangular alcove on rear-left wall reserved for humidor, empty floor patch at right for ATM. Dark wood counter back center, a few cream lounge chairs behind the walking area, broad open terracotta floor. Plain exit opening far right. No people, no smoke, no branding or lettering. Foreground corners clear for independent armchair. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "prompt": "PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved brennans room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:\nbrennans-humidor: the tall glass-front humidor display fitted into the right wall, dark frame and warm shelves with bottles/cigar boxes. Preserve the right/top scene-edge clipping; exclude the cream foreground chair and brick wall (original 2048x1152 pixels x=1696 y=0 w=352 h=1024)\nbrennans-chair: the cream molded foreground lounge chair with dark wooden legs facing inward toward the low coffee table. Keep its bottom edge clipping; no rug, table, side stool or sofa (original 2048x1152 pixels x=1446 y=550 w=602 h=602)\nThe extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.",
       "world": {
         "x": 0,
         "y": 0,
@@ -116,110 +119,106 @@
       "size": "2048x1152",
       "upscale": 2,
       "references": [
-        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+        "art/generated/brennans-master/image.webp"
+      ],
+      "dependsOn": [
+        "brennans-master"
       ]
     },
     {
       "id": "welcome",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "prop",
       "prompt": "A low wide mustard welcome board with teal frame and two short dark wooden posts. Board blank. Match Maplewood church scale and perspective. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
       "world": {
-        "x": 1080,
-        "y": 515,
-        "w": 170,
-        "h": 105
+        "x": 998,
+        "y": 1680,
+        "w": 62,
+        "h": 40
       },
       "size": "1024x1024",
       "references": [
-        "art/generated/maplewood/image.webp"
+        "art/generated/overworld/image.webp"
       ],
       "dependsOn": [
-        "maplewood"
+        "overworld"
       ]
     },
     {
       "id": "signpost",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "prop",
       "prompt": "A wooden fingerpost with five blank arrow boards pointing left and right plus a small square board, cream and mustard with teal accent. Tall post. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
       "world": {
-        "x": 840,
-        "y": 475,
-        "w": 85,
-        "h": 160
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/maplewood/image.webp"
-      ],
-      "dependsOn": [
-        "maplewood"
-      ]
-    },
-    {
-      "id": "door",
-      "scene": "maplewood",
-      "kind": "prop",
-      "prompt": "A nearly square pair of teal double doors meeting at center, shallow arched top and cream frame, glass upper panels. EXACT silhouette of final opening crop; no bricks, wall or stairs. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 987,
-        "y": 374,
-        "w": 44,
+        "x": 926,
+        "y": 1677,
+        "w": 32,
         "h": 60
       },
       "size": "1024x1024",
       "references": [
-        "art/generated/maplewood/image.webp"
+        "art/generated/overworld/image.webp"
       ],
       "dependsOn": [
-        "maplewood"
+        "overworld"
+      ]
+    },
+    {
+      "id": "door",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the existing church entrance door leaves and narrow door frame. No brick, stairs or surrounding facade. Keep the exact tiny entrance at the same pixel position in the crop. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
       ],
-      "opening": {
-        "asset": "maplewood",
+      "registration": {
+        "asset": "overworld-master",
         "rect": {
-          "x": 975,
-          "y": 365,
-          "w": 70,
-          "h": 80
+          "x": 806.25,
+          "y": 1549.21875,
+          "w": 150,
+          "h": 150
         }
       }
     },
     {
       "id": "maplewood-tree",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "foreground",
-      "prompt": "One olive tree canopy on a terracotta-brown trunk in a low cream planter, broad rounded clusters of foliage with only two flat greens. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 100,
-        "y": 735,
-        "w": 110,
-        "h": 160
-      },
+      "prompt": "ONLY the central tree with green crown and its visible short trunk. No surrounding ground, road, building, neighboring trees or shadows. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
       "size": "1024x1024",
-      "references": [
-        "art/generated/maplewood/image.webp"
-      ],
+      "references": [],
       "dependsOn": [
-        "maplewood"
-      ]
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 1148.4375,
+          "y": 1699.21875,
+          "w": 150,
+          "h": 150
+        }
+      }
     },
     {
       "id": "moose-master",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "reference",
       "prompt": "A friendly simple cartoon moose side-on facing right, four legs, dark brown body, lighter muzzle, broad mustard antlers, one white eye with black pupil. Whole animal centered on pure #FF00FF. No shadow. Large simple flat shapes, matching the church scene.",
       "size": "1536x1024",
       "references": [
-        "art/generated/maplewood/image.webp"
+        "art/generated/overworld/image.webp"
       ],
       "dependsOn": [
-        "maplewood"
+        "overworld"
       ]
     },
     {
       "id": "moose-body",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "part",
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY torso, all four legs and neck; remove head, antlers and eye, end neck with a flat cut. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
@@ -241,7 +240,7 @@
     },
     {
       "id": "moose-head",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "part",
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY head and top of neck with extra neck overlap below; no body, legs, antlers or eye. Fill eye socket with head color. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
@@ -263,7 +262,7 @@
     },
     {
       "id": "moose-antlers",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "part",
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY both antlers including short attachment stubs at skull. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
@@ -285,7 +284,7 @@
     },
     {
       "id": "moose-eye",
-      "scene": "maplewood",
+      "scene": "overworld",
       "kind": "part",
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY one eye: cream-white oval and black pupil. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
@@ -309,229 +308,340 @@
       "id": "lobby-desk",
       "scene": "moosylvania",
       "kind": "prop",
-      "prompt": "One simple agency desk with cream tabletop on dark wood legs, single teal monitor with blank mustard display. No chair. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 1100,
-        "y": 850,
-        "w": 420,
-        "h": 300
-      },
+      "prompt": "Extract ONLY the large foreground teal computer monitor with pale frame, its stand and base on the nearest right-hand communal desk. Retain only the monitor, not the desk or chair. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
       "size": "1024x1024",
-      "references": [
-        "art/generated/moosylvania/image.webp"
-      ],
+      "references": [],
       "dependsOn": [
-        "moosylvania"
-      ]
+        "moosylvania-master"
+      ],
+      "registration": {
+        "asset": "moosylvania-master",
+        "rect": {
+          "x": 2417.138671875,
+          "y": 819.6044921875,
+          "w": 333.3984375,
+          "h": 333.3984375
+        }
+      },
+      "world": {
+        "x": 2490.76416015625,
+        "y": 866.6666666666666,
+        "w": 191.7041015625,
+        "h": 161.11111111111111
+      }
     },
     {
       "id": "lobby-plant",
       "scene": "moosylvania",
       "kind": "foreground",
-      "prompt": "One broad-leaf olive houseplant in a cream ceramic cylindrical pot. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 90,
-        "y": 1160,
-        "w": 220,
-        "h": 380
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/moosylvania/image.webp"
-      ],
+      "prompt": "Extract ONLY the entire large broad-leaf plant and white cylindrical planter at the far-left foreground. Keep the left-edge clipping exactly. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "768x1760",
+      "references": [],
       "dependsOn": [
-        "moosylvania"
-      ]
+        "moosylvania-master"
+      ],
+      "registration": {
+        "asset": "moosylvania-master",
+        "rect": {
+          "x": 0,
+          "y": 520.93505859375,
+          "w": 416.748046875,
+          "h": 958.5205078125
+        }
+      }
     },
     {
       "id": "slu-workstation",
       "scene": "slu",
       "kind": "prop",
-      "prompt": "One university computer workstation: cream desk, teal computer monitor showing blank cream screen, simple dark keyboard. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 1200,
-        "y": 900,
-        "w": 450,
-        "h": 360
-      },
+      "prompt": "Extract ONLY the front bright cyan computer monitor, its black frame and stand seen through the classroom glass on the LEFT of the double doors. No glass mullions, no desk, no chair. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
       "size": "1024x1024",
-      "references": [
-        "art/generated/slu/image.webp"
-      ],
+      "references": [],
       "dependsOn": [
-        "slu"
-      ]
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 1729.50439453125,
+          "y": 548.71826171875,
+          "w": 222.265625,
+          "h": 222.265625
+        }
+      }
     },
     {
       "id": "slu-diploma",
       "scene": "slu",
       "kind": "prop",
-      "prompt": "One wide framed cream diploma in a dark olive wood frame. Blank paper without writing; small mustard circular seal at bottom. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 920,
-        "y": 360,
-        "w": 300,
-        "h": 200
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/slu/image.webp"
-      ],
+      "prompt": "Extract ONLY the small framed cream diploma on the lobby wall to the left of the large dark display. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "1024x1152",
+      "references": [],
       "dependsOn": [
-        "slu"
-      ]
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 486.2060546875,
+          "y": 368.12744140625,
+          "w": 222.265625,
+          "h": 250.048828125
+        }
+      }
     },
     {
       "id": "slu-chair",
       "scene": "slu",
       "kind": "foreground",
-      "prompt": "One simple dark olive lab chair with cream seat and four legs in three-quarter view. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 120,
-        "y": 1250,
-        "w": 230,
-        "h": 310
-      },
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
       "size": "1024x1024",
-      "references": [
-        "art/generated/slu/image.webp"
-      ],
+      "references": [],
       "dependsOn": [
-        "slu"
-      ]
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 125.0244140625,
+          "y": 847.3876953125,
+          "w": 555.6640625,
+          "h": 555.6640625
+        },
+        "mask": [
+          [
+            0.0425,
+            0.10375
+          ],
+          [
+            0.05375,
+            0.09125
+          ],
+          [
+            0.1,
+            0.07375
+          ],
+          [
+            0.47,
+            0.1025
+          ],
+          [
+            0.5225,
+            0.11125
+          ],
+          [
+            0.54625,
+            0.125
+          ],
+          [
+            0.5525,
+            0.14375
+          ],
+          [
+            0.59375,
+            0.31875
+          ],
+          [
+            0.75,
+            0.3475
+          ],
+          [
+            0.905,
+            0.3775
+          ],
+          [
+            0.93625,
+            0.39625
+          ],
+          [
+            0.94625,
+            0.425
+          ],
+          [
+            0.94875,
+            0.5525
+          ],
+          [
+            0.93625,
+            0.5625
+          ],
+          [
+            0.94375,
+            0.69625
+          ],
+          [
+            0.92125,
+            0.7
+          ],
+          [
+            0.88875,
+            0.58
+          ],
+          [
+            0.58,
+            0.67125
+          ],
+          [
+            0.55,
+            0.825
+          ],
+          [
+            0.52,
+            0.82875
+          ],
+          [
+            0.51375,
+            0.68125
+          ],
+          [
+            0.18,
+            0.6075
+          ],
+          [
+            0.1425,
+            0.73375
+          ],
+          [
+            0.11125,
+            0.73375
+          ],
+          [
+            0.12875,
+            0.59875
+          ],
+          [
+            0.115,
+            0.5925
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
     },
     {
       "id": "foundry-projector",
       "scene": "foundry",
       "kind": "prop",
-      "prompt": "One small vintage cinema projector on a low mustard pedestal, two dark reels and teal body, simple flat geometry. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 2100,
-        "y": 1030,
-        "w": 260,
-        "h": 300
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/foundry/image.webp"
-      ],
+      "prompt": "Extract ONLY the charcoal ceiling-mounted projector clipped by the top edge. Keep that exact clipped silhouette and position, no ceiling or wall. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "1600x960",
+      "references": [],
       "dependsOn": [
-        "foundry"
-      ]
+        "foundry-master"
+      ],
+      "registration": {
+        "asset": "foundry-master",
+        "rect": {
+          "x": 340.34423828125,
+          "y": 0,
+          "w": 347.2900390625,
+          "h": 208.3740234375
+        }
+      }
     },
     {
       "id": "foundry-seats",
       "scene": "foundry",
       "kind": "foreground",
-      "prompt": "One row of three connected empty olive and dark brown cinema seat backs, front view with slight elevated perspective. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 900,
-        "y": 1220,
-        "w": 1000,
-        "h": 350
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/foundry/image.webp"
-      ],
+      "prompt": "Extract ONLY ALL cinema chair backs, chairs and attached dine-in tables in this foreground crop as ONE aligned seating layer. Preserve the stair aisle as transparent and remove walls, screen, ceiling and floor visible between the rows. Keep every seat in the exact original pixel position; never rearrange rows. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "2048x768",
+      "references": [],
       "dependsOn": [
-        "foundry"
-      ]
+        "foundry-master"
+      ],
+      "registration": {
+        "asset": "foundry-master",
+        "rect": {
+          "x": 0,
+          "y": 533.4375,
+          "w": 2845,
+          "h": 1066.875
+        }
+      }
     },
     {
       "id": "side-project-taps",
       "scene": "side-project",
       "kind": "prop",
-      "prompt": "A polished brass beer tap tower with four handles, teal center plaque and cream metal base. Blank labels. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 1260,
-        "y": 400,
-        "w": 320,
-        "h": 300
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/side-project/image.webp"
-      ],
+      "prompt": "Extract ONLY the complete narrow silver row of beer taps with drip tray mounted on the bar, no wood counter or back wall. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "1536x768",
+      "references": [],
       "dependsOn": [
-        "side-project"
-      ]
+        "side-project-master"
+      ],
+      "registration": {
+        "asset": "side-project-master",
+        "rect": {
+          "x": 652.9052734375,
+          "y": 708.4716796875,
+          "w": 472.314453125,
+          "h": 236.1572265625
+        }
+      }
     },
     {
       "id": "side-project-stool",
       "scene": "side-project",
       "kind": "foreground",
-      "prompt": "One oak bar stool with round mustard seat and dark brown legs in three-quarter view. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 250,
-        "y": 1200,
-        "w": 220,
-        "h": 340
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/side-project/image.webp"
-      ],
+      "prompt": "Extract ONLY the ONE white-metal stool with honey wood back and seat that is second from the LEFT in the front bar row. Keep its clipped lower feet as shown; exclude every neighboring stool and the countertop. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "1024x1520",
+      "references": [],
       "dependsOn": [
-        "side-project"
-      ]
+        "side-project-master"
+      ],
+      "registration": {
+        "asset": "side-project-master",
+        "rect": {
+          "x": 597.3388671875,
+          "y": 937.68310546875,
+          "w": 444.53125,
+          "h": 662.62939453125
+        }
+      }
     },
     {
       "id": "brennans-humidor",
       "scene": "brennans",
       "kind": "prop",
-      "prompt": "A dark wood glass-front humidor cabinet with six simple cream cigar boxes on shelves, plain blank labels, closed glass doors in olive and teal flat fills. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 450,
-        "y": 520,
-        "w": 570,
-        "h": 530
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/brennans/image.webp"
-      ],
+      "prompt": "Extract ONLY the tall glass-front humidor display fitted into the right wall, dark frame and warm shelves with bottles/cigar boxes. Preserve the right/top scene-edge clipping; exclude the cream foreground chair and brick wall. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "704x2048",
+      "references": [],
       "dependsOn": [
-        "brennans"
-      ]
-    },
-    {
-      "id": "brennans-atm",
-      "scene": "brennans",
-      "kind": "prop",
-      "prompt": "One compact teal ATM with cream blank screen, mustard keypad and dark slot. Unbranded. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 2050,
-        "y": 850,
-        "w": 260,
-        "h": 420
-      },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/brennans/image.webp"
+        "brennans-master"
       ],
-      "dependsOn": [
-        "brennans"
-      ]
+      "registration": {
+        "asset": "brennans-master",
+        "rect": {
+          "x": 2356.015625,
+          "y": 0,
+          "w": 488.984375,
+          "h": 1422.5
+        }
+      }
     },
     {
       "id": "brennans-chair",
       "scene": "brennans",
       "kind": "foreground",
-      "prompt": "One comfortable olive lounge armchair on dark wood legs, broad rounded arms and cream cushion. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
-      "world": {
-        "x": 230,
-        "y": 1120,
-        "w": 430,
-        "h": 400
-      },
+      "prompt": "Extract ONLY the cream molded foreground lounge chair with dark wooden legs facing inward toward the low coffee table. Keep its bottom edge clipping; no rug, table, side stool or sofa. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
       "size": "1024x1024",
-      "references": [
-        "art/generated/brennans/image.webp"
-      ],
+      "references": [],
       "dependsOn": [
-        "brennans"
-      ]
+        "brennans-master"
+      ],
+      "registration": {
+        "asset": "brennans-master",
+        "rect": {
+          "x": 2008.7255859375,
+          "y": 764.0380859375,
+          "w": 836.2744140625,
+          "h": 836.2744140625
+        }
+      },
+      "world": {
+        "x": 2087.90771484375,
+        "y": 1147.2222222222222,
+        "w": 664.0185546875,
+        "h": 480.55555555555554
+      }
     },
     {
       "id": "rider-master",
@@ -611,6 +721,268 @@
           0.5
         ]
       }
+    },
+    {
+      "id": "moosylvania-master",
+      "scene": "moosylvania",
+      "kind": "reference",
+      "prompt": "Create one fully composed illustrated interior, 2048x1152, 16:9, looking gently downward into the room from its entry, all furniture obeying ONE camera and common floor plane. Use the supplied PHOTOS for the actual architecture, room proportions, furniture style and relative arrangement. Use the FIRST illustration only for the simple flat shape language and bright saturated palette. Translate the photographed interior into the illustration, do not invent a generic brown room. Clean flat solid fills with white/ivory and cool daylight, cyan/teal accents, sunny yellow and fresh green where appropriate; brown confined to actual wood/brick. No sepia wash. No people, no readable text/logos, no photographic texture or gradients. Fully furnish the scene NOW, including the specified objects in their natural places, so it reads as one coherent room. Objects will later be extracted in place. Do not scatter items across an empty floor. Actual Moosylvania studio, 7303 Marietta Avenue, PHOTO 01 is primary. Wide airy open office inside the converted church: white painted walls with repeated tall ROUND-ARCH windows, charcoal exposed steel/wood joist ceiling and silver ducts, bright white columns, light gray polished floor, pale natural-wood communal worktables aligned with the room edges. Near-left seating nook with fresh yellow-green low sofa and lime upholstered armchairs around low oval coffee table; behind it orderly pale desks with small dark/teal monitors. Use PHOTO 02 only for converted-church mezzanine cues, do not recreate an empty orange chapel. Main visible interactive desk should be integrated into the front-right communal desk row, same angle/height as neighbors; plant in white pot near the window at far-left foreground. Keep central circulation aisle open.",
+      "size": "2048x1152",
+      "references": [
+        "art/references/local/places/moosylvania/01.jpg",
+        "art/references/local/places/moosylvania/02.jpg"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      }
+    },
+    {
+      "id": "side-project-master",
+      "scene": "side-project",
+      "kind": "reference",
+      "prompt": "Create one fully composed illustrated interior, 2048x1152, 16:9, looking gently downward into the room from its entry, all furniture obeying ONE camera and common floor plane. Use the supplied PHOTOS for the actual architecture, room proportions, furniture style and relative arrangement. Use the FIRST illustration only for the simple flat shape language and bright saturated palette. Translate the photographed interior into the illustration, do not invent a generic brown room. Clean flat solid fills with white/ivory and cool daylight, cyan/teal accents, sunny yellow and fresh green where appropriate; brown confined to actual wood/brick. No sepia wash. No people, no readable text/logos, no photographic texture or gradients. Fully furnish the scene NOW, including the specified objects in their natural places, so it reads as one coherent room. Objects will later be extracted in place. Do not scatter items across an empty floor. Actual Side Project Cellar at 7373 Marietta, use PHOTO 01 and PHOTO 10. Intimate rectangular taproom, exposed pale blond wood ceiling joists, cool blue-gray painted walls, polished light-gray concrete floor, honey-colored rectangular wood bar/counter, WHITE metal stool frames with pale wood seats, hanging clear jar pendants. A pale wood enclosed back-bar/cooler structure with empty dark chalkboard and simple dark bottle shelves. Counter extends along left/middle, long communal table at right aligned with perspective. Compact metallic taps fixed on the bar worktop; one near stool belongs directly in the front bar row with matching neighbors. Bright daylight from right storefront windows. No redbrick fake wine cellar, no giant tap sculpture.",
+      "size": "2048x1152",
+      "references": [
+        "art/references/local/places/side-project/01.jpg",
+        "art/references/local/places/side-project/06.jpg",
+        "art/references/local/places/side-project/10.jpg"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      }
+    },
+    {
+      "id": "brennans-master",
+      "scene": "brennans",
+      "kind": "reference",
+      "prompt": "Create one fully composed illustrated interior, 2048x1152, 16:9, looking gently downward into the room from its entry, all furniture obeying ONE camera and common floor plane. Use the supplied PHOTOS for the actual architecture, room proportions, furniture style and relative arrangement. Use the FIRST illustration only for the simple flat shape language and bright saturated palette. Translate the photographed interior into the illustration, do not invent a generic brown room. Clean flat solid fills with white/ivory and cool daylight, cyan/teal accents, sunny yellow and fresh green where appropriate; brown confined to actual wood/brick. No sepia wash. No people, no readable text/logos, no photographic texture or gradients. Fully furnish the scene NOW, including the specified objects in their natural places, so it reads as one coherent room. Objects will later be extracted in place. Do not scatter items across an empty floor. Actual Brennan's 316 N Euclid: PHOTO 06 is primary long narrow room, PHOTO 04 gives bar details, PHOTO 08 is glass humidor. Narrow room receding to a rear window, rich TEAL painted paneled left wall with assorted empty picture frames, continuous caramel leather banquette against left wall, small white/cream tables at even intervals. Exposed red brick/right backbar with slim dark wood shelves, cream pressed-tin ceiling with hanging spherical white paper lamps. Medium cool-gray floor; brightened daylight exposure while retaining teal character. At right/rear a tall narrow glass-front humidor built INTO the wall shelving, not a cabinet stranded on floor. Small neutral charcoal ATM recessed beside rear exit, unobtrusive. One cream molded lounge chair naturally placed next to an existing low table in foreground seating nook, facing the table. No green Victorian parlor, no turquoise freestanding ATM, no orange floor.",
+      "size": "2048x1152",
+      "references": [
+        "art/references/local/places/brennans/06.jpg",
+        "art/references/local/places/brennans/04.jpg",
+        "art/references/local/places/brennans/08.jpg"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      }
+    },
+    {
+      "id": "foundry-master",
+      "scene": "foundry",
+      "kind": "reference",
+      "prompt": "Create one fully composed illustrated interior, 2048x1152, 16:9, looking gently downward into the room from its entry, all furniture obeying ONE camera and common floor plane. Use the supplied PHOTOS for the actual architecture, room proportions, furniture style and relative arrangement. Use the FIRST illustration only for the simple flat shape language and bright saturated palette. Translate the photographed interior into the illustration, do not invent a generic brown room. Clean flat solid fills with white/ivory and cool daylight, cyan/teal accents, sunny yellow and fresh green where appropriate; brown confined to actual wood/brick. No sepia wash. No people, no readable text/logos, no photographic texture or gradients. Fully furnish the scene NOW, including the specified objects in their natural places, so it reads as one coherent room. Objects will later be extracted in place. Do not scatter items across an empty floor. Actual Alamo Drafthouse Cinema City Foundry auditorium, PHOTO 02 primary, PHOTO 03 foyer palette secondary. View from the upper/back corner looking toward large pale ivory cinema screen on far wall. Rows of CHARCOAL upholstered reclining cinema chairs with small dark dine-in tables, all facing AWAY from viewer toward screen; gently stepped floor and a clear side/center aisle. Bold burnt-orange/red acoustic side walls and vertical cream light panels, black/dark navy acoustic ceiling with simple fixture shapes. Keep the room readable and colorful with coral, ivory, navy and teal accents, not brown darkness. The nearest visible row of three seat backs is a separate clear foreground silhouette naturally continuing the seating rows; no random front-facing seats or projector sitting on the aisle floor. A small modern projector mounted securely at upper rear ceiling edge can be visible in the top foreground. Empty blank screen and poster frames.",
+      "size": "2048x1152",
+      "references": [
+        "art/references/local/places/alamo/02.jpg",
+        "art/references/local/places/alamo/03.jpg"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      }
+    },
+    {
+      "id": "slu-master",
+      "scene": "slu",
+      "kind": "reference",
+      "prompt": "Create one fully composed illustrated interior, 2048x1152, 16:9, looking gently downward into the room from its entry, all furniture obeying ONE camera and common floor plane. Use the supplied PHOTOS for the actual architecture, room proportions, furniture style and relative arrangement. Use the FIRST illustration only for the simple flat shape language and bright saturated palette. Translate the photographed interior into the illustration, do not invent a generic brown room. Clean flat solid fills with white/ivory and cool daylight, cyan/teal accents, sunny yellow and fresh green where appropriate; brown confined to actual wood/brick. No sepia wash. No people, no readable text/logos, no photographic texture or gradients. Fully furnish the scene NOW, including the specified objects in their natural places, so it reads as one coherent room. Objects will later be extracted in place. Do not scatter items across an empty floor. Actual McDonnell Douglas Hall at Saint Louis University, 3450 Lindell, using SLU's verified lobby photo. This is a modern university lobby beside the Oliver and Eleze Boileau computer classroom, NOT a Gothic brick church or clocktower room. Match the photographed cream-white walls, light blond double classroom doors, large glass sidelights revealing orderly rows of computer desks and blue screens, simple rectangular gray upholstered lounge seating beneath wall-mounted dark display. Widen gently to show lobby at left and glass-fronted computer teaching room at right in same perspective. Cool gray floor, white ceiling LED panels, restrained SLU royal-blue/cyan accents, sunny daylight. One visible computer workstation belongs IN the classroom front row aligned with its neighbors, a small framed diploma belongs flush on the lobby wall beside the display, and a gray/blue lounge chair belongs beside lobby sofa facing its coffee table. No arched windows, fantasy tower or terracotta floor. No people, text or lettering.",
+      "size": "2048x1152",
+      "references": [
+        "art/references/local/places/slu/lobby.jpg"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      }
+    },
+    {
+      "id": "overworld-master",
+      "scene": "overworld",
+      "kind": "reference",
+      "prompt": "One continuous illustrated St Louis exploration map, 2304x1152 (2:1), north toward top, east right, mildly elevated three-quarter aerial camera. The FIRST image controls bright simple original cartoon style: clear CYAN sky/water, fresh yellow-green parks, pale cream sidewalks, ivory roofs, sunny yellow accents. No sepia, no brown wash, no mountains. Satellite screenshots control RELATIVE GEOGRAPHY, not photographic rendering. West/left: Maplewood small Marietta district lower-left, Moosylvania dark red converted church and Side Project modest one-story charcoal/brick corner storefront directly nearby; Moosylvania facade must match arrival illustration. No detached Maplewood island or inset. North of Maplewood: broad Forest Park green oval/rectangle; Central West End with Brennan's brick/teal Euclid storefront just northeast of Forest Park. Midtown to their east: actual SLU McDonnell Douglas Hall as modern low rectangular cream/red masonry academic block, no invented Gothic clocktower, and City Foundry long brick industrial hall/sawtooth roofs with yellow trim south of SLU, adjacent Alamo modern rust-red box auditorium and projecting flat awning. Carondelet Park is SOUTH of central city and southeast of Maplewood, a distinct lower green area with lakes and cycle path, NOT in downtown. Mississippi runs north-south near right edge with gentle bend, broad teal water. Arch is entirely on grassy WEST bank in a large green national park. Critical: I-44 runs north-south WEST of Arch park, I-64/40 runs east-west past Foundry then SOUTH of the Arch toward POPLAR STREET BRIDGE, crossing river SOUTH of Arch. NO roadway through the Arch opening or its grass. Eads Bridge crosses river NORTH of Arch, with three steel arches. Leave visible grass between every road and Arch legs. Illinois/east bank occupies right fifth; compressed Belleville town sits well east/southeast, away from immediate waterfront. Simplify intervening city blocks, keep all named landmarks distinct at legible scale, common camera and lighting. Continuous streets/paths integrate districts. Fully compose nonmoving scenery; no interactive signs, moose, cyclist or people. Leave natural grass verge beside Moosylvania entrance for signpost and moose. No text, labels, map pins, dotted boundaries or UI.",
+      "size": "2304x1152",
+      "references": [
+        "art/references/local/places/satellite-metro.png",
+        "art/references/local/places/satellite-arch.png",
+        "prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png",
+        "art/references/local/places/alamo/01.jpg"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 5400,
+        "h": 2700
+      }
+    },
+    {
+      "id": "lobby-desk-2",
+      "scene": "moosylvania",
+      "kind": "prop",
+      "prompt": "Extract ONLY the teal monitor and its stand on the back-center desk, left of the little yellow angled lamp. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "moosylvania-master"
+      ],
+      "registration": {
+        "asset": "moosylvania-master",
+        "rect": {
+          "x": 1118.27392578125,
+          "y": 757.09228515625,
+          "w": 180.5908203125,
+          "h": 180.5908203125
+        }
+      },
+      "world": {
+        "x": 1146.05712890625,
+        "y": 798.6111111111111,
+        "w": 73.62548828125,
+        "h": 76.38888888888889
+      }
+    },
+    {
+      "id": "lobby-desk-3",
+      "scene": "moosylvania",
+      "kind": "prop",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "moosylvania-master"
+      ],
+      "registration": {
+        "asset": "moosylvania-master",
+        "rect": {
+          "x": 1389.16015625,
+          "y": 764.0380859375,
+          "w": 180.5908203125,
+          "h": 180.5908203125
+        },
+        "mask": [
+          [
+            0.225,
+            0.26
+          ],
+          [
+            0.6,
+            0.26
+          ],
+          [
+            0.59375,
+            0.56375
+          ],
+          [
+            0.4375,
+            0.56625
+          ],
+          [
+            0.43875,
+            0.60875
+          ],
+          [
+            0.35625,
+            0.60875
+          ],
+          [
+            0.3575,
+            0.56625
+          ],
+          [
+            0.195,
+            0.5675
+          ]
+        ]
+      },
+      "deriveFrom": "moosylvania-master"
+    },
+    {
+      "id": "lobby-desk-4",
+      "scene": "moosylvania",
+      "kind": "prop",
+      "prompt": "Extract ONLY the dark teal monitor and its stand on the left window-side desk, just behind the teal task chair. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "moosylvania-master"
+      ],
+      "registration": {
+        "asset": "moosylvania-master",
+        "rect": {
+          "x": 569.5556640625,
+          "y": 750.146484375,
+          "w": 180.5908203125,
+          "h": 180.5908203125
+        }
+      },
+      "world": {
+        "x": 597.3388671875,
+        "y": 790.2777777777778,
+        "w": 84.73876953125,
+        "h": 93.05555555555556
+      }
+    },
+    {
+      "id": "brennans-atm",
+      "scene": "brennans",
+      "kind": "prop",
+      "prompt": "Extract the narrow dark teal vertical wall panel fixed to the brick between the rear entrance and bottle shelves. Preserve EXACT perspective, outline and pixel position. This is the discreet ATM interaction face: within its existing outline add a very small pale screen in the upper half and understated keypad below. No freestanding cabinet, no enlargement, no floor or wall pixels. Everything outside the panel pure #FF00FF or transparent. Do not recenter.",
+      "size": "768x1536",
+      "references": [],
+      "dependsOn": [
+        "brennans-master"
+      ],
+      "registration": {
+        "asset": "brennans-master",
+        "rect": {
+          "x": 1639.208984375,
+          "y": 527.880859375,
+          "w": 88.90625,
+          "h": 177.8125
+        }
+      }
     }
-  ]
+  ],
+  "sceneLayouts": {
+    "overworld": {
+      "arrival": {
+        "x": 985,
+        "y": 1650
+      },
+      "rigs": [
+        {
+          "name": "moose",
+          "rect": {
+            "x": 1070,
+            "y": 1680,
+            "w": 65,
+            "h": 65
+          },
+          "travelX": 0
+        },
+        {
+          "name": "rider",
+          "rect": {
+            "x": 1940,
+            "y": 2360,
+            "w": 90,
+            "h": 65
+          },
+          "travelX": 0
+        }
+      ]
+    }
+  }
 }

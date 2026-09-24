@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "5b9d87cbb96e1ec909bf83f8d4d792a5b3d6cbfe0232fe3451f15c9fe27c13b3",
-  "run": "art/runs/foundry/2026-09-24T19-09-21.600Z",
+  "sourceSha256": "c8f847bde640b783b45c46634dba34547d703c941103905d2cf20a516817cc78",
+  "run": "art/runs/foundry/2026-09-24T20-38-08.782Z",
   "provider": "codex",
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

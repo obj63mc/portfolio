@@ -57,24 +57,25 @@ function drawRig(name,target,time,context=ctx) {
 function draw(time) {
   requestAnimationFrame(draw);
   if (!scene) return;
-  const hasRig=scene.rig&&data.rigs[scene.rig.name];
+  const instances=scene.rigInstances.filter(r=>data.rigs[r.name]);
+  const hasRig=instances.length>0;
   const animated=hasRig&&((enabled('motion')&&!enabled('reduced'))||time-reaction<900);
   if(!dirty&&(!animated||time-lastFrame<1000/30))return;
   dirty=false;lastFrame=time;
   ctx.clearRect(0,0,world.width,world.height);ctx.fillStyle='#e9dfbf';ctx.fillRect(0,0,scene.w,scene.h);
-  const plate=data.assets.find(a=>a.id===scene.id);
+  const density=$('density').value,showMaster=density==='master';
+  const plate=data.assets.find(a=>a.id===(showMaster?scene.id+'-master':scene.id));
   if(plate){
-    const density=$('density').value;
-    if(density==='plate')drawImage(ctx,`generated/${plate.file}`,{x:0,y:0,w:scene.w,h:scene.h});
+    if(density==='plate'||showMaster)drawImage(ctx,`generated/${plate.file}`,{x:0,y:0,w:scene.w,h:scene.h});
     else for(const tile of plate.tiles.filter(t=>t.density===Number(density)))drawImage(ctx,`generated/${tile.file}`,tile);
   }
-  if(enabled('props')){
+  if(enabled('props')&&!showMaster){
     for(const layer of scene.layers.filter(l=>l.kind==='prop')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
-    if(hasRig){const r=scene.rig;drawRig(r.name,{...r.rect,x:r.rect.x+(enabled('motion')&&!enabled('reduced')?Math.sin(time/4000)*r.travelX:0)},time);}
+    for(const r of instances)drawRig(r.name,{...r.rect,x:r.rect.x+(enabled('motion')&&!enabled('reduced')?Math.sin(time/4000)*r.travelX:0)},time);
   }
   // A cursor silhouette makes occlusion testable between scenery and foreground scenery.
   ctx.fillStyle='#fff';ctx.strokeStyle='#243830';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(camera.x,camera.y);ctx.lineTo(camera.x+11,camera.y+36);ctx.lineTo(camera.x+18,camera.y+23);ctx.lineTo(camera.x+33,camera.y+20);ctx.closePath();ctx.fill();ctx.stroke();
-  if(enabled('foreground'))for(const layer of scene.layers.filter(l=>l.kind==='foreground')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
+  if(enabled('foreground')&&!showMaster)for(const layer of scene.layers.filter(l=>l.kind==='foreground')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
   if(enabled('depth'))for(const [i,d] of scene.depth.entries()){
     rect(d.rect,'#e8c576',`depth ${i+1}`);line(d.horizonY,'#e8c576',d.rect.x,d.rect.w);line(d.foregroundY,'#a9b866',d.rect.x,d.rect.w);
   }
@@ -97,16 +98,16 @@ function draw(time) {
   pc.fillStyle='#e9dfbf';pc.fillRect(0,0,390,844);pc.drawImage(world,f.x,f.y,f.w,f.h,0,0,390,844);
   if(enabled('frame'))rect(f,'#55d6e5','390 × 844 / 0.6');
   rc.fillStyle='#e9dfbf';rc.fillRect(0,0,900,600);
-  if(hasRig)drawRig(scene.rig.name,{x:0,y:0,w:900,h:600},time,rc);
+  instances.forEach((r,i)=>drawRig(r.name,{x:i*900/instances.length,y:0,w:900/instances.length,h:600},time,rc));
   if(time-last>1000){last=time;updateStatus();}
 }
 function updateStatus(){
-  const f=frame(),sign=scene.props?.find(p=>p.id==='signpost');
+  const f=frame(),sign=scene.artProps?.find(p=>p.id==='signpost');
   const fits=sign&&sign.rect.x>=f.x&&sign.rect.x+sign.rect.w<=f.x+f.w&&sign.rect.y>=f.y&&sign.rect.y+sign.rect.h<=f.y+f.h;
   const conflicts=(scene.artForeground??scene.foreground??[]).flatMap(a=>(scene.artProps??scene.props??[]).filter(b=>overlap(a.rect,b.rect)).map(b=>`${a.key} overlaps ${b.id}`));
   const missing=data.pending.filter(id=>id===scene.id);
-  $('status').textContent=`${scene.w} × ${scene.h} world px. ${scene.id==='maplewood'?'Signpost in phone frame: '+(fits?'PASS':'FAIL')+'. ':''}${conflicts.length?'Foreground conflicts: '+conflicts.join(', '):'No foreground/prop rectangle overlaps.'}\n`+
-    (missing.length?'Background not generated yet. ':'')+(scene.id!=='maplewood'?'Production overlays read directly from src/lib/scenes; still placeholders until tickets 04/05. Draft rects show the asset placements separately.':'Art proof placement from art/scenes/maplewood.ts; judge before promotion.');
+  $('status').textContent=`${scene.w} × ${scene.h} world px. ${sign?'Signpost in phone frame: '+(fits?'PASS':'FAIL')+'. ':''}${conflicts.length?'Inspect foreground bounds: '+conflicts.join(', ')+'. Check the visible interactive face; bounding boxes can overlap naturally.':'No foreground/prop rectangle overlaps.'}\n`+
+    (missing.length?'Background not generated yet. ':'')+'Production overlays read directly from src/lib/scenes; draft rects follow the composed artwork. Maplewood is part of the overworld.';
 }
 function edgeFacts(image){
   const c=document.createElement('canvas');c.width=image.naturalWidth;c.height=image.naturalHeight;
@@ -118,6 +119,8 @@ function edgeFacts(image){
 }
 function selectScene(){
   scene=data.scenes.find(s=>s.id===$('scene').value);camera={...scene.arrival};world.width=scene.w;world.height=scene.h;dirty=true;
+  $('rig-section').hidden=scene.rigInstances.length===0;
+  $('comparison').src=`generated/${scene.id}-master/image.webp`;
   $('assets').replaceChildren();
   for(const a of data.assets.filter(a=>a.scene===scene.id)){
     const card=document.createElement('article');card.className='card';const image=document.createElement('img');image.src=`generated/${a.file}`;image.alt=a.id;
@@ -140,7 +143,6 @@ $('save').onclick=()=>{
 try {
   const response=await fetch('./generated/review.json');if(!response.ok)throw new Error('Run node scripts/art.ts review first.');data=await response.json();
   for(const s of data.scenes){const option=document.createElement('option');option.value=s.id;option.textContent=s.title;$('scene').append(option);}
-  $('comparison').src='generated/maplewood/image.webp';
   const requested=new URLSearchParams(location.search).get('scene');if(data.scenes.some(s=>s.id===requested))$('scene').value=requested;
   selectScene();requestAnimationFrame(draw);
 }catch(error){$('status').textContent=`${error.message} Serve this repository over HTTP, then open art/review.html.`;}

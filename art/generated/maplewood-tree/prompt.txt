@@ -1,13 +1,13 @@
-STYLE: Flat vector illustration in the style of the attached reference screenshots. Layered flat shapes, no gradients, no outlines, no texture, no drop shadows. Warm palette led by cream, mustard, terracotta, olive and a teal accent; take the exact hues from the reference. Slightly elevated three-quarter view, like looking down a street from a second-floor window. One light source, upper left. Clean hard edges, simple rounded geometry, generous negative space. No people, no animals, no text and no lettering unless the prompt names it. Nothing photographic.
+STYLE: Flat vector illustration matching the supplied original daytime artwork. Broad layered solid-color shapes, clean edges, no outlines, no grain or painted texture, no gradients. Bright and clear palette: light cyan #87CDD5, turquoise #2FB8B0, yellow-green #AFC652, ivory #FFF4D4, sunny golden yellow #FFD34F, fresh leaf green #719B50, small coral accents #DF7554, dark teal #244F55. Use cream for walls and pale surfaces, not as an all-over tint. Brown only where the actual reference contains wood or brick; keep it a minority color. Slightly elevated perspective with consistent scale, one light source upper left. No sepia wash, no muddy olive/brown shadows. No people, animals, text or lettering unless explicitly requested. Nothing photographic.
 
-PRODUCTION: This is artwork for a cursor-exploration world. Match the attached scene's perspective and scale. Use few broad solid-color polygons, not hundreds of decorative details. No grain, paper, stippling, painterly shading, vignette or lighting gradients. Dark faces may use a single darker flat fill. Keep all interactive content readable as silhouettes. Do not bake interactive props into background plates when the asset prompt reserves them. No captions, labels, borders or presentation mockups.
+REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.
 
 
 ASSET: maplewood-tree
-One olive tree canopy on a terracotta-brown trunk in a low cream planter, broad rounded clusters of foliage with only two flat greens. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.
+ONLY the central tree with green crown and its visible short trunk. No surrounding ground, road, building, neighboring trees or shadows. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
 
 Target image size: 1024x1024. Keep the entire object within the frame with a clean margin.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/generated/maplewood/image.webp
-3. <repo>/prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png
+2. <repo>/art/runs/maplewood-tree/2026-09-24T20-36-08.392Z/registration.png
+REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
 import { dimensions, magick } from './process.ts';
 import type { Manifest, ProcessedAsset } from './types.ts';
 
@@ -13,6 +14,20 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
     const size = dimensions(file);
     if (size.w !== result.width || size.h !== result.height) problems.push(`${asset.id}: dimensions disagree with metadata`);
     if (asset.world && JSON.stringify(asset.world) !== JSON.stringify(result.world)) problems.push(`${asset.id}: world rect changed; reprocess this asset`);
+    if (asset.registration) {
+      if (JSON.stringify(asset.registration) !== JSON.stringify(result.registration)) problems.push(`${asset.id}: registration changed; regenerate this asset`);
+      const r = asset.registration.rect, t = result.trim, s = result.source;
+      const expected = asset.world ?? {x:r.x+t.x/s.w*r.w,y:r.y+t.y/s.h*r.h,w:t.w/s.w*r.w,h:t.h/s.h*r.h};
+      if (JSON.stringify(expected) !== JSON.stringify(result.world)) problems.push(`${asset.id}: placement must match its reviewed anchor or source crop and trim offset`);
+    }
+    const provenance = join(dir, 'provenance.json');
+    if (asset.deriveFrom && existsSync(provenance)) {
+      const parent = join(root, 'art/generated', asset.deriveFrom, 'image.webp');
+      const derivation = JSON.parse(readFileSync(provenance, 'utf8')).derivation;
+      if (derivation?.referenceSha256 && existsSync(parent) && derivation.referenceSha256 !== createHash('sha256').update(readFileSync(parent)).digest('hex')) {
+        problems.push(`${asset.id}: parent composition changed; regenerate this derivative`);
+      }
+    }
     if (asset.kind === 'background' && asset.world) {
       const { w, h } = asset.world;
       if (size.w !== w * 2 || size.h !== h * 2) problems.push(`${asset.id}: desktop plate must be ${w * 2} × ${h * 2}`);

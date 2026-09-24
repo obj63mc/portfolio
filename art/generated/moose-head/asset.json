@@ -1,6 +1,6 @@
 {
   "id": "moose-head",
-  "scene": "maplewood",
+  "scene": "overworld",
   "kind": "part",
   "file": "moose-head/image.webp",
   "source": {

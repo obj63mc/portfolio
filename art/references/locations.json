@@ -1,0 +1,184 @@
+{
+  "checked": "2026-09-24",
+  "note": "Photos used as local reference only; source photos and credentials are not included in deliverable assets.",
+  "sources": [
+    {
+      "location": "moosylvania",
+      "name": "Moosylvania",
+      "address": "7303 Marietta Ave, St. Louis, MO 63143, USA",
+      "maps": "https://maps.google.com/?cid=15379864497651634730",
+      "coordinates": {
+        "latitude": 38.6126711,
+        "longitude": -90.31735429999999
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/moosylvania/01.jpg",
+          "authors": [
+            {
+              "displayName": "Moosylvania",
+              "uri": "https://maps.google.com/maps/contrib/117906335586020784674"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/moosylvania/02.jpg",
+          "authors": [
+            {
+              "displayName": "Moosylvania",
+              "uri": "https://maps.google.com/maps/contrib/117906335586020784674"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "side-project",
+      "name": "The Side Project Cellar",
+      "address": "7373 Marietta Ave, Maplewood, MO 63143, USA",
+      "maps": "https://maps.google.com/?cid=13689592726572415109",
+      "coordinates": {
+        "latitude": 38.612007999999996,
+        "longitude": -90.31940089999999
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/side-project/01.jpg",
+          "authors": [
+            {
+              "displayName": "The Side Project Cellar",
+              "uri": "https://maps.google.com/maps/contrib/103282937388677579093"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/side-project/06.jpg",
+          "authors": [
+            {
+              "displayName": "Peter Delucchi",
+              "uri": "https://maps.google.com/maps/contrib/101777656459984081055"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/side-project/10.jpg",
+          "authors": [
+            {
+              "displayName": "Christoffer Hultgren",
+              "uri": "https://maps.google.com/maps/contrib/103470780200660640943"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "brennans",
+      "name": "Brennan's",
+      "address": "316 N Euclid Ave, St. Louis, MO 63108, USA",
+      "maps": "https://maps.google.com/?cid=9457755970461846008",
+      "coordinates": {
+        "latitude": 38.645333199999996,
+        "longitude": -90.2612958
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/brennans/06.jpg",
+          "authors": [
+            {
+              "displayName": "john paul anderson lionel",
+              "uri": "https://maps.google.com/maps/contrib/100837927232127997431"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/brennans/04.jpg",
+          "authors": [
+            {
+              "displayName": "john paul anderson lionel",
+              "uri": "https://maps.google.com/maps/contrib/100837927232127997431"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/brennans/08.jpg",
+          "authors": [
+            {
+              "displayName": "Crystal",
+              "uri": "https://maps.google.com/maps/contrib/117152713049618675197"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "alamo",
+      "name": "Alamo Drafthouse Cinema City Foundry",
+      "address": "3765 Foundry Way Ste 275, St. Louis, MO 63110, USA",
+      "maps": "https://maps.google.com/?cid=3278489788615234711",
+      "coordinates": {
+        "latitude": 38.6337097,
+        "longitude": -90.2402047
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/alamo/01.jpg",
+          "authors": [
+            {
+              "displayName": "Alamo Drafthouse Cinema City Foundry",
+              "uri": "https://maps.google.com/maps/contrib/113332111931987977613"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/alamo/02.jpg",
+          "authors": [
+            {
+              "displayName": "Alamo Drafthouse Cinema City Foundry",
+              "uri": "https://maps.google.com/maps/contrib/113332111931987977613"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/alamo/03.jpg",
+          "authors": [
+            {
+              "displayName": "ArchEats",
+              "uri": "https://maps.google.com/maps/contrib/100320278962332047364"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "location": "foundry",
+      "name": "City Foundry STL",
+      "address": "3730 Foundry Way, St. Louis, MO 63110, USA",
+      "maps": "https://maps.google.com/?cid=2482593106868470980",
+      "coordinates": {
+        "latitude": 38.6333193,
+        "longitude": -90.2399176
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/foundry/02.jpg",
+          "authors": [
+            {
+              "displayName": "City Foundry STL",
+              "uri": "https://maps.google.com/maps/contrib/112377109206120822807"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "slu": {
+    "page": "https://www.slu.edu/news/2020/february/argus2-launches.php",
+    "image": "https://www.slu.edu/news/img/parks_crowd_960.jpg",
+    "author": "Maggie Rotermund / Saint Louis University",
+    "description": "Verified McDonnell Douglas Hall lobby and Boileau computer classroom"
+  },
+  "satellite": [
+    "https://www.google.com/maps/@38.6247,-90.1866,1548m/data=!3m1!1e3",
+    "https://www.google.com/maps/@38.625,-90.255,14600m/data=!3m1!1e3"
+  ]
+}

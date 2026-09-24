@@ -1,6 +1,11 @@
 {
-  "sourceSha256": "e9b987498f5c6c30db852d14ba4a0323b7984711c40f2b13853fae7680357786",
-  "run": "art/runs/slu-chair/2026-09-24T19-17-07.769Z",
-  "provider": "codex",
+  "sourceSha256": "315df5a553140f768591fb24af9cc5bc531367941cca9b2399659e14d581f806",
+  "run": "art/runs/slu-chair/2026-09-24T20-50-25.159Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "slu-master",
+    "referenceSha256": "7210a2b7a4902aafc15f65ea3d8bad7c88679d3e98c673cfdf43190a5aa1b317",
+    "operation": "masked-composition-crop"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

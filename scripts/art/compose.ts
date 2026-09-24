@@ -1,11 +1,11 @@
 import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { magick } from './process.ts';
-import type { ProcessedAsset, Rect } from './types.ts';
+import type { ProcessedAsset, Rect, RigPlacement } from './types.ts';
 import { RIG_DRAW_ORDER } from './types.ts';
 
 interface Part { parent: string | null; x: number; y: number; w: number; h: number; pivot: number[]; file: string }
-interface Scene { id: string; w: number; h: number; rig?: { name: string; rect: Rect }; layers: { asset: string; kind: string; rect: Rect }[] }
+interface Scene { id: string; w: number; h: number; rigInstances: RigPlacement[]; layers: { asset: string; kind: string; rect: Rect }[] }
 
 /** A review composite never replaces the separable production layers. */
 export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[], rigs: Record<string, Record<string, Part>>, rigBounds: Record<string, Rect>) {
@@ -19,10 +19,11 @@ export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[],
       const asset = assets.find(a => a.id === layer.asset)!;
       add(join(root, 'art/generated', asset.file), layer.rect);
     }
-    const rigName = scene.rig?.name;
-    if (rigName && scene.rig && rigs[rigName]) {
+    for (const instance of scene.rigInstances) {
+      const rigName = instance.name;
+      if (!rigs[rigName]) continue;
       const master = assets.find(a => a.id === `${rigName}-master`);
-      const target = scene.rig.rect;
+      const target = instance.rect;
       const bounds = rigBounds[rigName], scale = Math.min(target.w/bounds.w, target.h/bounds.h);
       if (master) for (const key of RIG_DRAW_ORDER) {
         const part = rigs[rigName][key]; if (!part) continue;

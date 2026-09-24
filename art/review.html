@@ -19,15 +19,15 @@
 <label><input id="motion" type="checkbox" checked> Preview ambient motion</label>
 <label><input id="reduced" type="checkbox"> Reduced motion</label>
 <button id="react">Play click reaction</button>
-<label for="density">Background rendering</label><select id="density"><option value="plate">Full plate</option><option value="1.25">Phone tiles · 1.25×</option><option value="2">Desktop tiles · 2×</option></select>
+<label for="density">Background rendering</label><select id="density"><option value="plate">Assembled scene</option><option value="master">Composition reference</option><option value="1.25">Phone tiles · 1.25×</option><option value="2">Desktop tiles · 2×</option></select>
 <p class="legend">Green: props · Pink: foreground · Amber: horizon · Cyan: water and phone frame · White: bridge deck · Red: south-end line. Click the scene to inspect a camera position; Reset returns to arrival.</p>
 <button id="reset">Reset to arrival</button></div>
 <div><h2>390 × 844 phone · 0.6 scale</h2><canvas id="phone" width="390" height="844"></canvas><p class="legend">World coverage is 650 × 1406⅔. Camera clamp uses full scene bounds.</p></div>
 </aside><section class="stage">
 <canvas id="world" width="1400" height="1000"></canvas><div id="status" role="status">Loading generated/review.json…</div>
 <h2>Assets and edge checks</h2><div id="assets" class="cards"></div>
-<h2>Moving-part assembly</h2><p class="legend">Master-frame registration at a useful inspection size. The click-reaction and reduced-motion controls also apply here.</p><canvas id="rigview" width="900" height="600"></canvas>
-<h2>Prototype comparison</h2><div class="compare"><div><p>Original prototype Maplewood</p><img src="../prototypes/art-pipeline/assets/maplewood.webp" alt="Original prototype Maplewood"></div><div><p>Current Maplewood plate</p><img id="comparison" alt="Regenerated Maplewood"></div></div>
+<section id="rig-section"><h2>Moving-part assembly</h2><p class="legend">Master-frame registration at a useful inspection size. The click-reaction and reduced-motion controls also apply here.</p><canvas id="rigview" width="900" height="600"></canvas></section>
+<h2>Palette and composition reference</h2><div class="compare"><div><p>Original daytime palette</p><img src="../prototypes/art-pipeline/reference/ref-scene-1-day.png" alt="Original daytime artwork"></div><div><p>Current scene composition</p><img id="comparison" alt="Composed scene reference"></div></div>
 <h2>Judge notes</h2><p>Inspect both tile densities, the phone view, cut-out edges and animated joints. Acceptance is a visual decision; dimensions alone do not pass an asset.</p>
 <label for="notes">Findings and next prompt correction</label><textarea id="notes" placeholder="Palette / seams / opening fit / foreground overlap / phone / moving joints…"></textarea>
 <div class="row"><button id="save">Download review notes</button><span id="saved"></span></div>
