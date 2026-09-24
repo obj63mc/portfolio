@@ -1,7 +1,7 @@
 # Pointer-locked desktop cursor and the river current: do the gate, the pause and the drift feel right?
 
 Type: prototype
-Status: claimed
+Status: resolved
 Part of: ../map.md
 Blocked by: 18
 
@@ -90,3 +90,26 @@ Checked by stepping the loop:
 - left to drift, the cursor stays on screen, the camera follows, and it washes out at the end after about 3.5 s from mid-river on a tall viewport.
 
 The detail is recorded as an amendment on the depth effects ticket.
+
+## Answer
+
+2026-09-24, Joe signed off after three remote runs on the deployed prototype: the rules below go into the spec. The detail, and how each rule was reached, is in the sections above.
+
+**Desktop input (any fine pointer; touch keeps the joystick and drag, with no gate)**
+- **Join gate:** the live scene and peers run behind a dimmed Join card. Nothing is sent and no own cursor is drawn until Join. Keyboard users can Tab to props and cards without joining. A browser that refuses the lock falls back to unlocked behaviour.
+- **Locked cursor:** the drawn cursor is moved 1:1 by mouse movement (OS acceleration kept) and is held inside the viewport. It starts where Join was clicked.
+- **Keys:** once joined, arrow keys and WASD move the cursor at 600 world px/s, with diagonals normalised. Before joining they pan the camera.
+- **Camera:** it follows the cursor through the edge-push band (unchanged: 25 / 12 percent, 900 px/s). There is no drag, wheel or trackpad panning on desktop.
+- **Drawing order:** the cursor is drawn above every card and control.
+- **Hover and click:** hover and clicks resolve at the drawn position. That includes cards, which stay prerendered `<dialog>` elements styled to the scene, never painted on the canvas.
+- **Pause:** Esc, blur or a hidden tab shows a Paused card. The cursor, the camera and the keys freeze, and the scene keeps animating. Resume re-locks with the cursor where it froze. A refused re-lock (Chrome's cooldown) keeps the card up and asks the visitor to wait a moment. The drift does not continue while paused.
+- **Navigation:** the lock lives on the shared layout, so it survives venue hops. External links blur the window and pause.
+
+**River current (replaces the version in the depth effects ticket)**
+- **Getting in:** a cursor is in the river once it moves onto the water from a bank or off the bridge deck. It stays in the river under the deck, and leaves by reaching either bank.
+- **The drift:** in the river the cursor drifts south at 150 world px/s. The camera follows through the push band, and steering is never punished.
+- **The reset:** only reaching the river's south end fades the visitor back to the Arch (a cut under reduced motion). Peers snap on jumps over 400 world px.
+- **The bridge:** it is drawn over a cursor in the river and under a cursor crossing it.
+- **Left to the spec:** whether a peer's river state is derived locally or sent as a presence bit, so that peers also pass under the bridge.
+
+Prototype: branch `prototype/pointer-lock`, last commit c37b652, live at https://cursor-sync-proto.barmadden.workers.dev.
