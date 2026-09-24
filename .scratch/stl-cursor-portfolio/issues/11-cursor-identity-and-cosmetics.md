@@ -81,3 +81,5 @@ localStorage holds two cosmetic fields: the worn cosmetic id and the earned set 
 2026-09-24, amended by the ticket "How does your own cursor stand out in a crowd on a phone?" (`15-own-cursor-in-a-crowd.md`): the halo and fading tag stay, but your own cursor is drawn at 1.25x and every peer at 0.75x on your screen, at full opacity. This is local drawing only. The rules live in that ticket.
 
 2026-09-24, amended by [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md): on desktop the pointer is locked after the visitor joins. The drawn cursor looks exactly as decided here, but it is moved by mouse movement instead of following the OS pointer position. Before joining, and while paused, the visitor's own cursor is not moving; peers see it idle, or not at all before the first join.
+
+2026-09-24, amended by [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): spectators no longer exist (ADR 0005). A visitor past the site-wide ceiling is single-player, and still sees and drives their own cursor, earns cosmetics and gets the halo and tag.

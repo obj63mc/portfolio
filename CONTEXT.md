@@ -106,5 +106,5 @@ A joined visitor who pressed Esc, left the window, or switched away from the tab
 _Avoid_: idle, away, AFK
 
 **Room**:
-The set of visitors who can currently see each other. There is one room per scene.
-_Avoid_: channel, session, lobby
+A set of up to 60 visitors in the same scene who can see each other. A scene has one room, and opens another when every room it has is full. Visitors in the same scene but different rooms never see each other; changing scene means joining a room of the new scene.
+_Avoid_: channel, session, lobby, instance, shard

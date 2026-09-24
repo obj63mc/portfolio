@@ -46,3 +46,5 @@ Resolved 2026-09-24. Joe did the dashboard steps; the agent checked them with wr
 2026-09-23, from the animation approach ticket (13): Rive is not adopted, so no Rive plan. Cloudflare only.
 
 2026-09-24: Joe renamed the workers.dev subdomain from `joe-3ed` to `barmadden`. Docs on `main` and the READMEs and bot script on `prototype/cursor-sync` and `prototype/own-cursor` now use `barmadden.workers.dev`; the cursor sync worker is at https://cursor-sync-proto.barmadden.workers.dev.
+
+2026-09-24, from [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): no Turnstile widget will be needed, since Turnstile is dropped. Joe manages budget alerts himself. The site ships on barmadden.com through Workers Builds, so no CI API token is needed, only an Account Analytics Read token kept locally for `npm run usage`.

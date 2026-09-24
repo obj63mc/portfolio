@@ -19,3 +19,7 @@ Key findings from primary sources:
 - Interpolation: render about 100 ms behind and lerp between snapshots; Liveblocks recommends springs.
 
 Recommended protocol for this project: one room per scene, MessagePack, world coordinates, 20 Hz uplink and 20 Hz batched downlink, 100 ms interpolation delay, 40-cursor room cap with overflow to sibling rooms, 15 s heartbeat, away state on visibilitychange, Turnstile on join, per-socket token bucket 25 msg/s with burst 50, server-side clamping of positions and prop ops. Concrete message examples are at the end of the note. Cursor Camp publishes no verifiable numbers.
+
+## Comments
+
+2026-09-24, amended by [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): Turnstile on join is dropped. The site has no form, and the Origin check (at the WAF edge and in the Worker), the token bucket, 60-visitor rooms and the visitor ceiling guard the socket. Rooms overflow into sibling rooms of the same scene at 60, which is close to this note's overflow idea (ADR 0005).

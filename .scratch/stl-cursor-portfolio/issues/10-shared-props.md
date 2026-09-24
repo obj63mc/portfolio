@@ -63,3 +63,7 @@ A lap timer, client-side only, modelled on Cursor Camp's running track. The clie
 ### Glossary
 
 Added **Shared prop** and **Local prop** to `CONTEXT.md`.
+
+## Comments
+
+2026-09-24, amended by [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): the spectator socket is retired. Rooms hold 60 visitors and a scene opens another room when all are full (ADR 0005), so nobody waits for a slot. Visitors past the site-wide ceiling get single-player, where the Foundry screen runs locally as it does when the socket is down. Each room has its own Foundry screen state.

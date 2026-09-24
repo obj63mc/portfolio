@@ -88,3 +88,7 @@ The analytics needs these allowances. The deploy ticket owns the header itself.
 No glossary terms and no ADR: everything here is implementation detail and easy to reverse.
 
 2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): every device now opens on a modal Join card, which would make the top consent bar inert. The bar therefore opens as a `popover` shown after the Join dialog, so it stacks above the dialog backdrop and stays operable; answering it is not joining. Copy, choices, defaults, GPC and loading rules are unchanged. The analytics icon sits after the sound toggle in the bottom-left cluster. An opt-out analytics toggle on the Join card was considered and ruled out, since a pre-ticked box is not valid consent in the EU (CJEU C-673/17, Planet49).
+
+## Comments
+
+2026-09-24, amended by [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): a CSP is adopted. Inline scripts are allowed wherever SvelteKit or GA need them, preferably through SvelteKit's `kit.csp` hash mode. The GA allowances listed here are included. The Workers Builds build script passes `PUBLIC_GA_ID` only when `WORKERS_CI_BRANCH` is `main`.

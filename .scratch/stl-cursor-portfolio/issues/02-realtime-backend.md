@@ -23,3 +23,7 @@ Resolved 2026-09-23 by a research subagent. Full comparison with pricing arithme
 **Ruled out:** Supabase Realtime, Ably, Pusher, Liveblocks and Convex. Fan-out billing or per-room limits put even 20 visitors in the thousands per month, or block 25 Hz outright (Pusher caps client events at 10/s, Liveblocks caps 10 connections per room on lower tiers).
 
 **Open tension for the sync prototype:** the sync-techniques note recommends 20 Hz and 40-cursor rooms; this note's cost bound assumes 15 Hz and 60 live cursors globally. The prototype should measure whether 15 Hz feels acceptable and settle the rate and caps together.
+
+## Comments
+
+2026-09-24, amended by [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): the spend cap is no longer held in code. Rooms hold 60 visitors each, with one Durable Object per room and overflow into new rooms per scene (ADR 0005, superseding ADR 0004). Cost is bounded by real traffic, a configurable site-wide visitor ceiling (default 1,000) and a manual kill switch script.

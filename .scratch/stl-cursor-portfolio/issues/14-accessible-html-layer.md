@@ -100,3 +100,7 @@ The district goes in the `<title>` ("Moosylvania, Maplewood") and in the exit li
 2026-09-24, from [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md): cards stay the prerendered `<dialog>` described above, styled to the scene, and are never painted on the canvas. Under pointer lock, the drawn cursor is drawn above every card and control. It gives the element under it a hover state, and a click activates it. That covers the close button, the links inside a card and any other control.
 
 2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): the Join card is a modal `<dialog>` opened with `showModal()` on every device, so until Join the page behind it is inert and Tab reaches only the Join button (and, for European visitors, the analytics consent popover above it). The Tab order, focus pans and live region above apply from Join onward. Visitors without JavaScript never see the card and get the plain document. The sound toggle in the bottom-left cluster is a prerendered `<button aria-pressed>` named "Sound".
+
+## Comments
+
+2026-09-24, from [How does the site deploy to Cloudflare, and how is the spend cap watched?](20-deploy-pipeline.md): search crawlers and link-preview bots reach every prerendered page. The zone blocks AI crawlers (Block AI bots on) and blocks known bots only on the socket path. Bot Fight Mode is off so crawlers are never challenged. Preview deploys send `X-Robots-Tag: noindex`.

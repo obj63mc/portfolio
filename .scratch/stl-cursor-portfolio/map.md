@@ -14,16 +14,16 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 - Skills per ticket type: research → `research`; prototype → `prototype`; grilling → `grilling` + `domain-modeling`.
 - Standing preferences (settled while charting, detail in the charting ticket):
   - Frontend: SvelteKit, static adapter. CSS is native modern CSS with nesting, no preprocessor.
-  - No PartyKit. Realtime backend to be chosen. Hosting ceiling $25/month with a hard spend cap; tool subscriptions used while authoring assets are outside that ceiling.
+  - No PartyKit. Realtime backend is Cloudflare Durable Objects. Hosting was first set at $25/month with a hard spend cap; since the deploy ticket, cost is bounded by real traffic, a configurable visitor ceiling and a manual kill switch, and Joe manages budget alerts himself. Tool subscriptions used while authoring assets are outside hosting costs.
   - Multiplayer is a hard requirement; the scene must degrade to single-player when the socket is down.
   - Rendering is hybrid: artwork drawn on canvas, props clickable like Cursor Camp with real HTML underneath for SEO and screen readers, cursors on an overlay.
   - Mobile is considered from the start: on-screen joystick plus drag-to-pan (drag scene left, view moves right). Not a later phase.
   - Art is AI-generated (ChatGPT, Nano Banana) in the flat vector style of the old Moosylvania site; original assets are style references only. Animated props via Rive.
   - Every device opens on a modal Join card; nothing moves or is sent until Join. Desktop uses pointer lock, as Cursor Camp does. The Join click locks the pointer, and Esc or leaving the window pauses until Resume. Arrow keys and WASD move the cursor like the mouse, and the camera follows by edge-push only. Drag is touch only.
-  - Sub-scenes are separate rooms. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
+  - Every scene, sub-scenes included, has its own rooms of up to 60 visitors. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
   - Only a small set of props are shared, server-authoritative state; the rest are local.
   - Sound: a bed per district, river and sub-scene, an overworld theme plus diegetic music, and prop sounds; on by default from the Join press, with a toggle to turn it off. Depth is horizon scaling, foreground scenery and the river current, with no general Z-sorting.
-  - ADRs so far: 0001 single zoom with world coordinates, 0002 canvas-native props, 0003 canvas-drawn props with DOM hit targets, 0004 one Durable Object for every room.
+  - ADRs so far: 0001 single zoom with world coordinates, 0002 canvas-native props, 0003 canvas-drawn props with DOM hit targets, 0004 one Durable Object for every room (superseded), 0005 one Durable Object per room with 60 visitors per room.
 
 ## Decisions so far
 
@@ -55,6 +55,8 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 - [Pointer-locked desktop cursor and the river current](issues/22-pointer-lock-and-river-current.md): desktop joins through a Join card that locks the pointer. Mouse and keys move the drawn cursor and the camera follows by edge-push only, with no desktop drag or wheel. Esc or blur pauses until Resume, and the cursor is drawn above cards and controls, which it clicks. A cursor in the river drifts south with the camera following, passes under the bridge, and resets to the Arch only at the river's end. Prototype live on `prototype/pointer-lock`.
 
 - [What does each district and prop sound like, and how is sound switched on?](issues/19-sound-design.md): Join is a modal card on every device and sound starts on the Join press (a stored off stays off); eleven beds crossfaded by the camera centre, one overworld theme plus diegetic music in the bars, lobby and theatre, a card sound and a signature one-shot per prop, only the Foundry screen audible from peers; bottom-left toggle, paused ducks, hidden tab suspends; free sources first (CC0 Freesound, ElevenLabs, edited Pixabay music), personal AudioJungle licences as fallback, never the agency's Envato seat; MP3 only, lazily loaded per scene; plain Web Audio. Amends the pointer lock, analytics (consent bar becomes a popover above the Join card) and persistence (`sound` defaults on) tickets.
+
+- [How does the site deploy to Cloudflare, and how is the spend cap watched?](issues/20-deploy-pipeline.md): one Worker serves the static build and runs one Durable Object per room (60 visitors each; a scene opens another room when full; fill-first placement by a directory object; site-wide ceiling default 1,000, then single-player; spectators retired; ADR 0005 supersedes 0004); barmadden.com moves its DNS from GoDaddy to Cloudflare, keeping the Google Workspace records; Workers Builds on `main` with public, noindex Worker Previews per PR, each with its own Durable Objects; Turnstile dropped in favour of WAF Origin and bot rules on `/ws`, Block AI bots on, Bot Fight Mode off; CSP allows inline scripts where SvelteKit or GA need them; `usage` and `multiplayer:off` / `multiplayer:on` scripts instead of automated caps; dashboard checklist in the ticket.
 
 ## Not yet specified
 
