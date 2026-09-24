@@ -2,13 +2,14 @@
 	import type { Prop } from './scenes/types';
 
 	// `level` keeps the card title inside the page's heading hierarchy when the cards read inline without JavaScript.
-	let { prop, level }: { prop: Prop; level: 2 | 4 } = $props();
+	// `state` replaces the gist for a prop whose name follows live state (the Foundry screen: "Screen: now playing Fast Five").
+	let { prop, level, state }: { prop: Prop; level: 2 | 4; state?: string } = $props();
 	let dialog: HTMLDialogElement;
 </script>
 
 <div class="prop">
 	<button type="button" aria-haspopup="dialog" onclick={() => dialog.showModal()}>
-		{prop.name}: {prop.gist}
+		{prop.name}: {state ?? prop.gist}
 	</button>
 	<dialog bind:this={dialog} aria-labelledby="card-{prop.id}-title">
 		<svelte:element this={`h${level}`} id="card-{prop.id}-title">{prop.name}</svelte:element>

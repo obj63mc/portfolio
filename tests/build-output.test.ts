@@ -3,18 +3,22 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
-import { MOOSYLVANIA } from '../src/lib/scenes/moosylvania.ts';
+import { SUB_SCENES } from '../src/lib/scenes/index.ts';
+import { screenGist } from '../src/lib/scenes/foundry.ts';
 
 const page = (file: string) => readFileSync(new URL(`../build/${file}`, import.meta.url), 'utf8');
 const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
 const withoutDialogs = (html: string) => html.replace(/<dialog[\s\S]*?<\/dialog>/g, '');
 const texts = (html: string, tag: string) =>
-	[...html.matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)</${tag}>`, 'g'))].map((m) => m[1].replace(/<[^>]+>/g, '').trim());
+	[...html.matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)</${tag}>`, 'g'))].map((m) => m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim());
 const opens = (html: string, tag: string) => [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>`, 'g'))].map((m) => m[0]);
 const signpost = (layer: string) => layer.slice(layer.indexOf('<nav'), layer.indexOf('</nav>'));
 const hrefs = (html: string) => [...html.matchAll(/<a\b[^>]*href="([^"]*)"/g)].map((m) => m[1]);
 
 const overworldProps = OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props));
+const subScenes = Object.values(SUB_SCENES);
+const allProps = [...overworldProps, ...subScenes.flatMap((s) => s.props)];
+const files = ['index.html', ...subScenes.map((s) => `${s.id}.html`)];
 
 test('overworld: title, description and the shell around the layer', () => {
 	const html = page('index.html');
@@ -62,21 +66,74 @@ test('overworld: doors and contacts are links, everything else stays a button', 
 	assert.deepEqual(external, hrefs(signpost(layer)).filter((h) => /^(https?:|mailto:)/.test(h)), 'external links outside cards live only on the signpost');
 });
 
-test('sub-scene: title with district, focusable h1, props, exit link to the venue anchor', () => {
-	const html = page('moosylvania.html');
-	assert.equal(texts(html, 'title')[0], 'Moosylvania, Maplewood');
-	const layer = main(html);
-	assert.match(layer, /<h1[^>]*tabindex="-1"[^>]*>Moosylvania<\/h1>/);
-	assert.deepEqual(texts(withoutDialogs(layer), 'h2'), []);
-	const buttons = opens(layer, 'button').filter((b) => b.includes('aria-haspopup="dialog"'));
-	assert.equal(buttons.length, MOOSYLVANIA.props.length);
-	assert.equal(opens(layer, 'dialog').length, MOOSYLVANIA.props.length);
-	assert.ok(texts(layer, 'button').includes('Frontend desk: Nuxt, Next, Svelte, TypeScript'));
-	assert.ok(hrefs(withoutDialogs(layer)).includes('/#moosylvania'));
+test('overworld: a door link to every sub-scene', () => {
+	const layer = withoutDialogs(main(page('index.html')));
+	for (const s of subScenes) {
+		const venue = layer.slice(layer.indexOf(`id="${s.id}"`));
+		assert.ok(hrefs(venue.slice(0, venue.indexOf('</section>'))).includes(`/${s.id}`), s.id);
+	}
+});
+
+test('sub-scenes: title with district, focusable h1, props left to right, exit link to the venue anchor', () => {
+	for (const s of subScenes) {
+		const html = page(`${s.id}.html`);
+		assert.equal(texts(html, 'title')[0], `${s.venue}, ${s.district}`);
+		assert.match(html, /<meta name="description" content="[^"]{20,}"/);
+		const layer = main(html);
+		assert.match(layer, new RegExp(`<h1[^>]*tabindex="-1"[^>]*>${s.venue}</h1>`));
+		assert.deepEqual(texts(withoutDialogs(layer), 'h2'), []);
+		const buttons = opens(layer, 'button').filter((b) => b.includes('aria-haspopup="dialog"'));
+		assert.equal(buttons.length, s.props.length, s.id);
+		assert.equal(opens(layer, 'dialog').length, s.props.length, s.id);
+		const expected = [...s.props].sort((a, b) => a.rect.x - b.rect.x).map((p) => `${p.name}: ${p.gist}`);
+		assert.deepEqual(texts(withoutDialogs(layer), 'button').slice(0, expected.length), expected, s.id);
+		assert.ok(hrefs(withoutDialogs(layer)).includes(`/#${s.id}`), s.id);
+	}
+});
+
+test('inventory: every prop from the content inventory is on some scene, one grant per cosmetic', () => {
+	const ids = new Set(allProps.map((p) => p.id));
+	const inventory = [
+		'welcome', 'moose', 'desk-frontend', 'desk-backend', 'desk-cms', 'desk-data',
+		'diploma', 'whiteboard', 'workstation',
+		'marquee', 'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
+		'mc-sign', 'server-rack',
+		'chalkboard', 'tap-bacardi', 'tap-grey-goose', 'tap-new-amsterdam', 'tap-camarena', 'tap-barefoot',
+		'tap-bud-light', 'tap-ej', 'tap-pink-whitney', 'tap-rumchata', 'tap-soonhari',
+		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo', 'atm',
+		'track', 'bike', 'ride-sign'
+	];
+	for (const id of inventory) assert.ok(ids.has(id), id);
+	assert.equal(ids.size, allProps.length, 'prop ids are unique across scenes');
+	assert.deepEqual([...new Set(allProps.map((p) => p.cosmetic).filter(Boolean))].sort(), [1, 2, 3, 4, 5, 6, 7]);
+	const cards = (id: string) => allProps.find((p) => p.id === id)!.body.join(' ');
+	const links = (id: string) => (allProps.find((p) => p.id === id)!.links ?? []).map((l) => l.href).join(' ');
+	assert.match(links('workstation'), /github\.com/);
+	assert.match(links('bike'), /strava\.com/);
+	assert.match(cards('mc-sign'), /Network Solutions/);
+	assert.match(cards('diploma'), /2005/);
+});
+
+test('clearance: the Universal titles are told only on the Foundry screen and under its posters', () => {
+	const titles = /Fast Five|Snow White|Lorax/;
+	for (const file of files.filter((f) => f !== 'foundry.html')) assert.doesNotMatch(page(file), titles, file);
+	let foundry = page('foundry.html');
+	assert.match(foundry, /Universal Pictures Home Entertainment/);
+	for (const id of ['screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
+		const card = new RegExp(`<div class="prop">[\\s\\S]*?<dialog[^>]*aria-labelledby="card-${id}-title"[\\s\\S]*?</dialog>`);
+		assert.match(foundry, card, id);
+		foundry = foundry.replace(card, '');
+	}
+	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the marquee and the head included, the titles are not told');
+});
+
+test('the shared screen: button name carries its state, prerendered idle', () => {
+	assert.ok(texts(main(page('foundry.html')), 'button').includes(`Screen: ${screenGist()}`));
+	assert.equal(screenGist('fast-five'), 'now playing Fast Five');
 });
 
 test('cards: every dialog is labelled and closes natively', () => {
-	for (const file of ['index.html', 'moosylvania.html']) {
+	for (const file of files) {
 		const dialogs = opens(page(file), 'dialog');
 		assert.ok(dialogs.length > 0);
 		assert.ok(dialogs.every((d) => d.includes('aria-labelledby=')), file);
@@ -84,6 +141,6 @@ test('cards: every dialog is labelled and closes natively', () => {
 	}
 	// Card titles stay inside the page's heading hierarchy when the cards read inline without JavaScript.
 	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.length);
-	assert.equal(texts(page('moosylvania.html'), 'h2').length, MOOSYLVANIA.props.length);
+	for (const s of subScenes) assert.equal(texts(page(`${s.id}.html`), 'h2').length, s.props.length, s.id);
 	assert.match(page('index.html'), /<noscript>[\s\S]*dialog \{ display: block/);
 });

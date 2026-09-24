@@ -49,6 +49,7 @@ const districts: District[] = [
 				id: 'side-project',
 				name: 'Side Project Cellar',
 				rect: { x: MW.x + 250, y: MW.y + 250, w: 400, h: 300 },
+				door: '/side-project',
 				props: []
 			}
 		]
@@ -58,14 +59,48 @@ const districts: District[] = [
 		name: 'Central West End',
 		rect: footprint(CWE),
 		sign: sign(CWE),
-		venues: [{ id: 'brennans', name: "Brennan's", rect: { x: CWE.x + 700, y: CWE.y + 250, w: 400, h: 300 }, props: [] }]
+		venues: [{ id: 'brennans', name: "Brennan's", rect: { x: CWE.x + 700, y: CWE.y + 250, w: 400, h: 300 }, door: '/brennans', props: [] }]
 	},
 	{
 		id: 'carondelet-park',
 		name: 'Carondelet Park',
 		rect: footprint(PARK),
 		sign: sign(PARK),
-		venues: [{ id: 'park', name: 'Carondelet Park', rect: { x: PARK.x + 150, y: PARK.y + 100, w: 1100, h: 700 }, props: [] }]
+		venues: [
+			{
+				id: 'park',
+				name: 'Carondelet Park',
+				rect: { x: PARK.x + 150, y: PARK.y + 100, w: 1100, h: 700 },
+				props: [
+					{
+						id: 'track',
+						name: 'Cycling track',
+						gist: 'the Carondelicious Criterium and Tuesday night training',
+						body: ['The park hosts the Carondelicious Criterium and the Tuesday night training series.'],
+						rect: { x: PARK.x + 200, y: PARK.y + 300, w: 900, h: 450 }
+					},
+					{
+						id: 'bike',
+						name: 'Joe’s bike',
+						gist: 'still riding, on Strava',
+						body: ['Joe raced criteriums and still rides. Follow along on Strava.'],
+						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
+						rect: { x: PARK.x + 700, y: PARK.y + 150, w: 120, h: 80 },
+						cosmetic: 7
+					},
+					{
+						id: 'ride-sign',
+						name: 'Ride sign',
+						gist: 'longest ride 160 miles',
+						body: [
+							'Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.',
+							'Raced criteriums, still rides.'
+						],
+						rect: { x: PARK.x + 950, y: PARK.y + 150, w: 100, h: 130 }
+					}
+				]
+			}
+		]
 	},
 	{
 		id: 'midtown',
@@ -73,8 +108,23 @@ const districts: District[] = [
 		rect: footprint(MID),
 		sign: sign(MID),
 		venues: [
-			{ id: 'slu', name: 'Saint Louis University', rect: { x: MID.x + 150, y: MID.y + 250, w: 400, h: 300 }, props: [] },
-			{ id: 'foundry', name: 'The Foundry', rect: { x: MID.x + 700, y: MID.y + 250, w: 500, h: 350 }, props: [] }
+			{ id: 'slu', name: 'Saint Louis University', rect: { x: MID.x + 150, y: MID.y + 250, w: 400, h: 300 }, door: '/slu', props: [] },
+			{
+				id: 'foundry',
+				name: 'The Foundry',
+				rect: { x: MID.x + 700, y: MID.y + 250, w: 500, h: 350 },
+				door: '/foundry',
+				props: [
+					{
+						id: 'marquee',
+						name: 'Marquee',
+						gist: 'Universal Pictures Home Entertainment',
+						// Clearance: the three titles are told only on the screen and under the posters inside.
+						body: ['Universal Pictures Home Entertainment: three titles, now showing inside.'],
+						rect: { x: MID.x + 750, y: MID.y + 260, w: 400, h: 90 }
+					}
+				]
+			}
 		]
 	},
 	{
@@ -82,7 +132,36 @@ const districts: District[] = [
 		name: 'Belleville',
 		rect: footprint(BEL),
 		sign: sign(BEL),
-		venues: [{ id: 'monstercommerce', name: 'MonsterCommerce', rect: { x: BEL.x + 300, y: BEL.y + 250, w: 600, h: 350 }, props: [] }]
+		venues: [
+			{
+				id: 'monstercommerce',
+				name: 'MonsterCommerce',
+				rect: { x: BEL.x + 300, y: BEL.y + 250, w: 600, h: 350 },
+				props: [
+					{
+						id: 'mc-sign',
+						name: 'MonsterCommerce sign',
+						gist: '2004 to 2011, acquired by Network Solutions',
+						body: [
+							'Intern from 2004, full time from 2005 after graduation, left in 2011.',
+							'Acquired by Network Solutions, announced December 2005.'
+						],
+						rect: { x: BEL.x + 350, y: BEL.y + 260, w: 300, h: 90 },
+						cosmetic: 3
+					},
+					{
+						id: 'server-rack',
+						name: 'Server rack',
+						gist: 'the e-commerce platform, Shopify before Shopify',
+						body: [
+							'Built the e-commerce platform: Shopify before Shopify.',
+							'After the acquisition, moved to networksolutions.com, focusing on conversion optimisation, front-end development and A/B testing.'
+						],
+						rect: { x: BEL.x + 750, y: BEL.y + 400, w: 100, h: 180 }
+					}
+				]
+			}
+		]
 	}
 ];
 
