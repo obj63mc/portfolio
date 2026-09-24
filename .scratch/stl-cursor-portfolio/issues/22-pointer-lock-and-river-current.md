@@ -53,3 +53,5 @@ Branch `prototype/pointer-lock` (commit 25503d9), built on `prototype/own-cursor
   - The bridge doesn't drift.
   - A cursor washes out after about 3 s and is put back at the Arch.
 - Still needs Joe's hands for the real lock, the Esc cooldown and the feel questions above.
+
+2026-09-24: deployed to https://cursor-sync-proto.barmadden.workers.dev (version b23256f8), replacing the ticket 09 build there. It uses the real socket, so Join, pause and the river can be tried with other visitors. Add `?current=`, `?pdrift=1` or `?lock=0` to the URL to change settings.
