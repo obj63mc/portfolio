@@ -18,17 +18,21 @@ If a tool drifts (adds outlines, gradients, or a different camera angle) restate
 
 Filename: `assets/maplewood.png` (convert to `maplewood.webp` in step 5).
 
+Always attach `ref-scene-0-arrival-mock.png` to this prompt: it is the only reference that shows the real office.
+
 Target: 1400 x 1000 world px, the district footprint from the layout ticket. Generate at the largest landscape size the tool offers (ChatGPT 1536 x 1024; Nano Banana at 3:2, Pro at 2K if available). Desktop draws at 1.0 render scale, so a 1536 px wide image is about 1.1 image px per world px: sharp at DPR 1, soft at DPR 2. The review harness measures this; if soft, test a 2x upscale (step 5) and judge whether flat shapes survive it.
 
 > STYLE paragraph.
 >
-> SCENE: A two-block stretch of Marietta Avenue in Maplewood, St. Louis, on a flat, single-colour ground plane that runs off every edge of the image with nothing on it near the edges (the ground colour must be one exact flat fill, because neighbouring scenes are composited onto it). Left of centre: a low two-storey brick agency building with big shopfront windows and a plain flat awning, the Moosylvania office. Leave a clear empty patch of ground in front of it, about a fifth of the image wide, where a sign and a moose will be placed later. Right of centre, across the street: a narrow taproom with a dark facade and a small patio, Side Project Cellar. A row of small shop fronts behind. Street trees, a few parked bikes, a painted crosswalk. At the far left edge, a decorative neighbourhood entrance sign in the shape of the real Maplewood sign, but with NO lettering on it. Leave the sky as a flat band of colour, no clouds. No doors drawn on the agency building: leave a plain door-shaped gap of the wall colour where the door goes.
+> SCENE: A two-block stretch of Marietta Avenue in Maplewood, St. Louis, on a flat, single-colour ground plane that runs off every edge of the image with nothing on it near the edges (the ground colour must be one exact flat fill, because neighbouring scenes are composited onto it). Right of centre: the Moosylvania office, which is the real building shown on the right of `ref-scene-0-arrival-mock.png` and must be drawn faithfully from it: a dark red-brown brick converted church with a tall pointed gable front, a large arched window with vertical cream mullions, two square corner towers with cream caps, a smaller arched entrance reached by a wide flight of steps, and a small side wing. Leave a clear empty patch of ground in front of it, about a fifth of the image wide, where a sign and a moose will be placed later. Left of centre, across the street: a narrow taproom with a dark facade and a small patio, Side Project Cellar. A row of small shop fronts behind. Street trees, a few parked bikes, a painted crosswalk. At the far left edge, a decorative neighbourhood entrance sign in the shape of the real Maplewood sign, but with NO lettering on it. Leave the sky as a flat band of colour, no clouds. No door drawn in the church entrance: leave a plain arched door-shaped gap of the wall colour where the door goes.
 
 Then, in the same conversation, the two edits below (Nano Banana is stronger at edits with the prior image attached):
 
 > Same image. Extend the flat ground colour to fill all four edges completely, remove any object touching an edge.
 
 > Same image. Make the empty patch in front of the agency building fully clear: no bench, no tree, no bike there.
+
+> Same image. Remove ONLY the street tree in the planting bed on the sidewalk just left of the church lawn; the signpost stands there instead.
 
 ## 2. Moosylvania lobby interior (sub-scene)
 
@@ -62,11 +66,11 @@ Each prop: same paragraph, same reference images, plus the Maplewood output atta
 >
 > OBJECT: A freestanding agency welcome sign: a wide rounded rectangle board on two short posts, in the mustard from the palette with a teal border. The board is blank, no lettering. Centered on a solid flat #FF00FF magenta background. No shadow on the magenta.
 
-**Moosylvania door**, `assets/door.png`, sized to the door gap left in the Maplewood image (measure it in the harness and note it here):
+**Moosylvania door**, `assets/door.png`, sized to the church's arched door gap (about 95 x 85 world px at a 1400 footprint, nearly square). Attach a crop of the church entrance from the Maplewood image so the shape matches; a single tall door covers under half the gap.
 
-> STYLE paragraph. Attach the Maplewood image as a second reference.
+> STYLE paragraph. Attach the church entrance crop.
 >
-> OBJECT: A single shopfront door with a glass panel and a flat frame, in the teal from the palette, drawn at exactly the angle of the doorways in the reference scene. Centered on a solid flat #FF00FF magenta background. No shadow on the magenta.
+> OBJECT: A pair of closed double doors that exactly fill that arched doorway: two doors side by side meeting in the middle, each in the teal from the palette with a tall glass panel and a lower flat panel, a thin cream frame, and a shallow arched top that together follows the doorway's arch. The overall shape must be almost square, about 1.1 wide to 1 tall, seen straight on at the same angle as the doorway in the crop. Doors only: no wall, no brick, no steps. Centered on a solid flat #FF00FF magenta background. No shadow on the magenta.
 
 ## 4. The moose in four parts (the hard ask)
 

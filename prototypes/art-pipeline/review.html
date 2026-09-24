@@ -75,13 +75,17 @@
 
 <section id="scene">
   <h2>Maplewood at world scale, with the props on it</h2>
-  <p class="hint">The background is stretched to the district footprint width in world px. Drag props to place them; drag the crosshair to the arrival point (the welcome sign). The frame is the camera at arrival, clamped to the district like the real camera; it must contain the whole signpost on the portrait phone. The magnifier shows the pixels the device would actually draw at the chosen render scale and DPR, enlarged 4x with no smoothing, so softness and edge fringe are visible.</p>
+  <p class="hint">The background is stretched to the district footprint width in world px. Drag props to place them; drag the crosshair to the arrival point (the welcome sign). Props are fitted to the world sizes in the controls (world px at a 1400 footprint, keeping each image's aspect) and anchored at their base, so the art's pixel size does not matter. Defaults put the signpost on the sidewalk where the street tree was, the welcome sign on the grass right of the church, and the double door in the church's arched gap (measured at about 95x85 world px), leaving the lawn in front of the church clear for the moose. The frame is the camera at arrival, clamped to the district like the real camera; it must contain the whole signpost on the portrait phone. The magnifier shows the pixels the device would actually draw at the chosen render scale and DPR, enlarged 4x with no smoothing, so softness and edge fringe are visible.</p>
   <div class="row">
     <label>Footprint width <input type="number" id="footW" value="1400" step="50"></label>
     <label>Render scale <select id="rscale"><option value="1">desktop 1.0</option><option value="0.6" selected>phone 0.6</option></select></label>
     <label>Frame <select id="frame"><option value="390x844" selected>phone portrait 390x844</option><option value="844x390">phone landscape 844x390</option><option value="1440x900">desktop 1440x900</option><option value="none">none</option></select></label>
     <label>DPR <select id="dpr"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></label>
     <label>Prop scale <input type="number" id="propScale" value="1" step="0.05" min="0.1"></label>
+    <label>Signpost h <input type="number" id="fit-signpost" value="170" step="5" min="10" style="width:5em"></label>
+    <label>Welcome w <input type="number" id="fit-welcome" value="150" step="5" min="10" style="width:5em"></label>
+    <label>Door w <input type="number" id="fit-door" value="98" step="1" min="10" style="width:5em"></label>
+    <button class="ghost" id="resetProps">Reset placement</button>
     <label><input type="checkbox" id="checker"> checkerboard instead of background</label>
   </div>
   <div class="two">
@@ -103,7 +107,7 @@
     <label><input type="checkbox" id="idle" checked> idle breathing</label>
     <label><input type="checkbox" id="reduced"> reduced motion</label>
     <label>Background <select id="mooseBg"><option value="checker">checker</option><option value="#fff">white</option><option value="#2b2620">dark</option><option value="#e9c46a">mustard</option></select></label>
-    <label>Scale <input type="number" id="mooseScale" value="1" step="0.05" min="0.1"></label>
+    <label>Scale <input type="number" id="mooseScale" value="0.5" step="0.05" min="0.1"></label>
   </div>
   <div class="two">
     <canvas id="mooseCv" width="900" height="600"></canvas>
@@ -168,12 +172,15 @@ for (const s of SLOTS) {
   slotsEl.appendChild(d);
 }
 document.getElementById('folder').addEventListener('change', ev => {
-  let n = 0;
+  let n = 0; const pick = new Map();   // one file per single slot; the keyed .webp beats the magenta .png
+  const rank = f => /\.webp$/i.test(f.name) ? 2 : /\.png$/i.test(f.name) ? 1 : 0;
   for (const f of ev.target.files) {
     if (!/\.(png|webp|jpe?g)$/i.test(f.name)) continue;
     const s = SLOTS.find(s => s.files.test(f.name)); if (!s) continue;
-    loadInto(s, f); n++;
+    if (s.multiple) { loadInto(s, f); n++; continue; }
+    const cur = pick.get(s.key); if (!cur || rank(f) > rank(cur.f)) pick.set(s.key, { s, f });
   }
+  for (const { s, f } of pick.values()) { loadInto(s, f); n++; }
   document.getElementById('folderMsg').textContent = n ? `${n} files matched slots.` : 'No filenames matched; see recipe.md for the names.';
 });
 
@@ -288,11 +295,25 @@ function renderStyle() {
 // ---------- scene tab ----------
 const sceneCv = document.getElementById('sceneCv'), sx = sceneCv.getContext('2d');
 const mag = document.getElementById('mag'), mx = mag.getContext('2d');
-const scene = { arrival:{x:400, y:600}, props:{}, pointer:null, drag:null };
+const scene = { arrival:{x:1300, y:560}, props:{}, pointer:null, drag:null };
 const PROP_KEYS = ['signpost','welcome','door'];
-const defaults = { signpost:{x:520, y:560}, welcome:{x:320, y:560}, door:{x:420, y:520} };
+// Defaults measured on the ChatGPT maplewood.png at a 1400 world px footprint.
+// Each prop is placed by its foot point (bottom centre) and fitted to a world size:
+// 'h' fits the height, 'w' fits the width; the other side follows the image aspect.
+const BASE_W = 1400;
+const DOOR_GAP = { x:990, y:359, w:95, h:85 };
+const PROP_FIT = { signpost:'h', welcome:'w', door:'w' };
+// signpost stands where the sidewalk tree was (removed from maplewood.png); welcome sits on the grass right of the church
+const defaults = { signpost:{x:660, y:546}, welcome:{x:1300, y:600}, door:{x:DOOR_GAP.x + DOOR_GAP.w / 2, y:DOOR_GAP.y + DOOR_GAP.h - 2} };   // 98 wide x 82 tall, raised 2: covers the arch top and the sill
+function resetProps() {
+  const k0 = (+document.getElementById('footW').value || BASE_W) / BASE_W;
+  for (const k of PROP_KEYS) scene.props[k] = { x:defaults[k].x * k0, y:defaults[k].y * k0 };
+  scene.arrival = { x:1300 * k0, y:560 * k0 };
+  drawScene();
+}
 for (const k of PROP_KEYS) scene.props[k] = { ...defaults[k] };
-['footW','rscale','frame','dpr','propScale','checker'].forEach(id => document.getElementById(id).addEventListener('input', drawScene));
+['footW','rscale','frame','dpr','propScale','checker','fit-signpost','fit-welcome','fit-door'].forEach(id => document.getElementById(id).addEventListener('input', drawScene));
+document.getElementById('resetProps').addEventListener('click', resetProps);
 
 function world() { const bg = A.maplewood; const W = +document.getElementById('footW').value || 1400; return { W, H: bg ? Math.round(W * bg.h / bg.w) : Math.round(W * 1000 / 1400) }; }
 function frameWorld() {
@@ -304,8 +325,12 @@ function frameWorld() {
   return { x, y, w:fw, h:fh, label:f };
 }
 function propRect(k) {
-  const a = A[k]; if (!a) return null; const s = +document.getElementById('propScale').value || 1;
-  const p = scene.props[k]; return { x:p.x, y:p.y, w:a.w * s, h:a.h * s };
+  const a = A[k]; if (!a) return null;
+  const s = (+document.getElementById('propScale').value || 1) * world().W / BASE_W;
+  const size = +document.getElementById('fit-' + k).value || 100;
+  const w = (PROP_FIT[k] === 'w' ? size : size * a.w / a.h) * s;
+  const h = (PROP_FIT[k] === 'h' ? size : size * a.h / a.w) * s;
+  const p = scene.props[k]; return { x:p.x - w / 2, y:p.y - h, w, h };
 }
 function paintWorld(ctx, vs, ox, oy, ow, oh) {
   // draws world region [ox,oy,ow,oh] at vs canvas px per world px, origin top-left
@@ -344,7 +369,9 @@ function drawScene() {
     if (r) { const fits = r.x >= f.x && r.y >= f.y && r.x + r.w <= f.x + f.w && r.y + r.h <= f.y + f.h; lines.push(`signpost ${fits ? 'FITS' : 'DOES NOT FIT'} the frame`); }
     else lines.push('signpost not loaded');
   }
-  for (const k of PROP_KEYS) { const r = propRect(k); if (r) lines.push(`${k} at (${Math.round(r.x)}, ${Math.round(r.y)}) ${Math.round(r.w)}x${Math.round(r.h)} world px`); }
+  for (const k of PROP_KEYS) { const r = propRect(k); if (r) lines.push(`${k} at (${Math.round(r.x)}, ${Math.round(r.y)}) ${Math.round(r.w)}x${Math.round(r.h)} world px, ${(A[k].w / r.w).toFixed(2)} image px per world px`); }
+  const dr = propRect('door');
+  if (dr) { const g = world().W / BASE_W; lines.push(`door ${Math.round(dr.w)}x${Math.round(dr.h)} vs church door gap ${Math.round(DOOR_GAP.w * g)}x${Math.round(DOOR_GAP.h * g)}: covers ${Math.round(100 * dr.w / (DOOR_GAP.w * g))}% of the gap width`); }
   document.getElementById('sceneStatus').textContent = lines.join('\n'); facts.scene = lines.join('; ');
   drawMag();
 }
@@ -364,7 +391,7 @@ function drawMag() {
 function scenePt(e) { const r = sceneCv.getBoundingClientRect(); const vs = sceneCv.width / world().W; return { x:(e.clientX - r.left) * (sceneCv.width / r.width) / vs, y:(e.clientY - r.top) * (sceneCv.height / r.height) / vs }; }
 sceneCv.addEventListener('pointerdown', e => {
   const p = scenePt(e); scene.drag = null;
-  for (const k of [...PROP_KEYS].reverse()) { const r = propRect(k); if (r && p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) { scene.drag = { k, dx:p.x - r.x, dy:p.y - r.y }; break; } }
+  for (const k of [...PROP_KEYS].reverse()) { const r = propRect(k); if (r && p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) { scene.drag = { k, dx:p.x - scene.props[k].x, dy:p.y - scene.props[k].y }; break; } }
   if (!scene.drag) scene.drag = { k:'arrival', dx:0, dy:0 };
   sceneCv.setPointerCapture(e.pointerId);
 });
@@ -379,7 +406,10 @@ sceneCv.addEventListener('pointerleave', () => { if (!scene.drag) { scene.pointe
 // ---------- moose tab ----------
 const mooseCv = document.getElementById('mooseCv'), mc = mooseCv.getContext('2d');
 const PARTS = ['body','antlers','head','eye'];                 // draw order
-const rig = { body:{x:250,y:150,px:0.5,py:1}, head:{x:520,y:120,px:0.15,py:0.85}, antlers:{x:560,y:40,px:0.5,py:0.95}, eye:{x:600,y:150,px:0.5,py:0.5} };
+// Default placement at scale 0.5, from the trim offsets of the ChatGPT parts inside their shared
+// 1254 px frame (body +200+397, head +703+338, antlers +436+116, eye +915+395), so the parts
+// start assembled. Drag to adjust if other art is loaded.
+const rig = { body:{x:200,y:181,px:0.5,py:1}, head:{x:452,y:152,px:0.15,py:0.85}, antlers:{x:319,y:41,px:0.78,py:0.95}, eye:{x:558,y:180,px:0.5,py:0.5} };
 const parent = { head:'body', antlers:'head', eye:'head' };
 const anim = { headTurn:0, wobble:0, blink:0, t0:performance.now() };
 let mdrag = null;
@@ -396,11 +426,12 @@ function partTransform(k, t) {
   if (k === 'eye') { const e = ease(anim.blink, 0.22); return { angle:0, sx:1, sy: e > 0 ? Math.max(0.08, Math.abs(Math.cos(Math.PI * (1 - e)))) : 1 }; }
 }
 function applyChain(k, t) {
-  if (parent[k]) applyChain(parent[k], t);
+  if (parent[k] && A[parent[k]]) applyChain(parent[k], t);   // parts can load in any order
   const p = pivotOf(k), tr = partTransform(k, t);
   mc.translate(p.x, p.y); mc.rotate(tr.angle); mc.scale(tr.sx, tr.sy); mc.translate(-p.x, -p.y);
 }
 function drawMoose(now) {
+  requestAnimationFrame(drawMoose);                              // schedule first so one bad frame cannot stop the loop
   const t = (now - anim.t0) / 1000; const bg = document.getElementById('mooseBg').value;
   mc.setTransform(1, 0, 0, 1, 0, 0); mc.clearRect(0, 0, mooseCv.width, mooseCv.height);
   if (bg === 'checker') { mc.fillStyle = '#e8e8e8'; mc.fillRect(0, 0, mooseCv.width, mooseCv.height); mc.fillStyle = '#fff'; for (let y = 0; y < mooseCv.height; y += 24) for (let x = ((y / 24) % 2) * 24; x < mooseCv.width; x += 48) mc.fillRect(x, y, 24, 24); }
@@ -411,7 +442,6 @@ function drawMoose(now) {
   }
   for (const k of PARTS) { const r = partRect(k); if (!r) continue; const p = pivotOf(k); mc.strokeStyle = '#b5451b'; mc.lineWidth = 2; mc.beginPath(); mc.arc(p.x, p.y, 6, 0, 7); mc.stroke(); mc.fillStyle = '#b5451b'; mc.font = '12px system-ui'; mc.fillText(k, r.x + 2, r.y - 3); }
   if (!PARTS.some(k => A[k])) { mc.fillStyle = '#666'; mc.font = '14px system-ui'; mc.fillText('Load the four moose parts on the Assets tab.', 20, 30); }
-  requestAnimationFrame(drawMoose);
 }
 requestAnimationFrame(drawMoose);
 document.querySelectorAll('[data-anim]').forEach(b => b.addEventListener('click', () => { anim[b.dataset.anim] = (performance.now() - anim.t0) / 1000; }));

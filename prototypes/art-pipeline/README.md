@@ -13,9 +13,9 @@ Nothing here ships. The branch `prototype/art-pipeline` is the primary source; t
 
 ## Checklist for Joe
 
-The generation and the judgement are yours; the agent cannot drive ChatGPT or Nano Banana, and the go or no-go is a taste call.
+Resolved 2026-09-23: GO with ChatGPT only (see ticket 07's Answer). `assets/` holds the kept WebP output; the magenta PNGs were deleted after keying, so regenerate or re-download from the ChatGPT library to re-key a prop. The checklist below is how the run was done.
 
-1. Save two or three old Moosylvania site screenshots into `reference/`.
+1. Style references are in `reference/` (see `reference/INDEX.md`): Joe's screenshots plus the original homepage art pulled from the Wayback Machine. Pick the `ref-*.png` files in the harness's reference slot.
 2. Work through `recipe.md` sections 1 to 4 in both tools. Save outputs under `assets/` with the given names. Keep a tally of retries and minutes of manual cleanup per asset.
 3. Run the section 5 commands to key out magenta and write WebP.
 4. Open `review.html`, load the `assets/` folder, and go tab by tab. In Scene, drag the arrival marker onto the welcome sign and confirm the signpost fits the portrait phone frame. In Moose, place the four parts, set pivots, and play the reactions.
