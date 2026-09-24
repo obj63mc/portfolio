@@ -40,13 +40,15 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 - [Can AI-generated art hold the Moosylvania style consistently across scenes?](issues/07-art-pipeline-prototype.md): GO with ChatGPT only; Maplewood (with the real church office), lobby, three keyed props and a four-part moose rig all held the old flat style with zero manual repainting; magenta key plus a 1 px erode cuts cleanly; backgrounds need the 2x upscale for DPR 2 phones; placement and phone framing get settled when every scene is regenerated to join up, via a Claude judge-and-regenerate loop. Recipe, review harness and WebP assets on `main` under `prototypes/art-pipeline/`.
 - [Does hybrid canvas rendering with the camera model hold 60fps on a phone?](issues/08-rendering-and-camera-prototype.md): variant B. Props and tiles are drawn on the canvas, each prop has a transparent button with real text in one camera-moved DOM layer, and cursors are on an overlay canvas. The background uses 512 px WebP tiles at 1.25x density on phones and 2x on desktop with ring eviction. The ticket 06 camera rules held unchanged at 0.6 phone scale. Emulated 60 fps for every variant, and Joe confirmed movement by hand; there are no real-phone numbers. ADR 0003. Prototype on branch `prototype/rendering-camera`.
 
+- [Provision the backend accounts](issues/12-provision-accounts.md): Cloudflare account on Workers Paid with a $20 budget alert (notification only; the in-code 15 Hz / 60-cursor limits are the real cap), subdomain `joe-3ed.workers.dev`, wrangler OAuth token outside the repo; no CI token or Turnstile widget yet.
+
 ## Not yet specified
 
 - Abuse mitigation and capacity: reconcile the 20 Hz / 40-per-room sync recommendation with the 15 Hz / 60-global cost bound, plus scripted-input handling. Over-cap visitors are spectators (decided in the shared-props ticket); the rest is settled by the cursor sync prototype.
 - Depth effects: horizon scaling of cursors, Z-sorting behind buildings, water drag. Depends on art having defined depth bands.
 - Sound design: what each district and prop sounds like, toggle UI.
 - Persistence schema in localStorage: key naming and versioning for the worn cosmetic id and earned set (fields decided in the cursor identity ticket) plus the bike track's personal top-ten lap times and any other progress.
-- Deploy pipeline and domain on Cloudflare Pages plus Workers, and how the in-code spend cap is monitored.
+- Deploy pipeline and domain on Cloudflare Pages plus Workers (including a scoped CI API token), and how the in-code spend cap is monitored beyond the $20 budget alert.
 - Analytics, if any.
 - Final spec assembly and hand-off to `/to-tickets`.
 
