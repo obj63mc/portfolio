@@ -1,7 +1,7 @@
 # Pointer-locked desktop cursor and the river current: do the gate, the pause and the drift feel right?
 
 Type: prototype
-Status: open
+Status: claimed
 Part of: ../map.md
 Blocked by: 18
 
@@ -34,3 +34,22 @@ Cursor Camp was checked in the browser: its live scene and other visitors' curso
 - **Resume**: clicking Resume re-locks with the cursor exactly where it stopped. If the browser refuses (Chrome's cooldown after Esc), the card stays up and says to try again in a moment.
 - **Camera input on desktop**: only edge-push, arrow keys and WASD. Drag-to-pan, wheel panning and trackpad panning are removed on desktop. Drag stays on touch only.
 - **Navigation**: the element that holds the lock sits in the shared layout, so entering a venue or leaving through an exit door keeps the lock. A link that opens another site blurs the window and pauses as above.
+
+## Prototype
+
+Branch `prototype/pointer-lock` (commit 25503d9), built on `prototype/own-cursor`, in `prototypes/cursor-sync/`. Run `npm run dev` and open `/?bots=20`, or use `npm run local` for the real socket. Settings: `?lock=0` turns the gate off for comparison, `?current=` sets the river speed, and `?pdrift=1` keeps the drift going while paused. The same controls are in the gear panel.
+
+- The stand-in Mississippi is a blue strip at world x 3980 to 4200, with a bridge deck at y 1180 to 1290 and the Arch on the west bank.
+- Peers snap on jumps over 400 world px.
+- Checked in a headless tab by stepping the loop (the automation tab can't take a real lock):
+  - Join places the cursor at the click point.
+  - Mouse deltas are held to the viewport.
+  - Edge-push runs about 900 px/s when the cursor is pinned to an edge.
+  - The wheel no longer pans.
+  - While paused, the cursor and camera freeze, and keys are ignored.
+  - Resume returns to the frozen spot.
+  - Clicking under lock opens the prop beneath the drawn cursor.
+  - The river drifts at 150 px/s and the camera doesn't follow.
+  - The bridge doesn't drift.
+  - A cursor washes out after about 3 s and is put back at the Arch.
+- Still needs Joe's hands for the real lock, the Esc cooldown and the feel questions above.
