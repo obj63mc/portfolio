@@ -13,6 +13,7 @@ import { Peers } from './peers';
 import { Net } from './net';
 import { Stats } from './stats';
 import { ui } from './ui.svelte';
+import { RIVER, riverStep, atRiverEnd, drawRiver } from './river';
 import type { M } from './math';
 import { DomProps } from './renderers/dom-props';
 import { CanvasProps } from './renderers/canvas-props';
@@ -111,15 +112,6 @@ export interface Script {
 
 const TILE = 512;
 
-// PROTOTYPE (ticket 22): stand-in Mississippi between Midtown and Belleville. The real mask comes from
-// the art pass (ticket 18); this is a rectangle with the bridge deck cut out.
-export const RIVER = { x: 3980, w: 220, bridge: { x: 3950, y: 1180, w: 280, h: 110 }, arch: { x: 3880, y: 1235 } };
-const inWater = (x: number, y: number) => {
-	const b = RIVER.bridge;
-	if (x < RIVER.x || x > RIVER.x + RIVER.w) return false;
-	return !(x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
-};
-
 export type LockMode = 'free' | 'gate' | 'locked' | 'paused';
 const MANIFEST: Record<string, { cols: number; rows: number }> = {
 	overworld: { cols: 11, rows: 6 },
@@ -150,6 +142,7 @@ export class Engine {
 	t = 0;
 	mode: LockMode = 'free';
 	joined = false; // desktop: nothing is sent until the first Join
+	inRiver = false; // ticket 22: see river.ts
 	drifting = false;
 	private washing = false;
 	private lockAt: { x: number; y: number } | null = null;
@@ -388,6 +381,7 @@ export class Engine {
 		const rm = this.settings.rm;
 		if (!rm) { this.fade.style.opacity = '1'; await wait(220); }
 		const a = RIVER.arch;
+		this.inRiver = false;
 		this.own.x = a.x;
 		this.own.y = a.y;
 		this.centreOn(a.x, a.y);
@@ -572,14 +566,16 @@ export class Engine {
 				vx += kx * 800;
 				vy += ky * 800;
 			}
-			// river current: drift south in world space; the camera does not follow (ticket 18)
+			// river current: drift south while in the river; the camera follows through the push band, so
+			// steering is never punished; only the river's south end washes the visitor out (ticket 22)
 			const moving = this.touchMode || this.mode === 'locked' || (this.mode === 'paused' && st.pdrift);
-			this.drifting = this.scene.id === 'overworld' && this.showOwn && moving && !this.washing && inWater(this.own.x, this.own.y);
+			this.inRiver = this.scene.id === 'overworld' && this.showOwn && !this.washing && riverStep(this.own.x, this.own.y, this.inRiver);
+			this.drifting = this.inRiver && moving;
 			if (this.drifting) {
-				if (this.mode === 'locked') this.pointer.y += st.current * dt * this.s;
+				if (this.mode === 'locked') this.pointer.y = Math.min(this.vh - 1, this.pointer.y + st.current * dt * this.s);
 				else this.own.y += st.current * dt;
 			}
-			const pushing = !this.drag && !this.drifting && (this.touchMode ? this.joy.active : this.pointer.inside);
+			const pushing = !this.drag && (this.touchMode ? this.joy.active || this.drifting : this.pointer.inside);
 			if (pushing && !this.nearProp()) {
 				const p = this.touchMode ? this.ownScreen : this.pointer;
 				vx += edge(p.x, this.vw, this.band) * st.push;
@@ -594,7 +590,7 @@ export class Engine {
 			this.cam.x += vx * dt;
 			this.cam.y += vy * dt;
 			this.clamp();
-			if (this.touchMode && !this.drifting) {
+			if (this.touchMode) {
 				// touch drag pans without moving the cursor in world space, but never loses it off screen
 				const m = 16 / this.s;
 				this.own.x = Math.max(this.cam.x + m, Math.min(this.cam.x + this.viewW - m, this.own.x));
@@ -603,7 +599,7 @@ export class Engine {
 				this.own.x = this.cam.x + this.pointer.x / this.s;
 				this.own.y = this.cam.y + this.pointer.y / this.s;
 			}
-			if (this.drifting && (this.own.y > this.cam.y + this.viewH || this.own.x < this.cam.x || this.own.x > this.cam.x + this.viewW)) this.washOut();
+			if (this.inRiver && atRiverEnd(this.own.y)) this.washOut();
 			if (this.showOwn) this.net.move(this.own.x, this.own.y);
 		}
 
@@ -745,7 +741,7 @@ export class Engine {
 	private hud() {
 		const r = this.stats.recent(), st = this.settings;
 		ui.hud =
-			`keys ${st.keyspd} px/s · lock ${this.mode}${this.joined ? '' : ' (not joined)'}${this.drifting ? ' · drifting' : ''} · current ${st.current} px/s${st.pdrift ? ' (also paused)' : ''}\n` +
+			`keys ${st.keyspd} px/s · lock ${this.mode}${this.joined ? '' : ' (not joined)'}${this.inRiver ? ' · in the river' : ''} · current ${st.current} px/s${st.pdrift ? ' (also paused)' : ''}\n` +
 			`${st.variant} · own ${st.own}${st.own.includes('B') ? ` own ×${st.ownk}` : ''}${st.own.includes('D') ? ` peers ×${st.peerk}` : ''} · bg ${st.bg}${st.rm ? ' · reduced motion' : ''}\n` +
 			`${r.fps} fps (${r.refresh} Hz) · p95 ${r.p95} ms · missed ${r.jank}% · js p95 ${r.jsP95} ms\n` +
 			this.net.hud() + '\n' +
@@ -760,30 +756,6 @@ function edge(pos: number, size: number, band: number) {
 	if (pos < b) { const t = 1 - pos / b; return -t * t; }
 	if (pos > size - b) { const t = 1 - (size - pos) / b; return t * t; }
 	return 0;
-}
-
-function drawRiver(g: CanvasRenderingContext2D, k: number, cam: { x: number; y: number }) {
-	const X = (x: number) => (x - cam.x) * k, Y = (y: number) => (y - cam.y) * k;
-	g.fillStyle = 'rgb(58 118 176 / 0.85)';
-	g.fillRect(X(RIVER.x), Y(0), RIVER.w * k, 2700 * k);
-	g.strokeStyle = 'rgb(255 255 255 / 0.35)';
-	g.lineWidth = 2 * k;
-	for (let y = 40; y < 2700; y += 120)
-		for (const dx of [40, 130]) { g.beginPath(); g.moveTo(X(RIVER.x + dx), Y(y)); g.lineTo(X(RIVER.x + dx + 30), Y(y + 18)); g.stroke(); }
-	const b = RIVER.bridge;
-	g.fillStyle = '#8a7a66';
-	g.fillRect(X(b.x), Y(b.y), b.w * k, b.h * k);
-	g.fillStyle = '#6d5f4f';
-	g.fillRect(X(b.x), Y(b.y), b.w * k, 10 * k);
-	g.fillRect(X(b.x), Y(b.y + b.h - 10), b.w * k, 10 * k);
-	// the Arch, where a washed-out visitor lands
-	const a = RIVER.arch;
-	g.strokeStyle = '#c9ced6';
-	g.lineWidth = 9 * k;
-	g.beginPath(); g.moveTo(X(a.x - 70), Y(a.y + 40)); g.quadraticCurveTo(X(a.x), Y(a.y - 260), X(a.x + 70), Y(a.y + 40)); g.stroke();
-	g.fillStyle = '#fff';
-	g.font = `600 ${14 * k}px system-ui, sans-serif`;
-	g.fillText('stand-in Mississippi', X(RIVER.x + 10), Y(b.y - 20));
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string) {

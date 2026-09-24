@@ -6,6 +6,7 @@
 //   Verdict: BD with ?ownk=1.25&peerk=0.75 and peers at full opacity (the default below).
 import type { Engine } from '../engine';
 import { ATLAS, CELL, TIP } from '../sprites';
+import { drawBridge, onDeck } from '../river';
 
 const BLUE = '#1f5fd1';
 
@@ -24,7 +25,20 @@ export function drawCursors(g: CanvasRenderingContext2D, e: Engine) {
 	};
 
 	const psc = fx.includes('D') ? e.settings.peerk : 1;
-	for (const p of e.peers.drawn) one(p.x, p.y, p.flag, p.cos, p.gold, false, psc);
+	// ticket 22: in the river, your cursor passes under the bridge. Peers on the deck stay on top; a
+	// peer's own river state is not on the wire, so a peer swimming under the bridge is drawn over it here.
+	const under = e.inRiver;
+	const later: typeof e.peers.drawn = [];
+	for (const p of e.peers.drawn) {
+		if (under && onDeck(p.x, p.y)) later.push(p);
+		else one(p.x, p.y, p.flag, p.cos, p.gold, false, psc);
+	}
+	const bridge = () => {
+		if (!under) return;
+		drawBridge(g, k, e.cam);
+		g.setTransform(1, 0, 0, 1, 0, 0);
+		for (const p of later) one(p.x, p.y, p.flag, p.cos, p.gold, false, psc);
+	};
 
 	if (!e.showOwn) return; // ticket 22: no own cursor before the first Join
 	const o = e.own, osc = fx.includes('B') ? e.settings.ownk : 1;
@@ -47,6 +61,7 @@ export function drawCursors(g: CanvasRenderingContext2D, e: Engine) {
 		g.globalAlpha = 1;
 	}
 	one(o.x, o.y, e.net.flag, o.cosmetic, o.gold, true, osc);
+	bridge();
 
 	if (fx.includes('E')) {
 		// persistent pill above the tip, in CSS px so it reads the same at every render scale
