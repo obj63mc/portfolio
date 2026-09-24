@@ -1,0 +1,25 @@
+{
+  "id": "slu-workstation",
+  "scene": "slu",
+  "kind": "prop",
+  "file": "slu-workstation/image.webp",
+  "world": {
+    "x": 1200,
+    "y": 900,
+    "w": 450,
+    "h": 360
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "4365fa7aef73bdb66e1e2f7aa0152ee953f487f699b96e58ec1741e75164a503"
+  },
+  "trim": {
+    "x": 186,
+    "y": 144,
+    "w": 898,
+    "h": 983
+  },
+  "width": 898,
+  "height": 983
+}

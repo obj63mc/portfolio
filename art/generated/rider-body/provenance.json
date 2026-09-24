@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "0d6953dc184dcb4d11eb0f4a5b69b5d22dee331035ff55d166ff70f904a9d671",
+  "run": "art/runs/rider-body/2026-09-24T19-19-34.203Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

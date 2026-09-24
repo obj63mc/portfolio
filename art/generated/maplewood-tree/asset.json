@@ -1,0 +1,25 @@
+{
+  "id": "maplewood-tree",
+  "scene": "maplewood",
+  "kind": "foreground",
+  "file": "maplewood-tree/image.webp",
+  "world": {
+    "x": 100,
+    "y": 735,
+    "w": 110,
+    "h": 160
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "9b1e96f8a5faa1ff6ae077000f9f13601fd1e8b97d00a2934640b9dbe13dea4f"
+  },
+  "trim": {
+    "x": 226,
+    "y": 148,
+    "w": 833,
+    "h": 949
+  },
+  "width": 833,
+  "height": 949
+}

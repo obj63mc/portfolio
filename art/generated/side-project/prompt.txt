@@ -1,0 +1,13 @@
+STYLE: Flat vector illustration in the style of the attached reference screenshots. Layered flat shapes, no gradients, no outlines, no texture, no drop shadows. Warm palette led by cream, mustard, terracotta, olive and a teal accent; take the exact hues from the reference. Slightly elevated three-quarter view, like looking down a street from a second-floor window. One light source, upper left. Clean hard edges, simple rounded geometry, generous negative space. No people, no animals, no text and no lettering unless the prompt names it. Nothing photographic.
+
+PRODUCTION: This is artwork for a cursor-exploration world. Match the attached scene's perspective and scale. Use few broad solid-color polygons, not hundreds of decorative details. No grain, paper, stippling, painterly shading, vignette or lighting gradients. Dark faces may use a single darker flat fill. Keep all interactive content readable as silhouettes. Do not bake interactive props into background plates when the asset prompt reserves them. No captions, labels, borders or presentation mockups.
+
+
+ASSET: side-project
+Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An intimate craft-beer cellar tasting room inspired by Side Project Cellar on Marietta: charcoal back bar, cream walls, warm oak bar counter with big uninterrupted flat planes, bottle shelves holding simple blank dark bottle silhouettes, olive seating, broad cream floor. Leave a clear space in middle of countertop for separate taps; empty dark chalkboard patch left; right wall door opening. No patrons, no branded labels, no text. Foreground bottom corners left clear for independent stool scenery. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.
+
+Target image size: 2048x1152. Fill the image edge to edge.
+References in order:
+1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
+2. <repo>/prototypes/art-pipeline/reference/ref-scene-4-office.png
+3. <repo>/prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png

@@ -1,0 +1,12 @@
+STYLE: Flat vector illustration in the style of the attached reference screenshots. Layered flat shapes, no gradients, no outlines, no texture, no drop shadows. Warm palette led by cream, mustard, terracotta, olive and a teal accent; take the exact hues from the reference. Slightly elevated three-quarter view, like looking down a street from a second-floor window. One light source, upper left. Clean hard edges, simple rounded geometry, generous negative space. No people, no animals, no text and no lettering unless the prompt names it. Nothing photographic.
+
+PRODUCTION: This is artwork for a cursor-exploration world. Match the attached scene's perspective and scale. Use few broad solid-color polygons, not hundreds of decorative details. No grain, paper, stippling, painterly shading, vignette or lighting gradients. Dark faces may use a single darker flat fill. Keep all interactive content readable as silhouettes. Do not bake interactive props into background plates when the asset prompt reserves them. No captions, labels, borders or presentation mockups.
+
+
+ASSET: maplewood
+A coherent 1400 by 1000 district plate, elevated 3/4 view. A compact two-block Marietta Avenue. Right half the actual Moosylvania church in reference 1: tall pointed gable, dark brick, cream mullions in large arched window, paired square corner towers with cream caps, short wing. Keep church within x 760..1280 and y 180..680 in world coordinates. Arched double-door opening centered around x 990 y 570, roughly 95 wide and 95 tall, empty wall-colored opening without door. Left half Side Project Cellar: modest narrow charcoal storefront with tall rectangular windows and patio, rows of small Maplewood shops behind it. Street sweeps across middle lower third, crosswalk. Two empty grass patches near each other in front of church for welcome sign and fingerpost, x 890..1170 y 700..890. Do NOT draw signs, moose or interactive props. Leave foreground corners empty for separate tree/planter scenery. All four outer edges must finish in one exact cream ground color #E9DFBF with 5 percent empty margin: this is a district on a larger continuous landscape, not a framed postcard. No sky band, no horizon line, no clipped roads or buildings. FLAT SOLID COLOR FILLS, NO TEXTURE OR GRADIENT.
+
+Target image size: 1792x1280. Fill the image edge to edge.
+References in order:
+1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
+2. <repo>/prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png

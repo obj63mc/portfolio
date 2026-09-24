@@ -1,0 +1,123 @@
+{
+  "id": "maplewood",
+  "scene": "maplewood",
+  "kind": "background",
+  "file": "maplewood/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 1400,
+    "h": 1000
+  },
+  "source": {
+    "w": 1484,
+    "h": 1060,
+    "sha256": "0dcd7c92a00d78b410322addf45278e132fb07bd385fc772374ee7ce07047d38"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1484,
+    "h": 1060
+  },
+  "width": 2800,
+  "height": 2000,
+  "tiles": [
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "file": "maplewood/1.25/0-0.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "file": "maplewood/1.25/1-0.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 0,
+      "w": 376,
+      "h": 512,
+      "file": "maplewood/1.25/2-0.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 512,
+      "w": 512,
+      "h": 488,
+      "file": "maplewood/1.25/0-1.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 512,
+      "w": 512,
+      "h": 488,
+      "file": "maplewood/1.25/1-1.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 512,
+      "w": 376,
+      "h": 488,
+      "file": "maplewood/1.25/2-1.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "file": "maplewood/2/0-0.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "file": "maplewood/2/1-0.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 0,
+      "w": 376,
+      "h": 512,
+      "file": "maplewood/2/2-0.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 512,
+      "w": 512,
+      "h": 488,
+      "file": "maplewood/2/0-1.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 512,
+      "w": 512,
+      "h": 488,
+      "file": "maplewood/2/1-1.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 512,
+      "w": 376,
+      "h": 488,
+      "file": "maplewood/2/2-1.webp"
+    }
+  ]
+}

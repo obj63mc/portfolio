@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "be22ed8f0317c079634506c521a60864a85df980fe0f376148daf74524132dec",
+  "run": "art/runs/slu-diploma/2026-09-24T19-15-13.472Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

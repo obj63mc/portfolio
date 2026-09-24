@@ -1,0 +1,25 @@
+{
+  "id": "door",
+  "scene": "maplewood",
+  "kind": "prop",
+  "file": "door/image.webp",
+  "world": {
+    "x": 987,
+    "y": 374,
+    "w": 44,
+    "h": 60
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "e801b15be508b8297b5d95c1291706cbc282b6d433538a702f3d4fd7083d61f6"
+  },
+  "trim": {
+    "x": 266,
+    "y": 127,
+    "w": 722,
+    "h": 994
+  },
+  "width": 722,
+  "height": 994
+}

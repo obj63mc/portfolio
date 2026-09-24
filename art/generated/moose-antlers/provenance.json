@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "f42e64538d0749ae270f19ab90861ae6a0dae81e8550ec278ee73811accbb209",
+  "run": "art/runs/moose-antlers/2026-09-24T19-18-11.022Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

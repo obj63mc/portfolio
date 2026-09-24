@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "9ce637be30b8931c00719428dc791a7d6feafd53a4f26ac0ed104d862c7aba54",
+  "run": "art/runs/moose-head/2026-09-24T19-16-31.990Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

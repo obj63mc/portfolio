@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "e9b987498f5c6c30db852d14ba4a0323b7984711c40f2b13853fae7680357786",
+  "run": "art/runs/slu-chair/2026-09-24T19-17-07.769Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

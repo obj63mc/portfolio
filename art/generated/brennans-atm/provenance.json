@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "e9ea44c8d9cc96a87212cbd33f4320ba907bec1dfa7bc02240e17c1a1d78b3e3",
+  "run": "art/runs/brennans-atm/2026-09-24T19-25-54.398Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "0dcd7c92a00d78b410322addf45278e132fb07bd385fc772374ee7ce07047d38",
+  "run": "art/runs/maplewood/2026-09-24T19-01-34.105Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

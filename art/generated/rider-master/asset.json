@@ -1,0 +1,19 @@
+{
+  "id": "rider-master",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "rider-master/image.webp",
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "c9868ed71034641a229bf36f97a8467c8c620d2e4a471e6d45e2188f04cb9c39"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1536,
+    "h": 1024
+  },
+  "width": 1536,
+  "height": 1024
+}

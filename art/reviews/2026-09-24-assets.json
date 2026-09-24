@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-24",
+  "verdict": "Maplewood pipeline proof accepted; seven assembled scenes accepted as starter drafts, not production geometry.",
+  "assetHashes": {
+    "maplewood": "0dcd7c92a00d78b410322addf45278e132fb07bd385fc772374ee7ce07047d38",
+    "overworld": "005d85717ec66e7e367ee06f5a1ac80209e133a1d63841d5ba22d0dd4f1c0774",
+    "moosylvania": "08381230436212c77b4988b24a2e628677400f35184fdaca78e0d8cd45b0a763",
+    "slu": "1d3bc28379a8f8dcdad29553d266ec26214512ef8c81d4d63bdb38dc55e670ff",
+    "foundry": "5b9d87cbb96e1ec909bf83f8d4d792a5b3d6cbfe0232fe3451f15c9fe27c13b3",
+    "side-project": "74293246b68eec447c72a65a595e15a9e3a6f59d6f6ecead736f427660238d6d",
+    "brennans": "98b406803e5bed0a1df4ef8f76b357627366f41240f225c0a4e68264f3e0e877",
+    "welcome": "0107a5be0f3bc6a384527b475f6f40d67f69c520dd919d74835519c02e970136",
+    "signpost": "dee61f036f4b4113955ea4d900f90446b1c8d51b356decf06fd666457e43fb74",
+    "door": "e801b15be508b8297b5d95c1291706cbc282b6d433538a702f3d4fd7083d61f6",
+    "maplewood-tree": "9b1e96f8a5faa1ff6ae077000f9f13601fd1e8b97d00a2934640b9dbe13dea4f",
+    "moose-master": "b0d449e350e18f8966d9394fd701e405d61d69c19697a0cad63875c2e108eeb5",
+    "moose-body": "e0bd393ba917c7ab0e7f718b8b7d860c472578a215f1abf04967a58dfefaa6c1",
+    "moose-head": "9ce637be30b8931c00719428dc791a7d6feafd53a4f26ac0ed104d862c7aba54",
+    "moose-antlers": "f42e64538d0749ae270f19ab90861ae6a0dae81e8550ec278ee73811accbb209",
+    "moose-eye": "c94b0f6e7e7e44fa17130e38e6808968f2c968e6835b21b3da0bec818fe6a716",
+    "lobby-desk": "da5d0676c90dabd5b102ae286aaec5421853f9ec62f3d720b41baf249ec10d76",
+    "lobby-plant": "b982ca2df97959eff31624b04a3b5442d7871e37b8aafaeaf13e78449d655f83",
+    "slu-workstation": "4365fa7aef73bdb66e1e2f7aa0152ee953f487f699b96e58ec1741e75164a503",
+    "slu-diploma": "be22ed8f0317c079634506c521a60864a85df980fe0f376148daf74524132dec",
+    "slu-chair": "e9b987498f5c6c30db852d14ba4a0323b7984711c40f2b13853fae7680357786",
+    "foundry-projector": "51e0e4f87381fbe79552fd4a81196c6132288d89e920843dcc14e8c0bf348eea",
+    "foundry-seats": "763801ec1373c7017667d5c860698211b0eae7af6b5b607429f9c3877306fa15",
+    "side-project-taps": "4b62437fecac5abf3026f654b2599188112ffa6d5c77423adcbe54080db727a5",
+    "side-project-stool": "9ff996ef2b06193a57a37f7caccc096ce89c09cfe7beb553f90d1273235db353",
+    "brennans-humidor": "7e3fa16ea13160871ac403ea8987bcc25e695a1dedbc3781041a51d187aa2c80",
+    "brennans-atm": "e9ea44c8d9cc96a87212cbd33f4320ba907bec1dfa7bc02240e17c1a1d78b3e3",
+    "brennans-chair": "1e8e49974cbd48291f61b6b754649b030cca4ebce4225e40abc9652681a84240",
+    "rider-master": "c9868ed71034641a229bf36f97a8467c8c620d2e4a471e6d45e2188f04cb9c39",
+    "rider-body": "0d6953dc184dcb4d11eb0f4a5b69b5d22dee331035ff55d166ff70f904a9d671",
+    "rider-rear-wheel": "a60de53dce3c8c310c9bfe4170dbedcb689e56b76d19894b790b8e0ae54392cf",
+    "rider-front-wheel": "9e1cf900a671f5bf3397896adba71d2f6afe2b57378348abd8bc43f602a00df9"
+  },
+  "checks": {
+    "assets": 32,
+    "backgrounds": 7,
+    "tiles": 384,
+    "phone": "390x844 at 0.6; Maplewood signpost fits; small proof world leaves neutral space below scene",
+    "rigs": "Moose body/head/antlers/eye and cyclist body/two wheels inspected assembled; ambient and click controls available",
+    "geometry": "Depth, prop/foreground, river mask/deck/south-end/Arch overlays imported from scene modules; draft placements separately toggled"
+  },
+  "limitations": [
+    "Production art placement and river alignment remain issues 04/05.",
+    "Overworld landmark proportions are stylized, including draft SLU tower and Eads Bridge; this is not an accurate map.",
+    "API fallback is documented but this batch exercised only authenticated Codex CLI."
+  ]
+}

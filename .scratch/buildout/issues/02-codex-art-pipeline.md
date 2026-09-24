@@ -8,11 +8,19 @@ Assumption to verify first: the Codex CLI can produce an image file with referen
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] One command generates, keys, trims, upscales, encodes and tiles an asset from a manifest entry, with no manual step between prompt and tile
-- [ ] Reference images attach per the recipe's working rules (arrival mock on Maplewood prompts, opening crop for opening-filling props)
-- [ ] Moving props are produced as separated transparent parts with pivots, in the moose rig JSON shape from the prototype
-- [ ] The harness shows depth region, foreground scenery, prop rect, river geometry and phone-frame overlays read from the scene-data module
-- [ ] Maplewood regenerated through the pipeline passes the prototype's criteria in the harness (dimensions, fringe and halo, palette)
-- [ ] The judge-and-regenerate loop is documented in one place a Claude agent can follow: judge in the harness, adjust the prompt, rerun the one command
+- [x] One command generates, keys, trims, upscales, encodes and tiles an asset from a manifest entry, with no manual step between prompt and tile
+- [x] Reference images attach per the recipe's working rules (arrival mock on Maplewood prompts, opening crop for opening-filling props)
+- [x] Moving props are produced as separated transparent parts with pivots, in the moose rig JSON shape from the prototype
+- [x] The harness shows depth region, foreground scenery, prop rect, river geometry and phone-frame overlays read from the scene-data module
+- [x] Maplewood regenerated through the pipeline passes the prototype's criteria in the harness (dimensions, fringe and halo, palette)
+- [x] The judge-and-regenerate loop is documented in one place a Claude agent can follow: judge in the harness, adjust the prompt, rerun the one command
+
+## Answer
+
+Implemented in `scripts/art.ts` and `art/`. Authenticated Codex CLI image generation was verified with attached references and used for all 32 retained starter assets: seven plates, separated props/foreground, and moose/rider rigs. The pipeline produces 384 background tiles across both densities, keeps source hashes/prompts, and supports offline reprocessing.
+
+The workshop at `art/review.html` assembles layers, reads scene geometry, previews phone/tile/rig states, and compares Maplewood with the prototype. See `art/README.md` for the identical Codex/Claude command workflow, `art/landmarks.md` for references, and `art/reviews/2026-09-24-assets.json` for the visual verdict and source hashes. Assembled images are in `art/generated/composites/`.
+
+The broader scene set is a starter draft. Issues 04/05 still own production promotion, complete content props, exact hit-target placement and final river geometry. No production route was switched to draft artwork.

@@ -1,0 +1,13 @@
+STYLE: Flat vector illustration in the style of the attached reference screenshots. Layered flat shapes, no gradients, no outlines, no texture, no drop shadows. Warm palette led by cream, mustard, terracotta, olive and a teal accent; take the exact hues from the reference. Slightly elevated three-quarter view, like looking down a street from a second-floor window. One light source, upper left. Clean hard edges, simple rounded geometry, generous negative space. No people, no animals, no text and no lettering unless the prompt names it. Nothing photographic.
+
+PRODUCTION: This is artwork for a cursor-exploration world. Match the attached scene's perspective and scale. Use few broad solid-color polygons, not hundreds of decorative details. No grain, paper, stippling, painterly shading, vignette or lighting gradients. Dark faces may use a single darker flat fill. Keep all interactive content readable as silhouettes. Do not bake interactive props into background plates when the asset prompt reserves them. No captions, labels, borders or presentation mockups.
+
+
+ASSET: lobby-desk
+One simple agency desk with cream tabletop on dark wood legs, single teal monitor with blank mustard display. No chair. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.
+
+Target image size: 1024x1024. Keep the entire object within the frame with a clean margin.
+References in order:
+1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
+2. <repo>/art/generated/moosylvania/image.webp
+3. <repo>/prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png

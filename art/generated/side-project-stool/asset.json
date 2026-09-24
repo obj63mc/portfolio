@@ -1,0 +1,25 @@
+{
+  "id": "side-project-stool",
+  "scene": "side-project",
+  "kind": "foreground",
+  "file": "side-project-stool/image.webp",
+  "world": {
+    "x": 250,
+    "y": 1200,
+    "w": 220,
+    "h": 340
+  },
+  "source": {
+    "w": 1024,
+    "h": 1024,
+    "sha256": "9ff996ef2b06193a57a37f7caccc096ce89c09cfe7beb553f90d1273235db353"
+  },
+  "trim": {
+    "x": 324,
+    "y": 205,
+    "w": 377,
+    "h": 616
+  },
+  "width": 377,
+  "height": 616
+}

@@ -1,0 +1,25 @@
+{
+  "id": "lobby-desk",
+  "scene": "moosylvania",
+  "kind": "prop",
+  "file": "lobby-desk/image.webp",
+  "world": {
+    "x": 1100,
+    "y": 850,
+    "w": 420,
+    "h": 300
+  },
+  "source": {
+    "w": 1024,
+    "h": 1024,
+    "sha256": "da5d0676c90dabd5b102ae286aaec5421853f9ec62f3d720b41baf249ec10d76"
+  },
+  "trim": {
+    "x": 94,
+    "y": 243,
+    "w": 836,
+    "h": 542
+  },
+  "width": 836,
+  "height": 542
+}

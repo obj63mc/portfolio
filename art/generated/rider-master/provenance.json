@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "c9868ed71034641a229bf36f97a8467c8c620d2e4a471e6d45e2188f04cb9c39",
+  "run": "art/runs/rider-master/2026-09-24T19-17-34.936Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

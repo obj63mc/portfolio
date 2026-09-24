@@ -1,0 +1,25 @@
+{
+  "id": "slu-chair",
+  "scene": "slu",
+  "kind": "foreground",
+  "file": "slu-chair/image.webp",
+  "world": {
+    "x": 120,
+    "y": 1250,
+    "w": 230,
+    "h": 310
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "e9b987498f5c6c30db852d14ba4a0323b7984711c40f2b13853fae7680357786"
+  },
+  "trim": {
+    "x": 336,
+    "y": 145,
+    "w": 596,
+    "h": 964
+  },
+  "width": 596,
+  "height": 964
+}

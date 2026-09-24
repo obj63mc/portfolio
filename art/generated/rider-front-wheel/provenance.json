@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "9e1cf900a671f5bf3397896adba71d2f6afe2b57378348abd8bc43f602a00df9",
+  "run": "art/runs/rider-front-wheel/2026-09-24T19-22-22.305Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

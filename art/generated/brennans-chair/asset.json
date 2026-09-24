@@ -1,0 +1,25 @@
+{
+  "id": "brennans-chair",
+  "scene": "brennans",
+  "kind": "foreground",
+  "file": "brennans-chair/image.webp",
+  "world": {
+    "x": 230,
+    "y": 1120,
+    "w": 430,
+    "h": 400
+  },
+  "source": {
+    "w": 1024,
+    "h": 1024,
+    "sha256": "1e8e49974cbd48291f61b6b754649b030cca4ebce4225e40abc9652681a84240"
+  },
+  "trim": {
+    "x": 203,
+    "y": 203,
+    "w": 645,
+    "h": 619
+  },
+  "width": 645,
+  "height": 619
+}

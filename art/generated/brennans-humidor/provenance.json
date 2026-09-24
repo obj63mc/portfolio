@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "7e3fa16ea13160871ac403ea8987bcc25e695a1dedbc3781041a51d187aa2c80",
+  "run": "art/runs/brennans-humidor/2026-09-24T19-24-27.301Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -1,0 +1,25 @@
+{
+  "id": "slu-diploma",
+  "scene": "slu",
+  "kind": "prop",
+  "file": "slu-diploma/image.webp",
+  "world": {
+    "x": 920,
+    "y": 360,
+    "w": 300,
+    "h": 200
+  },
+  "source": {
+    "w": 1024,
+    "h": 1024,
+    "sha256": "be22ed8f0317c079634506c521a60864a85df980fe0f376148daf74524132dec"
+  },
+  "trim": {
+    "x": 129,
+    "y": 229,
+    "w": 767,
+    "h": 559
+  },
+  "width": 767,
+  "height": 559
+}

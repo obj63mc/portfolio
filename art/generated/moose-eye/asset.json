@@ -1,0 +1,28 @@
+{
+  "id": "moose-eye",
+  "scene": "maplewood",
+  "kind": "part",
+  "file": "moose-eye/image.webp",
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "c94b0f6e7e7e44fa17130e38e6808968f2c968e6835b21b3da0bec818fe6a716"
+  },
+  "trim": {
+    "x": 1066,
+    "y": 281,
+    "w": 35,
+    "h": 37
+  },
+  "width": 35,
+  "height": 37,
+  "rig": {
+    "name": "moose",
+    "part": "eye",
+    "parent": "head",
+    "pivot": [
+      0.5,
+      0.5
+    ]
+  }
+}

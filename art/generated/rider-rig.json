@@ -1,0 +1,38 @@
+{
+  "body": {
+    "parent": null,
+    "x": 523,
+    "y": 128,
+    "w": 481,
+    "h": 661,
+    "pivot": [
+      0.5,
+      0.7
+    ],
+    "file": "rider-body/image.webp"
+  },
+  "rear-wheel": {
+    "parent": "body",
+    "x": 394,
+    "y": 554,
+    "w": 293,
+    "h": 297,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "rider-rear-wheel/image.webp"
+  },
+  "front-wheel": {
+    "parent": "body",
+    "x": 833,
+    "y": 545,
+    "w": 306,
+    "h": 307,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "rider-front-wheel/image.webp"
+  }
+}

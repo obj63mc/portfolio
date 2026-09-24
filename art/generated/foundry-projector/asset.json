@@ -1,0 +1,25 @@
+{
+  "id": "foundry-projector",
+  "scene": "foundry",
+  "kind": "prop",
+  "file": "foundry-projector/image.webp",
+  "world": {
+    "x": 2100,
+    "y": 1030,
+    "w": 260,
+    "h": 300
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "51e0e4f87381fbe79552fd4a81196c6132288d89e920843dcc14e8c0bf348eea"
+  },
+  "trim": {
+    "x": 316,
+    "y": 155,
+    "w": 596,
+    "h": 909
+  },
+  "width": 596,
+  "height": 909
+}

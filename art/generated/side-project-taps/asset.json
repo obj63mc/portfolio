@@ -1,0 +1,25 @@
+{
+  "id": "side-project-taps",
+  "scene": "side-project",
+  "kind": "prop",
+  "file": "side-project-taps/image.webp",
+  "world": {
+    "x": 1260,
+    "y": 400,
+    "w": 320,
+    "h": 300
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "4b62437fecac5abf3026f654b2599188112ffa6d5c77423adcbe54080db727a5"
+  },
+  "trim": {
+    "x": 76,
+    "y": 105,
+    "w": 1100,
+    "h": 1009
+  },
+  "width": 1100,
+  "height": 1009
+}

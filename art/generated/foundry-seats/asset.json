@@ -1,0 +1,25 @@
+{
+  "id": "foundry-seats",
+  "scene": "foundry",
+  "kind": "foreground",
+  "file": "foundry-seats/image.webp",
+  "world": {
+    "x": 900,
+    "y": 1220,
+    "w": 1000,
+    "h": 350
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "763801ec1373c7017667d5c860698211b0eae7af6b5b607429f9c3877306fa15"
+  },
+  "trim": {
+    "x": 103,
+    "y": 411,
+    "w": 1048,
+    "h": 402
+  },
+  "width": 1048,
+  "height": 402
+}

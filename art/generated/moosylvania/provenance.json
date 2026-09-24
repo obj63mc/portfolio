@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "08381230436212c77b4988b24a2e628677400f35184fdaca78e0d8cd45b0a763",
+  "run": "art/runs/moosylvania/2026-09-24T19-06-23.628Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

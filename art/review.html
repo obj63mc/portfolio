@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>St. Louis · Scene workshop</title>
+<style>
+  :root{font:14px/1.5 system-ui;color:#eae5d5;background:#202a27;color-scheme:dark}*{box-sizing:border-box}body{margin:0}header{padding:20px 28px;border-bottom:1px solid #526056;display:flex;align-items:center;gap:24px}h1{font-size:22px;margin:0}header p{margin:0;color:#b9c4ba}main{display:grid;grid-template-columns:260px 1fr;min-height:90vh}aside{padding:20px;background:#28342e}label{display:block;margin:10px 0}select,button,input,textarea{font:inherit}select,button,textarea{padding:8px;background:#34463c;border:1px solid #718674;border-radius:5px;color:inherit}select{width:100%}button{cursor:pointer}button:hover{background:#4b6554}input[type=range]{width:100%}.stage{padding:20px;min-width:0}canvas{display:block;width:100%;height:auto;background:#e9dfbf;border:1px solid #788475}#phone{width:195px;height:422px;border:2px solid #84dce0;margin:15px auto}#status{padding:12px 0;color:#eac67a;white-space:pre-line}h2{font-size:15px;margin:22px 0 8px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.pill{font-size:12px;padding:4px 9px;border-radius:20px;background:#485b49}a{color:#90d9da}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px;margin-top:16px}.card{background:#2c3b33;padding:12px;border-radius:8px;overflow:hidden}.card img{width:100%;height:140px;object-fit:contain;background:repeating-conic-gradient(#e6e0cc 0% 25%,#b7bcae 0% 50%) 50%/16px 16px}.card p{font-size:12px;overflow-wrap:anywhere}textarea{width:100%;min-height:100px}.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px}.compare img{width:100%}.legend{font-size:12px;color:#b9c4ba}.warn{color:#f4be78}@media(max-width:800px){main{display:block}aside{display:grid;grid-template-columns:1fr 1fr;gap:8px}header{display:block}#phone{margin:0}.stage{padding:8px}}
+</style>
+<header><div><h1>St. Louis · Scene workshop</h1><p>Backgrounds, foreground scenery and moving props in one world.</p></div><span class="pill">Issue 02 · art proof</span><a href="../prototypes/art-pipeline/review.html">Prototype judging tools ↗</a></header>
+<main><aside>
+<div><label for="scene">Scene</label><select id="scene"></select>
+<label><input id="props" type="checkbox" checked> Prop cut-outs</label>
+<label><input id="foreground" type="checkbox" checked> Foreground scenery</label>
+<label><input id="rects" type="checkbox"> Prop / foreground rects</label>
+<label><input id="draftRects" type="checkbox"> Draft asset placement rects</label>
+<label><input id="depth" type="checkbox"> Depth regions</label>
+<label><input id="river" type="checkbox"> River geometry</label>
+<label><input id="frame" type="checkbox" checked> First phone frame</label>
+<label><input id="motion" type="checkbox" checked> Preview ambient motion</label>
+<label><input id="reduced" type="checkbox"> Reduced motion</label>
+<button id="react">Play click reaction</button>
+<label for="density">Background rendering</label><select id="density"><option value="plate">Full plate</option><option value="1.25">Phone tiles · 1.25×</option><option value="2">Desktop tiles · 2×</option></select>
+<p class="legend">Green: props · Pink: foreground · Amber: horizon · Cyan: water and phone frame · White: bridge deck · Red: south-end line. Click the scene to inspect a camera position; Reset returns to arrival.</p>
+<button id="reset">Reset to arrival</button></div>
+<div><h2>390 × 844 phone · 0.6 scale</h2><canvas id="phone" width="390" height="844"></canvas><p class="legend">World coverage is 650 × 1406⅔. Camera clamp uses full scene bounds.</p></div>
+</aside><section class="stage">
+<canvas id="world" width="1400" height="1000"></canvas><div id="status" role="status">Loading generated/review.json…</div>
+<h2>Assets and edge checks</h2><div id="assets" class="cards"></div>
+<h2>Moving-part assembly</h2><p class="legend">Master-frame registration at a useful inspection size. The click-reaction and reduced-motion controls also apply here.</p><canvas id="rigview" width="900" height="600"></canvas>
+<h2>Prototype comparison</h2><div class="compare"><div><p>Original prototype Maplewood</p><img src="../prototypes/art-pipeline/assets/maplewood.webp" alt="Original prototype Maplewood"></div><div><p>Current Maplewood plate</p><img id="comparison" alt="Regenerated Maplewood"></div></div>
+<h2>Judge notes</h2><p>Inspect both tile densities, the phone view, cut-out edges and animated joints. Acceptance is a visual decision; dimensions alone do not pass an asset.</p>
+<label for="notes">Findings and next prompt correction</label><textarea id="notes" placeholder="Palette / seams / opening fit / foreground overlap / phone / moving joints…"></textarea>
+<div class="row"><button id="save">Download review notes</button><span id="saved"></span></div>
+</section></main>
+<script type="module" src="./review.js"></script>
+</html>

@@ -1,0 +1,25 @@
+{
+  "id": "lobby-plant",
+  "scene": "moosylvania",
+  "kind": "foreground",
+  "file": "lobby-plant/image.webp",
+  "world": {
+    "x": 90,
+    "y": 1160,
+    "w": 220,
+    "h": 380
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "b982ca2df97959eff31624b04a3b5442d7871e37b8aafaeaf13e78449d655f83"
+  },
+  "trim": {
+    "x": 314,
+    "y": 93,
+    "w": 649,
+    "h": 1035
+  },
+  "width": 649,
+  "height": 1035
+}

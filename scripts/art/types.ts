@@ -1,0 +1,33 @@
+export interface Rect { x: number; y: number; w: number; h: number }
+export interface Asset {
+  id: string;
+  scene: string;
+  kind: 'background' | 'prop' | 'foreground' | 'part' | 'reference';
+  prompt: string;
+  references?: string[];
+  dependsOn?: string[];
+  world?: Rect;
+  size?: string;
+  upscale?: number;
+  opening?: { asset: string; rect: Rect };
+  rig?: { name: string; part: string; parent: string | null; pivot: [number, number] };
+}
+export interface Manifest {
+  version: number;
+  style: string;
+  references: string[];
+  assets: Asset[];
+}
+export interface ProcessedAsset {
+  id: string;
+  kind: Asset['kind'];
+  scene: string;
+  file: string;
+  world?: Rect;
+  source: { w: number; h: number; sha256: string };
+  trim: Rect;
+  width: number;
+  height: number;
+  tiles?: { density: number; x: number; y: number; w: number; h: number; file: string }[];
+  rig?: Asset['rig'];
+}

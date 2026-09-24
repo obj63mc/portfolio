@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "b982ca2df97959eff31624b04a3b5442d7871e37b8aafaeaf13e78449d655f83",
+  "run": "art/runs/lobby-plant/2026-09-24T19-12-53.384Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

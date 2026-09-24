@@ -1,0 +1,616 @@
+{
+  "version": 1,
+  "style": "art/style.txt",
+  "references": [
+    "prototypes/art-pipeline/reference/ref-scene-1-day.png"
+  ],
+  "assets": [
+    {
+      "id": "maplewood",
+      "scene": "maplewood",
+      "kind": "background",
+      "prompt": "A coherent 1400 by 1000 district plate, elevated 3/4 view. A compact two-block Marietta Avenue. Right half the actual Moosylvania church in reference 1: tall pointed gable, dark brick, cream mullions in large arched window, paired square corner towers with cream caps, short wing. Keep church within x 760..1280 and y 180..680 in world coordinates. Arched double-door opening centered around x 990 y 570, roughly 95 wide and 95 tall, empty wall-colored opening without door. Left half Side Project Cellar: modest narrow charcoal storefront with tall rectangular windows and patio, rows of small Maplewood shops behind it. Street sweeps across middle lower third, crosswalk. Two empty grass patches near each other in front of church for welcome sign and fingerpost, x 890..1170 y 700..890. Do NOT draw signs, moose or interactive props. Leave foreground corners empty for separate tree/planter scenery. All four outer edges must finish in one exact cream ground color #E9DFBF with 5 percent empty margin: this is a district on a larger continuous landscape, not a framed postcard. No sky band, no horizon line, no clipped roads or buildings. FLAT SOLID COLOR FILLS, NO TEXTURE OR GRADIENT.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 1400,
+        "h": 1000
+      },
+      "size": "1792x1280"
+    },
+    {
+      "id": "overworld",
+      "scene": "overworld",
+      "kind": "background",
+      "prompt": "One continuous explorable St Louis overworld, landscape 2:1. Elevated 3/4 illustration with open walkable cream ground #E9DFBF, all landmarks at consistent small scale. West to east: Maplewood lower left with dark red brick Moosylvania converted church (match arrival reference) and a charcoal Side Project storefront across a short street; Central West End upper middle-left with red-brick Euclid storefronts and corner bar; Midtown upper middle-right with SLU campus brick buildings and cream clock tower, City Foundry red-brick industrial sawtooth halls with smokestack and blank marquee; a wide teal Mississippi river near the right, running vertically north to south; slender silver Gateway Arch on its west bank, Eads Bridge crossing left to right at middle height; Belleville east bank with a small redbrick downtown square, Victorian county courthouse silhouette and generic early internet commerce office. Carondelet Park lower middle beneath CWE and Midtown with lake, pavilion and continuous looping cycling track. Forest Park green strip connects west neighborhoods, highway 40/64 as a restrained gray east-west strip. Leave large quiet spaces between districts while paths connect them naturally. No hard rectangular district borders, no floating labels, no text, no icons, no people, no moose, no cyclist. Foreground trees sparse so routes remain legible. River x about 76 percent, Carondelet x 48 percent y 77 percent. Consistent palette, perspective, light and scale across the ENTIRE scene.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 5400,
+        "h": 2700
+      },
+      "size": "2304x1152",
+      "references": [
+        "prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png"
+      ]
+    },
+    {
+      "id": "moosylvania",
+      "scene": "moosylvania",
+      "kind": "background",
+      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An airy creative agency lobby inside the converted brick church: warm terracotta rear wall, tall cream pointed arch windows, visible dark timber ceiling beams, reception counter at left rear. Four separate clear floor positions for identical desks arranged across the middle (do NOT draw desks or computers). Clear wall space for sign. Right wall plain empty door opening. Broad uncluttered cream floor across foreground. Olive plant at far rear only. Architectural cues from arrival reference, not a corporate glass skyscraper. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      },
+      "size": "2048x1152",
+      "upscale": 1.7,
+      "references": [
+        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+      ]
+    },
+    {
+      "id": "slu",
+      "scene": "slu",
+      "kind": "background",
+      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. A Saint Louis University computer science teaching lab: cream and terracotta brick walls, tall arched windows with simplified campus clock tower visible outside, olive desks along side walls, teal monitors with blank screens. Leave middle room empty. A large empty cream wall patch at upper left for diploma, center rear blank whiteboard frame area, right-of-center clear floor for a single interactive workstation. Right wall plain empty exit opening. No actual diagrams or text. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      },
+      "size": "2048x1152",
+      "upscale": 2,
+      "references": [
+        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+      ]
+    },
+    {
+      "id": "foundry",
+      "scene": "foundry",
+      "kind": "background",
+      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. A boutique cinema inside City Foundry industrial brick hall: terracotta brick side walls, exposed dark roof trusses, warm mustard sconces. Large blank near-black screen centered on rear wall with clear rectangular bounds, three empty portrait poster panels on left wall, a small plain exit opening right. Sparse rear audience seats; foreground seats reserved for a separate cutout and do NOT draw them. No viewers, no moose, no film imagery, no lettering. Wide open center aisle. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      },
+      "size": "2048x1152",
+      "upscale": 2,
+      "references": [
+        "prototypes/art-pipeline/reference/ref-scene-3-theatre.png"
+      ]
+    },
+    {
+      "id": "side-project",
+      "scene": "side-project",
+      "kind": "background",
+      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An intimate craft-beer cellar tasting room inspired by Side Project Cellar on Marietta: charcoal back bar, cream walls, warm oak bar counter with big uninterrupted flat planes, bottle shelves holding simple blank dark bottle silhouettes, olive seating, broad cream floor. Leave a clear space in middle of countertop for separate taps; empty dark chalkboard patch left; right wall door opening. No patrons, no branded labels, no text. Foreground bottom corners left clear for independent stool scenery. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      },
+      "size": "2048x1152",
+      "upscale": 2,
+      "references": [
+        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+      ]
+    },
+    {
+      "id": "brennans",
+      "scene": "brennans",
+      "kind": "background",
+      "prompt": "Wide 16:9 complete room plate, target 2845 by 1600 world px, with consistent slightly elevated three-quarter camera. An intimate Central West End brick bar and cigar lounge inspired by Brennan’s on Euclid: deep olive paneled walls, terracotta brick, mustard lamplight represented as flat colored shapes, cream ceiling. A large empty rectangular alcove on rear-left wall reserved for humidor, empty floor patch at right for ATM. Dark wood counter back center, a few cream lounge chairs behind the walking area, broad open terracotta floor. Plain exit opening far right. No people, no smoke, no branding or lettering. Foreground corners clear for independent armchair. Keep exactly the same cream/mustard/terracotta/olive/teal palette and simple broad shape language as the reference. No tiny repetitive detail.",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 2845,
+        "h": 1600
+      },
+      "size": "2048x1152",
+      "upscale": 2,
+      "references": [
+        "prototypes/art-pipeline/reference/ref-scene-4-office.png"
+      ]
+    },
+    {
+      "id": "welcome",
+      "scene": "maplewood",
+      "kind": "prop",
+      "prompt": "A low wide mustard welcome board with teal frame and two short dark wooden posts. Board blank. Match Maplewood church scale and perspective. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 1080,
+        "y": 515,
+        "w": 170,
+        "h": 105
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/maplewood/image.webp"
+      ],
+      "dependsOn": [
+        "maplewood"
+      ]
+    },
+    {
+      "id": "signpost",
+      "scene": "maplewood",
+      "kind": "prop",
+      "prompt": "A wooden fingerpost with five blank arrow boards pointing left and right plus a small square board, cream and mustard with teal accent. Tall post. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 840,
+        "y": 475,
+        "w": 85,
+        "h": 160
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/maplewood/image.webp"
+      ],
+      "dependsOn": [
+        "maplewood"
+      ]
+    },
+    {
+      "id": "door",
+      "scene": "maplewood",
+      "kind": "prop",
+      "prompt": "A nearly square pair of teal double doors meeting at center, shallow arched top and cream frame, glass upper panels. EXACT silhouette of final opening crop; no bricks, wall or stairs. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 987,
+        "y": 374,
+        "w": 44,
+        "h": 60
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/maplewood/image.webp"
+      ],
+      "dependsOn": [
+        "maplewood"
+      ],
+      "opening": {
+        "asset": "maplewood",
+        "rect": {
+          "x": 975,
+          "y": 365,
+          "w": 70,
+          "h": 80
+        }
+      }
+    },
+    {
+      "id": "maplewood-tree",
+      "scene": "maplewood",
+      "kind": "foreground",
+      "prompt": "One olive tree canopy on a terracotta-brown trunk in a low cream planter, broad rounded clusters of foliage with only two flat greens. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 100,
+        "y": 735,
+        "w": 110,
+        "h": 160
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/maplewood/image.webp"
+      ],
+      "dependsOn": [
+        "maplewood"
+      ]
+    },
+    {
+      "id": "moose-master",
+      "scene": "maplewood",
+      "kind": "reference",
+      "prompt": "A friendly simple cartoon moose side-on facing right, four legs, dark brown body, lighter muzzle, broad mustard antlers, one white eye with black pupil. Whole animal centered on pure #FF00FF. No shadow. Large simple flat shapes, matching the church scene.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/maplewood/image.webp"
+      ],
+      "dependsOn": [
+        "maplewood"
+      ]
+    },
+    {
+      "id": "moose-body",
+      "scene": "maplewood",
+      "kind": "part",
+      "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY torso, all four legs and neck; remove head, antlers and eye, end neck with a flat cut. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/moose-master/image.webp"
+      ],
+      "dependsOn": [
+        "moose-master"
+      ],
+      "rig": {
+        "name": "moose",
+        "part": "body",
+        "parent": null,
+        "pivot": [
+          0.5,
+          1
+        ]
+      }
+    },
+    {
+      "id": "moose-head",
+      "scene": "maplewood",
+      "kind": "part",
+      "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY head and top of neck with extra neck overlap below; no body, legs, antlers or eye. Fill eye socket with head color. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/moose-master/image.webp"
+      ],
+      "dependsOn": [
+        "moose-master"
+      ],
+      "rig": {
+        "name": "moose",
+        "part": "head",
+        "parent": "body",
+        "pivot": [
+          0.18,
+          0.8
+        ]
+      }
+    },
+    {
+      "id": "moose-antlers",
+      "scene": "maplewood",
+      "kind": "part",
+      "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY both antlers including short attachment stubs at skull. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/moose-master/image.webp"
+      ],
+      "dependsOn": [
+        "moose-master"
+      ],
+      "rig": {
+        "name": "moose",
+        "part": "antlers",
+        "parent": "head",
+        "pivot": [
+          0.7,
+          0.9
+        ]
+      }
+    },
+    {
+      "id": "moose-eye",
+      "scene": "maplewood",
+      "kind": "part",
+      "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY one eye: cream-white oval and black pupil. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/moose-master/image.webp"
+      ],
+      "dependsOn": [
+        "moose-master"
+      ],
+      "rig": {
+        "name": "moose",
+        "part": "eye",
+        "parent": "head",
+        "pivot": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "lobby-desk",
+      "scene": "moosylvania",
+      "kind": "prop",
+      "prompt": "One simple agency desk with cream tabletop on dark wood legs, single teal monitor with blank mustard display. No chair. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 1100,
+        "y": 850,
+        "w": 420,
+        "h": 300
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/moosylvania/image.webp"
+      ],
+      "dependsOn": [
+        "moosylvania"
+      ]
+    },
+    {
+      "id": "lobby-plant",
+      "scene": "moosylvania",
+      "kind": "foreground",
+      "prompt": "One broad-leaf olive houseplant in a cream ceramic cylindrical pot. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 90,
+        "y": 1160,
+        "w": 220,
+        "h": 380
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/moosylvania/image.webp"
+      ],
+      "dependsOn": [
+        "moosylvania"
+      ]
+    },
+    {
+      "id": "slu-workstation",
+      "scene": "slu",
+      "kind": "prop",
+      "prompt": "One university computer workstation: cream desk, teal computer monitor showing blank cream screen, simple dark keyboard. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 1200,
+        "y": 900,
+        "w": 450,
+        "h": 360
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/slu/image.webp"
+      ],
+      "dependsOn": [
+        "slu"
+      ]
+    },
+    {
+      "id": "slu-diploma",
+      "scene": "slu",
+      "kind": "prop",
+      "prompt": "One wide framed cream diploma in a dark olive wood frame. Blank paper without writing; small mustard circular seal at bottom. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 920,
+        "y": 360,
+        "w": 300,
+        "h": 200
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/slu/image.webp"
+      ],
+      "dependsOn": [
+        "slu"
+      ]
+    },
+    {
+      "id": "slu-chair",
+      "scene": "slu",
+      "kind": "foreground",
+      "prompt": "One simple dark olive lab chair with cream seat and four legs in three-quarter view. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 120,
+        "y": 1250,
+        "w": 230,
+        "h": 310
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/slu/image.webp"
+      ],
+      "dependsOn": [
+        "slu"
+      ]
+    },
+    {
+      "id": "foundry-projector",
+      "scene": "foundry",
+      "kind": "prop",
+      "prompt": "One small vintage cinema projector on a low mustard pedestal, two dark reels and teal body, simple flat geometry. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 2100,
+        "y": 1030,
+        "w": 260,
+        "h": 300
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/foundry/image.webp"
+      ],
+      "dependsOn": [
+        "foundry"
+      ]
+    },
+    {
+      "id": "foundry-seats",
+      "scene": "foundry",
+      "kind": "foreground",
+      "prompt": "One row of three connected empty olive and dark brown cinema seat backs, front view with slight elevated perspective. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 900,
+        "y": 1220,
+        "w": 1000,
+        "h": 350
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/foundry/image.webp"
+      ],
+      "dependsOn": [
+        "foundry"
+      ]
+    },
+    {
+      "id": "side-project-taps",
+      "scene": "side-project",
+      "kind": "prop",
+      "prompt": "A polished brass beer tap tower with four handles, teal center plaque and cream metal base. Blank labels. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 1260,
+        "y": 400,
+        "w": 320,
+        "h": 300
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/side-project/image.webp"
+      ],
+      "dependsOn": [
+        "side-project"
+      ]
+    },
+    {
+      "id": "side-project-stool",
+      "scene": "side-project",
+      "kind": "foreground",
+      "prompt": "One oak bar stool with round mustard seat and dark brown legs in three-quarter view. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 250,
+        "y": 1200,
+        "w": 220,
+        "h": 340
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/side-project/image.webp"
+      ],
+      "dependsOn": [
+        "side-project"
+      ]
+    },
+    {
+      "id": "brennans-humidor",
+      "scene": "brennans",
+      "kind": "prop",
+      "prompt": "A dark wood glass-front humidor cabinet with six simple cream cigar boxes on shelves, plain blank labels, closed glass doors in olive and teal flat fills. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 450,
+        "y": 520,
+        "w": 570,
+        "h": 530
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/brennans/image.webp"
+      ],
+      "dependsOn": [
+        "brennans"
+      ]
+    },
+    {
+      "id": "brennans-atm",
+      "scene": "brennans",
+      "kind": "prop",
+      "prompt": "One compact teal ATM with cream blank screen, mustard keypad and dark slot. Unbranded. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 2050,
+        "y": 850,
+        "w": 260,
+        "h": 420
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/brennans/image.webp"
+      ],
+      "dependsOn": [
+        "brennans"
+      ]
+    },
+    {
+      "id": "brennans-chair",
+      "scene": "brennans",
+      "kind": "foreground",
+      "prompt": "One comfortable olive lounge armchair on dark wood legs, broad rounded arms and cream cushion. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "world": {
+        "x": 230,
+        "y": 1120,
+        "w": 430,
+        "h": 400
+      },
+      "size": "1024x1024",
+      "references": [
+        "art/generated/brennans/image.webp"
+      ],
+      "dependsOn": [
+        "brennans"
+      ]
+    },
+    {
+      "id": "rider-master",
+      "scene": "overworld",
+      "kind": "reference",
+      "prompt": "A tiny friendly cyclist on a simple teal road bicycle, perfect side view facing right, mustard jersey, cream helmet, terracotta shorts, two round dark wheels. On pure #FF00FF magenta, entire cycle and rider visible. Simple flat silhouette.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/overworld/image.webp"
+      ],
+      "dependsOn": [
+        "overworld"
+      ]
+    },
+    {
+      "id": "rider-body",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY cyclist and bicycle frame, fork and handlebars; remove both wheels entirely. Everything else pure solid #FF00FF. Never recenter or enlarge.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/rider-master/image.webp"
+      ],
+      "dependsOn": [
+        "rider-master"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "body",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.7
+        ]
+      }
+    },
+    {
+      "id": "rider-rear-wheel",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY the rear wheel, round dark tire with cream hub and three simple spokes. Everything else pure solid #FF00FF. Never recenter or enlarge.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/rider-master/image.webp"
+      ],
+      "dependsOn": [
+        "rider-master"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "rear-wheel",
+        "parent": "body",
+        "pivot": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "rider-front-wheel",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY the front wheel, round dark tire with cream hub and three simple spokes. Everything else pure solid #FF00FF. Never recenter or enlarge.",
+      "size": "1536x1024",
+      "references": [
+        "art/generated/rider-master/image.webp"
+      ],
+      "dependsOn": [
+        "rider-master"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "front-wheel",
+        "parent": "body",
+        "pivot": [
+          0.5,
+          0.5
+        ]
+      }
+    }
+  ]
+}
