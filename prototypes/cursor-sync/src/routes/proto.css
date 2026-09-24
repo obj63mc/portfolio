@@ -102,3 +102,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 		button:disabled { opacity: 0.5; cursor: default; }
 	}
 }
+
+/* ticket 22: cursor canvas lifted above the UI; synthetic hover for the locked cursor */
+.cursor-canvas.top { position: fixed; left: 0; top: 0; z-index: 30; pointer-events: none; }
+.ui :is(button, a).hot { filter: brightness(1.15); outline: 2px solid #1f5fd1; outline-offset: 1px; }

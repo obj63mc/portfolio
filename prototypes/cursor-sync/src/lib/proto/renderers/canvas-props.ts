@@ -44,7 +44,10 @@ export class CanvasProps implements Renderer {
 		this.overlay.style.width = e.vw + 'px';
 		this.overlay.style.height = e.vh + 'px';
 		this.og = this.overlay.getContext('2d')!;
-		e.root.append(this.layer, this.overlay);
+		// ticket 22: the cursor canvas sits above every card and control, so a locked cursor can operate them
+		this.overlay.classList.add('top');
+		e.root.append(this.layer);
+		document.body.append(this.overlay);
 	}
 
 	frame(e: Engine) {

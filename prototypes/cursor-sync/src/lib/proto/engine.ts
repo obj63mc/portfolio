@@ -346,6 +346,21 @@ export class Engine {
 		}
 	};
 
+	private hot: HTMLElement | null = null;
+
+	/** Locked: no real :hover, so mark the card or UI control under the drawn cursor. */
+	private hoverControl() {
+		let c: HTMLElement | null = null;
+		if (this.mode === 'locked') {
+			const hit = document.elementFromPoint(this.pointer.x, this.pointer.y) as HTMLElement | null;
+			c = hit?.closest<HTMLElement>('.ui button, .ui a') ?? null;
+		}
+		if (c === this.hot) return;
+		this.hot?.classList.remove('hot');
+		c?.classList.add('hot');
+		this.hot = c;
+	}
+
 	/** A click while locked lands on whatever sits under the drawn cursor. */
 	private clickUnderCursor() {
 		const { x, y } = this.pointer;
@@ -583,6 +598,7 @@ export class Engine {
 		// visibility, hover, motion
 		const vx0 = this.cam.x - 60, vy0 = this.cam.y - 60, vx1 = this.cam.x + this.viewW + 60, vy1 = this.cam.y + this.viewH + 60;
 		for (const p of this.props) p.visible = p.x + p.w > vx0 && p.x < vx1 && p.y + p.h > vy0 && p.y < vy1;
+		this.hoverControl();
 		const h = this.resolveHover();
 		if (h !== this.hover) { if (this.hover) this.hover.hover = false; if (h) h.hover = true; this.hover = h; }
 		for (const p of this.props) if (p.visible || p.def.motion === 'rider') updateProp(p, dt, this.t, st.rm, this.own.x);
