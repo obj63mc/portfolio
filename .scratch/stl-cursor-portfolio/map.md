@@ -58,9 +58,11 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 
 - [How does the site deploy to Cloudflare, and how is the spend cap watched?](issues/20-deploy-pipeline.md): one Worker serves the static build and runs one Durable Object per room (60 visitors each; a scene opens another room when full; fill-first placement by a directory object; site-wide ceiling default 1,000, then single-player; spectators retired; ADR 0005 supersedes 0004); barmadden.com moves its DNS from GoDaddy to Cloudflare, keeping the Google Workspace records; Workers Builds on `main` with public, noindex Worker Previews per PR, each with its own Durable Objects; Turnstile dropped in favour of WAF Origin and bot rules on `/ws`, Block AI bots on, Bot Fight Mode off; CSP allows inline scripts where SvelteKit or GA need them; `usage` and `multiplayer:off` / `multiplayer:on` scripts instead of automated caps; dashboard checklist in the ticket.
 
+- [Assemble the spec and hand it off](issues/21-assemble-spec.md): the spec is at [`spec.md`](spec.md), ready for `/to-tickets`; every amendment resolved in favour of the later ticket and listed; ten gaps flagged, one call made in assembly (peer river state as a presence bit); seven suggested build phases. The map is complete.
+
 ## Not yet specified
 
-- Nothing left in the fog; every remaining decision is an open ticket.
+- Nothing. Every ticket is resolved and the destination is reached; building the site is the next effort, ticketed from `spec.md`.
 
 ## Out of scope
 
