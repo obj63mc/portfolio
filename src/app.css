@@ -1,0 +1,40 @@
+:root {
+	font-family: system-ui, sans-serif;
+	line-height: 1.4;
+}
+
+body {
+	margin: 0;
+	padding: 1rem;
+}
+
+.skip {
+	position: absolute;
+	left: -100vw;
+
+	&:focus {
+		left: 1rem;
+		top: 1rem;
+	}
+}
+
+/* No engine yet: the canvases stay out of the document. The engine ticket shows them. */
+canvas {
+	display: none;
+}
+
+dialog {
+	max-width: 32rem;
+
+	&::backdrop {
+		background: rgb(0 0 0 / 0.5);
+	}
+}
+
+.controls {
+	position: fixed;
+	left: 1rem;
+	bottom: 1rem;
+	display: flex;
+	gap: 0.5rem;
+}

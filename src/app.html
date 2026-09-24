@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<!-- Plain-document fallback: without JavaScript every card reads inline and the button is noise. -->
+		<noscript>
+			<style>
+				.prop > button, dialog form { display: none; }
+				dialog { display: block; position: static; border: 0; padding: 0; }
+			</style>
+		</noscript>
+		%sveltekit.head%
+	</head>
+	<body>
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
