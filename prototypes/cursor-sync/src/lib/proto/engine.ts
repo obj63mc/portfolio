@@ -37,7 +37,20 @@ export interface Settings {
 	delay: number; // interpolation delay, ms
 	turnstile: boolean;
 	ws: string; // socket base URL
+	own: string; // ticket 15: own-cursor treatment letters, e.g. 'A' or 'BE'
+	ownk: number; // ticket 15: own cursor scale for treatment B
+	peerk: number; // ticket 15: peer cursor scale for treatment D
 }
+
+// PROTOTYPE (ticket 15): the floating switcher cycles these; combos go through the settings panel.
+export const OWN_VARIANTS: { key: string; name: string }[] = [
+	{ key: 'A', name: 'Baseline: halo + fading tag' },
+	{ key: 'B', name: 'Bigger own cursor' },
+	{ key: 'C', name: 'Beacon ring + ping' },
+	{ key: 'D', name: 'Peers recede' },
+	{ key: 'E', name: 'Persistent "you" marker' },
+	{ key: 'BD', name: 'Chosen: bigger own, smaller peers' }
+];
 
 export function readSettings(q: URLSearchParams): Settings {
 	const coarse = matchMedia('(pointer: coarse)').matches;
@@ -59,7 +72,10 @@ export function readSettings(q: URLSearchParams): Settings {
 		hz: num('hz', 15),
 		delay: num('delay', 100),
 		turnstile: q.get('ts') !== '0',
-		ws: q.get('ws') ?? `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
+		ws: q.get('ws') ?? `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`,
+		own: (q.get('own') ?? 'BD').toUpperCase().replace(/[^A-E]/g, '') || 'A',
+		ownk: num('ownk', 1.25),
+		peerk: num('peerk', 0.75)
 	};
 }
 
@@ -573,7 +589,7 @@ export class Engine {
 	private hud() {
 		const r = this.stats.recent(), st = this.settings;
 		ui.hud =
-			`${st.variant} · bg ${st.bg}${st.rm ? ' · reduced motion' : ''}\n` +
+			`${st.variant} · own ${st.own}${st.own.includes('B') ? ` own ×${st.ownk}` : ''}${st.own.includes('D') ? ` peers ×${st.peerk}` : ''} · bg ${st.bg}${st.rm ? ' · reduced motion' : ''}\n` +
 			`${r.fps} fps (${r.refresh} Hz) · p95 ${r.p95} ms · missed ${r.jank}% · js p95 ${r.jsP95} ms\n` +
 			this.net.hud() + '\n' +
 			`scale ${this.s} · dpr ${this.dpr} · tiles ${this.density}x (${this.tiles.size} held) · canvas ${this.canvas.width}x${this.canvas.height}\n` +

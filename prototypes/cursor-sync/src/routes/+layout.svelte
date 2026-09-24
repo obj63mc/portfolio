@@ -3,12 +3,14 @@
 	Foundry theatre with the shared screen at /midtown/foundry. Three variants of where props and cursors live, switchable with
 	?variant=A|B|C, on the real scene routes (/ and /maplewood/moosylvania). Camera, input, tiles and
 	peers are shared by every variant so the variants differ only in rendering and hit testing.
+	Ticket 15: the floating switcher now cycles own-cursor treatments (?own=A..E, combos like ?own=BE
+	via the gear panel); the renderer variant stays on B (?variant= still works).
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, replaceState } from '$app/navigation';
-	import { Engine, VARIANTS, readSettings, type Variant } from '$lib/proto/engine';
+	import { Engine, OWN_VARIANTS, readSettings } from '$lib/proto/engine';
 	import { sceneForPath } from '$lib/proto/scenes';
 	import { ui } from '$lib/proto/ui.svelte';
 	import { runAll, soak } from '$lib/proto/bench';
@@ -20,6 +22,7 @@
 	let panel = $state(false);
 	let hud = $state(true);
 	let form = $state<Record<string, string>>({});
+	let own = $state('A');
 
 	onMount(() => {
 		const q = new URLSearchParams(location.search);
@@ -27,8 +30,9 @@
 		form = {
 			bots: String(s.bots), bg: s.bg, scale: String(s.scale), dpr: String(s.dprCap), rm: s.rm ? '1' : '0',
 			props: String(s.props), tiles: String(s.tiles), push: String(s.push), joy: String(s.joy), tau: String(s.tau), band: String(s.band),
-			hz: String(s.hz), delay: String(s.delay), ts: s.turnstile ? '1' : '0'
+			hz: String(s.hz), delay: String(s.delay), ts: s.turnstile ? '1' : '0', own: s.own, ownk: String(s.ownk), peerk: String(s.peerk)
 		};
+		own = s.own;
 		const e = new Engine(stage, s, (path, back) => {
 			if (back && history.state && history.length > 1 && sceneForPath(location.pathname) !== 'overworld') history.back();
 			else goto(path + location.search);
@@ -51,12 +55,13 @@
 
 	function cycle(d: number) {
 		if (!eng || ui.bench.running) return;
-		const i = VARIANTS.findIndex((v) => v.key === ui.variant);
-		const v = VARIANTS[(i + d + VARIANTS.length) % VARIANTS.length].key as Variant;
+		const i = OWN_VARIANTS.findIndex((v) => v.key === own);
+		const v = OWN_VARIANTS[(i + d + OWN_VARIANTS.length) % OWN_VARIANTS.length].key;
 		const u = new URL(location.href);
-		u.searchParams.set('variant', v);
+		u.searchParams.set('own', v);
 		replaceState(u.pathname + u.search, page.state);
-		eng.setVariant(v);
+		own = form.own = eng.settings.own = v;
+		eng.own.youUntil = eng.t + 4; // replay the tag so A and B can be judged on arrival too
 	}
 
 	function apply() {
@@ -83,7 +88,7 @@
 		knob = { x: 0, y: 0 };
 		if (eng) { eng.joy.x = eng.joy.y = 0; eng.joy.active = false; }
 	}
-	const current = $derived(VARIANTS.find((v) => v.key === ui.variant)!);
+	const current = $derived(OWN_VARIANTS.find((v) => v.key === own) ?? { key: own, name: 'combo' });
 </script>
 
 <div class="stage" bind:this={stage}></div>
@@ -136,6 +141,9 @@
 		<p class="hint">Rooms at different rates are separate, so everyone comparing must pick the same rate.</p>
 		<h2>Settings <small>(reloads)</small></h2>
 		<div class="grid">
+			<label>Own cursor (letters, e.g. BE) <input bind:value={form.own} /></label>
+			<label>Own scale for B <select bind:value={form.ownk}>{#each ['1.25', '1.4', '1.5', '1.75'] as v}<option>{v}</option>{/each}</select></label>
+			<label>Peer scale for D <select bind:value={form.peerk}>{#each ['0.6', '0.75', '0.8', '1'] as v}<option>{v}</option>{/each}</select></label>
 			<label>Send rate Hz <select bind:value={form.hz}>{#each ['10', '15', '20'] as v}<option>{v}</option>{/each}</select></label>
 			<label>Interp delay ms <input bind:value={form.delay} inputmode="numeric" /></label>
 			<label>Turnstile <select bind:value={form.ts}><option value="1">on</option><option value="0">off</option></select></label>

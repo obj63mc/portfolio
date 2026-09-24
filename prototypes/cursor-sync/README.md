@@ -61,3 +61,13 @@ Locally: 35 bots gave 30 live + 5 spectators, spectators promoted as live bots l
 local screen, snapshot overwrite and the overworld/theatre handoff all behaved in the browser.
 The first 10 Hz run right after a deploy failed every socket with 1006 before `hello`; the rerun was
 clean. Watch for it after deploys.
+
+## Ticket 15: own cursor in a crowd (branch `prototype/own-cursor`)
+
+`?own=` picks own-cursor treatments by letter, combinable: A baseline (halo + fading "you" tag),
+B bigger own cursor (`?ownk=`), C beacon ring and ping, D smaller peer cursors (`?peerk=`), E persistent
+"you" bubble. The floating switcher cycles A to E and BD. All of it is local drawing; nothing is on the wire.
+Try it with `npm run dev`, then `http://<mac-ip>:5173/?bots=20` on a phone.
+
+Verdict (Joe, 2026-09-24): **BD**. Own cursor at 1.25x, peers at 0.75x, peers stay fully opaque, on top of
+the baseline halo and fading tag. This is now the default.
