@@ -19,7 +19,7 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
   - Rendering is hybrid: artwork drawn on canvas, props clickable like Cursor Camp with real HTML underneath for SEO and screen readers, cursors on an overlay.
   - Mobile is considered from the start: on-screen joystick plus drag-to-pan (drag scene left, view moves right). Not a later phase.
   - Art is AI-generated (ChatGPT, Nano Banana) in the flat vector style of the old Moosylvania site; original assets are style references only. Animated props via Rive.
-  - Desktop uses pointer lock, as Cursor Camp does. A Join click locks the pointer, and Esc or leaving the window pauses until Resume. The camera moves by edge-push and keys only; drag is touch only.
+  - Desktop uses pointer lock, as Cursor Camp does. A Join click locks the pointer, and Esc or leaving the window pauses until Resume. Arrow keys and WASD move the cursor like the mouse, and the camera follows by edge-push only. Drag is touch only.
   - Sub-scenes are separate rooms. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
   - Only a small set of props are shared, server-authoritative state; the rest are local.
   - Sound: ambient per district plus prop sounds, off by default. Depth is horizon scaling, foreground scenery and the river current, with no general Z-sorting.

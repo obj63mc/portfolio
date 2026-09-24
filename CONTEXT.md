@@ -26,7 +26,7 @@ _Avoid_: interior, level, page, room
 Either the overworld or a sub-scene. The general term for any explorable space.
 
 **Camera**:
-The visitor's view onto a scene: the part of it currently on screen. Moves by edge-push and keys, plus drag and the joystick on touch.
+The visitor's view onto a scene: the part of it currently on screen. Follows the visitor's cursor by edge-push. On touch, drag also moves it.
 _Avoid_: viewport, scroll position, window
 
 ### Things

@@ -32,7 +32,7 @@ Cursor Camp was checked in the browser: its live scene and other visitors' curso
   - the scene keeps animating;
   - the hidden-tab rule from the cursor sync ticket still applies: stop sending, and close after 60 s.
 - **Resume**: clicking Resume re-locks with the cursor exactly where it stopped. If the browser refuses (Chrome's cooldown after Esc), the card stays up and says to try again in a moment.
-- **Camera input on desktop**: only edge-push, arrow keys and WASD. Drag-to-pan, wheel panning and trackpad panning are removed on desktop. Drag stays on touch only.
+- **Camera input on desktop**: only edge-push. Arrow keys and WASD move the cursor, not the camera (amended below). Drag-to-pan, wheel panning and trackpad panning are removed on desktop. Drag stays on touch only.
 - **Navigation**: the element that holds the lock sits in the shared layout, so entering a venue or leaving through an exit door keeps the lock. A link that opens another site blurs the window and pauses as above.
 
 ## Prototype
@@ -61,3 +61,12 @@ Branch `prototype/pointer-lock` (commit 25503d9), built on `prototype/own-cursor
 - the control under the cursor gets a hover mark;
 - a click activates it.
 Checked on the live site: the card opens, Close is marked on hover, and a click closes it. Joe chose to keep the card as the prerendered `<dialog>` from the accessible layer ticket, styled to the scene, as long as the locked cursor can click it. The text is not painted on the canvas. The prototype already works this way.
+
+2026-09-24, Joe's second remote run: panning with the keys stopped working once the camera hit a scene edge. The keys moved the camera, and a clamped camera left nothing to move. Joe's rule: while locked, arrow keys and WASD move the cursor exactly as the mouse does, and the camera follows through the edge-push band. At a world edge the cursor keeps travelling to the scene edge.
+- Cursor speed on the keys is 600 world px/s, the joystick speed, set with `?keyspd=`. Diagonals are normalised.
+- Before joining, keys still pan the camera, since there is no cursor yet. Keyboard users Tab through props there.
+- Commit 3cb8a08, deployed as version dc0a118b.
+- Checked on the live site by stepping the loop:
+  - a quarter-second tap moves the cursor 150 px and leaves the camera still;
+  - holding left, the camera stops at x 0 and the cursor carries on to the scene edge;
+  - holding right, the camera follows once the cursor reaches the band.
