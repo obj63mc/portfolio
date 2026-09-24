@@ -11,6 +11,7 @@ interface Env {
 	ROOM: DurableObjectNamespace<Room>;
 	ASSETS: Fetcher;
 	TURNSTILE_SECRET: string;
+	CAP_OVERRIDE?: string; // stress tests only: one cap for every room
 }
 
 export default {
@@ -91,7 +92,7 @@ export class Room extends DurableObject<Env> {
 		this.hz = Number(q.get('hz'));
 		if (new URL(req.url).pathname === '/stats') return Response.json(this.stats());
 
-		const { cap } = ROOMS[this.room];
+		const cap = Number(this.env.CAP_OVERRIDE) || ROOMS[this.room].cap;
 		const live = [...this.peers.values()].filter((p) => !p.spec).length;
 		const pair = new WebSocketPair();
 		const ws = pair[1];
