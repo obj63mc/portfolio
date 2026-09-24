@@ -70,3 +70,23 @@ Checked on the live site: the card opens, Close is marked on hover, and a click 
   - a quarter-second tap moves the cursor 150 px and leaves the camera still;
   - holding left, the camera stops at x 0 and the cursor carries on to the scene edge;
   - holding right, the camera follows once the cursor reaches the band.
+
+2026-09-24, Joe's third remote run: being dropped at the Arch just because the drift took the cursor out of view felt wrong while steering. Joe's rules:
+- The reset happens only when you reach the river's end while in the river.
+- The bridge is foreground when you are in the river, so you pass under it, and you walk on top of it when you are crossing.
+
+Built in commit c37b652, deployed as version d755556c:
+- the river logic moved to `river.ts`, with an in-the-river state that holds while under the deck;
+- the drift is held inside the viewport and the camera follows it through the push band;
+- the wash-out now triggers only at the south end, at world y 2676 and below;
+- the overlay draws the bridge after your cursor when you are in the river, and peers on the deck stay on top;
+- the stand-in bridge and Arch point now line up with the road crossing and Arch already painted in the placeholder art.
+
+Checked by stepping the loop:
+- walking from the west bank onto the deck stays out of the river, with no drift;
+- stepping off the deck onto water enters the river;
+- the drift passes under the deck and stays in the river, and the cursor is hidden by the bridge (screenshot checked);
+- steering onto the east bank leaves the river and stops the drift;
+- left to drift, the cursor stays on screen, the camera follows, and it washes out at the end after about 3.5 s from mid-river on a tall viewport.
+
+The detail is recorded as an amendment on the depth effects ticket.

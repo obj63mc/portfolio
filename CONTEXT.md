@@ -52,7 +52,7 @@ Non-interactive artwork in a scene, such as the Arch, the river, roads and parks
 _Avoid_: background, decoration, set dressing, filler
 
 **Foreground scenery**:
-Scenery drawn in front of every cursor, the visitor's own included, such as a near tree or the bridge railing. Never a prop, and never covers one.
+Scenery drawn in front of every cursor, the visitor's own included, such as a near tree or a lamp post. Never a prop, and never covers one.
 _Avoid_: occluder, foreground layer, overlay, z-index
 
 **Cosmetic**:
@@ -78,7 +78,7 @@ Motion a prop plays in response to a visitor's hover or click, such as the Monst
 _Avoid_: interaction, effect, trigger, animation
 
 **River current**:
-The pull that carries a cursor downstream while it is over the Mississippi, off the bridge. A visitor carried out of their camera's view is put back at the Arch.
+The pull that carries a cursor downstream while it is in the river. A cursor is in the river once it moves onto the water from a bank or off the bridge. It passes under the bridge and leaves the river by reaching either bank. A visitor carried to the river's south end is put back at the Arch.
 _Avoid_: water drag, drift zone, hazard
 
 ### People

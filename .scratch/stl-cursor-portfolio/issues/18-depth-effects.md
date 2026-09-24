@@ -44,7 +44,7 @@ A look at the prototype art set the ground: Maplewood is a street-level view wit
 
 - **Depth regions**: rects in the scene JSON, each with `horizonY` and `foregroundY`: one per district, one for Carondelet Park, any scenery strip that needs one, and one or more per sub-scene. Checked in the review harness as line overlays.
 - **Foreground scenery**: keyed WebP cut-outs with a world rect each, also painted into the tiles, none overlapping a prop rect.
-- **Overworld only**: the river water mask as a polygon excluding the bridge deck, and the Arch reset point in world px.
+- **Overworld only**: the river water mask as a polygon, the bridge deck rect, a bridge cut-out drawn over cursors in the river, the river's south end line, and the Arch reset point in world px (amended below).
 
 ### Recorded elsewhere
 
@@ -53,3 +53,10 @@ A look at the prototype art set the ground: Maplewood is a street-level view wit
 - No ADR: foreground scenery is cheap to reverse.
 
 2026-09-24: desktop input moved to pointer lock (see [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md)). The locked cursor is the only cursor, so there is no real pointer for the drift to pull away from. The desktop offset question above is gone, and the drift just moves the drawn cursor, as it does on touch.
+
+2026-09-24, amended by [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md), from Joe's third remote run. Leaving the camera view no longer resets anyone; a visitor steering their own cursor is never dropped at the Arch. The river rules above are replaced by these:
+- A cursor is **in the river** once it moves onto the water from a bank or off the end of the bridge deck. It stays in the river while passing under the deck. It leaves by reaching either bank.
+- In the river the cursor drifts south at about 150 world px/s. The camera follows through the normal push band, so the cursor settles partway into the bottom band and the camera scrolls with it.
+- Only reaching the river's south end puts the visitor back at the Arch, with the same fade and snap as before.
+- The bridge is drawn under cursors walking across it, which do not drift, and over a cursor that is in the river. It is the one piece of scenery whose layer depends on the cursor.
+- Peers: in the prototype, a peer's river state is not on the wire, so a peer swimming under the bridge is drawn on top of it. The spec has to choose between deriving each peer's state locally from its path and adding a presence bit.
