@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Manifest, ProcessedAsset } from './types.ts';
-import { MAPLEWOOD } from '../../art/scenes/maplewood.ts';
+import { maplewoodScene } from '../../art/scenes/maplewood.ts';
+import { RIG_DRAW_ORDER } from './types.ts';
 import { OVERWORLD } from '../../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../../src/lib/scenes/index.ts';
 import { compose } from './compose.ts';
@@ -24,7 +25,7 @@ export async function buildReview(root: string, manifest: Manifest, composites =
     const parts = Object.values(rig), x = Math.min(...parts.map(p => p.x)), y = Math.min(...parts.map(p => p.y));
     return [name, { x, y, w: Math.max(...parts.map(p => p.x+p.w))-x, h: Math.max(...parts.map(p => p.y+p.h))-y }];
   }));
-  const sourceScenes = [MAPLEWOOD,
+  const sourceScenes = [maplewoodScene(manifest.assets),
     { ...OVERWORLD, arrival: { x: 1390, y: 1456 }, props: [
       { id: 'signpost', rect: OVERWORLD.signpost.rect }, ...OVERWORLD.districts.flatMap(d => d.venues.flatMap(v => v.props))
     ] },
@@ -35,19 +36,21 @@ export async function buildReview(root: string, manifest: Manifest, composites =
     }))
   ];
   const scenes = sourceScenes.map(scene => {
+    const rig = scene.id === 'maplewood' ? { name: 'moose', rect: scene.props.find(p => p.id === 'moose')!.rect, travelX: 0 } :
+      scene.id === 'overworld' ? { name: 'rider', rect: { x: 2100, y: 2200, w: 240, h: 160 }, travelX: 300 } : undefined;
     const layers = assets.flatMap(asset => {
       if (asset.scene !== scene.id || !asset.world || !['prop', 'foreground'].includes(asset.kind)) return [];
-      const rects = asset.id === 'lobby-desk' ? scene.props.filter(p => p.id.startsWith('desk-')).map(p => p.rect) :
-        [scene.id === 'maplewood' ? scene.props.find(p => p.id === asset.id)?.rect ?? asset.world : asset.world];
+      const rects = asset.id === 'lobby-desk' ? scene.props.filter(p => p.id.startsWith('desk-')).map(p => p.rect) : [asset.world];
       return rects.map((rect, i) => ({ id: `${asset.id}-${i}`, asset: asset.id, kind: asset.kind, rect }));
     });
-    return { ...scene, layers,
-      artProps: layers.filter(l => l.kind === 'prop').map(l => ({ id: l.id, rect: l.rect })),
+    return { ...scene, layers, rig,
+      artProps: [...layers.filter(l => l.kind === 'prop').map(l => ({ id: l.id, rect: l.rect })),
+        ...(rig ? [{ id: rig.name, rect: { ...rig.rect, x: rig.rect.x-rig.travelX, w: rig.rect.w+rig.travelX*2 } }] : [])],
       artForeground: layers.filter(l => l.kind === 'foreground').map(l => ({ key: l.id, rect: l.rect })) };
   });
   mkdirSync(join(root, 'art/generated'), { recursive: true });
   for (const [name, rig] of Object.entries(rigs)) writeFileSync(join(root, `art/generated/${name}-rig.json`), JSON.stringify(rig, null, 2) + '\n');
-  writeFileSync(join(root, 'art/generated/review.json'), JSON.stringify({ scenes, assets, rigs, rigBounds,
+  writeFileSync(join(root, 'art/generated/review.json'), JSON.stringify({ scenes, assets, rigs, rigBounds, rigDrawOrder: RIG_DRAW_ORDER,
     pending: manifest.assets.filter(a => !assets.some(p => p.id === a.id)).map(a => a.id) }, null, 2) + '\n');
   console.log(`Review data: ${assets.length}/${manifest.assets.length} assets. art/review.html`);
   if (composites) compose(root, scenes, assets, rigs, rigBounds);

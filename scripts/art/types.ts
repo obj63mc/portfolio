@@ -31,3 +31,4 @@ export interface ProcessedAsset {
   tiles?: { density: number; x: number; y: number; w: number; h: number; file: string }[];
   rig?: Asset['rig'];
 }
+export const RIG_DRAW_ORDER = ['body', 'rear-wheel', 'front-wheel', 'head', 'antlers', 'eye'];

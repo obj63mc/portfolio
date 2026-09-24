@@ -2,9 +2,10 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { magick } from './process.ts';
 import type { ProcessedAsset, Rect } from './types.ts';
+import { RIG_DRAW_ORDER } from './types.ts';
 
 interface Part { parent: string | null; x: number; y: number; w: number; h: number; pivot: number[]; file: string }
-interface Scene { id: string; w: number; h: number; props?: { id: string; rect: Rect }[]; layers: { asset: string; kind: string; rect: Rect }[] }
+interface Scene { id: string; w: number; h: number; rig?: { name: string; rect: Rect }; layers: { asset: string; kind: string; rect: Rect }[] }
 
 /** A review composite never replaces the separable production layers. */
 export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[], rigs: Record<string, Record<string, Part>>, rigBounds: Record<string, Rect>) {
@@ -18,12 +19,12 @@ export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[],
       const asset = assets.find(a => a.id === layer.asset)!;
       add(join(root, 'art/generated', asset.file), layer.rect);
     }
-    const rigName = scene.id === 'maplewood' ? 'moose' : scene.id === 'overworld' ? 'rider' : undefined;
-    if (rigName && rigs[rigName]) {
+    const rigName = scene.rig?.name;
+    if (rigName && scene.rig && rigs[rigName]) {
       const master = assets.find(a => a.id === `${rigName}-master`);
-      const target = scene.props?.find(p => p.id === rigName)?.rect ?? { x: 2100, y: 2200, w: 240, h: 160 };
+      const target = scene.rig.rect;
       const bounds = rigBounds[rigName], scale = Math.min(target.w/bounds.w, target.h/bounds.h);
-      if (master) for (const key of ['body', 'rear-wheel', 'front-wheel', 'head', 'antlers', 'eye']) {
+      if (master) for (const key of RIG_DRAW_ORDER) {
         const part = rigs[rigName][key]; if (!part) continue;
         add(join(root, 'art/generated', part.file), { x: target.x+(target.w-bounds.w*scale)/2+(part.x-bounds.x)*scale,
           y: target.y+target.h-bounds.h*scale+(part.y-bounds.y)*scale, w:part.w*scale, h:part.h*scale });

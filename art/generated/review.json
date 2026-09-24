@@ -116,6 +116,16 @@
           }
         }
       ],
+      "rig": {
+        "name": "moose",
+        "rect": {
+          "x": 970,
+          "y": 510,
+          "w": 100,
+          "h": 110
+        },
+        "travelX": 0
+      },
       "artProps": [
         {
           "id": "welcome-0",
@@ -142,6 +152,15 @@
             "y": 374,
             "w": 44,
             "h": 60
+          }
+        },
+        {
+          "id": "moose",
+          "rect": {
+            "x": 970,
+            "y": 510,
+            "w": 100,
+            "h": 110
           }
         }
       ],
@@ -717,7 +736,27 @@
         }
       ],
       "layers": [],
-      "artProps": [],
+      "rig": {
+        "name": "rider",
+        "rect": {
+          "x": 2100,
+          "y": 2200,
+          "w": 240,
+          "h": 160
+        },
+        "travelX": 300
+      },
+      "artProps": [
+        {
+          "id": "rider",
+          "rect": {
+            "x": 1800,
+            "y": 2200,
+            "w": 840,
+            "h": 160
+          }
+        }
+      ],
       "artForeground": []
     },
     {
@@ -5657,5 +5696,13 @@
       "h": 724
     }
   },
+  "rigDrawOrder": [
+    "body",
+    "rear-wheel",
+    "front-wheel",
+    "head",
+    "antlers",
+    "eye"
+  ],
   "pending": []
 }

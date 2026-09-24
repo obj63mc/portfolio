@@ -49,7 +49,7 @@ function drawRig(name,target,time,context=ctx) {
     if(key==='eye'&&((moving&&time%4700>4510)||click>.75))context.scale(1,.14);
     context.translate(-px,-py);
   };
-  for(const [key,p] of parts.sort(([a],[b])=>['body','rear-wheel','front-wheel','head','antlers','eye'].indexOf(a)-['body','rear-wheel','front-wheel','head','antlers','eye'].indexOf(b))) {
+  for(const [key,p] of parts.sort(([a],[b])=>data.rigDrawOrder.indexOf(a)-data.rigDrawOrder.indexOf(b))) {
     context.save();transform(key);drawImage(context,`generated/${p.file}`,p);context.restore();
   }
   context.restore();
@@ -57,7 +57,7 @@ function drawRig(name,target,time,context=ctx) {
 function draw(time) {
   requestAnimationFrame(draw);
   if (!scene) return;
-  const hasRig=(scene.id==='maplewood'&&data.rigs.moose)||(scene.id==='overworld'&&data.rigs.rider);
+  const hasRig=scene.rig&&data.rigs[scene.rig.name];
   const animated=hasRig&&((enabled('motion')&&!enabled('reduced'))||time-reaction<900);
   if(!dirty&&(!animated||time-lastFrame<1000/30))return;
   dirty=false;lastFrame=time;
@@ -70,8 +70,7 @@ function draw(time) {
   }
   if(enabled('props')){
     for(const layer of scene.layers.filter(l=>l.kind==='prop')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
-    if(scene.id==='maplewood')drawRig('moose',scene.props.find(p=>p.id==='moose').rect,time);
-    if(scene.id==='overworld')drawRig('rider',{x:2100+(enabled('motion')&&!enabled('reduced')?Math.sin(time/4000)*300:0),y:2200,w:240,h:160},time);
+    if(hasRig){const r=scene.rig;drawRig(r.name,{...r.rect,x:r.rect.x+(enabled('motion')&&!enabled('reduced')?Math.sin(time/4000)*r.travelX:0)},time);}
   }
   // A cursor silhouette makes occlusion testable between scenery and foreground scenery.
   ctx.fillStyle='#fff';ctx.strokeStyle='#243830';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(camera.x,camera.y);ctx.lineTo(camera.x+11,camera.y+36);ctx.lineTo(camera.x+18,camera.y+23);ctx.lineTo(camera.x+33,camera.y+20);ctx.closePath();ctx.fill();ctx.stroke();
@@ -98,7 +97,7 @@ function draw(time) {
   pc.fillStyle='#e9dfbf';pc.fillRect(0,0,390,844);pc.drawImage(world,f.x,f.y,f.w,f.h,0,0,390,844);
   if(enabled('frame'))rect(f,'#55d6e5','390 × 844 / 0.6');
   rc.fillStyle='#e9dfbf';rc.fillRect(0,0,900,600);
-  if(hasRig)drawRig(scene.id==='maplewood'?'moose':'rider',{x:0,y:0,w:900,h:600},time,rc);
+  if(hasRig)drawRig(scene.rig.name,{x:0,y:0,w:900,h:600},time,rc);
   if(time-last>1000){last=time;updateStatus();}
 }
 function updateStatus(){
