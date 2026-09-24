@@ -60,4 +60,4 @@ Branch `prototype/pointer-lock` (commit 25503d9), built on `prototype/own-cursor
 - the cursor canvas sits above all UI;
 - the control under the cursor gets a hover mark;
 - a click activates it.
-Checked on the live site: the card opens, Close is marked on hover, and a click closes it. Whether the card's text should be painted on the canvas, or stay the prerendered `<dialog>` from the accessible layer ticket, is open with Joe.
+Checked on the live site: the card opens, Close is marked on hover, and a click closes it. Joe chose to keep the card as the prerendered `<dialog>` from the accessible layer ticket, styled to the scene, as long as the locked cursor can click it. The text is not painted on the canvas. The prototype already works this way.
