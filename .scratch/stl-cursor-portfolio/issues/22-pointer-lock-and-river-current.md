@@ -55,3 +55,9 @@ Branch `prototype/pointer-lock` (commit 25503d9), built on `prototype/own-cursor
 - Still needs Joe's hands for the real lock, the Esc cooldown and the feel questions above.
 
 2026-09-24: deployed to https://cursor-sync-proto.barmadden.workers.dev (version b23256f8), replacing the ticket 09 build there. It uses the real socket, so Join, pause and the river can be tried with other visitors. Add `?current=`, `?pdrift=1` or `?lock=0` to the URL to change settings.
+
+2026-09-24, Joe's first remote run: Join, pause, resume and the river all worked well. One problem: a prop's card could not be clicked. The drawn cursor was painted under the card and the other controls, so with the OS cursor hidden there was nothing to aim with. Joe's rule: cards (and every on-screen control) are part of the scene interaction. The locked cursor is drawn above them and operates them. The fix is commit 32451f3, deployed as version 6b736a9d:
+- the cursor canvas sits above all UI;
+- the control under the cursor gets a hover mark;
+- a click activates it.
+Checked on the live site: the card opens, Close is marked on hover, and a click closes it. Whether the card's text should be painted on the canvas, or stay the prerendered `<dialog>` from the accessible layer ticket, is open with Joe.
