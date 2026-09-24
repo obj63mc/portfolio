@@ -4,10 +4,10 @@
   "kind": "prop",
   "file": "welcome/image.webp",
   "world": {
-    "x": 998,
-    "y": 1680,
-    "w": 62,
-    "h": 40
+    "x": 1040,
+    "y": 1712,
+    "w": 130,
+    "h": 83
   },
   "source": {
     "w": 1024,

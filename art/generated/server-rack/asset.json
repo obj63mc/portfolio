@@ -1,0 +1,34 @@
+{
+  "id": "server-rack",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "server-rack/image.webp",
+  "world": {
+    "x": 5135.653907496013,
+    "y": 1267.950558213716,
+    "w": 111.44338118022328,
+    "h": 172.0494417862839
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "d6aba0c24170beca985d12758f20b426dee3a66b338910f0431cc9606f1cd69a"
+  },
+  "trim": {
+    "x": 229,
+    "y": 391,
+    "w": 559,
+    "h": 863
+  },
+  "width": 559,
+  "height": 863,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 5090,
+      "y": 1190,
+      "w": 250,
+      "h": 250
+    }
+  }
+}

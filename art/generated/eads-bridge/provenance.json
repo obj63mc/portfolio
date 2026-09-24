@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "6e049db5d02f5fd41f115ffc7342c77ed953ebf317dc74d4a15206f0d08dc4af",
+  "run": "art/runs/eads-bridge/2026-09-24T21-43-06.154Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -93,7 +93,7 @@ function draw(time) {
     const r=scene.river;ctx.fillStyle='#55d6e54d';ctx.beginPath();r.mask.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();
     // The deck is excluded from the overlay mask and shown as a distinct walkable rectangle.
     if(plate) {ctx.save();ctx.beginPath();ctx.rect(r.deck.x,r.deck.y,r.deck.w,r.deck.h);ctx.clip();drawImage(ctx,`generated/${plate.file}`,{x:0,y:0,w:scene.w,h:scene.h});ctx.restore();}
-    rect(r.deck,'#fff','bridge deck');line(r.southEndY,'#ff7969');ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(r.arch.x,r.arch.y,18,0,Math.PI*2);ctx.fill();
+    rect(r.deck,'#fff','bridge deck');if(r.bridge)rect(r.bridge.rect,'#f6a6d3',r.bridge.key);line(r.southEndY,'#ff7969');ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(r.arch.x,r.arch.y,18,0,Math.PI*2);ctx.fill();
   }
   const f=frame();
   pc.fillStyle='#e9dfbf';pc.fillRect(0,0,390,844);pc.drawImage(world,f.x,f.y,f.w,f.h,0,0,390,844);

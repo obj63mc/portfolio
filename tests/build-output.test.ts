@@ -55,7 +55,8 @@ test('overworld: one button and one dialog per prop, named prop plus gist', () =
 	for (const p of overworldProps) assert.ok(texts(html, 'button').includes(`${p.name}: ${p.gist}`), p.id);
 	assert.match(html, /<dialog[^>]*>[\s\S]*Chief Architect[\s\S]*<\/dialog>/);
 	const moosylvania = texts(withoutDialogs(html).slice(html.indexOf('id="moosylvania"')), 'button').slice(0, 2);
-	assert.deepEqual(moosylvania.map((t) => t.split(':')[0]), ['The moose', 'Welcome sign'], 'props read left to right');
+	const byX = OVERWORLD.districts[0].venues[0].props.slice().sort((a, b) => a.rect.x - b.rect.x).map((p) => p.name);
+	assert.deepEqual(moosylvania.map((t) => t.split(':')[0]), byX, 'props read left to right');
 });
 
 test('overworld: doors and contacts are links, everything else stays a button', () => {

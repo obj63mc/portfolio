@@ -24,7 +24,7 @@ Open [the scene workshop](http://127.0.0.1:4174/art/review.html). There are **si
 
 Each `*-master` reference is a complete composition. Location photos supply architectural details; the original daytime illustration supplies the brighter cyan, green, cream and coral palette. See [landmarks.md](landmarks.md) and [the source ledger](references/locations.json). Photos and satellite screenshots are local references, never shipped artwork. Recreating a master on another machine requires restoring the selected images to the listed `art/references/local/` paths. Missing references produce a clear error; committed outputs and the workshop work without this local photo pack.
 
-1. Generate and inspect a master: `npm run art -- generate moosylvania-master --force`. Judge it against the real room photographs before extracting anything.
+1. Generate and inspect a master: `npm run art -- generate moosylvania-master --force`. Judge it against the real room photographs before extracting anything. To iterate on an accepted draft, copy it to `references/local/drafts/`, attach it as a composition reference and give the prompt a short fix list; the overworld master was settled this way in two runs.
 2. Choose each movable object's crop in the master. `registration.rect` is that crop in scene world coordinates. The pipeline attaches the exact crop as the final reference. Background edits remove those objects while preserving the room, furniture, perspective and illumination.
 3. Generate the layers with `--force --keep-masters`. Do not regenerate an approved master accidentally. An explicit `world` rectangle anchors the trimmed object to measured fixture bounds; otherwise placement derives from its source crop and trim offset. Inspect both: models sometimes recenter or resize extracted objects despite the prompt.
 4. For precise extraction without redrawing, `deriveFrom` plus `registration.mask` copies the original composition pixels through a measured polygon matte. Mask points are normalized to the registration crop. The SLU chair and one lobby monitor use this path after generated cutouts lost interior pixels. `deriveFrom` without a mask copies the composition, as used by the overworld.
@@ -32,7 +32,17 @@ Each `*-master` reference is a complete composition. Location photos supply arch
 
 The four Moosylvania computer targets are four monitors on existing desks. They are not four cloned furniture sprites. Foreground seats face the Alamo screen; the Side Project tap bank rests on the bar; the Brennan's chair meets the rug and floor in the original perspective. Foreground scenery never covers a prop. Brennan's stationary cabinet is scenery, with its unobscured upper glass face extracted as a separate prop for highlighting and interaction. The foreground chair can overlap passive casework while remaining clear of that face. The validator rejects foreground/prop bounding-box overlaps.
 
+The Codex image tool accepts **at most five reference images** (the registration crop counts as one; the pipeline refuses more) and returns its own native size: about 1774 × 887 for a 2:1 prompt, 1254 × 1254 for a square. It cannot be told a pixel size; earlier 2048 and 2304 wide masters were `sips` upscales made by the Codex agent, and the pipeline now asks for the native file unresized. Upscaling to the plate size is the pipeline's job.
+
 `generate backgrounds` selects six plates; `generate furnishings` selects interior scenery, props and foreground. Existing outputs are retained unless `--force` is present. `--keep-masters` preserves reference assets even with `--force`. Run one generator per asset at a time; independent scenes may run concurrently after shared dependencies exist. `generate <asset> --dry-run` writes its full prompt and checks available references. Processing stages outputs before replacement so failure leaves the previous asset intact.
+
+## The overworld
+
+The overworld master is one Cursor Camp style diorama: an elevated three-quarter view, north up, one continuous ground plane with a thin skyline band, about a dozen large landmarks and connected cream footpaths, so a 32 world px cursor reads as person scale beside an 80 px doorway. A Cursor Camp screenshot (`references/local/cursor-camp/`, logged in `references/locations.json`) is attached only for camera angle and object scale; the style and palette still come from the original daytime illustration. The five district signs and the MonsterCommerce roof sign are the only lettering requested.
+
+Static props are painted into the composition and extracted by registration crop, the same as the interiors: the church door, marquee (board and bulb row as separate layers), MonsterCommerce sign and its eyeball (separate layers, so a blink draws over a dark board), server rack, bike, park notice board, two foreground trees and the Eads Bridge cut-out. Square crops use `1024x1024`; the bridge uses a 3:2 crop with `1536x1024`, because the extraction canvas must keep the crop's aspect ratio. The welcome board, fingerpost, moose rig and rider rig are standalone cut-outs placed by `world` rects and `sceneLayouts`; they are re-placed, not regenerated, when the master changes. The rider's `travelX` sweeps the lower straight of the track.
+
+`src/lib/scenes/overworld.ts` carries the measured geometry: district and venue rects, prop rects copied from each extraction's `asset.json`, six depth regions that tile the world with one shared horizon (300) and foreground line (2700), the foreground tree rects, the river water polygon, the Eads deck and bridge cut-out, the Poplar Street south-end line and the Arch reset point. `tests/overworld-geometry.test.ts` checks those rules, including the signpost and moose inside the first phone frame centred on the welcome board.
 
 ## Files and coordinates
 
@@ -44,7 +54,7 @@ The four Moosylvania computer targets are four monitors on existing desks. They 
 - `moose-rig.json` and `rider-rig.json`: prototype-compatible `{parent,x,y,w,h,pivot}` parts plus file paths. Pivots are normalized within the trimmed part; ancestor transforms operate in master space. Both rigs are placed in the overworld.
 - `generated/composites/`: stitched inspection images and contact sheet; these do not replace separable layers.
 
-Production geometry overlays come from `src/lib/scenes/overworld.ts` and the five interior modules. Dashed draft rectangles follow the actual assembled artwork. **Production hit targets and river collisions still use the earlier scene data.** Issues 04/05 own promoting artwork and reconciling that geometry; this revision does not switch the production route. The artwork is a coherent starter asset set, not the complete content inventory for those tickets.
+Production geometry overlays come from `src/lib/scenes/overworld.ts` and the five interior modules. Dashed draft rectangles follow the actual assembled artwork. The overworld's production geometry now matches its artwork (issue 04); the interiors' hit targets still use the earlier scene data until issue 05 promotes them.
 
 ## Judge and regenerate — either agent
 

@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "556a1847af418e79d4fc204d77b522f00109b54fa0d997add7c3dde7a926366d",
+  "run": "art/runs/marquee/2026-09-24T21-40-34.987Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

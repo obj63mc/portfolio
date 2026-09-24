@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "513a94766cd666153e63ac46afeb5eb147daa3533028c571001b9dc1cad45b82",
+  "run": "art/runs/bike/2026-09-24T21-43-23.746Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

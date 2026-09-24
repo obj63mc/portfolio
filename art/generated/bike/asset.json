@@ -1,0 +1,34 @@
+{
+  "id": "bike",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "bike/image.webp",
+  "world": {
+    "x": 2624.306220095694,
+    "y": 2277.177033492823,
+    "w": 235.11961722488036,
+    "h": 137.87878787878788
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "513a94766cd666153e63ac46afeb5eb147daa3533028c571001b9dc1cad45b82"
+  },
+  "trim": {
+    "x": 69,
+    "y": 324,
+    "w": 1134,
+    "h": 665
+  },
+  "width": 1134,
+  "height": 665,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 2610,
+      "y": 2210,
+      "w": 260,
+      "h": 260
+    }
+  }
+}

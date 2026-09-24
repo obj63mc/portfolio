@@ -82,8 +82,11 @@ export interface Overworld extends SceneBase {
 	/** West to east by centre x: DOM order, tab order and reading order. */
 	districts: District[];
 	river: {
+		/** Water polygon. The deck rect is excluded by the engine, so walking across never drifts. */
 		mask: Point[];
 		deck: Rect;
+		/** The bridge cut-out: drawn over a cursor in the river and under a cursor crossing the deck. */
+		bridge: Cutout;
 		southEndY: number;
 		arch: Point;
 	};

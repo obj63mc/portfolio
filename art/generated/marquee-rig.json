@@ -1,0 +1,14 @@
+{
+  "bulbs": {
+    "parent": null,
+    "x": 341,
+    "y": 416,
+    "w": 651,
+    "h": 113,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "marquee-bulbs/image.webp"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "eye": {
+    "parent": null,
+    "x": 223,
+    "y": 464,
+    "w": 174,
+    "h": 196,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "mc-eye/image.webp"
+  }
+}

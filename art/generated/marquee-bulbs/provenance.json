@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "82fd18440dd3bc16e02e6a5f3f2b48df5474373698f8edf5cb62b57dfec5116d",
+  "run": "art/runs/marquee-bulbs/2026-09-24T21-41-40.860Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -1,0 +1,34 @@
+{
+  "id": "mc-sign",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "mc-sign/image.webp",
+  "world": {
+    "x": 4777.86283891547,
+    "y": 879.2344497607655,
+    "w": 524.7208931419458,
+    "h": 186.66666666666666
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "5cc0338337b33631055cb4ab2c131dab636a82c501447141aa0ecc8d23d34f46"
+  },
+  "trim": {
+    "x": 40,
+    "y": 267,
+    "w": 1175,
+    "h": 418
+  },
+  "width": 1175,
+  "height": 418,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 4760,
+      "y": 760,
+      "w": 560,
+      "h": 560
+    }
+  }
+}

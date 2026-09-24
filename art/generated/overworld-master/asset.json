@@ -10,16 +10,16 @@
     "h": 2700
   },
   "source": {
-    "w": 2304,
-    "h": 1152,
-    "sha256": "eeed777acb68a40e97b83caf6b67e7faff8fff1a8ff9589afb42be9aba1f70b3"
+    "w": 1774,
+    "h": 887,
+    "sha256": "8634cc2e6dc44de5ebf0b62f588ccc8d4c8665d5f5ef310ea0feb9ff5bcd8775"
   },
   "trim": {
     "x": 0,
     "y": 0,
-    "w": 2304,
-    "h": 1152
+    "w": 1774,
+    "h": 887
   },
-  "width": 2304,
-  "height": 1152
+  "width": 1774,
+  "height": 887
 }

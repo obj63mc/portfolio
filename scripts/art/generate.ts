@@ -6,6 +6,8 @@ import { createHash } from 'node:crypto';
 import { dimensions, magick } from './process.ts';
 import type { Asset, Manifest, Rect } from './types.ts';
 
+export const MAX_REFERENCES = 5;
+
 export function preparePrompt(asset: Asset, manifest: Manifest, root: string, run: string) {
   const references = manifest.references.map(p => resolve(root, p));
   // Keep the asset-specific master last; part prompts refer to the final image.
@@ -27,8 +29,10 @@ export function preparePrompt(asset: Asset, manifest: Manifest, root: string, ru
   if (asset.opening) attachCrop('opening', asset.opening);
   if (asset.registration) attachCrop('registration', asset.registration, asset.size ?? '1024x1024');
   for (const path of references) if (!existsSync(path)) throw new Error(`Missing reference: ${path}`);
+  // The Codex image tool rejects more than five reference images; the crop counts as one.
+  if (references.length > MAX_REFERENCES) throw new Error(`${asset.id}: ${references.length} references, the image tool accepts at most ${MAX_REFERENCES}`);
   const prompt = `${readFileSync(resolve(root, manifest.style), 'utf8')}\n\nASSET: ${asset.id}\n${asset.prompt}\n\n` +
-    `Target image size: ${asset.size ?? '1536x1024'}. ${asset.registration ? 'Preserve the exact framing of the final crop, including objects clipped by its edge.' : asset.kind === 'background' ? 'Fill the image edge to edge.' : 'Keep the entire object within the frame with a clean margin.'}\n` +
+    `Target aspect ratio and size: ${asset.size ?? '1536x1024'}. Save the tool's native output; never resize it. ${asset.registration ? 'Preserve the exact framing of the final crop, including objects clipped by its edge.' : asset.kind === 'background' ? 'Fill the image edge to edge.' : 'Keep the entire object within the frame with a clean margin.'}\n` +
     `References in order:\n${references.map((p, i) => `${i + 1}. ${p}`).join('\n')}\n` +
     (asset.opening ? 'The final reference is the exact opening to fill; match its silhouette and perspective.\n' : '') +
     (asset.registration ? 'REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.\n' : '');
@@ -59,7 +63,7 @@ export function generate(asset: Asset, manifest: Manifest, root: string, provide
     return output;
   }
   if (provider === 'codex') {
-    const instruction = `${prompt}\nUse the built-in image generation tool, using the attached reference images. Generate exactly this one raster asset. Save the original generated image to ${output}. Do not perform background removal, color keying, alpha processing or other pixel edits: the outer pipeline handles that. Do not synthesize the illustration with code or SVG. Do not modify any project files except that output. Do not run git. If image generation is unavailable, report UNSUPPORTED and stop. Do not invoke an API fallback. Return the saved path.\n`;
+    const instruction = `${prompt}\nUse the built-in image generation tool, using the attached reference images. Generate exactly this one raster asset. Save the original generated image to ${output}. Do not perform background removal, color keying, alpha processing, resizing or other pixel edits: the outer pipeline handles that. Do not synthesize the illustration with code or SVG. Do not modify any project files except that output. Do not run git. If image generation is unavailable, report UNSUPPORTED and stop. Do not invoke an API fallback. Return the saved path.\n`;
     const log = openSync(join(run, 'codex.jsonl'), 'w');
     try {
       const result = spawnSync('codex', ['exec', '--ephemeral', '--sandbox', 'workspace-write', '--json', '-C', root,

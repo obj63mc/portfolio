@@ -131,10 +131,10 @@
       "kind": "prop",
       "prompt": "A low wide mustard welcome board with teal frame and two short dark wooden posts. Board blank. Match Maplewood church scale and perspective. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
       "world": {
-        "x": 998,
-        "y": 1680,
-        "w": 62,
-        "h": 40
+        "x": 1040,
+        "y": 1712,
+        "w": 130,
+        "h": 83
       },
       "size": "1024x1024",
       "references": [
@@ -150,10 +150,10 @@
       "kind": "prop",
       "prompt": "A wooden fingerpost with five blank arrow boards pointing left and right plus a small square board, cream and mustard with teal accent. Tall post. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
       "world": {
-        "x": 926,
-        "y": 1677,
-        "w": 32,
-        "h": 60
+        "x": 1215,
+        "y": 1660,
+        "w": 75,
+        "h": 140
       },
       "size": "1024x1024",
       "references": [
@@ -167,7 +167,7 @@
       "id": "door",
       "scene": "overworld",
       "kind": "prop",
-      "prompt": "ONLY the existing church entrance door leaves and narrow door frame. No brick, stairs or surrounding facade. Keep the exact tiny entrance at the same pixel position in the crop. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "prompt": "ONLY the church's arched wooden double entrance door with its narrow stone frame. No brick, steps, planters or lamp posts. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
       "size": "1024x1024",
       "references": [],
       "dependsOn": [
@@ -176,10 +176,10 @@
       "registration": {
         "asset": "overworld-master",
         "rect": {
-          "x": 806.25,
-          "y": 1549.21875,
-          "w": 150,
-          "h": 150
+          "x": 830,
+          "y": 1540,
+          "w": 220,
+          "h": 220
         }
       }
     },
@@ -187,7 +187,7 @@
       "id": "maplewood-tree",
       "scene": "overworld",
       "kind": "foreground",
-      "prompt": "ONLY the central tree with green crown and its visible short trunk. No surrounding ground, road, building, neighboring trees or shadows. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "prompt": "ONLY the single round green tree nearest the center with its short trunk. No ground, path, bushes, bench, neighboring trees or shadows. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
       "size": "1024x1024",
       "references": [],
       "dependsOn": [
@@ -196,10 +196,10 @@
       "registration": {
         "asset": "overworld-master",
         "rect": {
-          "x": 1148.4375,
-          "y": 1699.21875,
-          "w": 150,
-          "h": 150
+          "x": 1080,
+          "y": 1970,
+          "w": 180,
+          "h": 180
         }
       }
     },
@@ -863,13 +863,13 @@
       "id": "overworld-master",
       "scene": "overworld",
       "kind": "reference",
-      "prompt": "One continuous illustrated St Louis exploration map, 2304x1152 (2:1), north toward top, east right, mildly elevated three-quarter aerial camera. The FIRST image controls bright simple original cartoon style: clear CYAN sky/water, fresh yellow-green parks, pale cream sidewalks, ivory roofs, sunny yellow accents. No sepia, no brown wash, no mountains. Satellite screenshots control RELATIVE GEOGRAPHY, not photographic rendering. West/left: Maplewood small Marietta district lower-left, Moosylvania dark red converted church and Side Project modest one-story charcoal/brick corner storefront directly nearby; Moosylvania facade must match arrival illustration. No detached Maplewood island or inset. North of Maplewood: broad Forest Park green oval/rectangle; Central West End with Brennan's brick/teal Euclid storefront just northeast of Forest Park. Midtown to their east: actual SLU McDonnell Douglas Hall as modern low rectangular cream/red masonry academic block, no invented Gothic clocktower, and City Foundry long brick industrial hall/sawtooth roofs with yellow trim south of SLU, adjacent Alamo modern rust-red box auditorium and projecting flat awning. Carondelet Park is SOUTH of central city and southeast of Maplewood, a distinct lower green area with lakes and cycle path, NOT in downtown. Mississippi runs north-south near right edge with gentle bend, broad teal water. Arch is entirely on grassy WEST bank in a large green national park. Critical: I-44 runs north-south WEST of Arch park, I-64/40 runs east-west past Foundry then SOUTH of the Arch toward POPLAR STREET BRIDGE, crossing river SOUTH of Arch. NO roadway through the Arch opening or its grass. Eads Bridge crosses river NORTH of Arch, with three steel arches. Leave visible grass between every road and Arch legs. Illinois/east bank occupies right fifth; compressed Belleville town sits well east/southeast, away from immediate waterfront. Simplify intervening city blocks, keep all named landmarks distinct at legible scale, common camera and lighting. Continuous streets/paths integrate districts. Fully compose nonmoving scenery; no interactive signs, moose, cyclist or people. Leave natural grass verge beside Moosylvania entrance for signpost and moose. No text, labels, map pins, dotted boundaries or UI.",
-      "size": "2304x1152",
+      "prompt": "One continuous illustrated St Louis exploration world, 2:1 landscape. The image labeled COMPOSITION DRAFT is an approved draft of this exact scene: keep its camera (elevated three-quarter diorama view, north up, east right, thin sky and distant-skyline band along the top edge), its layout, and the position, size and design of every landmark, sign, path, tree cluster, lake, track, river and bridge. Redraw it at full resolution with crisp flat shapes and this short fix list. FIXES: (1) exactly ONE steel-arch bridge, Eads Bridge, crosses the river north of the Gateway Arch, carrying a flat walkable deck; remove the second steel bridge. Keep the plain highway bridge at the far south edge. (2) The distant skyline must NOT contain an arch; the Gateway Arch appears once only, on its green riverside lawn. (3) The I-44 highway runs well WEST of the Arch lawn with a wide grass margin; no road passes between, beside or under the Arch legs. (4) Moosylvania stays the dark red brick converted church from the arrival illustration: one pointed gable, one tall arched window, front steps, with an EMPTY open grass verge in front of and right of the steps for a moose and signs. The FIRST image controls the flat cartoon style and bright palette: cyan sky and water, fresh yellow-green grass, pale cream paths, sunny yellow and small coral accents; broad flat fills, no outlines, no texture. The Cursor Camp screenshot controls only camera angle and object scale: a person-scale doorway is about 1/30 of the image height; large readable landmarks on one continuous ground with connected cream footpaths. Landmarks, west to east: Side Project Cellar one-story brick corner storefront with string lights and patio; Moosylvania church; MAPLEWOOD stone sign; Forest Park tree strip with a stone gate; Central West End brick row with Brennan's teal-millwork storefront and its CENTRAL WEST END sign; sunken I-64 with a pedestrian overpass; SLU McDonnell Douglas Hall modern cream and red academic block with glass entrance and MIDTOWN sign; City Foundry brick sawtooth hall with yellow trim and the attached rust-red Alamo cinema with a blank bulb-lit marquee; the Gateway Arch on its lawn; the Mississippi; Eads Bridge; Belleville on the east bank with the BELLEVILLE sign and the two-story brick MonsterCommerce office whose roof sign reads MONSTERCOMMERCE in bold cream capitals with the first O drawn as a big cartoon eyeball, and a tall dark server rack with small green lights standing outside its open loading dock; Carondelet Park south-center with lake, boathouse, oval cream cycling track with a start line, CARONDELET PARK sign, tall wooden notice board and a teal road bicycle leaning on a fence post beside it. Text (verbatim, the only lettering): MAPLEWOOD, CENTRAL WEST END, MIDTOWN, BELLEVILLE, CARONDELET PARK, MONSTERCOMMERCE. No people, animals, moose, cyclist, vehicles, map pins, dotted lines or UI. One consistent camera, scale and upper-left light across the whole image.",
+      "size": "1774x887",
       "references": [
-        "art/references/local/places/satellite-metro.png",
-        "art/references/local/places/satellite-arch.png",
+        "art/references/local/drafts/overworld-master-v1.webp",
+        "art/references/local/cursor-camp/campfire.png",
         "prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png",
-        "art/references/local/places/alamo/01.jpg"
+        "art/references/local/places/foundry/01.jpg"
       ],
       "world": {
         "x": 0,
@@ -1004,34 +1004,218 @@
           "h": 177.8125
         }
       }
+    },
+    {
+      "id": "marquee",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the cinema marquee: the white rectangular sign box, its dark frame and the dark bulb housing strip on top. Fill every bulb spot on that top strip with the housing's dark color so no bulbs remain. No brick wall, no awning, no bulbs under the awning, no doors. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 2980,
+          "y": 730,
+          "w": 460,
+          "h": 460
+        }
+      }
+    },
+    {
+      "id": "marquee-bulbs",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the row of small round yellow bulbs on the dark strip on top of the cinema marquee. No housing, sign box, frame, awning, wall or the bulbs under the awning. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 2980,
+          "y": 730,
+          "w": 460,
+          "h": 460
+        }
+      },
+      "rig": {
+        "name": "marquee",
+        "part": "bulbs",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "mc-sign",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the dark rooftop sign board reading MONSTERCOMMERCE with its cream lettering and short support posts. Fill the eyeball O with the board's dark color so the letters read M, an empty dark gap, then NSTERCOMMERCE. No roof, brick, sky or trees. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 4760,
+          "y": 760,
+          "w": 560,
+          "h": 560
+        }
+      }
+    },
+    {
+      "id": "mc-eye",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the round cartoon eyeball that forms the O of the rooftop sign: white eye, cyan iris and black pupil. No letters, board, roof or sky. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 4760,
+          "y": 760,
+          "w": 560,
+          "h": 560
+        }
+      },
+      "rig": {
+        "name": "mc-sign",
+        "part": "eye",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "server-rack",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the tall dark server rack cabinet with its rows of small green and yellow lights. No wall, loading dock, bollard, ground or trees. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 5090,
+          "y": 1190,
+          "w": 250,
+          "h": 250
+        }
+      }
+    },
+    {
+      "id": "bike",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the teal road bicycle with both wheels. No fence, posts, grass, lamp or path. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 2610,
+          "y": 2210,
+          "w": 260,
+          "h": 260
+        }
+      }
+    },
+    {
+      "id": "ride-sign",
+      "scene": "overworld",
+      "kind": "prop",
+      "prompt": "ONLY the tall wooden park notice board: its small roof, two posts and the framed map panel. No fence rails, grass, path, lamp or trees. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1024x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 2780,
+          "y": 1990,
+          "w": 390,
+          "h": 390
+        }
+      }
+    },
+    {
+      "id": "eads-bridge",
+      "scene": "overworld",
+      "kind": "foreground",
+      "prompt": "ONLY Eads Bridge: both stone towers, the two steel arch spans, the deck and the center pier down to the waterline. No water, riverbank rocks, trees or road beyond the towers. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "size": "1536x1024",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 3960,
+          "y": 540,
+          "w": 1020,
+          "h": 680
+        }
+      },
+      "world": {
+        "x": 3978,
+        "y": 625,
+        "w": 1002,
+        "h": 253
+      }
     }
   ],
   "sceneLayouts": {
     "overworld": {
       "arrival": {
-        "x": 985,
-        "y": 1650
+        "x": 1105,
+        "y": 1755
       },
       "rigs": [
         {
           "name": "moose",
           "rect": {
-            "x": 1070,
-            "y": 1680,
-            "w": 65,
-            "h": 65
+            "x": 1060,
+            "y": 1840,
+            "w": 160,
+            "h": 120
           },
           "travelX": 0
         },
         {
           "name": "rider",
           "rect": {
-            "x": 1940,
-            "y": 2360,
-            "w": 90,
-            "h": 65
+            "x": 2000,
+            "y": 2215,
+            "w": 120,
+            "h": 85
           },
-          "travelX": 0
+          "travelX": 400
         }
       ]
     }

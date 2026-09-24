@@ -1,0 +1,34 @@
+{
+  "id": "marquee",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "marquee/image.webp",
+  "world": {
+    "x": 3083.811802232855,
+    "y": 860.5901116427433,
+    "w": 305.56618819776713,
+    "h": 119.21850079744816
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "556a1847af418e79d4fc204d77b522f00109b54fa0d997add7c3dde7a926366d"
+  },
+  "trim": {
+    "x": 283,
+    "y": 356,
+    "w": 833,
+    "h": 325
+  },
+  "width": 833,
+  "height": 325,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 2980,
+      "y": 730,
+      "w": 460,
+      "h": 460
+    }
+  }
+}

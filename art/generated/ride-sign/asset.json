@@ -1,0 +1,34 @@
+{
+  "id": "ride-sign",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "ride-sign/image.webp",
+  "world": {
+    "x": 2857.44019138756,
+    "y": 2022.6555023923445,
+    "w": 236.67464114832538,
+    "h": 326.555023923445
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "aab8e13bca2e0c7e90beb27c4a3b969f851d08fd84c3842ce0c704787ae2d428"
+  },
+  "trim": {
+    "x": 249,
+    "y": 105,
+    "w": 761,
+    "h": 1050
+  },
+  "width": 761,
+  "height": 1050,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 2780,
+      "y": 1990,
+      "w": 390,
+      "h": 390
+    }
+  }
+}

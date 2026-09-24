@@ -180,5 +180,14 @@
   "satellite": [
     "https://www.google.com/maps/@38.6247,-90.1866,1548m/data=!3m1!1e3",
     "https://www.google.com/maps/@38.625,-90.255,14600m/data=!3m1!1e3"
+  ],
+  "compositionReferences": [
+    {
+      "id": "cursor-camp-campfire",
+      "localFile": "art/references/local/cursor-camp/campfire.png",
+      "purpose": "Camera angle, object scale and ground-plane composition only (elevated three-quarter diorama, cursor-scale props). Not a style or palette reference.",
+      "source": "https://aftermath.site/cursor-camp-impressions/ (screenshot of https://neal.fun/cursor-camp by Neal Agarwal)",
+      "checked": "2026-09-24"
+    }
   ]
 }

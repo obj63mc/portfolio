@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "347073c4c4eed62ed12154c01aff4471f704260727542956bc3c9feaef180929",
+  "run": "art/runs/mc-eye/2026-09-24T21-44-20.406Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}
