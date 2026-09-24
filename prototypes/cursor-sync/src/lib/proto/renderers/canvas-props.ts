@@ -4,6 +4,7 @@
 import type { Engine, Renderer } from '../engine';
 import { drawProp } from '../props';
 import { drawCursors } from './draw-cursors';
+import { drawScreen } from '../screen';
 
 export class CanvasProps implements Renderer {
 	private layer!: HTMLDivElement;
@@ -49,7 +50,9 @@ export class CanvasProps implements Renderer {
 	frame(e: Engine) {
 		const W = e.worldM, g = e.ctx;
 		const vis = e.props.filter((p) => p.visible).sort((a, b) => a.y + a.h - (b.y + b.h));
-		for (const p of vis) drawProp(g, p, e.sprites, W);
+		for (const p of vis)
+			if (p.def.motion === 'screen') drawScreen(g, p, W, e.net.screen, e.net.serverNow(), e.net.screenSource);
+			else drawProp(g, p, e.sprites, W);
 		const s = e.s;
 		this.layer.style.transform = `translate3d(${-e.cam.x * s}px,${-e.cam.y * s}px,0) scale(${s})`;
 		for (const p of e.props) {

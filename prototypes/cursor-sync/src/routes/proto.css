@@ -87,3 +87,4 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 	border-radius: 50%; background: rgb(255 255 255 / 0.25); border: 2px solid rgb(255 255 255 / 0.6); touch-action: none;
 	.knob { position: absolute; left: 34px; top: 34px; width: 52px; height: 52px; border-radius: 50%; background: rgb(255 255 255 / 0.85); pointer-events: none; }
 }
+.ts-box { position: fixed; right: 8px; bottom: 80px; z-index: 50; }

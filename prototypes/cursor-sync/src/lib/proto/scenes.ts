@@ -1,7 +1,9 @@
 // Placeholder scene data. Positions are world px (ADR 0001). Maplewood rects come from the ticket 07
 // harness (district origin 100, 900); other districts use stand-in art from scripts/build-art.sh.
-export type SceneId = 'overworld' | 'lobby';
-export type Motion = 'none' | 'moose' | 'rider' | 'marquee' | 'blink' | 'bike';
+import type { Title } from './protocol';
+
+export type SceneId = 'overworld' | 'lobby' | 'theatre';
+export type Motion = 'none' | 'moose' | 'rider' | 'marquee' | 'blink' | 'bike' | 'screen';
 
 export interface PropDef {
 	id: string;
@@ -16,11 +18,13 @@ export interface PropDef {
 	enter?: SceneId;
 	exit?: boolean;
 	cosmetic?: number;
+	play?: Title; // a Foundry poster: clicking sends the shared screen op
 }
 
 export interface SceneDef {
 	id: SceneId;
 	path: string;
+	art: SceneId; // which scene's background tiles to draw
 	w: number;
 	h: number;
 	band: number;
@@ -52,6 +56,7 @@ const BEL = { x: 4250, y: 600 };
 export const OVERWORLD: SceneDef = {
 	id: 'overworld',
 	path: '/',
+	art: 'overworld',
 	w: 5400,
 	h: 2700,
 	band: 0.25,
@@ -66,7 +71,7 @@ export const OVERWORLD: SceneDef = {
 		{ id: 'brennans', title: "Brennan's", body: 'Cigar clients. Bar interior sub-scene (not in this prototype).', img: 'door', x: CWE.x + 989 * k, y: CWE.y + 360 * k, w: 77, h: 64 },
 		{ id: 'slu', title: 'Saint Louis University', body: 'BS Computer Science with Honors, 2005. CS lab sub-scene (not in this prototype).', img: 'door', x: MID.x + 300 * k, y: MID.y + 350 * k, w: 60, h: 50 },
 		{ id: 'marquee', title: 'The Foundry marquee', body: 'Universal Pictures Home Entertainment: three titles.', img: 'welcome', motion: 'marquee', x: MID.x + 780 * k, y: MID.y + 470 * k, w: 150, h: 88 },
-		{ id: 'foundry-door', title: 'The Foundry', body: 'Theatre sub-scene (not in this prototype).', img: 'door', x: MID.x + 989 * k, y: MID.y + 360 * k, w: 77, h: 64 },
+		{ id: 'foundry-door', title: 'The Foundry', body: 'Enter the theatre.', img: 'door', enter: 'theatre', x: MID.x + 989 * k, y: MID.y + 360 * k, w: 77, h: 64 },
 		{ id: 'monster', title: 'MonsterCommerce', body: 'Intern 2004, full time 2005, left 2011. Acquired by Network Solutions. Click to blink the eye.', img: 'welcome', motion: 'blink', x: BEL.x + 850 * k, y: BEL.y + 470 * k, w: 150, h: 88, cosmetic: 2 },
 		{ id: 'server-rack', title: 'Server rack', body: 'Built the e-commerce platform; later conversion optimisation and A/B testing at networksolutions.com.', img: 'signpost', x: BEL.x + 500 * k, y: BEL.y + 300 * k, w: 70, h: 130 },
 		{ id: 'rider', title: 'Track rider', body: 'Carondelicious Criterium and the Tuesday night series.', motion: 'rider', x: TRACK.cx, y: TRACK.cy, w: 60, h: 50 },
@@ -78,6 +83,7 @@ export const OVERWORLD: SceneDef = {
 export const LOBBY: SceneDef = {
 	id: 'lobby',
 	path: '/maplewood/moosylvania',
+	art: 'lobby',
 	w: 2845,
 	h: 1600,
 	band: 0.12,
@@ -92,9 +98,29 @@ export const LOBBY: SceneDef = {
 	]
 };
 
-export const SCENES: Record<SceneId, SceneDef> = { overworld: OVERWORLD, lobby: LOBBY };
+// The Foundry theatre, with placeholder art borrowed from the lobby: three posters and the one shared prop.
+export const THEATRE: SceneDef = {
+	id: 'theatre',
+	path: '/midtown/foundry',
+	art: 'lobby',
+	w: 2845,
+	h: 1600,
+	band: 0.12,
+	arrival: { x: 1430, y: 1100 },
+	hot: { x: 200, y: 300, w: 2400, h: 1100 },
+	props: [
+		{ id: 'poster-fast-five', title: 'Fast Five', body: 'Poster. Click to play it on the screen.', img: 'signpost', x: 260, y: 520, w: 150, h: 280, play: 'fast-five' },
+		{ id: 'poster-snow-white', title: 'Snow White and the Huntsman', body: 'Poster. Click to play it on the screen.', img: 'signpost', x: 470, y: 520, w: 150, h: 280, play: 'snow-white' },
+		{ id: 'poster-lorax', title: 'The Lorax', body: 'Poster. Click to play it on the screen.', img: 'signpost', x: 680, y: 520, w: 150, h: 280, play: 'lorax' },
+		{ id: 'screen', title: 'The Foundry screen', body: 'Shared: every visitor in the theatre sees the same reel.', motion: 'screen', x: 1050, y: 300, w: 1500, h: 760 },
+		{ id: 'exit', title: 'Exit door', body: 'Back to Midtown.', img: 'door', x: 1370, y: 1400, w: 120, h: 100, exit: true }
+	]
+};
 
-export const sceneForPath = (path: string): SceneId => (path.replace(/\/$/, '') === LOBBY.path ? 'lobby' : 'overworld');
+export const SCENES: Record<SceneId, SceneDef> = { overworld: OVERWORLD, lobby: LOBBY, theatre: THEATRE };
+
+export const sceneForPath = (path: string): SceneId =>
+	(Object.values(SCENES).find((s) => s.path === (path.replace(/\/$/, '') || '/'))?.id ?? 'overworld');
 
 /** Stress mode: copies of every overworld prop scattered by a fixed seed. */
 export function multiplyProps(scene: SceneDef, mult: number): PropDef[] {

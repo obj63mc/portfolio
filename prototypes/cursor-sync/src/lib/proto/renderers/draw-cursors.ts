@@ -15,7 +15,7 @@ export function drawCursors(g: CanvasRenderingContext2D, e: Engine) {
 	};
 	for (const p of e.peers.drawn) one(p.x, p.y, p.flag, p.cos, p.gold, false);
 	const o = e.own;
-	one(o.x, o.y, 0, o.cosmetic, o.gold, true);
+	one(o.x, o.y, e.net.flag, o.cosmetic, o.gold, true);
 	const left = o.youUntil - e.t;
 	if (left > 0) {
 		g.globalAlpha = Math.min(1, left);

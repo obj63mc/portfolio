@@ -5,6 +5,7 @@ import { SCENES, multiplyProps, type SceneDef, type SceneId } from './scenes';
 import { newProp, updateProp, hitProp, type PropState } from './props';
 import { loadSprites, type Sprites } from './sprites';
 import { Peers } from './peers';
+import { Net } from './net';
 import { Stats } from './stats';
 import { ui } from './ui.svelte';
 import type { M } from './math';
@@ -32,6 +33,10 @@ export interface Settings {
 	joy: number;
 	tau: number;
 	band: number; // 0 = scene default
+	hz: number;
+	delay: number; // interpolation delay, ms
+	turnstile: boolean;
+	ws: string; // socket base URL
 }
 
 export function readSettings(q: URLSearchParams): Settings {
@@ -39,8 +44,8 @@ export function readSettings(q: URLSearchParams): Settings {
 	const small = Math.min(screen.width, screen.height) < 700;
 	const num = (k: string, d: number) => (q.has(k) ? Number(q.get(k)) : d);
 	return {
-		variant: (['A', 'B', 'C'].includes(q.get('variant') ?? '') ? q.get('variant') : 'A') as Variant,
-		bots: num('bots', 20),
+		variant: (['A', 'B', 'C'].includes(q.get('variant') ?? '') ? q.get('variant') : 'B') as Variant,
+		bots: num('bots', 0), // > 0: ticket 08's simulated peers instead of the socket
 		bg: q.get('bg') === 'dom' ? 'dom' : 'canvas',
 		scale: num('scale', coarse ? (small ? 0.6 : 0.8) : 1),
 		dprCap: num('dpr', 2),
@@ -50,7 +55,11 @@ export function readSettings(q: URLSearchParams): Settings {
 		push: num('push', 900),
 		joy: num('joy', 600),
 		tau: num('tau', 0.15),
-		band: num('band', 0)
+		band: num('band', 0),
+		hz: num('hz', 15),
+		delay: num('delay', 100),
+		turnstile: q.get('ts') !== '0',
+		ws: q.get('ws') ?? `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
 	};
 }
 
@@ -72,7 +81,7 @@ export interface Script {
 }
 
 const TILE = 512;
-const MANIFEST = {
+const MANIFEST: Record<string, { cols: number; rows: number }> = {
 	overworld: { cols: 11, rows: 6 },
 	lobby: { cols: 6, rows: 4 }
 };
@@ -81,7 +90,8 @@ export class Engine {
 	scene!: SceneDef;
 	props: PropState[] = [];
 	sprites!: Sprites;
-	peers!: Peers;
+	peers!: Peers | Net;
+	net: Net;
 	renderer!: Renderer;
 	stats = new Stats();
 	settings: Settings;
@@ -115,6 +125,7 @@ export class Engine {
 
 	constructor(public root: HTMLElement, settings: Settings, private nav: (path: string, back?: boolean) => void) {
 		this.settings = settings;
+		this.net = new Net({ hz: settings.hz, delay: settings.delay, turnstile: settings.turnstile, base: settings.ws });
 		this.s = settings.scale;
 		this.dpr = Math.min(devicePixelRatio || 1, settings.dprCap);
 		const need = this.s * this.dpr;
@@ -143,6 +154,7 @@ export class Engine {
 
 	destroy() {
 		cancelAnimationFrame(this.raf);
+		this.net.destroy();
 		this.renderer?.destroy();
 		this.off.forEach((f) => f());
 		this.tiles.forEach((t) => t.bmp?.close());
@@ -161,7 +173,7 @@ export class Engine {
 
 	setPeers(n: number) {
 		this.settings.bots = n;
-		this.peers.resize(n, this.t);
+		if (this.peers instanceof Peers) this.peers.resize(n, this.t);
 	}
 
 	/** Route changed: fade, swap scene, place the cursor at the door it came through. */
@@ -186,11 +198,12 @@ export class Engine {
 		this.props = defs.map(newProp);
 		this.tiles.forEach((t) => (t.dead = true, t.bmp?.close(), t.img?.remove()));
 		this.tiles.clear();
-		this.peers = new Peers(scene, this.settings.bots, this.t);
+		if (this.settings.bots) this.peers = new Peers(scene, this.settings.bots, this.t);
+		else { this.peers = this.net; this.net.join(id); }
 		ui.card = null;
 		let at = scene.arrival;
-		if (from === 'lobby') {
-			const door = scene.props.find((p) => p.enter === 'lobby')!;
+		const door = from && scene.props.find((p) => p.enter === from);
+		if (door) {
 			at = { x: door.x + door.w / 2, y: door.y + door.h + 24 };
 		}
 		this.own.x = at.x;
@@ -352,8 +365,10 @@ export class Engine {
 		p.clickT = 0;
 		if (this.script) return;
 		const d = p.def;
+		if (d.play) return this.net.play(d.play);
 		if (d.cosmetic != null && this.own.cosmetic !== d.cosmetic) {
 			this.own.cosmetic = d.cosmetic;
+			this.net.setCos(d.cosmetic, this.own.gold);
 			ui.toast = `Cosmetic granted by ${d.title}`;
 			setTimeout(() => (ui.toast = ''), 2000);
 		}
@@ -419,6 +434,7 @@ export class Engine {
 				this.own.x = this.cam.x + this.pointer.x / this.s;
 				this.own.y = this.cam.y + this.pointer.y / this.s;
 			}
+			this.net.move(this.own.x, this.own.y);
 		}
 
 		// visibility, hover, motion
@@ -458,7 +474,7 @@ export class Engine {
 	// ---- background tiles -------------------------------------------------------------------------
 
 	private tileRange(ring: number) {
-		const { cols, rows } = MANIFEST[this.scene.id];
+		const { cols, rows } = MANIFEST[this.scene.art];
 		return {
 			x0: Math.max(0, Math.floor(this.cam.x / TILE) - ring), y0: Math.max(0, Math.floor(this.cam.y / TILE) - ring),
 			x1: Math.min(cols - 1, Math.floor((this.cam.x + this.viewW) / TILE) + ring), y1: Math.min(rows - 1, Math.floor((this.cam.y + this.viewH) / TILE) + ring),
@@ -475,7 +491,7 @@ export class Engine {
 				if (this.tiles.has(key)) continue;
 				const tile: Tile = {};
 				this.tiles.set(key, tile);
-				const url = `/art/${this.scene.id}/${this.density}/t_${ty * r.cols + tx}.webp`;
+				const url = `/art/${this.scene.art}/${this.density}/t_${ty * r.cols + tx}.webp`;
 				if (this.settings.bg === 'dom') {
 					const img = new Image();
 					img.decoding = 'async';
@@ -523,6 +539,7 @@ export class Engine {
 				if (bmp) g.drawImage(bmp, x0, y0, x1 - x0, y1 - y0);
 				else { g.fillStyle = '#a9cf86'; g.fillRect(x0, y0, x1 - x0, y1 - y0); }
 			}
+		if (this.scene.id === 'theatre') { g.fillStyle = 'rgb(10 8 20 / 0.7)'; g.fillRect(0, 0, this.canvas.width, this.canvas.height); } // lights down
 	}
 
 	// ---- bench script -----------------------------------------------------------------------------
@@ -558,8 +575,9 @@ export class Engine {
 		ui.hud =
 			`${st.variant} · bg ${st.bg}${st.rm ? ' · reduced motion' : ''}\n` +
 			`${r.fps} fps (${r.refresh} Hz) · p95 ${r.p95} ms · missed ${r.jank}% · js p95 ${r.jsP95} ms\n` +
+			this.net.hud() + '\n' +
 			`scale ${this.s} · dpr ${this.dpr} · tiles ${this.density}x (${this.tiles.size} held) · canvas ${this.canvas.width}x${this.canvas.height}\n` +
-			`peers ${this.peers.drawn.length} on screen of ${st.bots} · props ${this.props.filter((p) => p.visible).length} on screen of ${this.props.length}`;
+			`peers ${this.peers.drawn.length} on screen · props ${this.props.filter((p) => p.visible).length} on screen of ${this.props.length}`;
 	}
 }
 

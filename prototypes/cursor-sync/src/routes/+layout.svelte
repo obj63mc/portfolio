@@ -1,5 +1,6 @@
 <!--
-	PROTOTYPE, throwaway (ticket 08). Three variants of where props and cursors live, switchable with
+	PROTOTYPE, throwaway (tickets 08 and 09). Ticket 09 adds the real socket (lib/proto/net.ts) and the
+	Foundry theatre with the shared screen at /midtown/foundry. Three variants of where props and cursors live, switchable with
 	?variant=A|B|C, on the real scene routes (/ and /maplewood/moosylvania). Camera, input, tiles and
 	peers are shared by every variant so the variants differ only in rendering and hit testing.
 -->
@@ -25,7 +26,8 @@
 		const s = readSettings(q);
 		form = {
 			bots: String(s.bots), bg: s.bg, scale: String(s.scale), dpr: String(s.dprCap), rm: s.rm ? '1' : '0',
-			props: String(s.props), tiles: String(s.tiles), push: String(s.push), joy: String(s.joy), tau: String(s.tau), band: String(s.band)
+			props: String(s.props), tiles: String(s.tiles), push: String(s.push), joy: String(s.joy), tau: String(s.tau), band: String(s.band),
+			hz: String(s.hz), delay: String(s.delay), ts: s.turnstile ? '1' : '0'
 		};
 		const e = new Engine(stage, s, (path, back) => {
 			if (back && history.state && history.length > 1 && sceneForPath(location.pathname) !== 'overworld') history.back();
@@ -104,7 +106,7 @@
 {#if ui.toast}<div class="ui toast">{ui.toast}</div>{/if}
 
 {#if page.url.pathname !== '/'}
-	<button class="ui back" onclick={() => history.back()}>← Maplewood</button>
+	<button class="ui back" onclick={() => history.back()}>← Back</button>
 {/if}
 
 {#if ui.touch}
@@ -129,9 +131,15 @@
 
 {#if panel}
 	<div class="ui panel">
+		<h2>Network</h2>
+		<button disabled={!eng} onclick={() => { eng?.net.drop(10); panel = false; }}>Drop socket for 10 s</button>
+		<p class="hint">Rooms at different rates are separate, so everyone comparing must pick the same rate.</p>
 		<h2>Settings <small>(reloads)</small></h2>
 		<div class="grid">
-			<label>Peers <select bind:value={form.bots}>{#each ['0', '20', '40', '60', '120'] as v}<option>{v}</option>{/each}</select></label>
+			<label>Send rate Hz <select bind:value={form.hz}>{#each ['10', '15', '20'] as v}<option>{v}</option>{/each}</select></label>
+			<label>Interp delay ms <input bind:value={form.delay} inputmode="numeric" /></label>
+			<label>Turnstile <select bind:value={form.ts}><option value="1">on</option><option value="0">off</option></select></label>
+			<label>Simulated peers (0 = socket) <select bind:value={form.bots}>{#each ['0', '20', '40', '60', '120'] as v}<option>{v}</option>{/each}</select></label>
 			<label>Background <select bind:value={form.bg}><option value="canvas">canvas</option><option value="dom">DOM tiles</option></select></label>
 			<label>Render scale <input bind:value={form.scale} inputmode="decimal" /></label>
 			<label>DPR cap <input bind:value={form.dpr} inputmode="decimal" /></label>

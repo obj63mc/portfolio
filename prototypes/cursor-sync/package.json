@@ -1,14 +1,16 @@
 {
-  "name": "rendering-camera-prototype",
+  "name": "cursor-sync-prototype",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "PROTOTYPE, throwaway. Ticket 08: hybrid canvas rendering and camera on phones.",
+  "description": "PROTOTYPE, throwaway. Ticket 09: cursor sync on Durable Objects, built on the ticket 08 renderer.",
   "scripts": {
     "art": "bash scripts/build-art.sh",
     "dev": "vite dev --host",
-    "phone": "vite build && vite preview --host --port 4173",
-    "build": "vite build"
+    "build": "vite build",
+    "local": "vite build && npx wrangler@4 dev --ip 0.0.0.0 --port 8787",
+    "deploy": "vite build && npx wrangler@4 deploy",
+    "bots": "node scripts/bots.mjs"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",
