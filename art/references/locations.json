@@ -69,6 +69,13 @@
             }
           ]
         }
+      ],
+      "layoutReferences": [
+        {
+          "localFile": "art/references/local/places/side-project/satellite-plaza.png",
+          "source": "Google Maps satellite view screenshot supplied by Joe, 2026-09-24",
+          "note": "Maplewood plaza: storefront row along Manchester Rd on the north, Side Project Cellar on the west end with its long front wall facing east into the lot and the deck on its far side, Moosylvania at the east end, Marietta Ave on the south."
+        }
       ]
     },
     {
@@ -169,6 +176,24 @@
           ]
         }
       ]
+    },
+    {
+      "location": "old-courthouse",
+      "name": "Old Courthouse, Gateway Arch National Park",
+      "address": "11 N 4th St, St. Louis, MO 63102, USA",
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/old-courthouse/01.jpg",
+          "source": "https://commons.wikimedia.org/wiki/File:Downtown-STL-10_(33198159648).jpg",
+          "license": "CC BY 2.0",
+          "authors": [
+            {
+              "displayName": "Ajay Suresh from New York, NY, USA"
+            }
+          ]
+        }
+      ],
+      "note": "Local reference only, for the courthouse design and its position west of the Arch."
     }
   ],
   "slu": {

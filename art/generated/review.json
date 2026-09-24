@@ -4,7 +4,7 @@
       "id": "overworld",
       "title": "Joe Madden, St. Louis",
       "description": "An explorable St. Louis where Joe Madden, Chief Architect at Moosylvania, keeps his career, client work, resume and contact details. Move through it as a cursor alongside other visitors.",
-      "w": 5400,
+      "w": 6750,
       "h": 2700,
       "signpost": {
         "rect": {
@@ -1989,21 +1989,21 @@
       "world": {
         "x": 0,
         "y": 0,
-        "w": 5400,
+        "w": 6750,
         "h": 2700
       },
       "source": {
-        "w": 1774,
-        "h": 887,
-        "sha256": "d2672d8d515164e77c023ff9c75c3f59f562ffd6edd52b5462a46b267fdae9f6"
+        "w": 1983,
+        "h": 793,
+        "sha256": "9b48e2bc96cea104c1cbb08c3ea6c0ae9a54d0d26d63a357ea43862fbf49c18c"
       },
       "trim": {
         "x": 0,
         "y": 0,
-        "w": 1774,
-        "h": 887
+        "w": 1983,
+        "h": 793
       },
-      "width": 10800,
+      "width": 13500,
       "height": 5400,
       "tiles": [
         {
@@ -2090,9 +2090,33 @@
           "density": 1.25,
           "x": 5120,
           "y": 0,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/1.25/10-0.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 5632,
+          "y": 0,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/11-0.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6144,
+          "y": 0,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/12-0.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6656,
+          "y": 0,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/1.25/13-0.webp"
         },
         {
           "density": 1.25,
@@ -2178,9 +2202,33 @@
           "density": 1.25,
           "x": 5120,
           "y": 512,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/1.25/10-1.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 5632,
+          "y": 512,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/11-1.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6144,
+          "y": 512,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/12-1.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6656,
+          "y": 512,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/1.25/13-1.webp"
         },
         {
           "density": 1.25,
@@ -2266,9 +2314,33 @@
           "density": 1.25,
           "x": 5120,
           "y": 1024,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/1.25/10-2.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 5632,
+          "y": 1024,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/11-2.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6144,
+          "y": 1024,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/12-2.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6656,
+          "y": 1024,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/1.25/13-2.webp"
         },
         {
           "density": 1.25,
@@ -2354,9 +2426,33 @@
           "density": 1.25,
           "x": 5120,
           "y": 1536,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/1.25/10-3.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 5632,
+          "y": 1536,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/11-3.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6144,
+          "y": 1536,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/12-3.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6656,
+          "y": 1536,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/1.25/13-3.webp"
         },
         {
           "density": 1.25,
@@ -2442,9 +2538,33 @@
           "density": 1.25,
           "x": 5120,
           "y": 2048,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/1.25/10-4.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 5632,
+          "y": 2048,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/11-4.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6144,
+          "y": 2048,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/1.25/12-4.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6656,
+          "y": 2048,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/1.25/13-4.webp"
         },
         {
           "density": 1.25,
@@ -2530,9 +2650,33 @@
           "density": 1.25,
           "x": 5120,
           "y": 2560,
-          "w": 280,
+          "w": 512,
           "h": 140,
           "file": "overworld/1.25/10-5.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 5632,
+          "y": 2560,
+          "w": 512,
+          "h": 140,
+          "file": "overworld/1.25/11-5.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6144,
+          "y": 2560,
+          "w": 512,
+          "h": 140,
+          "file": "overworld/1.25/12-5.webp"
+        },
+        {
+          "density": 1.25,
+          "x": 6656,
+          "y": 2560,
+          "w": 94,
+          "h": 140,
+          "file": "overworld/1.25/13-5.webp"
         },
         {
           "density": 2,
@@ -2618,9 +2762,33 @@
           "density": 2,
           "x": 5120,
           "y": 0,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/2/10-0.webp"
+        },
+        {
+          "density": 2,
+          "x": 5632,
+          "y": 0,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/11-0.webp"
+        },
+        {
+          "density": 2,
+          "x": 6144,
+          "y": 0,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/12-0.webp"
+        },
+        {
+          "density": 2,
+          "x": 6656,
+          "y": 0,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/2/13-0.webp"
         },
         {
           "density": 2,
@@ -2706,9 +2874,33 @@
           "density": 2,
           "x": 5120,
           "y": 512,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/2/10-1.webp"
+        },
+        {
+          "density": 2,
+          "x": 5632,
+          "y": 512,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/11-1.webp"
+        },
+        {
+          "density": 2,
+          "x": 6144,
+          "y": 512,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/12-1.webp"
+        },
+        {
+          "density": 2,
+          "x": 6656,
+          "y": 512,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/2/13-1.webp"
         },
         {
           "density": 2,
@@ -2794,9 +2986,33 @@
           "density": 2,
           "x": 5120,
           "y": 1024,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/2/10-2.webp"
+        },
+        {
+          "density": 2,
+          "x": 5632,
+          "y": 1024,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/11-2.webp"
+        },
+        {
+          "density": 2,
+          "x": 6144,
+          "y": 1024,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/12-2.webp"
+        },
+        {
+          "density": 2,
+          "x": 6656,
+          "y": 1024,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/2/13-2.webp"
         },
         {
           "density": 2,
@@ -2882,9 +3098,33 @@
           "density": 2,
           "x": 5120,
           "y": 1536,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/2/10-3.webp"
+        },
+        {
+          "density": 2,
+          "x": 5632,
+          "y": 1536,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/11-3.webp"
+        },
+        {
+          "density": 2,
+          "x": 6144,
+          "y": 1536,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/12-3.webp"
+        },
+        {
+          "density": 2,
+          "x": 6656,
+          "y": 1536,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/2/13-3.webp"
         },
         {
           "density": 2,
@@ -2970,9 +3210,33 @@
           "density": 2,
           "x": 5120,
           "y": 2048,
-          "w": 280,
+          "w": 512,
           "h": 512,
           "file": "overworld/2/10-4.webp"
+        },
+        {
+          "density": 2,
+          "x": 5632,
+          "y": 2048,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/11-4.webp"
+        },
+        {
+          "density": 2,
+          "x": 6144,
+          "y": 2048,
+          "w": 512,
+          "h": 512,
+          "file": "overworld/2/12-4.webp"
+        },
+        {
+          "density": 2,
+          "x": 6656,
+          "y": 2048,
+          "w": 94,
+          "h": 512,
+          "file": "overworld/2/13-4.webp"
         },
         {
           "density": 2,
@@ -3058,9 +3322,33 @@
           "density": 2,
           "x": 5120,
           "y": 2560,
-          "w": 280,
+          "w": 512,
           "h": 140,
           "file": "overworld/2/10-5.webp"
+        },
+        {
+          "density": 2,
+          "x": 5632,
+          "y": 2560,
+          "w": 512,
+          "h": 140,
+          "file": "overworld/2/11-5.webp"
+        },
+        {
+          "density": 2,
+          "x": 6144,
+          "y": 2560,
+          "w": 512,
+          "h": 140,
+          "file": "overworld/2/12-5.webp"
+        },
+        {
+          "density": 2,
+          "x": 6656,
+          "y": 2560,
+          "w": 94,
+          "h": 140,
+          "file": "overworld/2/13-5.webp"
         }
       ]
     },
@@ -6140,22 +6428,22 @@
       "world": {
         "x": 0,
         "y": 0,
-        "w": 5400,
+        "w": 6750,
         "h": 2700
       },
       "source": {
-        "w": 1774,
-        "h": 887,
-        "sha256": "8634cc2e6dc44de5ebf0b62f588ccc8d4c8665d5f5ef310ea0feb9ff5bcd8775"
+        "w": 1983,
+        "h": 793,
+        "sha256": "5ac028c8ee0a3c59c2e554c1a8832c311f70b069763b36fbca798439634a8d78"
       },
       "trim": {
         "x": 0,
         "y": 0,
-        "w": 1774,
-        "h": 887
+        "w": 1983,
+        "h": 793
       },
-      "width": 1774,
-      "height": 887
+      "width": 1983,
+      "height": 793
     },
     {
       "id": "lobby-desk-2",

@@ -1,7 +1,7 @@
 import type { District, Overworld, Rect } from './types';
 
-// Every rect here was measured on the accepted overworld master (art/reviews/2026-09-24-overworld.md),
-// world px at 5400 x 2700. Registered prop rects are the extraction's trim (art/generated/<id>/asset.json).
+// World px at 6750 x 2700 on the accepted overworld master (see the issue 04 comment). The rects below were
+// measured on the earlier 5400-wide draft and are re-measured in the prop pass. Registered prop rects are the extraction's trim (art/generated/<id>/asset.json).
 const centre = (r: Rect) => r.x + r.w / 2;
 
 // One ground plane, one horizon: the depth factor runs 0.85 at the skyline to 1.0 at the south edge in every
@@ -168,7 +168,7 @@ export const OVERWORLD: Overworld = {
 	title: 'Joe Madden, St. Louis',
 	description:
 		'An explorable St. Louis where Joe Madden, Chief Architect at Moosylvania, keeps his career, client work, resume and contact details. Move through it as a cursor alongside other visitors.',
-	w: 5400,
+	w: 6750,
 	h: 2700,
 	signpost: {
 		rect: { x: 1215, y: 1660, w: 75, h: 140 },

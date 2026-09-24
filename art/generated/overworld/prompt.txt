@@ -4,9 +4,9 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: overworld
-Use the final approved overworld composition unchanged, preserving all geography, bright palette, architecture and framing. The Arch is on green land between I-44 on its west and the river on its east; Eads Bridge north, Poplar Street highway bridge south. No new objects or text.
+Use the final approved overworld composition unchanged, preserving all geography, bright palette, architecture and framing. No new objects or text.
 
-Target aspect ratio and size: 2304x1152. Save the tool's native output; never resize it. Fill the image edge to edge.
+Target aspect ratio and size: 1983x793. Save the tool's native output; never resize it. Fill the image edge to edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
 2. <repo>/art/generated/overworld-master/image.webp

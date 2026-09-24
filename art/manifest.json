@@ -9,14 +9,14 @@
       "id": "overworld",
       "scene": "overworld",
       "kind": "background",
-      "prompt": "Use the final approved overworld composition unchanged, preserving all geography, bright palette, architecture and framing. The Arch is on green land between I-44 on its west and the river on its east; Eads Bridge north, Poplar Street highway bridge south. No new objects or text.",
+      "prompt": "Use the final approved overworld composition unchanged, preserving all geography, bright palette, architecture and framing. No new objects or text.",
       "world": {
         "x": 0,
         "y": 0,
-        "w": 5400,
+        "w": 6750,
         "h": 2700
       },
-      "size": "2304x1152",
+      "size": "1983x793",
       "references": [
         "art/generated/overworld-master/image.webp"
       ],
@@ -863,18 +863,18 @@
       "id": "overworld-master",
       "scene": "overworld",
       "kind": "reference",
-      "prompt": "One continuous illustrated St Louis exploration world, 2:1 landscape. The image labeled COMPOSITION DRAFT is an approved draft of this exact scene: keep its camera (elevated three-quarter diorama view, north up, east right, thin sky and distant-skyline band along the top edge), its layout, and the position, size and design of every landmark, sign, path, tree cluster, lake, track, river and bridge. Redraw it at full resolution with crisp flat shapes and this short fix list. FIXES: (1) exactly ONE steel-arch bridge, Eads Bridge, crosses the river north of the Gateway Arch, carrying a flat walkable deck; remove the second steel bridge. Keep the plain highway bridge at the far south edge. (2) The distant skyline must NOT contain an arch; the Gateway Arch appears once only, on its green riverside lawn. (3) The I-44 highway runs well WEST of the Arch lawn with a wide grass margin; no road passes between, beside or under the Arch legs. (4) Moosylvania stays the dark red brick converted church from the arrival illustration: one pointed gable, one tall arched window, front steps, with an EMPTY open grass verge in front of and right of the steps for a moose and signs. The FIRST image controls the flat cartoon style and bright palette: cyan sky and water, fresh yellow-green grass, pale cream paths, sunny yellow and small coral accents; broad flat fills, no outlines, no texture. The Cursor Camp screenshot controls only camera angle and object scale: a person-scale doorway is about 1/30 of the image height; large readable landmarks on one continuous ground with connected cream footpaths. Landmarks, west to east: Side Project Cellar one-story brick corner storefront with string lights and patio; Moosylvania church; MAPLEWOOD stone sign; Forest Park tree strip with a stone gate; Central West End brick row with Brennan's teal-millwork storefront and its CENTRAL WEST END sign; sunken I-64 with a pedestrian overpass; SLU McDonnell Douglas Hall modern cream and red academic block with glass entrance and MIDTOWN sign; City Foundry brick sawtooth hall with yellow trim and the attached rust-red Alamo cinema with a blank bulb-lit marquee; the Gateway Arch on its lawn; the Mississippi; Eads Bridge; Belleville on the east bank with the BELLEVILLE sign and the two-story brick MonsterCommerce office whose roof sign reads MONSTERCOMMERCE in bold cream capitals with the first O drawn as a big cartoon eyeball, and a tall dark server rack with small green lights standing outside its open loading dock; Carondelet Park south-center with lake, boathouse, oval cream cycling track with a start line, CARONDELET PARK sign, tall wooden notice board and a teal road bicycle leaning on a fence post beside it. Text (verbatim, the only lettering): MAPLEWOOD, CENTRAL WEST END, MIDTOWN, BELLEVILLE, CARONDELET PARK, MONSTERCOMMERCE. No people, animals, moose, cyclist, vehicles, map pins, dotted lines or UI. One consistent camera, scale and upper-left light across the whole image.",
-      "size": "1774x887",
+      "prompt": "One continuous illustrated St Louis exploration world, WIDE 2.5:1 landscape so the Maplewood plaza has room. The image marked COMPOSITION DRAFT is the approved draft of this exact scene: keep its camera (elevated three-quarter diorama view, north up, east right), its flat cartoon style and bright palette, its scale, its plain cyan sky with a low treeline, and the position, size and design of every landmark, district sign, path, lake, river and bridge that this fix list does not name. Redraw it cleanly with these fixes only. FIX 1, OLD COURTHOUSE: the courthouse is NOT below the Arch. Move it WEST of the Arch, on the Arch's east-west axis, toward Midtown: the Arch stands nearest the river, and the courthouse (cream limestone, green copper dome, columned porticos, as in the COURTHOUSE PHOTO) sits west of it on the same green grounds with only lawn and paths between them, its dome looking at the Arch. The I-64 highway passes south of both. Nothing but grass south of the Arch. FIX 2, MAPLEWOOD PLAZA: rebuild Maplewood as one shared parking plaza: a pale grey asphalt lot with faint cream stall lines. The Moosylvania church stands on the EAST side of the lot facing west into it, with its front steps and an EMPTY grass verge beside the steps. Side Project Cellar stands on the WEST side of the lot facing east, directly across from the church: the building shown in the SIDE PROJECT CROP and photo, a low one-story dark brick building with a flat roof, black-framed windows and doors, and a raised wooden deck patio with strings of small warm bulbs. Along the whole NORTH side of the lot, behind both, runs a continuous row of two-story brick downtown Maplewood storefronts with awnings, shop windows and cornices. The lot opens south onto grass with the MAPLEWOOD sign. Give this plaza the room it needs. FIX 3, HIGHWAY WEST END: the I-64 highway begins at the Forest Park tree strip east of Maplewood, never beside the church or the plaza, then runs east between the SLU academic building and the City Foundry, then south of the courthouse and the Arch grounds, and crosses the river on the plain concrete bridge south of the Arch. No other roads, freeways or overpasses. Everything else stays as drawn: Central West End brick row with Brennan's teal storefront, SLU, the Foundry's sawtooth roof with yellow trim, the rust-red Alamo with its bulb marquee, Carondelet Park's lake with its single cream loop road and boathouse, the Mississippi, Eads Bridge with steel arches north of the Arch, and Belleville with the MonsterCommerce eyeball roof sign and the server rack at its loading dock. Lettering only on the five district signs and MONSTERCOMMERCE. No people, animals, vehicles, map pins or UI. One consistent camera, scale and upper-left light.",
+      "size": "1983x793",
       "references": [
-        "art/references/local/drafts/overworld-master-v1.webp",
-        "art/references/local/cursor-camp/campfire.png",
-        "prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png",
-        "art/references/local/places/foundry/01.jpg"
+        "art/references/local/drafts/overworld-master-v3e.webp",
+        "art/references/local/places/old-courthouse/01.jpg",
+        "art/references/local/drafts/side-project-from-v3c.png",
+        "art/references/local/places/side-project/03.jpg"
       ],
       "world": {
         "x": 0,
         "y": 0,
-        "w": 5400,
+        "w": 6750,
         "h": 2700
       }
     },

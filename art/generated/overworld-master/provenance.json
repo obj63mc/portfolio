@@ -1,6 +1,12 @@
 {
-  "sourceSha256": "8634cc2e6dc44de5ebf0b62f588ccc8d4c8665d5f5ef310ea0feb9ff5bcd8775",
-  "run": "art/runs/overworld-master/2026-09-24T21-30-15.266Z",
-  "provider": "codex",
+  "sourceSha256": "5ac028c8ee0a3c59c2e554c1a8832c311f70b069763b36fbca798439634a8d78",
+  "run": "art/runs/overworld-master/2026-09-24T23-11-43.195Z",
+  "provider": "derived",
+  "derivation": {
+    "operation": "regional-edit-composite",
+    "base": "overworld-master-g",
+    "edit": "overworld-maplewood-edit-p",
+    "script": "paste.py"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

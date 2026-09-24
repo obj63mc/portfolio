@@ -11,8 +11,9 @@ const world: Rect = { x: 0, y: 0, w: OVERWORLD.w, h: OVERWORLD.h };
 const props = OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props));
 const welcome = props.find((p) => p.id === 'welcome')!;
 
-test('world is 4800 to 5400 wide, 2700 tall, every rect inside it', () => {
-	assert.ok(OVERWORLD.w >= 4800 && OVERWORLD.w <= 5400);
+// The spec's 5400 cap was waived by Joe for the wider plaza (issue 04 comment).
+test('world is 4800 to 6750 wide, 2700 tall, every rect inside it', () => {
+	assert.ok(OVERWORLD.w >= 4800 && OVERWORLD.w <= 6750);
 	assert.equal(OVERWORLD.h, 2700);
 	const rects = [
 		OVERWORLD.signpost.rect,

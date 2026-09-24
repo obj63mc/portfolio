@@ -1,6 +1,0 @@
-{
-  "sourceSha256": "ff133f638794d135a96b84b475a97bc27912a5ba62c3b44cd7fb06166c0bb030",
-  "run": "art/runs/overworld-master-e/2026-09-24T22-02-15.443Z",
-  "provider": "codex",
-  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
-}
