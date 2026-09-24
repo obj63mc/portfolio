@@ -44,6 +44,10 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 
 - [Provision the backend accounts](issues/12-provision-accounts.md): Cloudflare account on Workers Paid with a $20 budget alert (notification only; the in-code 15 Hz / 60-cursor limits are the real cap), subdomain `joe-3ed.workers.dev`, wrangler OAuth token outside the repo; no CI token or Turnstile widget yet.
 
+- [How is the prop button layer structured for crawlers, screen readers and keyboards?](issues/14-accessible-html-layer.md): prerendered at build with `adapter-static`, fully static after deploy, with a plain-document fallback before the engine starts; `<h1>` per scene, `<h2>` per district and `<h3>` per venue, placed over the painted signs; each prop is a button plus its own prerendered `<dialog>` card; signpost contact arrows, venue doors and exit doors are links, and everything else is a button; tab order runs west to east and focus pans the camera; canvases are `aria-hidden`, and a live region covers only the visitor's own events. Card added to the glossary.
+
+- [How does your own cursor stand out in a crowd on a phone?](issues/15-own-cursor-in-a-crowd.md): your own cursor is drawn at 1.25x and every peer at 0.75x at full opacity, on your own screen only (nothing on the wire), on top of the existing halo and fading tag; beacon ring, persistent bubble, faded peers and edge arrow not adopted. Amends the cursor identity ticket. Prototype on branch `prototype/own-cursor`.
+
 ## Not yet specified
 
 - Depth effects: horizon scaling of cursors, Z-sorting behind buildings, water drag. Depends on art having defined depth bands.

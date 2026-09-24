@@ -43,6 +43,10 @@ _Avoid_: synced prop, global prop, multiplayer prop, server prop
 A prop that reacts only for the visitor who touched it. Every prop is local unless named as shared.
 _Avoid_: client prop, private prop, single-player prop
 
+**Card**:
+The panel a prop opens when clicked, holding its full content and any links. One per prop.
+_Avoid_: popup, modal, tooltip, reveal
+
 **Scenery**:
 Non-interactive artwork in a scene, such as the Arch, the river, roads and parks between districts. Scenery never carries content and is never shared state.
 _Avoid_: background, decoration, set dressing, filler
