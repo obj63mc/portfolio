@@ -37,7 +37,7 @@ A look at the prototype art set the ground: Maplewood is a street-level view wit
 - The camera does not follow the drift. When the visitor's cursor drifts out of their camera view: short fade, cursor placed at the Arch reset point, camera centred on it, "you" tag shown again. Under reduced motion the fade is a cut; the drift itself still applies (it is movement, not ambient motion).
 - Peers snap instead of interpolating on any position jump over about 400 world px, so the Arch reset never slides across the map. No wire change.
 - Joystick: drift adds to the cursor's motion.
-- Desktop: the drawn cursor must separate from the hidden real pointer by a growing offset while drifting (mouse deltas still move it; clicks use the drawn position, as the joystick does). How that offset feels and when it clears is graduated to [River current on desktop](22-river-current-desktop.md).
+- Desktop: the drawn cursor must separate from the hidden real pointer by a growing offset while drifting (mouse deltas still move it; clicks use the drawn position, as the joystick does). How that offset feels and when it clears is graduated to [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md).
 - The earlier water-drag and wake-ripple ideas are dropped; the current replaces them.
 
 ### Depth data the art regeneration pass delivers per scene
@@ -49,5 +49,7 @@ A look at the prototype art set the ground: Maplewood is a street-level view wit
 ### Recorded elsewhere
 
 - Glossary: added **Foreground scenery** and **River current** to `CONTEXT.md`.
-- New ticket: [River current on desktop](22-river-current-desktop.md), blocking spec assembly.
+- New ticket: [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md), blocking spec assembly.
 - No ADR: foreground scenery is cheap to reverse.
+
+2026-09-24: desktop input moved to pointer lock (see [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md)). The locked cursor is the only cursor, so there is no real pointer for the drift to pull away from. The desktop offset question above is gone, and the drift just moves the drawn cursor, as it does on touch.

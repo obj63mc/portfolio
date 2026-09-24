@@ -26,7 +26,7 @@ _Avoid_: interior, level, page, room
 Either the overworld or a sub-scene. The general term for any explorable space.
 
 **Camera**:
-The visitor's view onto a scene: the part of it currently on screen. Moves by edge-push, drag, joystick, keys or wheel.
+The visitor's view onto a scene: the part of it currently on screen. Moves by edge-push and keys, plus drag and the joystick on touch.
 _Avoid_: viewport, scroll position, window
 
 ### Things
@@ -86,6 +86,14 @@ _Avoid_: water drag, drift zone, hazard
 **Visitor**:
 A connected user, shown to others as a cursor.
 _Avoid_: user, player, cursor, client
+
+**Join**:
+The click that brings a desktop visitor into the scene. Their pointer is locked to the page, and their cursor starts moving for everyone else.
+_Avoid_: enter, start, log in, sign in
+
+**Paused**:
+A joined visitor who pressed Esc or left the window. Their cursor stays frozen where it was until they resume.
+_Avoid_: idle, away, AFK
 
 **Room**:
 The set of visitors who can currently see each other. There is one room per scene.

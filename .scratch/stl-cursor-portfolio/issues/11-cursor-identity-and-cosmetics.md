@@ -79,3 +79,5 @@ localStorage holds two cosmetic fields: the worn cosmetic id and the earned set 
 2026-09-24, from the cursor sync ticket (09): on a phone with 20 bots, Joe found his own cursor hard to see. The own-cursor rules above (halo plus a fading "you" tag at the same size as peers) are being revisited in the ticket "How does your own cursor stand out in a crowd on a phone?" (`15-own-cursor-in-a-crowd.md`).
 
 2026-09-24, amended by the ticket "How does your own cursor stand out in a crowd on a phone?" (`15-own-cursor-in-a-crowd.md`): the halo and fading tag stay, but your own cursor is drawn at 1.25x and every peer at 0.75x on your screen, at full opacity. This is local drawing only. The rules live in that ticket.
+
+2026-09-24, amended by [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md): on desktop the pointer is locked after the visitor joins. The drawn cursor looks exactly as decided here, but it is moved by mouse movement instead of following the OS pointer position. Before joining, and while paused, the visitor's own cursor is not moving; peers see it idle, or not at all before the first join.

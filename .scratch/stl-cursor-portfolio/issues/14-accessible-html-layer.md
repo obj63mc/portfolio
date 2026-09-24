@@ -94,3 +94,5 @@ The district goes in the `<title>` ("Moosylvania, Maplewood") and in the exit li
 ### Recorded elsewhere
 
 - Glossary: added **Card** to `CONTEXT.md`.
+
+2026-09-24, from [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md): desktop mouse visitors pass a Join gate that locks the pointer. The gate never blocks the accessible layer: keyboard users can Tab into prop buttons and cards without joining, and focus still pans the camera.
