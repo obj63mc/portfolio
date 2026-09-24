@@ -54,7 +54,7 @@ export function generate(asset: Asset, manifest: Manifest, root: string, provide
       }
       const crop = join(run, 'registration.png'), size = dimensions(crop);
       // A measured matte extracts existing generated pixels; it does not redraw the object.
-      magick([crop, '(', '-size', `${size.w}x${size.h}`, 'xc:black', '-fill', 'white', '-draw',
+      magick([crop, '-alpha', 'set', '(', '-size', `${size.w}x${size.h}`, 'xc:black', '-fill', 'white', '-draw',
         `polygon ${mask.map(([x,y]) => `${x*size.w},${y*size.h}`).join(' ')}`, '-alpha', 'copy', ')', '-compose', 'DstIn', '-composite', output]);
     } else magick([source, output]);
     writeFileSync(join(run, 'derivation.json'), JSON.stringify({asset:asset.deriveFrom,

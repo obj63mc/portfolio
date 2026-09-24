@@ -4,10 +4,10 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: door
-ONLY the church's arched wooden double entrance door with its narrow stone frame. No brick, steps, planters or lamp posts. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
+ONLY the church's pointed-arch entrance: the cream double door and its dark red arched frame and hood. No brick wall beyond the frame, no steps, windows or lawn. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
 
 Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/door/2026-09-24T21-40-34.954Z/registration.png
+2. <repo>/art/runs/door/2026-09-24T23-37-31.717Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

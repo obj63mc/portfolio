@@ -4,10 +4,10 @@
   "kind": "prop",
   "file": "signpost/image.webp",
   "world": {
-    "x": 1215,
-    "y": 1660,
-    "w": 75,
-    "h": 140
+    "x": 1520,
+    "y": 1370,
+    "w": 60,
+    "h": 120
   },
   "source": {
     "w": 1254,

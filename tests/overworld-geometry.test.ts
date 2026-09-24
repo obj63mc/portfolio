@@ -26,12 +26,12 @@ test('world is 4800 to 6750 wide, 2700 tall, every rect inside it', () => {
 	for (const r of rects) assert.ok(inside(r, world), JSON.stringify(r));
 });
 
-test('districts read west to east by centre x, with the park between the west end and midtown', () => {
+test('districts read west to east by centre x: on the accepted master the park lake sits west of the west end row', () => {
 	const centres = OVERWORLD.districts.map((d) => d.rect.x + d.rect.w / 2);
 	assert.deepEqual([...centres].sort((a, b) => a - b), centres);
 	assert.deepEqual(
 		OVERWORLD.districts.map((d) => d.id),
-		['maplewood', 'central-west-end', 'carondelet-park', 'midtown', 'belleville']
+		['maplewood', 'carondelet-park', 'central-west-end', 'midtown', 'belleville']
 	);
 	for (const d of OVERWORLD.districts) {
 		assert.ok(inside(d.sign, d.rect), `${d.id} sign over its district`);

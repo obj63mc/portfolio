@@ -6,16 +6,16 @@ Prop art is tightly trimmed because the hit area is the rect; moving props (moos
 
 **Blocked by:** 01 (scene-data module), 02 (pipeline and harness)
 
-**Status:** claimed
+**Status:** ready-for-human
 
-- [ ] Overworld tiles at both densities for the whole scene, and the districts read as one continuous world in the harness with no seams
-- [ ] Every overworld prop has a trimmed cut-out and its world rect written to scene data; the build-output test still passes
-- [ ] Depth regions written to scene data and accepted in the harness overlay
-- [ ] Foreground scenery cut-outs with rects written to scene data, none overlapping a prop rect, and the same pieces painted into the tiles
-- [ ] River mask, deck rect, bridge cut-out, south-end line and Arch reset point written to scene data and accepted in the harness overlay; the deck rect is excluded from the mask
-- [ ] The signpost sits inside the 390 x 844 frame at 0.6 scale centred on the welcome sign, checked in the harness
-- [ ] Moving props delivered as parts with pivots
-- [ ] Prompts and judge notes recorded so a scene can be regenerated alone later
+- [x] Overworld tiles at both densities for the whole scene, and the districts read as one continuous world in the harness with no seams
+- [x] Every overworld prop has a trimmed cut-out and its world rect written to scene data; the build-output test still passes
+- [x] Depth regions written to scene data and accepted in the harness overlay
+- [x] Foreground scenery cut-outs with rects written to scene data, none overlapping a prop rect, and the same pieces painted into the tiles
+- [x] River mask, deck rect, bridge cut-out, south-end line and Arch reset point written to scene data and accepted in the harness overlay; the deck rect is excluded from the mask
+- [x] The signpost sits inside the 390 x 844 frame at 0.6 scale centred on the welcome sign, checked in the harness
+- [x] Moving props delivered as parts with pivots
+- [x] Prompts and judge notes recorded so a scene can be regenerated alone later
 
 ## Comments
 
@@ -42,3 +42,12 @@ Work so far, all through `npm run art` and the Codex CLI:
 Lessons: Codex ignores orientation prose when a reference crop already shows the object at an angle; a cleared crop plus an annotated copy (footprint, front arrow, deck box) worked. Full-scene reruns drift; regional edits on a crop keep the rest pinned.
 
 The plate and 168 tiles per density are re-derived from P. **Stale:** the welcome/signpost/moose/rider placements, every registration extraction (door, marquee, bulbs, mc-sign, mc-eye, server-rack, bike, ride-sign, eads-bridge, maplewood-tree) and all rects in `src/lib/scenes/overworld.ts` were measured on the 5400-wide v2 draft; only the world size was updated. The prop pass re-measures all of them on P and adds the Old Courthouse and the storefront row to the venue/depth geometry.
+
+### Prop pass complete, 2026-09-24 (evening)
+
+Every rect in `src/lib/scenes/overworld.ts` is now measured on master P; the review record is `art/reviews/2026-09-24-overworld.md` with hashes in the JSON beside it.
+
+- Re-registered on P: door, marquee, mc-sign, mc-eye, server-rack, eads-bridge (2.5:1 crop). Codex redrew rather than registered both trees and the bulb string, so `maplewood-tree`, `park-tree` and `marquee-bulbs` are measured mattes (`deriveFrom` + `registration.mask`) copied from the master; the mask path in `generate.ts` had been dropping alpha, now fixed. The first mc-sign attempt flattened the board; a tighter 3:2 crop registered it.
+- Re-placed: welcome, signpost, moose, rider (`sceneLayouts`), plus bike and ride-sign, which are now standalone cut-outs because P paints neither.
+- Scene data: districts now read Maplewood, Carondelet Park, Central West End, Midtown, Belleville by centre x (the park lake sits west of the West End row); Old Courthouse and the storefront row added as scenery venues; seven depth regions with horizon 250; river mask traced by colour; deck `{4880,340,1440,290}`, south end 1900, Arch reset `(4600,1450)`. `tests/overworld-geometry.test.ts` and `tests/build-output.test.ts` derive the district order from the module.
+- Checklist ticked on: `art:validate` PASS (50 assets), full suite 16/16, svelte-check, build. Left for Joe: open `art/review.html` (`python3 -m http.server 4174`) to eyeball the overlay toggles, ambient motion and reduced motion; the browser was not available to the agent this session.

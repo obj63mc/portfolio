@@ -4,10 +4,10 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: marquee
-ONLY the cinema marquee: the white rectangular sign box, its dark frame and the dark bulb housing strip on top. Fill every bulb spot on that top strip with the housing's dark color so no bulbs remain. No brick wall, no awning, no bulbs under the awning, no doors. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
+ONLY the cinema's white rectangular marquee canopy on the front of the rust-red building: its white face, its top and its dark underside. Paint the underside plain dark where the string of bulbs hangs so no bulbs remain. No brick wall, glass doors, posts, awning, sidewalk or trees. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
 
-Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
+Target aspect ratio and size: 1536x1024. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/marquee/2026-09-24T21-40-34.987Z/registration.png
+2. <repo>/art/runs/marquee/2026-09-24T23-37-31.758Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

@@ -39,11 +39,11 @@ test('overworld: skip link, h1, signpost, then districts west to east with their
 	assert.deepEqual(texts(signpost(layer), 'a').slice(0, 4), ['Resume', 'Email', 'LinkedIn', 'GitHub']);
 	assert.match(hrefs(signpost(layer))[0], /\.pdf$/);
 	assert.match(hrefs(signpost(layer))[1], /^mailto:/);
-	assert.deepEqual(hrefs(signpost(layer)).slice(4), ['#maplewood', '#central-west-end', '#carondelet-park', '#midtown', '#belleville']);
-	assert.deepEqual(texts(layer, 'h2'), ['Maplewood', 'Central West End', 'Carondelet Park', 'Midtown', 'Belleville']);
-	assert.deepEqual(texts(layer, 'h3'), [
-		'Moosylvania', 'Side Project Cellar', "Brennan's", 'Carondelet Park', 'Saint Louis University', 'The Foundry', 'MonsterCommerce'
-	]);
+	// District order is west to east by centre x on the accepted art (tests/overworld-geometry.test.ts); the layer follows it.
+	assert.deepEqual(hrefs(signpost(layer)).slice(4), OVERWORLD.districts.map((d) => `#${d.id}`));
+	assert.deepEqual(texts(layer, 'h2'), OVERWORLD.districts.map((d) => d.name));
+	assert.deepEqual(texts(layer, 'h3'), OVERWORLD.districts.flatMap((d) => d.venues.map((v) => v.name)));
+	assert.ok(texts(layer, 'h3').includes('Moosylvania') && texts(layer, 'h3').includes('MonsterCommerce'));
 	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
 });
 

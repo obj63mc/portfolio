@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-24",
+  "scene": "overworld",
+  "verdict": "Overworld prop pass accepted on master P (6750 x 2700): every overworld prop, foreground piece, rig placement and the river geometry re-measured on the accepted master; production geometry in src/lib/scenes/overworld.ts matches the artwork.",
+  "assetHashes": {
+    "overworld": "17f1327fbe8f85945ff7c79c3e2c5d29b5900fe05585c91fe858ea70ec73d4a4",
+    "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
+    "signpost": "67a957f044e3dcfcc94f4d5297e44fd4e7e0b84b9c0f75135e5ea90d2cd615a8",
+    "door": "e8961290b6277f51718f413871ee6c3dde848126ede89d2e26898fe1bb0ab3f2",
+    "maplewood-tree": "1a541f56a2dfa9bf4e23ef7397bef08d828fe880c528a02d7e90f281936a3aaa",
+    "park-tree": "8259a36370aacb194af4d6097c105b7c3c4ae4a3bc9db6b7d663f0c35d217206",
+    "moose-master": "2bd49324886f3a02f5f5e772046ce35d083181e3037e17936d2f5d1855d3bc36",
+    "moose-body": "a6dcd7698e3631ae0ceb97b21defe357f775c62d2b714b787d75126e663be0b4",
+    "moose-head": "d22a5152497e965bc5be2a178d53a597db665f48bc82519e884ece66697cb91a",
+    "moose-antlers": "f8ea78b2d05994d88951271f0442f5eb79c1264bd8976fa44e3a052e75c20bf7",
+    "moose-eye": "41e700496fb80fdb94b738d6d336f1526ce1b528a21acd3bae3f32d5956eb4db",
+    "rider-master": "4ec3e817445479b78dcaa0fa40eb5f4b4577936c9718bfbd01d1d48490a34d41",
+    "rider-body": "3cbbf50cb026b7ef0520492dadb572efc11d1cf9bd911cee5fd73fbaecba3c32",
+    "rider-rear-wheel": "12c4b992ab0409e81bfd5be3b4b1567d9fbc5fae480a726b03259e169884bbcb",
+    "rider-front-wheel": "cc0e685017c5d3caa8c02a5fb0eea15739fa5f1dd20cb33ec92a41ad8d59cacd",
+    "overworld-master": "8ab2e29bb57188095a9ba3a3e6f979ff1dc099b443f2d75101b543d0df7f6218",
+    "marquee": "0526a11c1674166550ee9db20557a566b426c345c757b415a99191de4ccafa11",
+    "marquee-bulbs": "cae7667260aec0aa848612c646a100f88e21f0c94c2cd8961c1d04e6b5898fd7",
+    "mc-sign": "598127365bcc1fe11479f6540d18e57f539062c72d75941b312bf72bfd6014cf",
+    "mc-eye": "ec8511c195022524c4ec97ab43dce60b9d26a4d04f1ae6ecf5976103bc1f43fa",
+    "server-rack": "818d10e7c930a34d1ed5e6934fa1e6bd94c4d5197da1ce179a68f13a4b94408e",
+    "bike": "720cce51f12ea8b5764d24c6aee45eb9815e104fe3f751b4cffd8131d0866e9e",
+    "ride-sign": "385d020694b59b5802e1d8fbbc28f7ca56811b8fae4dff40b225ecb555bb507e",
+    "eads-bridge": "6419d666c948d98c96de567be715d42e58351606ba7a41c88a4eaf8644351478"
+  },
+  "checks": {
+    "assets": 50,
+    "validate": "PASS: 50 assets, exact tile coverage at both densities, transparent cut-outs and registered rig frame sizes",
+    "geometryTests": "tests/overworld-geometry.test.ts 6/6; full suite 16/16; svelte-check 0 errors; production build ok; art:check and art:test pass",
+    "phone": "390x844 at 0.6 centred on the welcome board (1835, 1438): signpost, church entrance, welcome board and moose all inside the first frame (checked on the assembled composite crop)",
+    "harness": "Depth, district, venue, prop, foreground, river mask, deck, bridge cut-out, south end, Arch reset and rig sweep overlays rendered from the scene module over the assembled composite; art/review.html itself was not opened in a browser this session"
+  },
+  "limitations": [
+    "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",
+    "Both foreground trees and the marquee bulb string are measured mattes of the master (radial colour trace, hand-measured band): their cut-outs carry a thin halo of the surrounding plate pixels, invisible at rest because they sit on identical pixels.",
+    "The Eads deck rect is axis aligned over a sloping deck, so it also excludes a wedge of water north of the east half from the river mask.",
+    "Codex redrew rather than registered the trees, the bulb string and the first MonsterCommerce sign attempt; the sign was accepted on a tighter 3:2 crop and reads slightly cleaner than the painted board beneath it."
+  ]
+}
