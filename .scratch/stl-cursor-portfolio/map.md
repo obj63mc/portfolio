@@ -19,10 +19,10 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
   - Rendering is hybrid: artwork drawn on canvas, props clickable like Cursor Camp with real HTML underneath for SEO and screen readers, cursors on an overlay.
   - Mobile is considered from the start: on-screen joystick plus drag-to-pan (drag scene left, view moves right). Not a later phase.
   - Art is AI-generated (ChatGPT, Nano Banana) in the flat vector style of the old Moosylvania site; original assets are style references only. Animated props via Rive.
-  - Desktop uses pointer lock, as Cursor Camp does. A Join click locks the pointer, and Esc or leaving the window pauses until Resume. Arrow keys and WASD move the cursor like the mouse, and the camera follows by edge-push only. Drag is touch only.
+  - Every device opens on a modal Join card; nothing moves or is sent until Join. Desktop uses pointer lock, as Cursor Camp does. The Join click locks the pointer, and Esc or leaving the window pauses until Resume. Arrow keys and WASD move the cursor like the mouse, and the camera follows by edge-push only. Drag is touch only.
   - Sub-scenes are separate rooms. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
   - Only a small set of props are shared, server-authoritative state; the rest are local.
-  - Sound: ambient per district plus prop sounds, off by default. Depth is horizon scaling, foreground scenery and the river current, with no general Z-sorting.
+  - Sound: a bed per district, river and sub-scene, an overworld theme plus diegetic music, and prop sounds; on by default from the Join press, with a toggle to turn it off. Depth is horizon scaling, foreground scenery and the river current, with no general Z-sorting.
   - ADRs so far: 0001 single zoom with world coordinates, 0002 canvas-native props, 0003 canvas-drawn props with DOM hit targets, 0004 one Durable Object for every room.
 
 ## Decisions so far
@@ -53,6 +53,8 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
 - [Which depth effects ship, and what must the art provide for them?](issues/18-depth-effects.md): horizon scaling in the first build (d from 1.0 at a region's foreground line to 0.85 at its horizon, own 1.25 × d, peers 0.75 × d, computed locally); no general Z-sorting, instead foreground scenery drawn over every cursor including your own; a river current drifts cursors south while they are in the river, with the camera following, passes them under the bridge, and resets anyone carried to the river's end to the Arch (amended by the pointer lock ticket); the art pass delivers depth region rects, foreground cut-outs, the river mask and the Arch point. Foreground scenery and river current added to the glossary.
 
 - [Pointer-locked desktop cursor and the river current](issues/22-pointer-lock-and-river-current.md): desktop joins through a Join card that locks the pointer. Mouse and keys move the drawn cursor and the camera follows by edge-push only, with no desktop drag or wheel. Esc or blur pauses until Resume, and the cursor is drawn above cards and controls, which it clicks. A cursor in the river drifts south with the camera following, passes under the bridge, and resets to the Arch only at the river's end. Prototype live on `prototype/pointer-lock`.
+
+- [What does each district and prop sound like, and how is sound switched on?](issues/19-sound-design.md): Join is a modal card on every device and sound starts on the Join press (a stored off stays off); eleven beds crossfaded by the camera centre, one overworld theme plus diegetic music in the bars, lobby and theatre, a card sound and a signature one-shot per prop, only the Foundry screen audible from peers; bottom-left toggle, paused ducks, hidden tab suspends; free sources first (CC0 Freesound, ElevenLabs, edited Pixabay music), personal AudioJungle licences as fallback, never the agency's Envato seat; MP3 only, lazily loaded per scene; plain Web Audio. Amends the pointer lock, analytics (consent bar becomes a popover above the Join card) and persistence (`sound` defaults on) tickets.
 
 ## Not yet specified
 

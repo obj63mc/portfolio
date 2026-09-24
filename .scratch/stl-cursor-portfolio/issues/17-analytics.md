@@ -86,3 +86,5 @@ The analytics needs these allowances. The deploy ticket owns the header itself.
 ### Not changed
 
 No glossary terms and no ADR: everything here is implementation detail and easy to reverse.
+
+2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): every device now opens on a modal Join card, which would make the top consent bar inert. The bar therefore opens as a `popover` shown after the Join dialog, so it stacks above the dialog backdrop and stays operable; answering it is not joining. Copy, choices, defaults, GPC and loading rules are unchanged. The analytics icon sits after the sound toggle in the bottom-left cluster. An opt-out analytics toggle on the Join card was considered and ruled out, since a pre-ticked box is not valid consent in the EU (CJEU C-673/17, Planet49).

@@ -45,3 +45,5 @@ Resolved 2026-09-23 in a two-round grilling session.
 - ADR: `docs/adr/0001-single-zoom-world-coordinates.md`.
 
 2026-09-24, amended by [Pointer-locked desktop cursor and the river current](22-pointer-lock-and-river-current.md): desktop now joins through a click that locks the pointer, and pauses on Esc or blur. Rule 1: push stops while paused, rather than when the pointer leaves the window, since a locked pointer can't leave. Rule 5: drag-to-pan is touch only. Rule 6: the wheel and trackpad no longer pan. Once joined, arrow keys and WASD move the cursor like the mouse, and the camera follows through the push band; before joining they still pan the camera. The other rules stand.
+
+2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): Join is a modal card on every device, so before Join the arrow keys and WASD no longer pan the camera and touch drag does nothing; every input waits for Join. Edge-push is also suppressed while the cursor is within 40 px of an on-screen control, as for props.

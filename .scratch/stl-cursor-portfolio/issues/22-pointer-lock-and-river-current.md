@@ -113,3 +113,5 @@ The detail is recorded as an amendment on the depth effects ticket.
 - **Left to the spec:** whether a peer's river state is derived locally or sent as a presence bit, so that peers also pass under the bridge.
 
 Prototype: branch `prototype/pointer-lock`, last commit c37b652, live at https://cursor-sync-proto.barmadden.workers.dev.
+
+2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): the Join gate applies on touch as well, for one universal experience. Join is a modal card on every device: nothing moves, takes input or is sent until Join, including keyboard Tab and key panning, which this ticket had allowed before Join. On touch, drag and the joystick wait for Join too, and the cursor starts where Join was tapped. Switching away from the tab pauses on touch, and the Resume tap also resumes audio. The Join press starts sound unless the visitor stored it off.

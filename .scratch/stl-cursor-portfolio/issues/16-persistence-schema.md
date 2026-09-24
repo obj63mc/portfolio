@@ -63,3 +63,5 @@ No glossary terms and no ADR: earned set and top-ten stay implementation words, 
 ## Context
 
 2026-09-24, from the analytics ticket (17): the schema gains `analytics: 'granted' | 'denied'`, left out while the visitor hasn't chosen. It is validated per field like the others (a bad value counts as missing), merges on write with last writer wins, syncs across tabs through the `storage` event, and falls back to memory when storage throws. Global Privacy Control overrides it.
+
+2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): `sound` now defaults to `true` (a missing or invalid value means on). A stored `false` keeps the visitor silent on Join; the Join press is the gesture that starts audio.

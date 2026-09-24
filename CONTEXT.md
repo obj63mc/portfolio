@@ -81,6 +81,16 @@ _Avoid_: interaction, effect, trigger, animation
 The pull that carries a cursor downstream while it is in the river. A cursor is in the river once it moves onto the water from a bank or off the bridge. It passes under the bridge and leaves the river by reaching either bank. A visitor carried to the river's south end is put back at the Arch.
 _Avoid_: water drag, drift zone, hazard
 
+### Sound
+
+**Bed**:
+The looping ambient sound of a district, the river, or a sub-scene. Beds blend into each other as the camera moves between places.
+_Avoid_: ambience, ambient track, background sound, soundscape
+
+**Theme**:
+The one piece of music that plays across the overworld, under the beds. Sub-scenes with music of their own replace it.
+_Avoid_: soundtrack, score, background music, BGM
+
 ### People
 
 **Visitor**:
@@ -88,11 +98,11 @@ A connected user, shown to others as a cursor.
 _Avoid_: user, player, cursor, client
 
 **Join**:
-The click that brings a desktop visitor into the scene. Their pointer is locked to the page, and their cursor starts moving for everyone else.
+The click or tap that brings a visitor into the scene, on every device. Their cursor starts moving for everyone else; on desktop their pointer is also locked to the page.
 _Avoid_: enter, start, log in, sign in
 
 **Paused**:
-A joined visitor who pressed Esc or left the window. Their cursor stays frozen where it was until they resume.
+A joined visitor who pressed Esc, left the window, or switched away from the tab. Their cursor stays frozen where it was until they resume.
 _Avoid_: idle, away, AFK
 
 **Room**:

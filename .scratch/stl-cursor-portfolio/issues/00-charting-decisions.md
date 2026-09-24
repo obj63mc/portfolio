@@ -36,3 +36,5 @@ Resolved in the charting session on 2026-09-23 through two grilling rounds.
 - Art: AI-generated with ChatGPT and Nano Banana in the flat vector style of the old Moosylvania site (warm palette, layered flat shapes). Original assets are style references only. Backgrounds as large WebP, props as separate transparent layers.
 
 **Glossary** fixed in `CONTEXT.md`: overworld, district, venue, sub-scene, scene, prop, visitor, room.
+
+2026-09-24, amended by [What does each district and prop sound like, and how is sound switched on?](19-sound-design.md): sound is on by default once a visitor joins, rather than off by default; the Join press starts it and the toggle turns it off.
