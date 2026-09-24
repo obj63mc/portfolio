@@ -1,7 +1,7 @@
 {
   "date": "2026-09-24",
   "scene": "overworld",
-  "verdict": "Overworld prop pass accepted on master P (6750 x 2700): every overworld prop, foreground piece, rig placement and the river geometry re-measured on the accepted master; production geometry in src/lib/scenes/overworld.ts matches the artwork.",
+  "verdict": "Overworld prop pass: geometry and cut-outs pass every automated check and the assembled-composite inspection; workshop visual acceptance (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) is still open for Joe, so the issue stays ready-for-human.",
   "assetHashes": {
     "overworld": "17f1327fbe8f85945ff7c79c3e2c5d29b5900fe05585c91fe858ea70ec73d4a4",
     "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
@@ -26,19 +26,20 @@
     "server-rack": "818d10e7c930a34d1ed5e6934fa1e6bd94c4d5197da1ce179a68f13a4b94408e",
     "bike": "720cce51f12ea8b5764d24c6aee45eb9815e104fe3f751b4cffd8131d0866e9e",
     "ride-sign": "385d020694b59b5802e1d8fbbc28f7ca56811b8fae4dff40b225ecb555bb507e",
-    "eads-bridge": "6419d666c948d98c96de567be715d42e58351606ba7a41c88a4eaf8644351478"
+    "eads-bridge": "3a0b448453773a4776c048500a61b99f5c2c29fac30d300471a471d321d8b0a8"
   },
   "checks": {
     "assets": 50,
     "validate": "PASS: 50 assets, exact tile coverage at both densities, transparent cut-outs and registered rig frame sizes",
     "geometryTests": "tests/overworld-geometry.test.ts 6/6; full suite 16/16; svelte-check 0 errors; production build ok; art:check and art:test pass",
     "phone": "390x844 at 0.6 centred on the welcome board (1835, 1438): signpost, church entrance, welcome board and moose all inside the first frame (checked on the assembled composite crop)",
-    "harness": "Depth, district, venue, prop, foreground, river mask, deck, bridge cut-out, south end, Arch reset and rig sweep overlays rendered from the scene module over the assembled composite; art/review.html itself was not opened in a browser this session"
+    "harness": "Depth, district, venue, prop, foreground, river mask, deck, bridge cut-out, south end, Arch reset and rig sweep overlays rendered from the scene module over the assembled composite; art/review.html was not opened in a browser this session, so the three harness checklist items in issue 04 stay unticked"
   },
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",
     "Both foreground trees and the marquee bulb string are measured mattes of the master (radial colour trace, hand-measured band): their cut-outs carry a thin halo of the surrounding plate pixels, invisible at rest because they sit on identical pixels.",
     "The Eads deck rect is axis aligned over a sloping deck, so it also excludes a wedge of water north of the east half from the river mask.",
-    "Codex redrew rather than registered the trees, the bulb string and the first MonsterCommerce sign attempt; the sign was accepted on a tighter 3:2 crop and reads slightly cleaner than the painted board beneath it."
+    "Codex redrew rather than registered the trees, the bulb string, the Eads Bridge (larger and over the Arch) and the first MonsterCommerce sign attempt; the sign was accepted on a tighter 3:2 crop, the other four are measured mattes.",
+    "The Eads Bridge matte carries the deck, abutments and piers only; the steel arches stay in the plate, so a cursor in the river north of the deck draws over them."
   ]
 }

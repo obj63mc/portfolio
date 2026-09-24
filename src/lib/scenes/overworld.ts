@@ -3,6 +3,7 @@ import type { District, Overworld, Rect } from './types';
 // World px at 6750 x 2700, measured on the accepted overworld master (art/generated/overworld-master, issue 04).
 // Registered prop and foreground rects are each extraction's trim (art/generated/<id>/asset.json); the welcome
 // board, signpost, bike and ride sign are placed by their manifest world rects; the moose and rider by sceneLayouts.
+// The Old Courthouse and the Maplewood storefront row are scenery painted in the plate, not venues.
 const centre = (r: Rect) => r.x + r.w / 2;
 
 // One ground plane, one horizon: the depth factor runs 0.85 at the treeline to 1.0 at the south edge in every
@@ -50,9 +51,7 @@ const districts: District[] = [
 				rect: { x: 210, y: 1070, w: 600, h: 240 },
 				door: '/side-project',
 				props: []
-			},
-			// The downtown Maplewood storefront row on the north side of the shared plaza: scenery, no door.
-			{ id: 'maplewood-row', name: 'Downtown Maplewood', rect: { x: 680, y: 800, w: 980, h: 290 }, props: [] }
+			}
 		]
 	},
 	{
@@ -126,9 +125,7 @@ const districts: District[] = [
 						rect: { x: 3238, y: 1585, w: 563, h: 152 }
 					}
 				]
-			},
-			// The Old Courthouse on the Arch grounds, west of the Arch: scenery, no door.
-			{ id: 'old-courthouse', name: 'Old Courthouse', rect: { x: 3800, y: 720, w: 520, h: 560 }, props: [] }
+			}
 		]
 	},
 	{
@@ -219,7 +216,7 @@ export const OVERWORLD: Overworld = {
 		],
 		// The Eads deck slopes from (4880, 370) to (6320, 600); the walkable rect spans the water between the banks.
 		deck: { x: 4880, y: 340, w: 1440, h: 290 },
-		bridge: { key: 'eads-bridge', rect: { x: 4719, y: 266, w: 2012, h: 663 } },
+		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
 		// Passing under the Poplar Street bridge is the river's end.
 		southEndY: 1900,
 		// The lawn between the Arch's legs, above the highway.

@@ -39,11 +39,12 @@ test('overworld: skip link, h1, signpost, then districts west to east with their
 	assert.deepEqual(texts(signpost(layer), 'a').slice(0, 4), ['Resume', 'Email', 'LinkedIn', 'GitHub']);
 	assert.match(hrefs(signpost(layer))[0], /\.pdf$/);
 	assert.match(hrefs(signpost(layer))[1], /^mailto:/);
-	// District order is west to east by centre x on the accepted art (tests/overworld-geometry.test.ts); the layer follows it.
-	assert.deepEqual(hrefs(signpost(layer)).slice(4), OVERWORLD.districts.map((d) => `#${d.id}`));
-	assert.deepEqual(texts(layer, 'h2'), OVERWORLD.districts.map((d) => d.name));
-	assert.deepEqual(texts(layer, 'h3'), OVERWORLD.districts.flatMap((d) => d.venues.map((v) => v.name)));
-	assert.ok(texts(layer, 'h3').includes('Moosylvania') && texts(layer, 'h3').includes('MonsterCommerce'));
+	// West to east by centre x on the accepted master: the park lake sits west of the West End row.
+	assert.deepEqual(hrefs(signpost(layer)).slice(4), ['#maplewood', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
+	assert.deepEqual(texts(layer, 'h2'), ['Maplewood', 'Carondelet Park', 'Central West End', 'Midtown', 'Belleville']);
+	assert.deepEqual(texts(layer, 'h3'), [
+		'Moosylvania', 'Side Project Cellar', 'Carondelet Park', "Brennan's", 'Saint Louis University', 'The Foundry', 'MonsterCommerce'
+	]);
 	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
 });
 

@@ -1794,7 +1794,7 @@
       "id": "eads-bridge",
       "scene": "overworld",
       "kind": "foreground",
-      "prompt": "ONLY Eads Bridge: both stone towers, the two steel arch spans, the deck and the center pier down to the waterline. No water, riverbank rocks, trees or road beyond the towers. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "prompt": "Extract the original Eads Bridge pixels from the approved overworld master using the measured crop matte: a hand-measured polygon along the sloping deck with both abutments and the two piers down to the water. The steel arches above the deck stay in the plate (a cursor crossing the deck draws over them). The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
       "size": "1983x793",
       "references": [],
       "dependsOn": [
@@ -1807,8 +1807,67 @@
           "y": 160,
           "w": 2050,
           "h": 820
-        }
-      }
+        },
+        "mask": [
+          [
+            0.0073,
+            0.2183
+          ],
+          [
+            1.0,
+            0.5488
+          ],
+          [
+            1.0,
+            0.6402
+          ],
+          [
+            0.9795,
+            0.6329
+          ],
+          [
+            0.9795,
+            0.7463
+          ],
+          [
+            0.9229,
+            0.7463
+          ],
+          [
+            0.9229,
+            0.6146
+          ],
+          [
+            0.3746,
+            0.4317
+          ],
+          [
+            0.3746,
+            0.6
+          ],
+          [
+            0.2985,
+            0.6
+          ],
+          [
+            0.2985,
+            0.4073
+          ],
+          [
+            0.0722,
+            0.3317
+          ],
+          [
+            0.0722,
+            0.4537
+          ],
+          [
+            0.0073,
+            0.4537
+          ]
+        ]
+      },
+      "deriveFrom": "overworld-master"
     }
   ],
   "sceneLayouts": {

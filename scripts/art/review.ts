@@ -24,8 +24,9 @@ export async function buildReview(root: string, manifest: Manifest, composites =
     const parts = Object.values(rig), x = Math.min(...parts.map(p => p.x)), y = Math.min(...parts.map(p => p.y));
     return [name, { x, y, w: Math.max(...parts.map(p => p.x+p.w))-x, h: Math.max(...parts.map(p => p.y+p.h))-y }];
   }));
+  const centre = (r: { x: number; y: number; w: number; h: number }) => ({ x: Math.round(r.x + r.w / 2), y: Math.round(r.y + r.h / 2) });
   const sourceScenes = [
-    { ...OVERWORLD, arrival: { x: 1835, y: 1438 }, props: [
+    { ...OVERWORLD, arrival: centre(OVERWORLD.districts.flatMap(d => d.venues.flatMap(v => v.props)).find(p => p.id === 'welcome')!.rect), props: [
       { id: 'signpost', rect: OVERWORLD.signpost.rect }, ...OVERWORLD.districts.flatMap(d => d.venues.flatMap(v => v.props))
     ] },
     ...Object.values(SUB_SCENES).map(scene => ({ ...scene, arrival: { x: 1422, y: 1000 } }))
