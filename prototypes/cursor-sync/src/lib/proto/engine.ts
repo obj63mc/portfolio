@@ -48,6 +48,7 @@ export interface Settings {
 	lock: boolean; // ticket 22: Join gate and pointer lock on desktop
 	current: number; // ticket 22: river current, world px/s
 	pdrift: boolean; // ticket 22: keep drifting while paused
+	keyspd: number; // ticket 22: locked cursor speed on arrow keys / WASD, world px/s
 }
 
 // PROTOTYPE (ticket 15): the floating switcher cycles these; combos go through the settings panel.
@@ -86,7 +87,8 @@ export function readSettings(q: URLSearchParams): Settings {
 		peerk: num('peerk', 0.75),
 		lock: q.get('lock') !== '0',
 		current: num('current', 150),
-		pdrift: q.get('pdrift') === '1'
+		pdrift: q.get('pdrift') === '1',
+		keyspd: num('keyspd', 600)
 	};
 }
 
@@ -557,6 +559,19 @@ export class Engine {
 				this.own.x = Math.max(0, Math.min(this.scene.w, this.own.x + this.joy.x * st.joy * dt));
 				this.own.y = Math.max(0, Math.min(this.scene.h, this.own.y + this.joy.y * st.joy * dt));
 			}
+			// keys: locked, they move the cursor like the mouse does and the camera follows through the
+			// push band (ticket 22); unjoined or unlocked, they still pan the camera directly
+			const k = this.mode === 'paused' ? new Set<string>() : this.keys; // paused: nothing moves
+			const kx = (k.has('ArrowRight') || k.has('d') ? 1 : 0) - (k.has('ArrowLeft') || k.has('a') ? 1 : 0);
+			const ky = (k.has('ArrowDown') || k.has('s') ? 1 : 0) - (k.has('ArrowUp') || k.has('w') ? 1 : 0);
+			if (this.mode === 'locked' && (kx || ky)) {
+				const step = (st.keyspd * this.s * dt) / Math.hypot(kx, ky);
+				this.pointer.x = Math.max(0, Math.min(this.vw - 1, this.pointer.x + kx * step));
+				this.pointer.y = Math.max(0, Math.min(this.vh - 1, this.pointer.y + ky * step));
+			} else if (this.mode !== 'locked') {
+				vx += kx * 800;
+				vy += ky * 800;
+			}
 			// river current: drift south in world space; the camera does not follow (ticket 18)
 			const moving = this.touchMode || this.mode === 'locked' || (this.mode === 'paused' && st.pdrift);
 			this.drifting = this.scene.id === 'overworld' && this.showOwn && moving && !this.washing && inWater(this.own.x, this.own.y);
@@ -570,9 +585,6 @@ export class Engine {
 				vx += edge(p.x, this.vw, this.band) * st.push;
 				vy += edge(p.y, this.vh, this.band) * st.push;
 			}
-			const k = this.mode === 'paused' ? new Set<string>() : this.keys; // paused: the camera stops
-			vx += ((k.has('ArrowRight') || k.has('d') ? 1 : 0) - (k.has('ArrowLeft') || k.has('a') ? 1 : 0)) * 800;
-			vy += ((k.has('ArrowDown') || k.has('s') ? 1 : 0) - (k.has('ArrowUp') || k.has('w') ? 1 : 0)) * 800;
 			if (!this.drag && (this.inertia.vx || this.inertia.vy)) {
 				vx += this.inertia.vx; vy += this.inertia.vy;
 				const f = Math.exp(-dt / st.tau);
@@ -733,7 +745,7 @@ export class Engine {
 	private hud() {
 		const r = this.stats.recent(), st = this.settings;
 		ui.hud =
-			`lock ${this.mode}${this.joined ? '' : ' (not joined)'}${this.drifting ? ' · drifting' : ''} · current ${st.current} px/s${st.pdrift ? ' (also paused)' : ''}\n` +
+			`keys ${st.keyspd} px/s · lock ${this.mode}${this.joined ? '' : ' (not joined)'}${this.drifting ? ' · drifting' : ''} · current ${st.current} px/s${st.pdrift ? ' (also paused)' : ''}\n` +
 			`${st.variant} · own ${st.own}${st.own.includes('B') ? ` own ×${st.ownk}` : ''}${st.own.includes('D') ? ` peers ×${st.peerk}` : ''} · bg ${st.bg}${st.rm ? ' · reduced motion' : ''}\n` +
 			`${r.fps} fps (${r.refresh} Hz) · p95 ${r.p95} ms · missed ${r.jank}% · js p95 ${r.jsP95} ms\n` +
 			this.net.hud() + '\n' +

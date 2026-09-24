@@ -34,7 +34,7 @@
 			bots: String(s.bots), bg: s.bg, scale: String(s.scale), dpr: String(s.dprCap), rm: s.rm ? '1' : '0',
 			props: String(s.props), tiles: String(s.tiles), push: String(s.push), joy: String(s.joy), tau: String(s.tau), band: String(s.band),
 			hz: String(s.hz), delay: String(s.delay), ts: s.turnstile ? '1' : '0', own: s.own, ownk: String(s.ownk), peerk: String(s.peerk),
-			lock: s.lock ? '1' : '0', current: String(s.current), pdrift: s.pdrift ? '1' : '0'
+			lock: s.lock ? '1' : '0', current: String(s.current), pdrift: s.pdrift ? '1' : '0', keyspd: String(s.keyspd)
 		};
 		own = s.own;
 		const e = new Engine(stage, s, (path, back) => {
@@ -146,6 +146,7 @@
 		<h2>Settings <small>(reloads)</small></h2>
 		<div class="grid">
 			<label>Pointer lock <select bind:value={form.lock}><option value="1">on</option><option value="0">off</option></select></label>
+			<label>Key cursor px/s <input bind:value={form.keyspd} inputmode="numeric" /></label>
 			<label>River current px/s <input bind:value={form.current} inputmode="numeric" /></label>
 			<label>Drift while paused <select bind:value={form.pdrift}><option value="0">no</option><option value="1">yes</option></select></label>
 			<label>Own cursor (letters, e.g. BE) <input bind:value={form.own} /></label>
