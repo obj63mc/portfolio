@@ -75,3 +75,5 @@ localStorage holds two cosmetic fields: the worn cosmetic id and the earned set 
 
 - A picker to switch between earned cosmetics. Ruled out for this map by the single-cosmetic model.
 - Overlay implementation (DOM elements or a canvas layer) belongs to the rendering prototype.
+
+2026-09-24, from the cursor sync ticket (09): on a phone with 20 bots, Joe found his own cursor hard to see. The own-cursor rules above (halo plus a fading "you" tag at the same size as peers) are being revisited in the ticket "How does your own cursor stand out in a crowd on a phone?" (`15-own-cursor-in-a-crowd.md`).
