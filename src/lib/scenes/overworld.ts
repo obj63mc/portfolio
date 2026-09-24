@@ -7,7 +7,8 @@ import type { District, Overworld, Rect } from './types';
 const centre = (r: Rect) => r.x + r.w / 2;
 
 // One ground plane, one horizon: the depth factor runs 0.85 at the treeline to 1.0 at the south edge in every
-// region, so crossing a region boundary never changes scale. The regions tile the ground so no gap falls back to 1.
+// region, so crossing a region boundary never changes scale. The regions tile the whole world, sky included, so the
+// factor holds 0.85 above the treeline instead of falling back to 1 there.
 const HORIZON_Y = 250;
 const FOREGROUND_Y = 2700;
 
@@ -15,13 +16,13 @@ const districts: District[] = [
 	{
 		id: 'maplewood',
 		name: 'Maplewood',
-		rect: { x: 0, y: 760, w: 2050, h: 1000 },
+		rect: { x: 0, y: 860, w: 1950, h: 900 },
 		sign: { x: 400, y: 1370, w: 460, h: 110 },
 		venues: [
 			{
 				id: 'moosylvania',
 				name: 'Moosylvania',
-				rect: { x: 1560, y: 990, w: 360, h: 480 },
+				rect: { x: 1560, y: 990, w: 380, h: 640 },
 				door: '/moosylvania',
 				props: [
 					{
@@ -57,7 +58,7 @@ const districts: District[] = [
 	{
 		id: 'central-west-end',
 		name: 'Central West End',
-		rect: { x: 1850, y: 290, w: 1850, h: 560 },
+		rect: { x: 1870, y: 290, w: 1830, h: 560 },
 		sign: { x: 1880, y: 700, w: 560, h: 140 },
 		venues: [{ id: 'brennans', name: "Brennan's", rect: { x: 2910, y: 390, w: 400, h: 390 }, door: '/brennans', props: [] }]
 	},
@@ -70,7 +71,7 @@ const districts: District[] = [
 			{
 				id: 'park',
 				name: 'Carondelet Park',
-				rect: { x: 900, y: 1950, w: 2800, h: 700 },
+				rect: { x: 900, y: 1950, w: 2800, h: 750 },
 				props: [
 					{
 						id: 'track',
@@ -97,7 +98,7 @@ const districts: District[] = [
 							'Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.',
 							'Raced criteriums, still rides.'
 						],
-						rect: { x: 2982, y: 2528, w: 82, h: 98 }
+						rect: { x: 2986, y: 2528, w: 78, h: 94 }
 					}
 				]
 			}
@@ -106,14 +107,14 @@ const districts: District[] = [
 	{
 		id: 'midtown',
 		name: 'Midtown',
-		rect: { x: 2150, y: 700, w: 2200, h: 1250 },
+		rect: { x: 2150, y: 870, w: 2200, h: 1020 },
 		sign: { x: 2760, y: 1280, w: 400, h: 130 },
 		venues: [
 			{ id: 'slu', name: 'Saint Louis University', rect: { x: 2440, y: 890, w: 1240, h: 430 }, door: '/slu', props: [] },
 			{
 				id: 'foundry',
 				name: 'The Foundry',
-				rect: { x: 2200, y: 1380, w: 1900, h: 520 },
+				rect: { x: 2200, y: 1380, w: 1900, h: 510 },
 				door: '/foundry',
 				props: [
 					{
@@ -137,7 +138,7 @@ const districts: District[] = [
 			{
 				id: 'monstercommerce',
 				name: 'MonsterCommerce',
-				rect: { x: 5900, y: 1050, w: 720, h: 480 },
+				rect: { x: 5900, y: 1050, w: 720, h: 560 },
 				props: [
 					{
 						id: 'mc-sign',
@@ -185,13 +186,13 @@ export const OVERWORLD: Overworld = {
 	},
 	districts: districts.sort((a, b) => centre(a.rect) - centre(b.rect)),
 	depth: [
-		{ x: 0, y: 250, w: 1500, h: 2450 }, // Maplewood and the Forest Park strip
-		{ x: 1500, y: 250, w: 2200, h: 1050 }, // Central West End and the I-64 strip
+		{ x: 0, y: 0, w: 1500, h: 2700 }, // Maplewood and the Forest Park strip
+		{ x: 1500, y: 0, w: 2200, h: 1300 }, // Central West End and the I-64 strip
 		{ x: 1500, y: 1300, w: 2700, h: 600 }, // Midtown
 		{ x: 1500, y: 1900, w: 2700, h: 800 }, // Carondelet Park
-		{ x: 3700, y: 250, w: 2100, h: 1050 }, // the Arch grounds, Eads Bridge and the river's north reach
+		{ x: 3700, y: 0, w: 2100, h: 1300 }, // the Arch grounds, Eads Bridge and the river's north reach
 		{ x: 4200, y: 1300, w: 1600, h: 1400 }, // the Mississippi south of the Arch and the Poplar crossing
-		{ x: 5800, y: 250, w: 950, h: 2450 } // Belleville
+		{ x: 5800, y: 0, w: 950, h: 2700 } // Belleville
 	].map((rect) => ({ rect, horizonY: HORIZON_Y, foregroundY: FOREGROUND_Y })),
 	foreground: [
 		{ key: 'maplewood-tree', rect: { x: 1543, y: 1574, w: 242, h: 232 } },
@@ -214,8 +215,9 @@ export const OVERWORLD: Overworld = {
 			{ x: 5981, y: 700 }, { x: 5994, y: 600 }, { x: 6297, y: 500 }, { x: 6345, y: 400 }, { x: 6423, y: 300 },
 			{ x: 6440, y: 270 }
 		],
-		// The Eads deck slopes from (4880, 370) to (6320, 600); the walkable rect spans the water between the banks.
-		deck: { x: 4880, y: 340, w: 1440, h: 290 },
+		// The Eads deck slopes from (4880, 370) to (6320, 600); the walkable rect spans the water and reaches the east
+		// bank at every row it covers (the bank is at x 6423 by y 300), so stepping off its east edge lands on grass.
+		deck: { x: 4880, y: 340, w: 1550, h: 290 },
 		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
 		// Passing under the Poplar Street bridge is the river's end.
 		southEndY: 1900,

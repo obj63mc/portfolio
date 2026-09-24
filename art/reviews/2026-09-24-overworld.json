@@ -38,8 +38,10 @@
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",
     "Both foreground trees and the marquee bulb string are measured mattes of the master (radial colour trace, hand-measured band): their cut-outs carry a thin halo of the surrounding plate pixels, invisible at rest because they sit on identical pixels.",
-    "The Eads deck rect is axis aligned over a sloping deck, so it also excludes a wedge of water north of the east half from the river mask.",
+    "The Eads deck rect is axis aligned over a sloping deck: it reaches the east bank at every row it covers, so it also excludes a wedge of water north of the deck from the river mask.",
     "Codex redrew rather than registered the trees, the bulb string, the Eads Bridge (larger and over the Arch) and the first MonsterCommerce sign attempt; the sign was accepted on a tighter 3:2 crop, the other four are measured mattes.",
-    "The Eads Bridge matte carries the deck, abutments and piers only; the steel arches stay in the plate, so a cursor in the river north of the deck draws over them."
+    "The Eads Bridge matte carries the deck, abutments and piers only; the steel arches stay in the plate, so a cursor in the river north of the deck draws over them.",
+    "District rects are separated by 10 to 20 px rather than the spec's \"about 200 px\": on this master the West End row sits directly above SLU, so the sound-bed footprints only just clear each other.",
+    "No Forest Park sign: the accepted master carries only the five district signs and the MonsterCommerce roof sign; the Forest Park strip is the tree belt between Maplewood and the West End."
   ]
 }

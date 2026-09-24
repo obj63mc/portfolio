@@ -35,7 +35,11 @@ test('districts read west to east by centre x: on the accepted master the park l
 	);
 	for (const d of OVERWORLD.districts) {
 		assert.ok(inside(d.sign, d.rect), `${d.id} sign over its district`);
-		for (const v of d.venues) for (const p of v.props) assert.ok(inside(p.rect, d.rect), `${p.id} inside ${d.id}`);
+		for (const v of d.venues) {
+			assert.ok(inside(v.rect, d.rect), `${v.id} inside ${d.id}`);
+			for (const p of v.props) assert.ok(inside(p.rect, v.rect), `${p.id} inside ${v.id}`);
+		}
+		for (const e of OVERWORLD.districts) if (e !== d) assert.ok(!overlap(d.rect, e.rect), `${d.id} overlaps ${e.id}`);
 	}
 });
 
