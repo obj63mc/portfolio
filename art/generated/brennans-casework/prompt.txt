@@ -4,11 +4,10 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: brennans-humidor
-The interactive glass face of the humidor, copied from the generated cabinet. Passive frame and lower casework remain scenery. This upper face is unobscured by the foreground chair.
+Extract ONLY the tall glass-front humidor display fitted into the right wall, dark frame and warm shelves with bottles/cigar boxes. Preserve the right/top scene-edge clipping; exclude the cream foreground chair and brick wall. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.
 
-Target image size: 700x2048. Preserve the exact framing of the final crop, including objects clipped by its edge.
+Target image size: 704x2048. Keep the entire object within the frame with a clean margin.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/generated/brennans-casework/image.webp
-3. <repo>/art/runs/brennans-humidor/2026-09-24T21-07-44.426Z/registration.png
+2. <repo>/art/runs/brennans-humidor/2026-09-24T20-34-35.782Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

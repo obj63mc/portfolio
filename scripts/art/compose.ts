@@ -15,7 +15,7 @@ export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[],
     if (!plate) continue;
     const args = [join(root, 'art/generated', plate.file), '-resize', `${scene.w}x${scene.h}!`];
     const add = (path: string, r: Rect) => args.push('(', path, '-resize', `${Math.round(r.w)}x${Math.round(r.h)}!`, ')', '-geometry', `+${Math.round(r.x)}+${Math.round(r.y)}`, '-compose', 'Over', '-composite');
-    for (const layer of scene.layers.filter(l => l.kind === 'prop')) {
+    for (const layer of [...scene.layers.filter(l => l.kind === 'scenery'), ...scene.layers.filter(l => l.kind === 'prop')]) {
       const asset = assets.find(a => a.id === layer.asset)!;
       add(join(root, 'art/generated', asset.file), layer.rect);
     }

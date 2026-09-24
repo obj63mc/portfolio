@@ -1560,14 +1560,25 @@
       },
       "layers": [
         {
-          "id": "brennans-humidor",
-          "asset": "brennans-humidor",
-          "kind": "prop",
+          "id": "brennans-casework",
+          "asset": "brennans-casework",
+          "kind": "scenery",
           "rect": {
             "x": 2423.874681122449,
             "y": 0,
             "w": 406.4890518707483,
             "h": 1240.196445275959
+          }
+        },
+        {
+          "id": "brennans-humidor",
+          "asset": "brennans-humidor",
+          "kind": "prop",
+          "rect": {
+            "x": 2456.393805272109,
+            "y": 27.77777777777778,
+            "w": 357.71036564625854,
+            "h": 1048.611111111111
           }
         },
         {
@@ -1598,10 +1609,10 @@
         {
           "id": "brennans-humidor",
           "rect": {
-            "x": 2423.874681122449,
-            "y": 0,
-            "w": 406.4890518707483,
-            "h": 1240.196445275959
+            "x": 2456.393805272109,
+            "y": 27.77777777777778,
+            "w": 357.71036564625854,
+            "h": 1048.611111111111
           }
         },
         {
@@ -5428,10 +5439,10 @@
       }
     },
     {
-      "id": "brennans-humidor",
+      "id": "brennans-casework",
       "scene": "brennans",
-      "kind": "prop",
-      "file": "brennans-humidor/image.webp",
+      "kind": "scenery",
+      "file": "brennans-casework/image.webp",
       "world": {
         "x": 2423.874681122449,
         "y": 0,
@@ -5459,6 +5470,62 @@
           "w": 488.984375,
           "h": 1422.5
         }
+      }
+    },
+    {
+      "id": "brennans-humidor",
+      "scene": "brennans",
+      "kind": "prop",
+      "file": "brennans-humidor/image.webp",
+      "world": {
+        "x": 2456.393805272109,
+        "y": 27.77777777777778,
+        "w": 357.71036564625854,
+        "h": 1048.611111111111
+      },
+      "source": {
+        "w": 700,
+        "h": 2048,
+        "sha256": "853f6c2f4c30cf80a396d58625f18b81ebd8d2ff1fadfbf869b4c695074a450c"
+      },
+      "trim": {
+        "x": 0,
+        "y": 0,
+        "w": 700,
+        "h": 2048
+      },
+      "width": 700,
+      "height": 2048,
+      "registration": {
+        "asset": "brennans-casework",
+        "rect": {
+          "x": 2456.393805272109,
+          "y": 27.77777777777778,
+          "w": 357.71036564625854,
+          "h": 1048.611111111111
+        },
+        "mask": [
+          [
+            0.01,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            0.01
+          ]
+        ]
       }
     },
     {

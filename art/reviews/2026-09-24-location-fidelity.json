@@ -11,7 +11,7 @@
     "side-project",
     "brennans"
   ],
-  "assetCount": 40,
+  "assetCount": 41,
   "tileCount": 372,
   "assetHashes": {
     "overworld": "a39252b6ad45400e85e548aaa09af51e123dcf81480f994708ef54a891b87f36",
@@ -38,7 +38,8 @@
     "foundry-seats": "85061d7ec19f12ee9bd60aefb75102fefeba91b91722d6018b9daaab344e917a",
     "side-project-taps": "79378579b8c93e9cb1e411b0e8bdc3e2fd5ed88ec873f3798adb7fc2cef744b5",
     "side-project-stool": "618a34afd44c644f2f2be9fe6d802b44247bfa6ffb046f19c251f3bfd9f590a1",
-    "brennans-humidor": "1deed72977c1bfc59894df59b5768c440c1aee8fb5bd7ed8d8fc5e3bb5f88198",
+    "brennans-casework": "1deed72977c1bfc59894df59b5768c440c1aee8fb5bd7ed8d8fc5e3bb5f88198",
+    "brennans-humidor": "853f6c2f4c30cf80a396d58625f18b81ebd8d2ff1fadfbf869b4c695074a450c",
     "brennans-chair": "87b13ddb57f5511a26446f43758d5046049200d2fd6d04d12dfe9fb087d7918e",
     "rider-master": "c9868ed71034641a229bf36f97a8467c8c620d2e4a471e6d45e2188f04cb9c39",
     "rider-body": "0d6953dc184dcb4d11eb0f4a5b69b5d22dee331035ff55d166ff70f904a9d671",
@@ -62,12 +63,22 @@
     "Brennan chair floor anchor and foreground monitor scale corrected",
     "Maplewood is an overworld district; signpost fits initial phone frame",
     "Arch grounds separate from west-side interstate",
-    "Both tile densities validated; workshop browser controls exercised"
+    "Both tile densities validated; workshop browser controls exercised",
+    "Passive cabinet scenery separated from unobscured interactive glass face; foreground/prop bounds validation passes",
+    "Foreground validation includes each moving rig and its full horizontal travel"
   ],
   "limitations": [
     "Compressed illustrated geography, not a surveyed map",
     "Brennan ATM hardware and portfolio-specific diploma are artistic adaptations",
     "Source photos are local references; restore them before regenerating masters on another machine",
     "Production click targets, depth and river geometry remain earlier placeholders and require promotion work"
+  ],
+  "validation": [
+    "art:check passed",
+    "art:test: 3 passed",
+    "art:validate: 41 assets / 372 tiles passed",
+    "Svelte check: 0 errors / 0 warnings",
+    "production build passed",
+    "site tests: 10 passed"
   ]
 }

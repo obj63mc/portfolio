@@ -22,6 +22,10 @@ export function processAsset(asset: Asset, input: string, outputRoot: string): P
     const result = processInto(asset, input, staging);
     const oldPrompt = join(target, 'prompt.txt');
     if (existsSync(oldPrompt)) copyFileSync(oldPrompt, join(staging, asset.id, 'prompt.txt'));
+    const oldProvenance = join(target, 'provenance.json');
+    if (existsSync(oldProvenance) && JSON.parse(readFileSync(oldProvenance, 'utf8')).sourceSha256 === result.source.sha256) {
+      copyFileSync(oldProvenance, join(staging, asset.id, 'provenance.json'));
+    }
     if (existsSync(target)) renameSync(target, previous);
     try { renameSync(join(staging, asset.id), target); }
     catch (error) { if (existsSync(previous)) renameSync(previous, target); throw error; }

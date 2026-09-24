@@ -37,7 +37,7 @@ try {
     if (values.provider !== 'codex' && values.provider !== 'api') throw new Error('--provider must be codex or api');
     const provider: 'codex' | 'api' = values.provider;
     const selected = id === 'all' ? manifest.assets : id === 'backgrounds' ? manifest.assets.filter(a => a.kind === 'background') :
-      id === 'furnishings' ? manifest.assets.filter(a => a.scene !== 'overworld' && ['prop', 'foreground'].includes(a.kind)) :
+      id === 'furnishings' ? manifest.assets.filter(a => a.scene !== 'overworld' && ['scenery', 'prop', 'foreground'].includes(a.kind)) :
       id?.startsWith('scene:') ? manifest.assets.filter(a => a.scene === id.slice(6)) : manifest.assets.filter(a => a.id === id);
     if (!selected.length) throw new Error(`Unknown asset ${id}; run node scripts/art.ts list`);
     if (values.source && selected.length !== 1) throw new Error('--source requires exactly one asset');

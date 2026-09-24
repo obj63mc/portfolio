@@ -69,6 +69,7 @@ function draw(time) {
     if(density==='plate'||showMaster)drawImage(ctx,`generated/${plate.file}`,{x:0,y:0,w:scene.w,h:scene.h});
     else for(const tile of plate.tiles.filter(t=>t.density===Number(density)))drawImage(ctx,`generated/${tile.file}`,tile);
   }
+  if(!showMaster)for(const layer of scene.layers.filter(l=>l.kind==='scenery')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
   if(enabled('props')&&!showMaster){
     for(const layer of scene.layers.filter(l=>l.kind==='prop')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
     for(const r of instances)drawRig(r.name,{...r.rect,x:r.rect.x+(enabled('motion')&&!enabled('reduced')?Math.sin(time/4000)*r.travelX:0)},time);
@@ -85,7 +86,7 @@ function draw(time) {
   }
   if(enabled('draftRects')){
     ctx.setLineDash([9,6]);
-    for(const layer of scene.layers)rect(layer.rect,layer.kind==='prop'?'#9be6b9':'#f6a6d3',layer.id+' · draft');
+    for(const layer of scene.layers)rect(layer.rect,layer.kind==='prop'?'#9be6b9':layer.kind==='scenery'?'#a9d2ed':'#f6a6d3',layer.id+' · draft');
     ctx.setLineDash([]);
   }
   if(enabled('river')&&scene.river){
@@ -106,7 +107,7 @@ function updateStatus(){
   const fits=sign&&sign.rect.x>=f.x&&sign.rect.x+sign.rect.w<=f.x+f.w&&sign.rect.y>=f.y&&sign.rect.y+sign.rect.h<=f.y+f.h;
   const conflicts=(scene.artForeground??scene.foreground??[]).flatMap(a=>(scene.artProps??scene.props??[]).filter(b=>overlap(a.rect,b.rect)).map(b=>`${a.key} overlaps ${b.id}`));
   const missing=data.pending.filter(id=>id===scene.id);
-  $('status').textContent=`${scene.w} × ${scene.h} world px. ${sign?'Signpost in phone frame: '+(fits?'PASS':'FAIL')+'. ':''}${conflicts.length?'Inspect foreground bounds: '+conflicts.join(', ')+'. Check the visible interactive face; bounding boxes can overlap naturally.':'No foreground/prop rectangle overlaps.'}\n`+
+  $('status').textContent=`${scene.w} × ${scene.h} world px. ${sign?'Signpost in phone frame: '+(fits?'PASS':'FAIL')+'. ':''}${conflicts.length?'Foreground conflicts: '+conflicts.join(', ')+'. Foreground scenery must not cover a prop.':'No foreground/prop rectangle overlaps.'}\n`+
     (missing.length?'Background not generated yet. ':'')+'Production overlays read directly from src/lib/scenes; draft rects follow the composed artwork. Maplewood is part of the overworld.';
 }
 function edgeFacts(image){

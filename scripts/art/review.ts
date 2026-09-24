@@ -34,7 +34,7 @@ export async function buildReview(root: string, manifest: Manifest, composites =
     const layout = manifest.sceneLayouts?.[scene.id];
     const rigInstances = layout?.rigs ?? [];
     const layers = assets.flatMap(asset => {
-      if (asset.scene !== scene.id || !asset.world || !['prop', 'foreground'].includes(asset.kind)) return [];
+      if (asset.scene !== scene.id || !asset.world || !['scenery', 'prop', 'foreground'].includes(asset.kind)) return [];
       return [{ id: asset.id, asset: asset.id, kind: asset.kind, rect: asset.world }];
     });
     return { ...scene, arrival: layout?.arrival ?? scene.arrival, layers, rigInstances,

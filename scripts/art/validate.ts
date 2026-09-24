@@ -6,10 +6,12 @@ import type { Manifest, ProcessedAsset } from './types.ts';
 
 export function validateOutputs(root: string, manifest: Manifest): string[] {
   const problems: string[] = [];
+  const placed: ProcessedAsset[] = [];
   for (const asset of manifest.assets) {
     const dir = join(root, 'art/generated', asset.id), metadata = join(dir, 'asset.json');
     if (!existsSync(metadata)) { problems.push(`${asset.id}: not generated`); continue; }
     const result = JSON.parse(readFileSync(metadata, 'utf8')) as ProcessedAsset;
+    if (result.world) placed.push(result);
     const file = join(root, 'art/generated', result.file);
     const size = dimensions(file);
     if (size.w !== result.width || size.h !== result.height) problems.push(`${asset.id}: dimensions disagree with metadata`);
@@ -21,10 +23,13 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
       if (JSON.stringify(expected) !== JSON.stringify(result.world)) problems.push(`${asset.id}: placement must match its reviewed anchor or source crop and trim offset`);
     }
     const provenance = join(dir, 'provenance.json');
-    if (asset.deriveFrom && existsSync(provenance)) {
+    if (asset.deriveFrom) {
       const parent = join(root, 'art/generated', asset.deriveFrom, 'image.webp');
-      const derivation = JSON.parse(readFileSync(provenance, 'utf8')).derivation;
-      if (derivation?.referenceSha256 && existsSync(parent) && derivation.referenceSha256 !== createHash('sha256').update(readFileSync(parent)).digest('hex')) {
+      const evidence = existsSync(provenance) ? JSON.parse(readFileSync(provenance, 'utf8')) : undefined;
+      const derivation = evidence?.derivation;
+      if (evidence?.sourceSha256 !== result.source.sha256 || derivation?.asset !== asset.deriveFrom || !/^[0-9a-f]{64}$/.test(derivation?.referenceSha256 ?? '') || !existsSync(parent)) {
+        problems.push(`${asset.id}: missing or mismatched derivative provenance; regenerate this derivative`);
+      } else if (derivation.referenceSha256 !== createHash('sha256').update(readFileSync(parent)).digest('hex')) {
         problems.push(`${asset.id}: parent composition changed; regenerate this derivative`);
       }
     }
@@ -56,6 +61,21 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
       if (existsSync(master)) {
         const source = JSON.parse(readFileSync(master, 'utf8')).source;
         if (result.source.w !== source.w || result.source.h !== source.h) problems.push(`${asset.id}: master and part frame dimensions differ; registration requires review`);
+      }
+    }
+  }
+  const props = [
+    ...placed.filter(a => a.kind === 'prop').map(a => ({id:a.id,scene:a.scene,rect:a.world!})),
+    ...Object.entries(manifest.sceneLayouts ?? {}).flatMap(([scene,layout]) => layout.rigs.map(rig => ({
+      id:rig.name,scene,rect:{...rig.rect,x:rig.rect.x-rig.travelX,w:rig.rect.w+rig.travelX*2}
+    })))
+  ];
+  for (const foreground of placed.filter(a => a.kind === 'foreground')) {
+    const a = foreground.world!;
+    for (const prop of props.filter(p => p.scene === foreground.scene)) {
+      const b = prop.rect;
+      if (a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y) {
+        problems.push(`${foreground.id}: foreground bounds overlap prop ${prop.id}`);
       }
     }
   }

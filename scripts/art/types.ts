@@ -3,7 +3,7 @@ export interface RigPlacement { name: string; rect: Rect; travelX: number }
 export interface Asset {
   id: string;
   scene: string;
-  kind: 'background' | 'prop' | 'foreground' | 'part' | 'reference';
+  kind: 'background' | 'scenery' | 'prop' | 'foreground' | 'part' | 'reference';
   prompt: string;
   references?: string[];
   dependsOn?: string[];

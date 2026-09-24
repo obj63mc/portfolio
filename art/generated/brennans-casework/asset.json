@@ -1,0 +1,34 @@
+{
+  "id": "brennans-casework",
+  "scene": "brennans",
+  "kind": "scenery",
+  "file": "brennans-casework/image.webp",
+  "world": {
+    "x": 2423.874681122449,
+    "y": 0,
+    "w": 406.4890518707483,
+    "h": 1240.196445275959
+  },
+  "source": {
+    "w": 735,
+    "h": 2138,
+    "sha256": "1deed72977c1bfc59894df59b5768c440c1aee8fb5bd7ed8d8fc5e3bb5f88198"
+  },
+  "trim": {
+    "x": 102,
+    "y": 0,
+    "w": 611,
+    "h": 1864
+  },
+  "width": 611,
+  "height": 1864,
+  "registration": {
+    "asset": "brennans-master",
+    "rect": {
+      "x": 2356.015625,
+      "y": 0,
+      "w": 488.984375,
+      "h": 1422.5
+    }
+  }
+}

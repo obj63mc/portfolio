@@ -4,7 +4,7 @@ import { resolve, join } from 'node:path';
 import { homedir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { dimensions, magick } from './process.ts';
-import type { Asset, Manifest } from './types.ts';
+import type { Asset, Manifest, Rect } from './types.ts';
 
 export function preparePrompt(asset: Asset, manifest: Manifest, root: string, run: string) {
   const references = manifest.references.map(p => resolve(root, p));
@@ -13,26 +13,19 @@ export function preparePrompt(asset: Asset, manifest: Manifest, root: string, ru
     const reference = resolve(root, path);
     if (!references.includes(reference)) references.push(reference);
   }
-  if (asset.opening) {
-    const source = resolve(root, `art/generated/${asset.opening.asset}/image.webp`);
-    const parent = manifest.assets.find(a => a.id === asset.opening!.asset);
-    if (!parent?.world || !existsSync(source)) throw new Error(`Generate ${asset.opening.asset} before ${asset.id}`);
-    const r = asset.opening.rect;
-    const crop = join(run, 'opening.png');
-    magick([source, '-crop', `${r.w * 2}x${r.h * 2}+${r.x * 2}+${r.y * 2}`, '+repage', crop]);
-    references.push(crop);
-  }
-  if (asset.registration) {
-    const parent = manifest.assets.find(a => a.id === asset.registration!.asset);
-    const source = resolve(root, `art/generated/${asset.registration.asset}/image.webp`);
-    if (!parent?.world || !existsSync(source)) throw new Error(`Generate ${asset.registration.asset} before ${asset.id}`);
-    const size = dimensions(source), r = asset.registration.rect;
+  function attachCrop(name: string, selection: {asset: string; rect: Rect}, resize?: string) {
+    const parent = manifest.assets.find(a => a.id === selection.asset);
+    const source = resolve(root, `art/generated/${selection.asset}/image.webp`);
+    if (!parent?.world || !existsSync(source)) throw new Error(`Generate ${selection.asset} before ${asset.id}`);
+    const size = dimensions(source), r = selection.rect;
     const sx = size.w / parent.world.w, sy = size.h / parent.world.h;
-    const crop = join(run, 'registration.png');
-    magick([source, '-crop', `${Math.round(r.w*sx)}x${Math.round(r.h*sy)}+${Math.round(r.x*sx)}+${Math.round(r.y*sy)}`,
-      '+repage', '-resize', `${asset.size ?? '1024x1024'}!`, crop]);
+    const crop = join(run, `${name}.png`);
+    magick([source, '-crop', `${Math.round(r.w*sx)}x${Math.round(r.h*sy)}+${Math.round((r.x-parent.world.x)*sx)}+${Math.round((r.y-parent.world.y)*sy)}`,
+      '+repage', ...(resize ? ['-resize',`${resize}!`] : []), crop]);
     references.push(crop);
   }
+  if (asset.opening) attachCrop('opening', asset.opening);
+  if (asset.registration) attachCrop('registration', asset.registration, asset.size ?? '1024x1024');
   for (const path of references) if (!existsSync(path)) throw new Error(`Missing reference: ${path}`);
   const prompt = `${readFileSync(resolve(root, manifest.style), 'utf8')}\n\nASSET: ${asset.id}\n${asset.prompt}\n\n` +
     `Target image size: ${asset.size ?? '1536x1024'}. ${asset.registration ? 'Preserve the exact framing of the final crop, including objects clipped by its edge.' : asset.kind === 'background' ? 'Fill the image edge to edge.' : 'Keep the entire object within the frame with a clean margin.'}\n` +
@@ -58,7 +51,7 @@ export function generate(asset: Asset, manifest: Manifest, root: string, provide
       const crop = join(run, 'registration.png'), size = dimensions(crop);
       // A measured matte extracts existing generated pixels; it does not redraw the object.
       magick([crop, '(', '-size', `${size.w}x${size.h}`, 'xc:black', '-fill', 'white', '-draw',
-        `polygon ${mask.map(([x,y]) => `${x*size.w},${y*size.h}`).join(' ')}`, ')', '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', output]);
+        `polygon ${mask.map(([x,y]) => `${x*size.w},${y*size.h}`).join(' ')}`, '-alpha', 'copy', ')', '-compose', 'DstIn', '-composite', output]);
     } else magick([source, output]);
     writeFileSync(join(run, 'derivation.json'), JSON.stringify({asset:asset.deriveFrom,
       referenceSha256:createHash('sha256').update(readFileSync(source)).digest('hex'),

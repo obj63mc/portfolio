@@ -1,6 +1,11 @@
 {
-  "sourceSha256": "1deed72977c1bfc59894df59b5768c440c1aee8fb5bd7ed8d8fc5e3bb5f88198",
-  "run": "art/runs/brennans-humidor/2026-09-24T20-34-35.782Z",
-  "provider": "codex",
+  "sourceSha256": "853f6c2f4c30cf80a396d58625f18b81ebd8d2ff1fadfbf869b4c695074a450c",
+  "run": "art/runs/brennans-humidor/2026-09-24T21-07-44.426Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-casework",
+    "referenceSha256": "cedfa5e8182722f3f8177681fd96b02234954319ce021161bac01123f585a0c7",
+    "operation": "masked-composition-crop"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }
