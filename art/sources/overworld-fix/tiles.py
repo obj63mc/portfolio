@@ -334,6 +334,58 @@ def shore_fill(img, loop, grow=22, protect=None):
     img.paste(out, (0, 0), touched); rep.paste(255, (0, 0), touched); rep.paste(255, (0, 0), land)
     print('   shore fill: strip relaid', n, 'px; water', wc, 'rim', rim); return rep
 
+def road_band(img, px, rb):
+    """Redraw a road: rb = {x: [x0, x1], guide: [[x, y_top], ...], road: rgb, dash: rgb, dashLen, dashPeriod, smooth}.
+    Road pixels are found in a window round the guide line; columns whose run looks like the clean road (10 to 17 px, top near the
+    guide) fix the top and bottom edges, which are interpolated over gaps and smoothed. Inside the band every pixel that is not a
+    tree in front of the road takes the road colour (edge pixels by coverage), and dashes of one length and spacing run along
+    the centre line. Returns the changed-pixel mask."""
+    x0, x1 = rb['x']; g = sorted(rb['guide']); road, dash = tuple(rb['road']), tuple(rb['dash']); win = rb.get('smooth', 31)
+    guide = lambda x: next(a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0]) for a, b in zip(g, g[1:]) if a[0] <= x <= b[0]) if g[0][0] <= x <= g[-1][0] else (g[0][1] if x < g[0][0] else g[-1][1])
+    RD = lambda c: 110 < c[0] < 175 and 135 < c[1] < 190 and 145 < c[2] < 205 and c[2] > c[0] + 8
+    TREE = lambda c: (c[1] > c[0] + 25 and c[0] < 150 and c[1] < 190) or c[0] > c[1] + 30 or sum(c) < 200  # crowns, brick, trunks: in front of the road, kept
+    prot = lambda x, y: any(r[0] <= x < r[2] and r[1] <= y < r[3] for r in rb.get('protect', []))
+    pad = win; tops, bots = {}, {}
+    for x in range(x0 - pad, x1 + pad + 1):
+        gy = guide(x); run = None; s0 = None
+        for y in range(int(gy) - 6, int(gy) + 22):
+            if RD(px[x, y]):
+                s0 = y if s0 is None else s0
+            elif s0 is not None:
+                if run is None or y - s0 > run[1] - run[0]: run = (s0, y)
+                s0 = None
+        if run and 10 <= run[1] - run[0] <= 17 and abs(run[0] - gy) <= 4: tops[x], bots[x] = run[0], run[1]
+    good = sorted(tops)
+    def fill(d):
+        out = {}
+        for x in range(x0 - pad, x1 + pad + 1):
+            if x in d: out[x] = d[x]; continue
+            l = max((k for k in good if k < x), default=None); r = min((k for k in good if k > x), default=None)
+            out[x] = d[l] + (d[r] - d[l]) * (x - l) / (r - l) if l is not None and r is not None else d[l if l is not None else r]
+        return {x: sum(out[x + k] for k in range(-(win // 2), win // 2 + 1)) / win for x in range(x0, x1 + 1)}
+    T, B = fill(tops), fill(bots); m = Image.new('L', img.size, 0); mp = m.load()
+    ov = lambda a, b, y: max(0.0, min(b, y + 1) - max(a, y))
+    for x in range(x0, x1 + 1):
+        edge = min(1.0, (x - x0) / 12, (x1 - x) / 12)  # fade in and out at the ends
+        for y in range(int(T[x]) - 1, int(B[x]) + 2):
+            o = px[x, y]
+            if TREE(o) or prot(x, y): continue
+            k = ov(T[x], B[x], y) * edge
+            if k <= 0: continue
+            c = tuple(round(k * road[i] + (1 - k) * o[i]) for i in range(3))
+            if c != o: px[x, y] = c; mp[x, y] = 255
+    period, L = rb.get('dashPeriod', 16), rb.get('dashLen', 6); w = rb.get('dashWidth', 1.2)
+    for x in range(x0 + 10, x1 - 10):
+        if (x - x0) % period >= L: continue
+        cy = (T[x] + B[x]) / 2
+        for y in range(int(cy) - 1, int(cy) + 2):
+            o = px[x, y]
+            if TREE(o) or prot(x, y): continue
+            k = ov(cy - w / 2, cy + w / 2, y)
+            if k > 0: px[x, y] = tuple(round(k * dash[i] + (1 - k) * o[i]) for i in range(3)); mp[x, y] = 255
+    print('   road x', rb['x'], len(good), 'clean columns; width', round(min(B[x] - T[x] for x in T), 1), '-', round(max(B[x] - T[x] for x in T), 1))
+    return m
+
 def stamp(img, src, dst, feather=1.0):
     """Clone a tree: copy the non-lawn pixels of the `src` rectangle (x0, y0, x1, y1) onto the same-size rectangle at
     `dst` (x, y of its top left), so a deleted tree can be replaced by a crisp one from elsewhere on the same map."""
@@ -449,7 +501,7 @@ def prepare(spec_path):
         changed = before(f'{T}/t-{name}.png') != old_crop or before(f'{T}/t-{name}-prompt.txt') != old_prompt
         if changed and os.path.exists(f'{T}/t-{name}-model.png'): os.remove(f'{T}/t-{name}-model.png'); print(name, 'crop or prompt changed: model output dropped')
         print(name, t['rect'], 'repaint px', mask.histogram()[255])
-    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28), 'bridges': spec.get('bridges', []), 'sandfills': spec.get('sandfills', []), 'tones': spec.get('tones', []), 'shorebands': spec.get('shorebands', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
+    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28), 'bridges': spec.get('bridges', []), 'sandfills': spec.get('sandfills', []), 'tones': spec.get('tones', []), 'shorebands': spec.get('shorebands', []), 'roadbands': spec.get('roadbands', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
 
 def loops():
     """Filled red loops from marked.png, in base pixels, as a list of full-size L masks (sorted by x)."""
@@ -646,6 +698,11 @@ def stitch():
                     c = tuple(round(fp * P[i] + fr * R[i] + fw * below[i] + fa * above[i]) for i in range(3))
                     if c != o: px[x, y] = c; mp[x, y] = 255
             union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   band x', sb['x'], 'path', P, 'rim', R, 'water', Wc, 'lawn', Lc)
+        img.save(f'{D}/stitched.png')
+    if tm.get('roadbands'):  # a road redrawn as one clean band: edges fitted from its clean columns, flat surface, evenly spaced centre dashes
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); px = img.load(); print('roadbands:')
+        for rb in tm['roadbands']:
+            union.paste(255, (0, 0), road_band(img, px, rb).filter(ImageFilter.MaxFilter(5)))
         img.save(f'{D}/stitched.png')
     if tm.get('paints'):  # flat repaint: a rectangle takes the colour at a sample point (a roof, a wall), 0.5 px feather
         img = Image.open(f'{D}/stitched.png').convert('RGB'); print('paints:')

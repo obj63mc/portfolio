@@ -1,38 +1,31 @@
 {
- "round": 12,
- "base": "rounds/base-12.png",
+ "round": 13,
+ "base": "rounds/base-13.png",
  "tiles": [
   {
-   "name": "river",
+   "name": "bevo",
    "rect": [
-    1471,
-    0,
-    512,
-    512
+    16,
+    537,
+    256,
+    256
    ],
    "loops": [],
-   "repaintPx": 5006,
-   "edit": true,
-   "keepBaseWater": [
-    [
-     1720,
-     195,
-     1800,
-     265
-    ]
-   ]
+   "repaintPx": 17816,
+   "edit": true
   },
   {
-   "name": "c0r1",
+   "name": "eads",
    "rect": [
+    1383,
     0,
-    281,
-    512,
-    512
+    600,
+    400
    ],
    "loops": [],
-   "repaintPx": 2569,
-   "edit": true
+   "repaintPx": 26968,
+   "edit": true,
+   "keepBaseWater": true
   }
  ],
  "stamps": [],
@@ -42,5 +35,92 @@
  "bridges": [],
  "sandfills": [],
  "tones": [],
- "shorebands": []
+ "shorebands": [],
+ "roadbands": [
+  {
+   "x": [
+    575,
+    1285
+   ],
+   "guide": [
+    [
+     570,
+     496
+    ],
+    [
+     640,
+     511
+    ],
+    [
+     700,
+     523
+    ],
+    [
+     760,
+     534
+    ],
+    [
+     830,
+     544
+    ],
+    [
+     870,
+     552
+    ],
+    [
+     930,
+     562
+    ],
+    [
+     1050,
+     584
+    ],
+    [
+     1100,
+     594
+    ],
+    [
+     1150,
+     605
+    ],
+    [
+     1200,
+     619
+    ],
+    [
+     1230,
+     630
+    ],
+    [
+     1270,
+     646
+    ],
+    [
+     1300,
+     658
+    ]
+   ],
+   "road": [
+    136,
+    159,
+    172
+   ],
+   "dash": [
+    158,
+    178,
+    189
+   ],
+   "dashLen": 6,
+   "dashPeriod": 16,
+   "smooth": 31,
+   "protect": [
+    [
+     643,
+     498,
+     668,
+     531
+    ]
+   ]
+  }
+ ]
 }
