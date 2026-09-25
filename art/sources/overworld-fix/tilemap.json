@@ -1,6 +1,6 @@
 {
- "round": 4,
- "base": "rounds/base-4.png",
+ "round": 5,
+ "base": "rounds/base-5.png",
  "tiles": [
   {
    "name": "c0r0",
@@ -10,20 +10,25 @@
     512,
     512
    ],
-   "loops": [],
-   "repaintPx": 5883,
+   "loops": [
+    0,
+    1
+   ],
+   "repaintPx": 3934,
    "edit": true
   },
   {
-   "name": "midtown",
+   "name": "church",
    "rect": [
-    700,
-    150,
+    100,
+    281,
     512,
     512
    ],
-   "loops": [],
-   "repaintPx": 4949,
+   "loops": [
+    4
+   ],
+   "repaintPx": 8668,
    "edit": true
   },
   {
@@ -34,12 +39,37 @@
     512,
     512
    ],
-   "loops": [],
-   "repaintPx": 27963,
-   "edit": true,
-   "keepBaseWater": true
+   "loops": [
+    2
+   ],
+   "repaintPx": 12362,
+   "edit": true
+  },
+  {
+   "name": "c3r1",
+   "rect": [
+    1471,
+    281,
+    512,
+    512
+   ],
+   "loops": [
+    3,
+    5
+   ],
+   "repaintPx": 10329,
+   "edit": true
   }
  ],
  "stamps": [],
- "paints": []
+ "paints": [],
+ "restore": [
+  [
+   455,
+   610,
+   565,
+   680
+  ]
+ ],
+ "blurThreshold": 28
 }

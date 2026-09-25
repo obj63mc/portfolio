@@ -1,9 +1,9 @@
 {
-  "sourceSha256": "6e0a32e1c5b1f4eddbccf6761a7abfbd2acf066a6e9d802c3126f505537cac4d",
-  "run": "art/runs/overworld-master/2026-09-25T16-58-10.000Z-tile-fixes-r4",
+  "sourceSha256": "1bb66de56ba1cd3e8a4d2388e271b7a74a765dd54a2b9fb74623e894f19b7b7e",
+  "run": "art/runs/overworld-master/2026-09-25T18-29-00.000Z-tile-fixes-r5",
   "provider": "derived",
   "derivation": {
-    "operation": "masked-tile-fixes-round-4",
+    "operation": "masked-tile-fixes-round-5",
     "base": "overworld-master (fill pass, native size)",
     "edit": "three rounds of overworld-fix tile redraws stitched by ImageMagick inside Joe's loops, the deck band and the park outline; single trees deleted by lawn_fill (see prompt.txt)",
     "script": "art/sources/overworld-fix/tiles.py stitch"

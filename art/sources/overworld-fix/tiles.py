@@ -116,7 +116,78 @@ GREY = lambda c: abs(c[0] - c[1]) < 22 and abs(c[1] - c[2]) < 28 and c[0] > 110
 WATER = lambda c: c[2] > 150 and c[1] > 150 and c[0] < 130
 HARD = lambda c: PATH(c) or GREY(c) or WATER(c)  # footpath, road, water: never lawn, never tree
 
-def lawn_fill(img, loop, reach=24, min_px=8, ghost=None, force=False):
+def clone_fill(img, rep, box, rows, cell=28):
+    """Refill the pixels of `rep` (L mask) with real lawn, cloned by translation. The region is worked in `cell` px
+    cells; each cell takes the translation whose source is (almost) all untouched lawn and whose colours match best
+    along the cell's border, then the cell is tone-shifted to the lawn beside it, so the lawn's own gradient and
+    grain carry through without a tonal step. A cell with no usable translation gets the row's lawn colour."""
+    W, H = img.size; src = img.copy(); sp = src.load(); rp = rep.load(); x0, y0, x1, y1 = box
+    pts_all = [(x, y) for y in range(max(0, y0), min(H, y1)) for x in range(max(0, x0), min(W, x1)) if rp[x, y]]
+    if not pts_all: return
+    fill = img.copy(); fp = fill.load(); cloned = 0; flat = 0
+    cells = {}
+    for p_ in pts_all: cells.setdefault((p_[0] // cell, p_[1] // cell), []).append(p_)
+    for key, pts in cells.items():
+        border = [(x, y) for (x, y) in pts if any(0 <= x + dx < W and 0 <= y + dy < H and not rp[x + dx, y + dy] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+        ring = [(x + dx, y + dy) for (x, y) in border for dx, dy in ((2, 0), (-2, 0), (0, 2), (0, -2)) if 0 <= x + dx < W and 0 <= y + dy < H and not rp[x + dx, y + dy] and LAWN_DEEP(sp[x + dx, y + dy])]
+        if not ring:  # an interior cell: borrow the ring of the whole region nearby
+            cx, cy = key[0] * cell + cell // 2, key[1] * cell + cell // 2
+            ring = [(x, y) for y in range(max(0, cy - 60), min(H, cy + 60), 3) for x in range(max(0, cx - 60), min(W, cx + 60), 3) if not rp[x, y] and LAWN_DEEP(sp[x, y])]
+        best = None; sample = pts[::3]
+        for dy in range(-120, 121, 2):
+            for dx in range(-120, 121, 2):
+                if abs(dx) < 4 and abs(dy) < 4: continue
+                bad = 0; lim = max(1, len(sample) // 50)
+                for (x, y) in sample:
+                    sx, sy = x + dx, y + dy
+                    if not (0 <= sx < W and 0 <= sy < H) or rp[sx, sy] or not LAWN_DEEP(sp[sx, sy]):
+                        bad += 1
+                        if bad > lim: break
+                if bad > lim: continue
+                err = 0; cnt = 0
+                for (x, y) in ring[::2]:
+                    sx, sy = x + dx, y + dy
+                    if 0 <= sx < W and 0 <= sy < H and LAWN_DEEP(sp[sx, sy]): err += sum(abs(a_ - b_) for a_, b_ in zip(sp[x, y], sp[sx, sy])); cnt += 1
+                if cnt and (best is None or err / cnt < best[0]): best = (err / cnt, dx, dy)
+        if best is None:
+            for (x, y) in pts:
+                if y in rows: fp[x, y] = rows[y]; flat += 1
+            continue
+        _, dx, dy = best; vals = []
+        for (x, y) in pts:
+            sx, sy = x + dx, y + dy
+            if 0 <= sx < W and 0 <= sy < H and not rp[sx, sy] and LAWN_DEEP(sp[sx, sy]): fp[x, y] = sp[sx, sy]; vals.append(fp[x, y])
+            elif y in rows: fp[x, y] = rows[y]
+        if ring and vals:
+            rm = [sum(sp[p_][i] for p_ in ring) / len(ring) for i in range(3)]; bm = [sum(v[i] for v in vals) / len(vals) for i in range(3)]
+            shift = [max(-25, min(25, rm[i] - bm[i])) for i in range(3)]
+            for (x, y) in pts: fp[x, y] = tuple(max(0, min(255, int(round(fp[x, y][i] + shift[i])))) for i in range(3))
+        cloned += len(pts)
+    img.paste(fill, (0, 0), rep.filter(ImageFilter.GaussianBlur(1.0))); print(f'   refill: cloned lawn in {len(cells)} cells ({cloned} px), flat {flat} px')
+
+def propagate_fill(img, rep, box, rows):
+    W, H = img.size; px = img.load(); x0, y0, x1, y1 = box
+    pad = 40; bx = (max(0, x0 - pad), max(0, y0 - pad), min(W, x1 + pad), min(H, y1 + pad))
+    crop = img.crop(bx); rc = rep.crop(bx); cw, ch = crop.size; cp, rcp = crop.load(), rc.load()
+    keep = Image.new('L', (cw, ch), 0); kp = keep.load()
+    for y in range(ch):
+        for x in range(cw):
+            if not rcp[x, y] and LAWN_DEEP(cp[x, y]): kp[x, y] = 255
+    prem = Image.composite(crop, Image.new('RGB', (cw, ch), (0, 0, 0)), keep); pp = prem.load()
+    fill = crop.copy(); fp = fill.load(); todo = {(x, y) for y in range(ch) for x in range(cw) if rcp[x, y]}
+    for _ in range(40):
+        pb = prem.filter(ImageFilter.GaussianBlur(5)).load(); kb = keep.filter(ImageFilter.GaussianBlur(5)).load(); done = []
+        for x, y in todo:
+            k = kb[x, y]
+            if k > 60:
+                c = tuple(min(255, int(round(v * 255 / k))) for v in pb[x, y]); fp[x, y] = c; done.append((x, y, c))
+        if not done: break
+        for x, y, c in done: todo.discard((x, y)); pp[x, y] = c; kp[x, y] = 255
+    for x, y in todo:
+        if y + bx[1] in rows: fp[x, y] = rows[y + bx[1]]
+    img.paste(fill, bx, rc.filter(ImageFilter.GaussianBlur(1.5)))
+
+def lawn_fill(img, loop, reach=24, min_px=8, ghost=None, force=False, ghost_only=False):
     """Delete the tree(s) inside one loop. Every tree-like pixel inside the loop goes (not lawn, footpath, road or water;
     with `ghost` set, also lawn-like pixels that far from the loop's surrounding lawn colour and not next to a footpath,
     road or water: the ghost of a half-transparent tree), in blobs of at least `min_px`. A strict-tree blob that reaches
@@ -156,13 +227,13 @@ def lawn_fill(img, loop, reach=24, min_px=8, ghost=None, force=False):
                         if wx0 <= nx < wx1 and wy0 <= ny < wy1 and (nx, ny) not in seen and test(nx, ny): seen.add((nx, ny)); q.append((nx, ny))
                 yield blob
     n = 0
-    for cls in (1, 2):  # ghost and tree blobs never merge, so a ghost beside a neighbouring tree goes alone
+    for cls in ((1,) if ghost_only else (1, 2)):  # ghost and tree blobs never merge, so a ghost beside a neighbouring tree goes alone
         for blob in blobs(lambda x, y: lp[x, y] and inside_class(x, y) == cls, (b[0], b[1], b[2], b[3])):  # inside the loop
             if len(blob) < min_px: continue
             for p_ in blob: rp[p_] = 255
             n += len(blob)
     grown = loop.filter(ImageFilter.MaxFilter(17)).load(); wide = (max(0, b[0] - 80), max(0, b[1] - 80), min(W, b[2] + 80), min(H, b[3] + 80))
-    for blob in blobs(strict, wide):  # strict-tree blobs seen whole
+    for blob in ([] if ghost_only else blobs(strict, wide)):  # strict-tree blobs seen whole
         inside = sum(1 for p_ in blob if grown[p_])
         if (any(rp[p_] for p_ in blob) or (len(blob) <= 400 and inside)) and inside * 2 >= len(blob):
             for p_ in blob:  # the rest of a tree the loop mostly covers, and small remnants at its edge
@@ -174,25 +245,7 @@ def lawn_fill(img, loop, reach=24, min_px=8, ghost=None, force=False):
     rep = rep.filter(ImageFilter.MaxFilter(5))  # two pixels over the edge: anti-aliased rims and a ghost's halo go too
     if not force: rep.paste(0, (0, 0), hard.filter(ImageFilter.MaxFilter(3)))  # never a footpath, road or water, nor their edge pixels (a forced loop clears everything but lawn)
     rp = rep.load()
-    pad = 40; box = (max(0, x0 - pad), max(0, y0 - pad), min(W, x1 + pad), min(H, y1 + pad))
-    crop = img.crop(box); rc = rep.crop(box); cw, ch = crop.size; cp, rcp = crop.load(), rc.load()
-    keep = Image.new('L', (cw, ch), 0); kp = keep.load()
-    for y in range(ch):
-        for x in range(cw):
-            if not rcp[x, y] and LAWN_DEEP(cp[x, y]): kp[x, y] = 255  # shaded lawn is sampled too, so shading carries through
-    prem = Image.composite(crop, Image.new('RGB', (cw, ch), (0, 0, 0)), keep); pp = prem.load()
-    fill = crop.copy(); fp = fill.load(); todo = {(x, y) for y in range(ch) for x in range(cw) if rcp[x, y]}
-    for _ in range(40):  # the untouched lawn's colour walks inward about five pixels a pass
-        pb = prem.filter(ImageFilter.GaussianBlur(5)).load(); kb = keep.filter(ImageFilter.GaussianBlur(5)).load(); done = []
-        for x, y in todo:
-            k = kb[x, y]
-            if k > 60:
-                c = tuple(min(255, int(round(v * 255 / k))) for v in pb[x, y]); fp[x, y] = c; done.append((x, y, c))
-        if not done: break
-        for x, y, c in done: todo.discard((x, y)); pp[x, y] = c; kp[x, y] = 255
-    for x, y in todo:
-        if y + box[1] in rows: fp[x, y] = rows[y + box[1]]
-    img.paste(fill, box, rc.filter(ImageFilter.GaussianBlur(1.5)))  # a soft edge, so a canopy-shaped outline never shows
+    clone_fill(img, rep, (x0, y0, x1, y1), rows)
     print('   lawn fill: replaced', n, 'pixels'); return rep
 
 def check():
@@ -238,6 +291,47 @@ def water_fill(img, loop):
             if lp[x, y] and not WATER(px[x, y]): rp[x, y] = 255; n += 1
     rep = rep.filter(ImageFilter.MaxFilter(5)); img.paste(Image.new('RGB', (W, H), c), (0, 0), rep.filter(ImageFilter.GaussianBlur(1.0)))
     print('   water fill: replaced', n, 'pixels'); return rep
+
+def shore_fill(img, loop, grow=22, protect=None):
+    """Rebuild a single smooth shoreline inside one loop (grown by `grow` px, footpaths excluded). The water region
+    is taken from the image and smoothed (4.5 px blur, thresholded); the whole land strip in the loop is relaid as
+    cloned lawn; then the rim (2 px, the lake's own sand colour) and the water are painted over it with soft alphas
+    from the blurred masks, so both edges are anti-aliased. Returns the mask of replaced pixels."""
+    W, H = img.size; px = img.load(); b0 = loop.getbbox(); rep = Image.new('L', (W, H), 0)
+    if not b0: return rep
+    loop = loop.filter(ImageFilter.MaxFilter(2 * grow + 1))
+    if protect: loop.paste(0, (0, 0), protect)
+    lp = loop.load(); b = loop.getbbox()
+    wx0, wy0, wx1, wy1 = max(0, b[0] - 40), max(0, b[1] - 40), min(W, b[2] + 40), min(H, b[3] + 40)
+    water = Image.new('L', (W, H), 0); wp = water.load(); wcol = []
+    for y in range(wy0, wy1):
+        for x in range(wx0, wx1):
+            if WATER(px[x, y]): wp[x, y] = 255; wcol.append(px[x, y])
+    if not wcol: print('   shore fill: no water near the loop'); return rep
+    wcol.sort(key=sum); wc = wcol[len(wcol) // 2]
+    ringc = [px[x, y] for y in range(wy0, wy1) for x in range(wx0, wx1) if not lp[x, y] and PATH(px[x, y]) and any(0 <= x + dx < W and 0 <= y + dy < H and wp[x + dx, y + dy] for dx in (-3, 0, 3) for dy in (-3, 0, 3))]
+    ringc.sort(key=sum); rim = ringc[len(ringc) // 2] if ringc else (248, 236, 180)
+    core = water.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(4.5)).point(lambda v: 255 if v > 127 else 0)
+    soft_w = core.filter(ImageFilter.GaussianBlur(1.0)).load(); soft_r = core.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(1.0)).load(); cp = core.load()
+    rows = {}
+    for y in range(b[1], b[3]):
+        s_ = sorted((px[x, y] for x in range(max(0, b[0] - 150), min(W, b[2] + 150)) if not lp[x, y] and LAWN(px[x, y])), key=sum)
+        if s_: rows[y] = s_[len(s_) // 2]
+    land = Image.new('L', (W, H), 0); ldp = land.load(); n = 0
+    for y in range(b[1], b[3]):
+        for x in range(b[0], b[2]):
+            if lp[x, y] and not PATH(px[x, y]) and (not cp[x, y] or soft_r[x, y] < 250): ldp[x, y] = 255; n += 1
+    clone_fill(img, land, (b[0] - 2, b[1] - 2, b[2] + 2, b[3] + 2), rows); px = img.load()
+    out = img.copy(); op = out.load(); touched = Image.new('L', (W, H), 0); tp = touched.load()
+    for y in range(b[1], b[3]):
+        for x in range(b[0], b[2]):
+            if not lp[x, y] or PATH(px[x, y]): continue
+            ar = soft_r[x, y] / 255.0; aw = soft_w[x, y] / 255.0
+            if ar <= 0.02: continue
+            c = px[x, y]; c = tuple(c[i] * (1 - ar) + rim[i] * ar for i in range(3)); c = tuple(int(round(c[i] * (1 - aw) + wc[i] * aw)) for i in range(3))
+            op[x, y] = c; tp[x, y] = 255
+    img.paste(out, (0, 0), touched); rep.paste(255, (0, 0), touched); rep.paste(255, (0, 0), land)
+    print('   shore fill: strip relaid', n, 'px; water', wc, 'rim', rim); return rep
 
 def stamp(img, src, dst, feather=1.0):
     """Clone a tree: copy the non-lawn pixels of the `src` rectangle (x0, y0, x1, y1) onto the same-size rectangle at
@@ -298,7 +392,7 @@ def detect(ref):
 
 def prepare(spec_path):
     spec = json.load(open(spec_path)); table = []
-    for kind in ('lawnfill', 'ghostfill', 'cleanup', 'waterfill', 'forcefill'):  # loops handled without a model: tree-like pixels become lawn (see lawn_fill)
+    for kind in ('lawnfill', 'ghostfill', 'cleanup', 'waterfill', 'forcefill', 'blurfill', 'shorefill'):  # loops handled without a model: tree-like pixels become lawn (see lawn_fill)
         m = Image.new('L', (1983, 793), 0)
         for i in spec.get(kind, []): m.paste(255, (0, 0), Image.open(f'{D}/rounds/detected/{i}.png').convert('L'))
         d = ImageDraw.Draw(m)
@@ -306,6 +400,10 @@ def prepare(spec_path):
         for poly in spec.get(kind + 'Polygons', []): d.polygon([tuple(p_) for p_ in poly], fill=255)
         for r in spec.get(kind + 'Protect', []): d.rectangle(r, fill=0)
         m.save(f'{T}/{kind}.png')
+        if kind == 'shorefill':  # the shore strip grows past the loop, so its protection is kept as its own mask
+            pm = Image.new('L', (1983, 793), 0); dp = ImageDraw.Draw(pm)
+            for r in spec.get('shorefillProtect', []): dp.rectangle(r, fill=255)
+            pm.save(f'{T}/shorefill-protect.png')
     if spec['base'] == 'stitched.png':  # a round starts from the previous result: keep that base aside, stitch overwrites stitched.png
         spec['base'] = f"rounds/base-{spec['round']}.png"; shutil.copy(f'{D}/stitched.png', f"{D}/{spec['base']}")
         json.dump(spec, open(spec_path, 'w'), indent=1); open(spec_path, 'a').write('\n')
@@ -317,7 +415,7 @@ def prepare(spec_path):
         magick(base, '-crop', f'{w}x{h}+{x}+{y}', '+repage', f'{T}/t-{name}.png')
         mask = Image.new('L', (1983, 793), 0)
         for i in t.get('loops', []):
-            if any(i in spec.get(k, []) for k in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill')): continue
+            if any(i in spec.get(k, []) for k in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill', 'blurfill', 'shorefill')): continue
             mask.paste(255, (0, 0), Image.open(f'{D}/rounds/detected/{i}.png').convert('L'))
         d = ImageDraw.Draw(mask)
         for r in t.get('extra', []): d.rectangle(r, fill=255)
@@ -350,7 +448,7 @@ def prepare(spec_path):
         changed = before(f'{T}/t-{name}.png') != old_crop or before(f'{T}/t-{name}-prompt.txt') != old_prompt
         if changed and os.path.exists(f'{T}/t-{name}-model.png'): os.remove(f'{T}/t-{name}-model.png'); print(name, 'crop or prompt changed: model output dropped')
         print(name, t['rect'], 'repaint px', mask.histogram()[255])
-    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
+    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28)}, open(f'{D}/tilemap.json', 'w'), indent=1)
 
 def loops():
     """Filled red loops from marked.png, in base pixels, as a list of full-size L masks (sorted by x)."""
@@ -489,11 +587,15 @@ def stitch():
     union = Image.new('L', (1983, 793), 0)
     for t in tm['tiles']:
         x, y, w, h = t['rect']; union.paste(255, (x, y), Image.open(f"{T}/t-{t['name']}-mask.png").convert('L').filter(ImageFilter.MaxFilter(5)))
-    for kind in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill', 'cleanup'):  # cleanup last: it tidies what the other fills and pastes leave
+    if tm.get('restore'):
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); bimg = Image.open(base).convert('RGB')
+        for r in tm['restore']: img.paste(bimg.crop(tuple(r)), (r[0], r[1])); print('restored base', r)
+        img.save(f'{D}/stitched.png')
+    for kind in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill', 'blurfill', 'shorefill', 'cleanup'):  # cleanup last: it tidies what the other fills and pastes leave
         if os.path.exists(f'{T}/{kind}.png'):
             m = Image.open(f'{T}/{kind}.png').convert('L'); img = Image.open(f'{D}/stitched.png').convert('RGB'); print(kind + ':')
             for loop in components(m):
-                fill = water_fill(img, loop) if kind == 'waterfill' else lawn_fill(img, loop, ghost=45 if kind == 'ghostfill' else None, force=kind == 'forcefill')
+                fill = water_fill(img, loop) if kind == 'waterfill' else shore_fill(img, loop, protect=Image.open(f'{T}/shorefill-protect.png').convert('L') if os.path.exists(f'{T}/shorefill-protect.png') else None) if kind == 'shorefill' else lawn_fill(img, loop, ghost=45 if kind == 'ghostfill' else tm.get('blurThreshold', 28) if kind == 'blurfill' else None, force=kind == 'forcefill', ghost_only=kind == 'blurfill')
                 union.paste(255, (0, 0), fill.filter(ImageFilter.MaxFilter(9)))
             img.save(f'{D}/stitched.png')
     if tm.get('paints'):  # flat repaint: a rectangle takes the colour at a sample point (a roof, a wall), 0.5 px feather
