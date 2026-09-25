@@ -1,6 +1,6 @@
 Overworld fix tile map. base.png is the master Joe marked up (commit 2bfad09, 1983 x 793, native size) and marked.png
 his review image aligned to it; each later round starts from the previous stitched.png, kept aside as rounds/base-N.png.
-Nothing here is upscaled or run through a model except the tile edits; the stitch is ImageMagick only.
+Nothing here is upscaled or run through a model except the tile edits and final-4x.webp; the stitch is ImageMagick only.
 A repaint area must end well inside its tile and should not cross a road except at a junction: the model lines
 its redraw up with what it can see in the reference, so a road that leaves the area needs its continuation in the
 tile, or it steps at the boundary (tiles.py check finds these).
