@@ -1,0 +1,19 @@
+{
+  "id": "overworld-fix-r13-eadsc",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld-fix-r13-eadsc/image.webp",
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "afc8d7740f3865512b85e1d20f02355c8cac02548b14bffe9fceddb3c7494b7a"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1536,
+    "h": 1024
+  },
+  "width": 1536,
+  "height": 1024
+}

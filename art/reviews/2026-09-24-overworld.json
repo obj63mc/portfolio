@@ -3,12 +3,12 @@
   "scene": "overworld",
   "verdict": "Overworld prop pass: geometry and cut-outs pass every automated check and the assembled-composite inspection; workshop visual acceptance (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) is still open for Joe, so the issue stays ready-for-human.",
   "assetHashes": {
-    "overworld": "9742bcbb17799625f104afb6794572b9be3f82bb2d76ca2ee2551e56b3ac3437",
+    "overworld": "e39c424e92e193db715dcebe6e2eaf85025b87a3bf9c29db0f460bd022b91299",
     "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
     "signpost": "67a957f044e3dcfcc94f4d5297e44fd4e7e0b84b9c0f75135e5ea90d2cd615a8",
     "door": "e8961290b6277f51718f413871ee6c3dde848126ede89d2e26898fe1bb0ab3f2",
-    "maplewood-tree": "8f8b3a943717437a4a7260dcbb28a1cfd43d9c6605915193de3d18fba8f64ff1",
-    "park-tree": "93578197c19bbd169c0ec244fe2061f76880049ee9c5732ac3bf5d780bafcadb",
+    "maplewood-tree": "8e80a8c4ade1ae53a821076b1bd99e86935efb8c9e38b8ccd1c389a1620c3f3f",
+    "park-tree": "5c06474d2042160143658ca9ad05411892c5ea1e4691b778211e4e7925fd99a3",
     "moose-master": "2bd49324886f3a02f5f5e772046ce35d083181e3037e17936d2f5d1855d3bc36",
     "moose-body": "a6dcd7698e3631ae0ceb97b21defe357f775c62d2b714b787d75126e663be0b4",
     "moose-head": "d22a5152497e965bc5be2a178d53a597db665f48bc82519e884ece66697cb91a",
@@ -18,15 +18,15 @@
     "rider-body": "3cbbf50cb026b7ef0520492dadb572efc11d1cf9bd911cee5fd73fbaecba3c32",
     "rider-rear-wheel": "12c4b992ab0409e81bfd5be3b4b1567d9fbc5fae480a726b03259e169884bbcb",
     "rider-front-wheel": "cc0e685017c5d3caa8c02a5fb0eea15739fa5f1dd20cb33ec92a41ad8d59cacd",
-    "overworld-master": "67c3b793d5ac8d47b637b707ec000e180c5fbaeffa5f42c2238860ac821462a7",
+    "overworld-master": "32edad79ca23b7ba196a5e56cd87f020a0526931f73bc0b237a9596680de288d",
     "marquee": "0526a11c1674166550ee9db20557a566b426c345c757b415a99191de4ccafa11",
-    "marquee-bulbs": "aaa79c9c4678fb70a22e4d4e9caf58997d672e56353640f5ae74b92479dae3b5",
-    "mc-sign": "2fde96ff662be41436d96150345a05261a1f7f23549b50d706e0c25f9cc907fa",
+    "marquee-bulbs": "5ce5c0ed655885402490cd6c006b73e66c14b469d65e605103f92a14c1817568",
+    "mc-sign": "517585985bcb19390ea172bf02548a55308cfc712babeadd4f7dc6c05d23bff3",
     "mc-eye": "b65bd2a139b1d179cf33db7430f21167cb58ad849990990b07d6cea3441fadc4",
     "server-rack": "818d10e7c930a34d1ed5e6934fa1e6bd94c4d5197da1ce179a68f13a4b94408e",
     "bike": "720cce51f12ea8b5764d24c6aee45eb9815e104fe3f751b4cffd8131d0866e9e",
     "ride-sign": "385d020694b59b5802e1d8fbbc28f7ca56811b8fae4dff40b225ecb555bb507e",
-    "eads-bridge": "0e9a83c361a0b0edab34e6af05af1a388c35b3b045b3ea72d81f606c29ea9ffa"
+    "eads-bridge": "41e7800bf1279491b026613b0cc34b3b3c1074768ed35f50bd990d42331ec828"
   },
   "checks": {
     "assets": 50,
@@ -47,7 +47,7 @@
     "tileFixesRound9": "2026-09-25: five spots from the 4x upscale: north-shore yard recoloured and sheared tree replaced; Forest Park bush and shadow, west tree cluster, Central West End ballfield and Monster Commerce riverfront redrawn on three drift-checked tiles; 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
     "tileFixesRound11": "2026-09-25: church tower top, brick building's ghosted end and trees, Carondelet front walk, Bevo Mill's four sails and a blurry tree fixed on three drift-checked tiles; 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
     "tileFixesRound12": "2026-09-25: Eads Bridge deck lamps, the riverbank below the pier and the consistent house and shop awnings fixed on two drift-checked tiles; 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
-    "tileFixesRound13Road": "2026-09-25: road north-east of the Carondelet lake redrawn as one band with evenly spaced dashes (tiles.py roadbands); 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok. Bevo Mill and Eads Bridge tiles pending (Codex 401)"
+    "tileFixesRound13": "2026-09-25: road north-east of the Carondelet lake redrawn with evenly spaced dashes (tiles.py roadbands); Bevo Mill redrawn crisp on a 256 px tile; Eads Bridge arches redrawn with one consistent truss arch and hanger structure on every span (piers, deck slab and lamps kept); 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; eads-bridge cutout read on a checkerboard; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok"
   },
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",

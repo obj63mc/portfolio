@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "40208b1c773a716549c91775cadc654972c878471fc74a11efea3b3d4f5dbfae",
+  "run": "art/runs/overworld-fix-r13-eadsb/2026-09-25T23-49-30.808Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

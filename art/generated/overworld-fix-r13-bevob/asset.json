@@ -1,0 +1,19 @@
+{
+  "id": "overworld-fix-r13-bevob",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld-fix-r13-bevob/image.webp",
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "5813fceaf8415b371f5f0957d5c586801d0cfa0889b34b4bb57127ee32e36351"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}
