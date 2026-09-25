@@ -5,6 +5,9 @@ A repaint area must end well inside its tile and should not cross a road except 
 its redraw up with what it can see in the reference, so a road that leaves the area needs its continuation in the
 tile, or it steps at the boundary (tiles.py check finds these).
 
+final-4x.webp               stitched.png upscaled 4x (7932 x 3172) by Real-ESRGAN, Upscayl upscayl-bin, model digital-art-4x;
+                            lossless WebP, pixel-identical to the PNG it was encoded from. Regenerate after every round:
+                            upscayl-bin -i stitched.png -o final-4x.png -s 4 -m <Upscayl>/Resources/models -n digital-art-4x
 tiles/t-<name>.png          exact crop of the round's base (512 px squares; wider tiles where one drawing must stay whole)
 tiles/t-<name>-marked.png   the same crop with this round's repaint areas outlined in red (round 1: Joe's own loops)
 tiles/t-<name>-mask.png     white = repaint. Black pixels are never touched.

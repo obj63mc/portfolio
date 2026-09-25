@@ -85,3 +85,4 @@ Joe's review of the fill: an extra blurred road above the Foundry, Busch Stadium
 - Tile map round six (2026-09-25): the park redrawn whole with one uniform ring (a scaled model output rejected by the drift check, strict-registration rerun kept), the courthouse fountain's double ring replaced by one connected ring, Maplewood lawn relaid.
 - Tile map round seven (2026-09-25): the second path parallel to the lake ring on the west removed and the north-west junction narrowed to one clean join.
 - Tile map round eight (2026-09-25): the outer road west of the park put back (round seven had removed it as a parallel path), with the storefront and shop whole; the ring along the north shore redrawn as one even band on a smoothed water edge.
+- 4x upscale of the round-eight master (2026-09-25): `art/sources/overworld-fix/final-4x.webp`, 7932 x 3172, Upscayl `digital-art-4x`, lossless. Not yet installed as the master source.
