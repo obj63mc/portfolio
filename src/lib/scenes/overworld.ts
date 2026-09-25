@@ -148,7 +148,7 @@ const districts: District[] = [
 							'Intern from 2004, full time from 2005 after graduation, left in 2011.',
 							'Acquired by Network Solutions, announced December 2005.'
 						],
-						rect: { x: 5910, y: 1118, w: 631, h: 185 },
+						rect: { x: 5945, y: 1106, w: 581, h: 165 },
 						cosmetic: 3
 					},
 					{

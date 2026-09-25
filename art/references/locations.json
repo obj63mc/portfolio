@@ -194,6 +194,38 @@
         }
       ],
       "note": "Local reference only, for the courthouse design and its position west of the Arch."
+    },
+    {
+      "location": "monstercommerce",
+      "name": "MonsterCommerce (2004 to 2011, acquired by Network Solutions)",
+      "note": "Joe's former employer; the building on the overworld is an invented Belleville warehouse. These owner-supplied brand images govern the rooftop sign only: the logo lettering (bold italic purple MONSTER with the monster's yellow eye as the O, silver COMMERCE) and the purple monster mascot.",
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/monstercommerce/logo.png",
+          "authors": [
+            {
+              "displayName": "MonsterCommerce logo, supplied by Joe Madden"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/monstercommerce/monster.jpg",
+          "authors": [
+            {
+              "displayName": "MonsterCommerce mascot, supplied by Joe Madden"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/monstercommerce/site-2012.jpg",
+          "authors": [
+            {
+              "displayName": "monstercommerce.com home page circa 2012, supplied by Joe Madden"
+            }
+          ]
+        }
+      ],
+      "checked": "2026-09-24"
     }
   ],
   "slu": {

@@ -4,10 +4,10 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: mc-eye
-ONLY the round cartoon eyeball that forms the O of the rooftop sign: white eye, cyan iris and black pupil. No letters, board, roof or sky. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
+ONLY the monster's one big yellow eye with its black pupil in the round purple head that forms the O of the rooftop sign. No fur, letters, rail, roof or sky. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.
 
 Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/mc-eye/2026-09-24T23-39-01.523Z/registration.png
+2. <repo>/art/runs/mc-eye/2026-09-25T00-15-32.546Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

@@ -17,7 +17,7 @@ Viewed [Arch-area satellite imagery](https://www.google.com/maps/@38.6247,-90.18
 - Mississippi on the east; the Arch stands on its own riverside lawn. I-44 runs **west, beside the Arch grounds**, not through the Arch.
 - Eads Bridge is north of the Arch; the larger I-64/Poplar Street crossing is south. These are distinct crossings.
 - Maplewood is southwest, Forest Park northwest, Central West End northeast of Forest Park, SLU/Foundry in Midtown, downtown east and Carondelet Park south. Distances and individual street grids are stylized.
-- Maplewood has no separate scene. Church entrance, welcome board, signpost and moose are placed on its overworld district. The rider belongs to the southern park district. No historical MonsterCommerce office facade has been verified.
+- Maplewood has no separate scene. Church entrance, welcome board, signpost and moose are placed on its overworld district. The rider belongs to the southern park district. No historical MonsterCommerce office facade has been verified; the Belleville warehouse is invented, and only its rooftop sign follows a verified source: Joe's MonsterCommerce logo and purple monster mascot (`references/local/places/monstercommerce/`, owner-supplied, logged in `references/locations.json`).
 
 The overworld master is a diorama, not an aerial map: the camera sits at about 35 degrees, the skyline band along the top stands in for downtown, and only the named landmarks are drawn at cursor scale. Its river polygon, Eads deck, Poplar Street south end and Arch reset point in `src/lib/scenes/overworld.ts` were measured on that master.
 

@@ -1687,7 +1687,7 @@
       "id": "mc-sign",
       "scene": "overworld",
       "kind": "prop",
-      "prompt": "ONLY the dark brown rooftop sign board reading MONSTERCOMMERCE with its cream lettering and short support posts, exactly as drawn: a long board seen in perspective, angled with the building's front face, with the letters spilling over its lower edge. Fill the eyeball O with the board's dark brown so the letters read M, an empty dark gap, then NSTERCOMMERCE. No roof, brick, sky or trees. Keep the exact shape, angle and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate, straighten or redesign.",
+      "prompt": "Extract the original rooftop MonsterCommerce sign pixels from the approved overworld master using the measured crop matte: a hand-measured band along the roof edge carrying the purple and silver letters, the monster head O and the rail beneath. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
       "size": "1536x1024",
       "references": [],
       "dependsOn": [
@@ -1700,14 +1700,49 @@
           "y": 1050,
           "w": 690,
           "h": 460
-        }
-      }
+        },
+        "mask": [
+          [
+            0.0942,
+            0.1783
+          ],
+          [
+            0.1522,
+            0.1783
+          ],
+          [
+            0.1594,
+            0.1217
+          ],
+          [
+            0.2754,
+            0.1217
+          ],
+          [
+            0.287,
+            0.1957
+          ],
+          [
+            0.9348,
+            0.2652
+          ],
+          [
+            0.9348,
+            0.4783
+          ],
+          [
+            0.0942,
+            0.3783
+          ]
+        ]
+      },
+      "deriveFrom": "overworld-master"
     },
     {
       "id": "mc-eye",
       "scene": "overworld",
       "kind": "prop",
-      "prompt": "ONLY the round cartoon eyeball that forms the O of the rooftop sign: white eye, cyan iris and black pupil. No letters, board, roof or sky. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
+      "prompt": "ONLY the monster's one big yellow eye with its black pupil in the round purple head that forms the O of the rooftop sign. No fur, letters, rail, roof or sky. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
       "size": "1024x1024",
       "references": [],
       "dependsOn": [
