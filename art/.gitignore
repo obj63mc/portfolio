@@ -1,5 +1,6 @@
 runs/
-sources/
+sources/*
+!sources/overworld-fix/
 generated/**/*.png
 generated/.processing-*/
 references/local/
