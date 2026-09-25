@@ -1,5 +1,2 @@
 Edit this tile of a flat-colour isometric illustrated city map. Repaint ONLY the transparent (masked) areas; every other pixel stays exactly as in the input, same framing, scale, camera, palette and line weight. Image 2 is the same tile with the defects circled in red by the art director, for reference only: never draw red marks. Do not add signs or lettering. Where something is removed, continue the surrounding lawn, footpath, road or water so it matches the neighbouring pixels. Objects cut by the tile edge stay cut, the tile is part of a larger image.
-1. Far-left loop at the image edge: a blurred, broken tree. Remove it; plain lawn.
-2. Loop around the MAPLEWOOD sign: keep the sign board, lettering and posts crisp. A building is smeared into the sign's lower right; remove that building entirely, lawn and the cream path beneath.
-3. Loop above the storefront row: a tree cut into a bush. Remove the tree completely; lawn and the footpath continue through.
-4. Loop right of the sign, left of the church steps: a small house. Remove it; lawn, keep the paths.
+1. Loop above the storefront row's roofline: a translucent smear of a tree behind the roof. Remove it; a clean roofline and lawn.

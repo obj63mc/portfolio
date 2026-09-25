@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "c620ffaa4e1c63c38d7332b34d1ee9dfe4ea579fa2b1888e9350d576b0685311",
-  "run": "art/runs/overworld-master/2026-09-25T13-51-40.000Z-tile-fixes",
+  "sourceSha256": "e6b55f5f7e427b3109ae43087a4983e8765e074d846bbb0568d68aaab445c61f",
+  "run": "art/runs/overworld-master/2026-09-25T15-33-29.000Z-tile-fixes-r2",
   "provider": "derived",
   "derivation": {
-    "operation": "masked-tile-fixes",
+    "operation": "masked-tile-fixes-round-2",
     "base": "overworld-master (fill pass, native size)",
-    "edit": "eight overworld-fix-tile-* tile redraws stitched by ImageMagick only inside the marked defect loops and the lake shore band (see prompt.txt)",
+    "edit": "round one: eight tile redraws inside Joe's loops; round two: seven overworld-fix-r2-* tile redraws inside the loops he drew on the round-one result, the bridge deck band and a wider lake band, all stitched by ImageMagick (see prompt.txt)",
     "script": "art/sources/overworld-fix/tiles.py stitch"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

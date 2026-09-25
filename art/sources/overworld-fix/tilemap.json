@@ -1,150 +1,111 @@
-[
- {
-  "name": "c0r0",
-  "rect": [
-   0,
-   0,
-   512,
-   512
-  ],
-  "loops": [
-   0,
-   1,
-   2,
-   3
-  ],
-  "repaintPx": 32752,
-  "edit": true
- },
- {
-  "name": "c0r1",
-  "rect": [
-   0,
-   281,
-   512,
-   512
-  ],
-  "loops": [],
-  "repaintPx": 0,
-  "edit": false
- },
- {
-  "name": "c1r0",
-  "rect": [
-   500,
-   0,
-   512,
-   512
-  ],
-  "loops": [
-   4
-  ],
-  "extra": [
-   [
-    575,
-    245,
-    725,
-    320
-   ]
-  ],
-  "repaintPx": 27297,
-  "edit": true
- },
- {
-  "name": "c1r1",
-  "rect": [
-   500,
-   281,
-   512,
-   512
-  ],
-  "loops": [
-   5,
-   6
-  ],
-  "repaintPx": 21825,
-  "edit": true
- },
- {
-  "name": "c2r0",
-  "rect": [
-   1000,
-   0,
-   512,
-   512
-  ],
-  "loops": [
-   8,
-   9
-  ],
-  "extra": [
-   [
-    1100,
-    30,
-    1200,
-    112
-   ]
-  ],
-  "repaintPx": 35145,
-  "edit": true
- },
- {
-  "name": "c2r1",
-  "rect": [
-   1000,
-   281,
-   512,
-   512
-  ],
-  "loops": [
-   7
-  ],
-  "repaintPx": 82807,
-  "edit": true
- },
- {
-  "name": "c3r0",
-  "rect": [
-   1471,
-   0,
-   512,
-   512
-  ],
-  "loops": [
-   10,
-   12,
-   13,
-   15
-  ],
-  "repaintPx": 31449,
-  "edit": true
- },
- {
-  "name": "c3r1",
-  "rect": [
-   1471,
-   281,
-   512,
-   512
-  ],
-  "loops": [
-   11,
-   14
-  ],
-  "repaintPx": 18475,
-  "edit": true
- },
- {
-  "name": "lake",
-  "rect": [
-   250,
-   281,
-   768,
-   512
-  ],
-  "loops": [],
-  "band": "lake",
-  "repaintPx": 47138,
-  "edit": true
- }
-]
+{
+ "round": 2,
+ "base": "rounds/base-2.png",
+ "tiles": [
+  {
+   "name": "c0r0",
+   "rect": [
+    0,
+    0,
+    512,
+    512
+   ],
+   "loops": [
+    0,
+    1
+   ],
+   "repaintPx": 1480,
+   "edit": true
+  },
+  {
+   "name": "c0r1",
+   "rect": [
+    0,
+    281,
+    512,
+    512
+   ],
+   "loops": [
+    2,
+    3
+   ],
+   "repaintPx": 4726,
+   "edit": true
+  },
+  {
+   "name": "c2r0",
+   "rect": [
+    1000,
+    0,
+    512,
+    512
+   ],
+   "loops": [
+    6,
+    7,
+    8
+   ],
+   "repaintPx": 5444,
+   "edit": true
+  },
+  {
+   "name": "c3r0",
+   "rect": [
+    1471,
+    0,
+    512,
+    512
+   ],
+   "loops": [
+    12
+   ],
+   "repaintPx": 7846,
+   "edit": true
+  },
+  {
+   "name": "bridge",
+   "rect": [
+    1215,
+    0,
+    768,
+    512
+   ],
+   "loops": [],
+   "repaintPx": 20488,
+   "edit": true
+  },
+  {
+   "name": "c3r1",
+   "rect": [
+    1471,
+    281,
+    512,
+    512
+   ],
+   "loops": [
+    16,
+    17
+   ],
+   "repaintPx": 12004,
+   "edit": true
+  },
+  {
+   "name": "lake",
+   "rect": [
+    240,
+    220,
+    860,
+    573
+   ],
+   "loops": [
+    4,
+    5,
+    18,
+    19,
+    20
+   ],
+   "repaintPx": 115416,
+   "edit": true
+  }
+ ]
+}
