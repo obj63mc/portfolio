@@ -443,7 +443,11 @@ def stitch():
     union.save(f'{T}/.union.png')
     magick(base, '-alpha', 'off', '(', f'{D}/stitched.png', '-alpha', 'off', ')', '-compose', 'Difference', '-composite', '-threshold', '0', '(', f'{T}/.union.png', '-negate', ')', '-compose', 'Multiply', '-composite', '-format', '%[fx:mean*w*h]', '-write', 'info:/tmp/ae.txt', 'null:')
     os.remove(f'{T}/.union.png'); print('pixels changed outside the masks:', open('/tmp/ae.txt').read().strip())
+    done = set()
     for t in tm['tiles']:  # what each tile looks like in the result: mark the next round on these
+        x, y, w, h = t['rect']; magick(f'{D}/stitched.png', '-crop', f'{w}x{h}+{x}+{y}', '+repage', f"{T}/t-{t['name']}-out.png"); done.add(t['name'])
+    for t in TILES:  # the standard grid too, so no tile's -out.png is ever stale
+        if t['name'] in done: continue
         x, y, w, h = t['rect']; magick(f'{D}/stitched.png', '-crop', f'{w}x{h}+{x}+{y}', '+repage', f"{T}/t-{t['name']}-out.png")
 
 if __name__ == '__main__':
