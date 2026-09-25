@@ -1,67 +1,7 @@
 {
- "round": 2,
- "base": "rounds/base-2.png",
+ "round": 3,
+ "base": "rounds/base-3.png",
  "tiles": [
-  {
-   "name": "c0r0",
-   "rect": [
-    0,
-    0,
-    512,
-    512
-   ],
-   "loops": [
-    0,
-    1
-   ],
-   "repaintPx": 1480,
-   "edit": true
-  },
-  {
-   "name": "c0r1",
-   "rect": [
-    0,
-    281,
-    512,
-    512
-   ],
-   "loops": [
-    2,
-    3
-   ],
-   "repaintPx": 4726,
-   "edit": true
-  },
-  {
-   "name": "c2r0",
-   "rect": [
-    1000,
-    0,
-    512,
-    512
-   ],
-   "loops": [
-    6,
-    7,
-    8
-   ],
-   "repaintPx": 5444,
-   "edit": true
-  },
-  {
-   "name": "c3r0",
-   "rect": [
-    1471,
-    0,
-    512,
-    512
-   ],
-   "loops": [
-    12
-   ],
-   "repaintPx": 7846,
-   "edit": true
-  },
   {
    "name": "bridge",
    "rect": [
@@ -70,41 +10,42 @@
     768,
     512
    ],
-   "loops": [],
-   "repaintPx": 20488,
+   "loops": [
+    0
+   ],
+   "repaintPx": 29454,
    "edit": true
   },
   {
-   "name": "c3r1",
+   "name": "foundry",
    "rect": [
-    1471,
+    1000,
     281,
     512,
     512
    ],
    "loops": [
-    16,
-    17
+    3
    ],
-   "repaintPx": 12004,
+   "repaintPx": 4727,
    "edit": true
   },
   {
    "name": "lake",
    "rect": [
-    240,
-    220,
-    860,
-    573
+    100,
+    373,
+    1050,
+    420
    ],
    "loops": [
     4,
     5,
-    18,
-    19,
-    20
+    6,
+    7,
+    8
    ],
-   "repaintPx": 115416,
+   "repaintPx": 189632,
    "edit": true
   }
  ]

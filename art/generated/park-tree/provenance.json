@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "6706325a8fbf407e4fb76c120b5b31f52d58de212d0bd0a55c8b9143b964e3d6",
-  "run": "art/runs/park-tree/2026-09-25T15-34-29.928Z",
+  "sourceSha256": "a1ff61d651d4bc0ea8e2dd3ba3c710b3d5a5e813c3052e1b46b0af061835718a",
+  "run": "art/runs/park-tree/2026-09-25T16-05-45.718Z",
   "provider": "derived",
   "derivation": {
     "asset": "overworld-master",
-    "referenceSha256": "0d8326e4713fd723352fb63869acc39a4828e242a7fe51f49712c42fdf8938aa",
+    "referenceSha256": "95593913ea8a3b50bc76a3cc721c7a9131b4ca8ea442963ddef5478537322716",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

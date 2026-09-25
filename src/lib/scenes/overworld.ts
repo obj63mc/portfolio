@@ -79,7 +79,7 @@ const districts: District[] = [
 						gist: 'the Carondelicious Criterium and Tuesday night training',
 						body: ['The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.'],
 						// The lower straight of the lake loop, west of the foreground tree.
-						rect: { x: 2300, y: 2635, w: 400, h: 55 }
+						rect: { x: 2300, y: 2515, w: 400, h: 65 }
 					},
 					{
 						id: 'bike',
@@ -87,7 +87,7 @@ const districts: District[] = [
 						gist: 'still riding, on Strava',
 						body: ['Joe raced criteriums and still rides. Follow along on Strava.'],
 						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
-						rect: { x: 2350, y: 2558, w: 100, h: 57 },
+						rect: { x: 2350, y: 2585, w: 100, h: 57 },
 						cosmetic: 7
 					},
 					{
@@ -98,7 +98,7 @@ const districts: District[] = [
 							'Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.',
 							'Raced criteriums, still rides.'
 						],
-						rect: { x: 2986, y: 2528, w: 78, h: 94 }
+						rect: { x: 2986, y: 2600, w: 78, h: 94 }
 					}
 				]
 			}
@@ -196,7 +196,7 @@ export const OVERWORLD: Overworld = {
 	].map((rect) => ({ rect, horizonY: HORIZON_Y, foregroundY: FOREGROUND_Y })),
 	foreground: [
 		{ key: 'maplewood-tree', rect: { x: 1543, y: 1574, w: 242, h: 232 } },
-		{ key: 'park-tree', rect: { x: 2709, y: 2420, w: 271, h: 255 } }
+		{ key: 'park-tree', rect: { x: 2784, y: 2462, w: 195, h: 237 } }
 	],
 	river: {
 		// West bank north to south, the south edge, then the east bank south to north. Traced by water colour on the

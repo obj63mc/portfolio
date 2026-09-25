@@ -6,6 +6,7 @@
   python3 tiles.py stitch   paste every tiles/t-<name>-model.png back with ImageMagick, only inside its mask, onto the
                             round's base into stitched.png, prove every pixel outside the masks is unchanged, and refresh
                             every tiles/t-<name>-out.png as that tile cut from stitched.png (mark the next round on those)
+  python3 tiles.py detect-master <png>   find the red loops drawn on a copy of the whole stitched master (any size)
   python3 tiles.py detect <git-ref>      find the red loops drawn since <git-ref> on tiles/*-out.png and *-marked.png,
                             fill each one and save it in master pixels under rounds/detected/ (see rounds/detected.json)
   python3 tiles.py check    after a stitch: every footpath or road of the round's base that reaches a repaint boundary
@@ -236,6 +237,17 @@ def components(mask):
                 out.append(one)
     return out
 
+def detect_master(marked):
+    """New loops drawn on a copy of the round's base (stitched.png at full size), saved like detect()."""
+    os.makedirs(f'{D}/rounds/detected', exist_ok=True)
+    now = Image.open(marked).convert('RGB'); prev = Image.open(f'{D}/stitched.png').convert('RGB')
+    if now.size != prev.size: now = now.resize(prev.size, Image.LANCZOS)
+    found = []
+    for f in loop_fill(red_strokes(now, prev).filter(ImageFilter.MaxFilter(7)), 7):
+        i = len(found); f.save(f'{D}/rounds/detected/{i}.png'); b = f.getbbox()
+        found.append({'id': i, 'from': os.path.basename(marked), 'bbox': b, 'px': f.histogram()[255]}); print(i, found[-1])
+    json.dump(found, open(f'{D}/rounds/detected.json', 'w'), indent=1)
+
 def detect(ref):
     """New loops drawn since git ref on the out and marked tiles, saved as master-size masks."""
     os.makedirs(f'{D}/rounds/detected', exist_ok=True); tiles = {t['name']: t for t in json.load(open(f'{D}/tilemap.json'))}
@@ -451,4 +463,4 @@ def stitch():
         x, y, w, h = t['rect']; magick(f'{D}/stitched.png', '-crop', f'{w}x{h}+{x}+{y}', '+repage', f"{T}/t-{t['name']}-out.png")
 
 if __name__ == '__main__':
-    {'slice': slice_tiles, 'stitch': stitch, 'check': check, 'detect': lambda: detect(sys.argv[2]), 'prepare': lambda: prepare(sys.argv[2])}[sys.argv[1]]()
+    {'slice': slice_tiles, 'stitch': stitch, 'check': check, 'detect': lambda: detect(sys.argv[2]), 'detect-master': lambda: detect_master(sys.argv[2]), 'prepare': lambda: prepare(sys.argv[2])}[sys.argv[1]]()
