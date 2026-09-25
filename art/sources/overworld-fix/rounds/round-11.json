@@ -1,0 +1,133 @@
+{
+ "round": 11,
+ "base": "rounds/base-11.png",
+ "tiles": {
+  "c0r1": {
+   "rect": [
+    0,
+    281,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     352,
+     436,
+     394,
+     480
+    ],
+    [
+     466,
+     557,
+     490,
+     568
+    ],
+    [
+     110,
+     662,
+     170,
+     716
+    ]
+   ],
+   "protect": [
+    [
+     336,
+     466,
+     360,
+     497
+    ]
+   ],
+   "fixes": [
+    "Upper outline (a tree between the grey street and the lawn, north-east of the white house with the yellow awning): the tree is blurry and translucent, doubled behind the crisp tree in front of it. Redraw it as one whole, crisp tree with a solid crown, a trunk and its shadow on the lawn. The street behind it and the crisp tree in front stay as they are.",
+    "Middle outline (the front walk of the blue-grey house on the lake's north shore): the walk is a shapeless pink smear with a green sliver in it. Redraw it as a clean, straight cream footpath of constant width from the house's front steps down to the lake's ring path, joining it, with plain lawn either side.",
+    "Lower outline (the Bevo Mill windmill): its sails are only two thin crossed sticks. Redraw the sails as four whole, evenly spaced lattice blades, the classic Dutch windmill X of four long rectangular latticed sails with wooden frames, mounted at the centre of the cap, all four clearly visible. The cap, the white tower body and the restaurant beside it keep their shape and position."
+   ]
+  },
+  "c2r0": {
+   "rect": [
+    1000,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1077,
+     60,
+     1097,
+     104
+    ]
+   ],
+   "fixes": [
+    "Outline (the top of the church's bell tower above the campus): the tower's top is blurry and fades into the trees behind it. Redraw only the tower, crisp: a clean square pale-stone bell tower with a clock face and a sharp pointed dark-slate spire, sharp edges. The soft background trees on either side of the tower keep their exact colours and shapes; the church's red roofs below stay as they are."
+   ]
+  },
+  "c2r1": {
+   "rect": [
+    1000,
+    281,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1324,
+     503,
+     1364,
+     550
+    ]
+   ],
+   "fixes": [
+    "Outline (the right end of the long brick building beside the highway, and the trees around it): a translucent ghost copy of the building and ghost trees overlap the building's right end. Redraw it so the building ends crisply with a solid brick wall and roof edge, and the trees at its right and front are each whole and solid, with one crown, a trunk and a shadow on the lawn; no translucent shapes. The lawn and the paths around it continue."
+   ]
+  }
+ },
+ "notes": {
+  "church": "Joe (4x crop): the top of the church is blurry; the tower's top fades into the haze of trees behind it; the first pass redrew the trees behind the tower crisper than the soft horizon band beside them, leaving an edge, so the mask was narrowed to the tower and its spire",
+  "building": "Joe: the trees are messed up next to the long brick building by the highway; a translucent copy of its right end and ghost trees overlap it; a grey-green smear of the ghost copy's roof line was left on the real building's side wall just outside the outline, covered by a patch of the same wall cloned from eight pixels up its slope",
+  "walk": "Joe: the driveway on the house in Carondelet is messed up; the blue-grey house's front walk is a pink smear with a green sliver",
+  "mill": "Joe: Bevo Mill needs its four blades; the sails were two thin crossed sticks",
+  "tree": "Joe: a blurry tree next to the last house; a translucent tree doubled behind a crisp one north-east of the white house; the old tree's ghost and a band of darker lawn the model left down the new tree's left side are painted the surrounding lawn colour (light pixels only, so the crowns, trunks and the darker tree shadow stay)"
+ },
+ "paints": [
+  {
+   "polygon": [
+    [
+     345,
+     448
+    ],
+    [
+     362,
+     448
+    ],
+    [
+     362,
+     473
+    ],
+    [
+     345,
+     473
+    ]
+   ],
+   "color": [
+    172,
+    202,
+    71
+   ]
+  }
+ ],
+ "stamps": [
+  {
+   "src": [
+    1325,
+    518,
+    1332,
+    525
+   ],
+   "dst": [
+    1317,
+    526
+   ]
+  }
+ ]
+}
