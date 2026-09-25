@@ -3,12 +3,12 @@
   "scene": "overworld",
   "verdict": "Overworld prop pass: geometry and cut-outs pass every automated check and the assembled-composite inspection; workshop visual acceptance (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) is still open for Joe, so the issue stays ready-for-human.",
   "assetHashes": {
-    "overworld": "8d05276f77bab7a8100ccf7197692711de9bc25007153d024c48479dd47b244f",
+    "overworld": "69a3a716279a5c05f17ae6700bcb0977f43b563c428c2eec98617d2691310043",
     "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
     "signpost": "67a957f044e3dcfcc94f4d5297e44fd4e7e0b84b9c0f75135e5ea90d2cd615a8",
     "door": "e8961290b6277f51718f413871ee6c3dde848126ede89d2e26898fe1bb0ab3f2",
-    "maplewood-tree": "b7faf9604e1e0b615f998c4bf2cf95553d6be4bd948d7be5cde23740fb341926",
-    "park-tree": "a5e58a3befa71e4f42bb7a9585f788934d43b0ec735e44650cd7e750291bbfd6",
+    "maplewood-tree": "1fa0801cd11b0fd9bfa3a9b0e0a3e333c9a00001775b285cd0f8ebf3a9e66cc5",
+    "park-tree": "e576d6a6de0d6edbd38a38b7fe67c10cfb90f909fa61b01225a9377aab470a38",
     "moose-master": "2bd49324886f3a02f5f5e772046ce35d083181e3037e17936d2f5d1855d3bc36",
     "moose-body": "a6dcd7698e3631ae0ceb97b21defe357f775c62d2b714b787d75126e663be0b4",
     "moose-head": "d22a5152497e965bc5be2a178d53a597db665f48bc82519e884ece66697cb91a",
@@ -18,15 +18,15 @@
     "rider-body": "3cbbf50cb026b7ef0520492dadb572efc11d1cf9bd911cee5fd73fbaecba3c32",
     "rider-rear-wheel": "12c4b992ab0409e81bfd5be3b4b1567d9fbc5fae480a726b03259e169884bbcb",
     "rider-front-wheel": "cc0e685017c5d3caa8c02a5fb0eea15739fa5f1dd20cb33ec92a41ad8d59cacd",
-    "overworld-master": "d95bc64717a8319892720cf5b9b242685ee3675ec3c1b7e56487f6a5374c6e71",
+    "overworld-master": "e25d93afab770958f1944b79484b8a377cc5c0c995ceec89882bfc043e9164f5",
     "marquee": "0526a11c1674166550ee9db20557a566b426c345c757b415a99191de4ccafa11",
-    "marquee-bulbs": "37e06364c7e29b30899945a625188057bc0c0dfabf6b3725207e50c4a74d377e",
-    "mc-sign": "96d747c120daf47c8ccfd004588f4560842904e37ca441eb600859bd65e86476",
+    "marquee-bulbs": "e6e834205a8f19422c602552facf3de23d1bd2e268a648fe36ee955233bc6d3b",
+    "mc-sign": "e604280a5e51057650ccb17831620c7b1434879b61f2fa381787da6206c23a23",
     "mc-eye": "b65bd2a139b1d179cf33db7430f21167cb58ad849990990b07d6cea3441fadc4",
     "server-rack": "818d10e7c930a34d1ed5e6934fa1e6bd94c4d5197da1ce179a68f13a4b94408e",
     "bike": "720cce51f12ea8b5764d24c6aee45eb9815e104fe3f751b4cffd8131d0866e9e",
     "ride-sign": "385d020694b59b5802e1d8fbbc28f7ca56811b8fae4dff40b225ecb555bb507e",
-    "eads-bridge": "82db5f310ed18aa3936eee30bcb2539544bd1ea1f1dc0881d0b7c6ed8cbd87d8"
+    "eads-bridge": "e051b01c89e9f9fa205a9afe67dc61db26c54b79dab290f9626a7d39c7a54c66"
   },
   "checks": {
     "assets": 50,
@@ -35,7 +35,7 @@
     "phone": "390x844 at 0.6 centred on the welcome board (1835, 1438): signpost, church entrance, welcome board and moose all inside the first frame (checked on the assembled composite crop)",
     "harness": "Depth, district, venue, prop, foreground, river mask, deck, bridge cut-out, south end, Arch reset and rig sweep overlays rendered from the scene module over the assembled composite; art/review.html was not opened in a browser this session, so the three harness checklist items in issue 04 stay unticked",
     "sign": "2026-09-25: MonsterCommerce rooftop sign redrawn to the supplied logo by a regional edit of the master; plate, tiles, the four master-derived mattes, mc-sign (matte) and mc-eye (registered extraction) re-derived; validate PASS, 16/16 tests, svelte-check, build",
-    "fill": "2026-09-25: sixteen regional fill edits in three rounds, courthouse rescaled, 4x Real-ESRGAN (Upscayl digital-art-4x) master; plate, tiles and five mattes re-derived; river mask, deck, bridge matte and Arch reset re-measured; validate PASS, 16/16 tests, art tests, svelte-check, build"
+    "fill": "2026-09-25: fifteen regional fill edits in three rounds with clipped seams, courthouse rescaled, Eads Bridge restored from the base, master at native 1983x793 (Real-ESRGAN tried and dropped); plate, tiles and five mattes re-derived; river mask, deck, bridge matte and Arch reset re-measured"
   },
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",
@@ -44,8 +44,7 @@
     "Codex redrew rather than registered the trees, the bulb string, the Eads Bridge (larger and over the Arch) and the first MonsterCommerce sign attempt; the sign was accepted on a tighter 3:2 crop, the other four are measured mattes.",
     "The Eads Bridge matte carries the deck, abutments and piers only; the steel arches stay in the plate, so a cursor in the river north of the deck draws over them.",
     "District rects are separated by 10 to 20 px rather than the spec's \"about 200 px\": on this master the West End row sits directly above SLU, so the sound-bed footprints only just clear each other.",
-    "The Eads Bridge seam with the Illinois-side fill edit is a hard cut at the west pier: the two drawings of the arch meet there with a small step in the springing.",
     "The Forest Park sign is painted in the plate only; the spec has no scene-data type for a strip sign.",
-    "The 4x master is a super-resolution of a 1983 x 793 composition: edges are crisp, but no new illustration detail exists below that scale, and the bridge matte carries a thin halo of water inside its band."
+    "Regional-edit seams are clipped to ground, not blended through structures; the west end of the Eads Bridge band is feathered over the Laclede's Landing wharf, which reads as a soft edge at the pier."
   ]
 }

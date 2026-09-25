@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "61a5de9a93f671a141e429ee39fcd228038ea6ae10bbc172ce3458d7c38745a1",
-  "run": "art/runs/eads-bridge/2026-09-25T04-10-22.275Z",
+  "sourceSha256": "1153f129bceb84682f19551f159d918f85b6237d4aa4706ad8f48aba4ffd8f23",
+  "run": "art/runs/eads-bridge/2026-09-25T04-38-53.876Z",
   "provider": "derived",
   "derivation": {
     "asset": "overworld-master",
-    "referenceSha256": "d95bc64717a8319892720cf5b9b242685ee3675ec3c1b7e56487f6a5374c6e71",
+    "referenceSha256": "e25d93afab770958f1944b79484b8a377cc5c0c995ceec89882bfc043e9164f5",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

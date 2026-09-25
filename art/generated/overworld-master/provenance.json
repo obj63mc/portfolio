@@ -1,12 +1,12 @@
 {
-  "sourceSha256": "74dd0a7176754a769acd8328290ffc528476c3f422b83376f946f67adf2f0dda",
-  "run": "art/runs/overworld-master/2026-09-25T04-09-05.000Z-fill-final",
+  "sourceSha256": "10e14457884fc84ca330aa2aa19718bc8e62701e6a4b1081cec7cdd1d31892f4",
+  "run": "art/runs/overworld-master/2026-09-25T04-37-54.000Z-fill-native",
   "provider": "derived",
   "derivation": {
-    "operation": "regional-edit-composite + realesrgan-4x",
-    "base": "overworld-master (fill pass rounds one and two, itself the MonsterCommerce-sign master plus fourteen regional edits)",
-    "edit": "overworld-fill-r20-courthouse and r21 (courthouse block), then Upscayl 2.15 digital-art-4x, 1983x793 to 7932x3172",
-    "script": "assemble2.py, upscayl-bin"
+    "operation": "regional-edit-composite",
+    "base": "overworld-master (MonsterCommerce sign master, itself P + sign edit B)",
+    "edit": "fifteen overworld-fill-* regional edits in three rounds with clipped seams; Eads Bridge restored from the base (see prompt.txt)",
+    "script": "assemble.py, assemble2.py, bridge-restore.py"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

@@ -1829,7 +1829,7 @@
       "id": "eads-bridge",
       "scene": "overworld",
       "kind": "foreground",
-      "prompt": "Extract the original Eads Bridge pixels from the approved overworld master using the measured crop matte: a hand-measured polygon along the sloping deck (steeper east of the west pier since the Illinois-side fill edit) with both abutments and the two piers down to the water. The steel arches above the deck stay in the plate (a cursor crossing the deck draws over them). The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "prompt": "Extract the original Eads Bridge pixels from the approved overworld master using the measured crop matte: a hand-measured polygon along the sloping deck with both abutments and the two piers down to the water (the bridge is restored wholesale from the pre-fill master, so it is one continuous drawing). The steel arches above the deck stay in the plate (a cursor crossing the deck draws over them). The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
       "size": "1983x793",
       "references": [],
       "dependsOn": [
@@ -1849,52 +1849,32 @@
             0.2187
           ],
           [
-            0.378,
-            0.3415
+            1.0,
+            0.5488
           ],
           [
             1.0,
-            0.6649
+            0.6402
           ],
           [
-            1.0,
-            0.7563
+            0.9795,
+            0.6334
           ],
           [
-            0.9854,
-            0.7487
+            0.9795,
+            0.7463
           ],
           [
-            0.9854,
-            0.8171
+            0.9229,
+            0.7463
           ],
           [
-            0.9268,
-            0.8171
-          ],
-          [
-            0.9268,
-            0.7183
-          ],
-          [
-            0.6634,
-            0.5813
-          ],
-          [
-            0.6634,
-            0.7805
-          ],
-          [
-            0.6146,
-            0.7805
-          ],
-          [
-            0.6146,
-            0.556
+            0.9229,
+            0.6146
           ],
           [
             0.3746,
-            0.4312
+            0.4323
           ],
           [
             0.3746,
