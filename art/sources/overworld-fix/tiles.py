@@ -13,7 +13,7 @@ from collections import deque
 from PIL import Image, ImageDraw, ImageFilter
 D = os.path.dirname(os.path.abspath(__file__)); T = f'{D}/tiles'
 BASE, MARKED = f'{D}/base.png', f'{D}/marked.png'
-def magick(*args): subprocess.run(['magick', *[str(a) for a in args]], check=True)
+def magick(*args): subprocess.run(['magick', '-define', 'png:exclude-chunks=date,time', *[str(a) for a in args]], check=True)  # no timestamps: a re-slice is byte-identical
 
 # Square 512 windows: columns at 0, 500, 1000, 1471 and rows at 0, 281 cover 1983 x 793 with small overlaps so
 # every marked defect fits inside one tile with margin. The lake loop needs the whole lake, so it gets one 3:2 tile.
@@ -22,7 +22,7 @@ TILES = [
  {'name': 'c0r1', 'rect': [0, 281, 512, 512],    'loops': []},
  {'name': 'c1r0', 'rect': [500, 0, 512, 512],    'loops': [4], 'extra': [[575, 245, 725, 320]]},
  {'name': 'c1r1', 'rect': [500, 281, 512, 512],  'loops': [5, 6]},
- {'name': 'c2r0', 'rect': [1000, 0, 512, 512],   'loops': [8, 9]},
+ {'name': 'c2r0', 'rect': [1000, 0, 512, 512],   'loops': [8, 9], 'extra': [[1100, 30, 1200, 112]]},  # the Ferris wheel's lower half sits outside the loop
  {'name': 'c2r1', 'rect': [1000, 281, 512, 512], 'loops': [7]},
  {'name': 'c3r0', 'rect': [1471, 0, 512, 512],   'loops': [10, 12, 13, 15]},
  {'name': 'c3r1', 'rect': [1471, 281, 512, 512], 'loops': [11, 14]},
@@ -39,8 +39,8 @@ FIXES = {
           "Loop above the storefront row: a tree cut into a bush. Remove the tree completely; lawn and the footpath continue through.",
           "Loop right of the sign, left of the church steps: a small house. Remove it; lawn, keep the paths."],
  'c1r0': ["Loop around the CENTRAL WEST END sign: redraw the sign board crisply, a clean brown board with white lettering and two dark posts, including its left end which is currently blurred. Remove the translucent ghost structure (a faint glass building) below and left of the sign, over its whole footprint; lawn and the existing paths."],
- 'c1r1': ["Upper loop, south of the church steps: a cut-off tree stands in front of a small brick house. Remove the tree completely and draw the house whole, with lawn and the path.",
-          "Lower loop, north of the lake and south of the big factory: the cluster of trees is blurred and cut. Remove those trees; lawn."],
+ 'c1r1': ["Upper loop, south of the church steps: a cut-off tree stands in front of a small brick house. Delete the tree entirely: no tree, bush or shadow remains anywhere in this loop, only lawn, the footpath and the house drawn whole.",
+          "Lower loop, north of the lake and south of the big factory: the cluster of trees is blurred and cut. Remove every cut or blurred tree; keep at most two whole, crisp trees on plain lawn."],
  'c2r0': ["Small loop near the top: the Ferris wheel. Remove it; a plain mid-rise brick building or trees in the same skyline row.",
           "Loop at the west end of the steel arch bridge: the bridge deck floats above the buildings and does not reach the land, a boat is cut off and the buildings are jumbled. Redraw so the bridge's west end rests on a stone abutment on the riverbank and the deck continues as a street between whole brick warehouses; remove the cut-off boat; keep the riverbank line where it is."],
  'c2r1': ["Loop around the ballpark: redraw the stadium as one solid oval with a complete outer brick wall on every side; its north (back) wall currently dissolves into a tree. No tree overlaps it; lawn around it.",

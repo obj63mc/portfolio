@@ -2265,7 +2265,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "adef3c9bee15120a297e4eefd3a305b0e7e89eca92ded718e1dd6a890699993a"
+        "sha256": "f893eba7f89cc7769ae34928a66815ccde2ddb7b88c526f19a3d59bcb5f320cb"
       },
       "trim": {
         "x": 0,
@@ -5775,7 +5775,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "404ecddf3b4021dc66506f5b0bbdfd7376809fddfb9635fa996b85d0e7133169"
+        "sha256": "2b8c85567ec9385e22a89405c97c95ba60ecefe2e2728155b376f0670b835a7b"
       },
       "trim": {
         "x": 35,
@@ -6099,7 +6099,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "13737f08c33f3968d4a3ef4356500df224c06a944a2bd9bc196e5b6d3120bee0"
+        "sha256": "b8c4669af2e196a68069808b65de1396c7674b72fc2c27b65553b62b3ca933b5"
       },
       "trim": {
         "x": 69,
@@ -7318,7 +7318,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "97844be1909381d4dc5fe2ca09fed021cda4a9f77980b67816ccbd294e7891fe"
+        "sha256": "c620ffaa4e1c63c38d7332b34d1ee9dfe4ea579fa2b1888e9350d576b0685311"
       },
       "trim": {
         "x": 0,
@@ -7547,7 +7547,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "18719bf4e5739ae722c72d6e54a7441c0f1ac2aeb541fff872dde4f6a5248926"
+        "sha256": "c77d0db23a6b6862fde8e5cf2e2142ba9395882eb021932199a28eaa8c0aa772"
       },
       "trim": {
         "x": 38,
@@ -7616,7 +7616,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "822ef36ee625c782f238feeb1ac946db45e0cb10ec12477e62da21b028fb63e8"
+        "sha256": "1f4cb0aa9eba828816a5a310631781b8b373f548b7bf62038ab8cff3d2ec5c35"
       },
       "trim": {
         "x": 145,
@@ -7811,7 +7811,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "9b40ddf4a389efcb0694039201eaea25f76b0b00c7008009fb997353c96b0237"
+        "sha256": "caa904c99522eb45ec435f838a274078ce3077b8d68989de338ed8495d323db6"
       },
       "trim": {
         "x": 15,

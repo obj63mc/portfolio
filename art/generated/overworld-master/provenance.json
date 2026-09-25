@@ -1,12 +1,12 @@
 {
-  "sourceSha256": "97844be1909381d4dc5fe2ca09fed021cda4a9f77980b67816ccbd294e7891fe",
-  "run": "art/runs/overworld-master/2026-09-25T13-09-24.000Z-section-fixes",
+  "sourceSha256": "c620ffaa4e1c63c38d7332b34d1ee9dfe4ea579fa2b1888e9350d576b0685311",
+  "run": "art/runs/overworld-master/2026-09-25T13-51-40.000Z-tile-fixes",
   "provider": "derived",
   "derivation": {
-    "operation": "masked-section-fixes",
+    "operation": "masked-tile-fixes",
     "base": "overworld-master (fill pass, native size)",
-    "edit": "seven overworld-fix-* section redraws accepted only inside the marked defect loops and the lake shore band (see prompt.txt)",
-    "script": "art/sources/overworld-fix/assemble.py"
+    "edit": "eight overworld-fix-tile-* tile redraws stitched by ImageMagick only inside the marked defect loops and the lake shore band (see prompt.txt)",
+    "script": "art/sources/overworld-fix/tiles.py stitch"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }
