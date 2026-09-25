@@ -1,0 +1,19 @@
+{
+  "id": "overworld-fix-r10-bigtreeb",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld-fix-r10-bigtreeb/image.webp",
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "a2401e76846ed57a44108d8dfdd7f4402838017a199043dd58d999905e004cc7"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}

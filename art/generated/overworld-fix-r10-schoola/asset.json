@@ -1,0 +1,19 @@
+{
+  "id": "overworld-fix-r10-schoola",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld-fix-r10-schoola/image.webp",
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "5242aa908ba647c8166261bc4247611a4b2000be97fe5e5d3ac31296f8c3a26b"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}

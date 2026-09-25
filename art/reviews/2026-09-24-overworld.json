@@ -3,11 +3,11 @@
   "scene": "overworld",
   "verdict": "Overworld prop pass: geometry and cut-outs pass every automated check and the assembled-composite inspection; workshop visual acceptance (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) is still open for Joe, so the issue stays ready-for-human.",
   "assetHashes": {
-    "overworld": "6f9db78a2464f8afe4663b1e0a6c51d00b599bffe9e9b1cf020c2862d71204e1",
+    "overworld": "6696961796df9b5d6a10f04dab0de9490394303b434315238ea00491a9fb3256",
     "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
     "signpost": "67a957f044e3dcfcc94f4d5297e44fd4e7e0b84b9c0f75135e5ea90d2cd615a8",
     "door": "e8961290b6277f51718f413871ee6c3dde848126ede89d2e26898fe1bb0ab3f2",
-    "maplewood-tree": "2968b6cabf52510b68d7766754fcedeb3be8af32dd3676a2d9e63bac4027d0cb",
+    "maplewood-tree": "35856331e00a23d402148465162f0b8e5237eaf4173d09682438e921a4b6f8c9",
     "park-tree": "f35ae06c1e35900676d3e1ca0db2e2a3c4fafe836bf843976c257f01ff767497",
     "moose-master": "2bd49324886f3a02f5f5e772046ce35d083181e3037e17936d2f5d1855d3bc36",
     "moose-body": "a6dcd7698e3631ae0ceb97b21defe357f775c62d2b714b787d75126e663be0b4",
@@ -18,15 +18,15 @@
     "rider-body": "3cbbf50cb026b7ef0520492dadb572efc11d1cf9bd911cee5fd73fbaecba3c32",
     "rider-rear-wheel": "12c4b992ab0409e81bfd5be3b4b1567d9fbc5fae480a726b03259e169884bbcb",
     "rider-front-wheel": "cc0e685017c5d3caa8c02a5fb0eea15739fa5f1dd20cb33ec92a41ad8d59cacd",
-    "overworld-master": "eed565d6fa52618d49bc265d59ff8cc9b83fd1b574af6647f04d2c3181335374",
+    "overworld-master": "13189b8ba3e568828631d3f8f191dbc1a529e98092b73b7e3503240123fc7186",
     "marquee": "0526a11c1674166550ee9db20557a566b426c345c757b415a99191de4ccafa11",
-    "marquee-bulbs": "7127770a122faef82fb9dfa5345f07676331f7f9b1c6c60fdc26be99bb25a4e2",
-    "mc-sign": "e9bca260df180870203dea48d292cb8426003ce640d31410ef0a65b497f8399d",
+    "marquee-bulbs": "006f49214bf22317b8740d3ebfda5de22cfb0fe7f12a7a9065c8f0888c7a3f45",
+    "mc-sign": "b326332159a1c90f309c9d1753389194a511bc3d241d9f0ed7ee7d7acb207714",
     "mc-eye": "b65bd2a139b1d179cf33db7430f21167cb58ad849990990b07d6cea3441fadc4",
     "server-rack": "818d10e7c930a34d1ed5e6934fa1e6bd94c4d5197da1ce179a68f13a4b94408e",
     "bike": "720cce51f12ea8b5764d24c6aee45eb9815e104fe3f751b4cffd8131d0866e9e",
     "ride-sign": "385d020694b59b5802e1d8fbbc28f7ca56811b8fae4dff40b225ecb555bb507e",
-    "eads-bridge": "5758732ccca03a7676a4f9062872265d34f66e95ef401be4d7fbf8abb5204d59"
+    "eads-bridge": "1a1028d07239e326eeac6f6fe97ca5e7372b7a915933f7ed4e29f5e357284bdc"
   },
   "checks": {
     "assets": 50,
@@ -43,7 +43,8 @@
     "tileFixesRound5": "2026-09-25: ten loops on the round-four master; four tiles (Codex image tool, ImageMagick stitch inside the loops, drift-checked) plus cell-cloned lawn fills, smoothed shore fills with a sand rim and a water fill along the island's ring path; tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
     "tileFixesRound6": "2026-09-25: park redrawn whole (strict-registration rerun after a scaled output was rejected by the drift check), fountain given a single connected ring, Maplewood lawn relaid; ImageMagick stitch inside the outlines, tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
     "tileFixesRound7": "2026-09-25: the parallel path west of the lake removed and the north-west junction narrowed (park tile, two openings, drift-checked); tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
-    "tileFixesRound8": "2026-09-25: the outer road west of the park restored from the round-six pixels (storefront, parking pad and shop whole), corner lawn tone evened, first yard carried to the ring, north-shore ring redrawn as one even band on the smoothed water edge; 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok"
+    "tileFixesRound8": "2026-09-25: the outer road west of the park restored from the round-six pixels (storefront, parking pad and shop whole), corner lawn tone evened, first yard carried to the ring, north-shore ring redrawn as one even band on the smoothed water edge; 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
+    "tileFixesRound9": "2026-09-25: five spots from the 4x upscale: north-shore yard recoloured and sheared tree replaced; Forest Park bush and shadow, west tree cluster, Central West End ballfield and Monster Commerce riverfront redrawn on three drift-checked tiles; 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok"
   },
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",

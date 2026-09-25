@@ -1,0 +1,19 @@
+{
+  "id": "overworld-fix-r9-c0r0b",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld-fix-r9-c0r0b/image.webp",
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "a8d24ecbe9914468a8657a6c5b7886d3ef69b695420443928c819beb4a823956"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}

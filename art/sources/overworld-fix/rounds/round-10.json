@@ -1,0 +1,110 @@
+{
+ "round": 10,
+ "base": "rounds/base-10.png",
+ "tiles": {
+  "school": {
+   "rect": [
+    1471,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1884,
+     244,
+     1954,
+     284
+    ]
+   ],
+   "protect": [
+    [
+     1938,
+     226,
+     1976,
+     268
+    ]
+   ],
+   "fixes": [
+    "Outline (the brick school's roof and the trees just behind it): the top of the building is fuzzy. The roof's grey-blue panels are soft and a white haze fades the trees behind the roof into it. Redraw the roof crisp: clean grey-blue roof panels with a sharp ridge and a sharp cornice edge, the brick gable over the entrance sharp. The trees behind the roof are whole and solid, with no haze, fade or white glow anywhere. The school's walls, windows and entrance below the roof, the bridge pier at the right and the trees at either side stay exactly as they are."
+   ]
+  },
+  "bigtree": {
+   "rect": [
+    400,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     564,
+     142,
+     612,
+     200
+    ]
+   ],
+   "protect": [],
+   "fixes": [
+    "Outline (the big tree beside the brick building, just south-east of the ballfield): its crown is cut off in a straight vertical line on its left side. Redraw it as one whole tree with a full, round, crisp crown on its trunk and its shadow on the lawn. The lawn and the footpath around it continue at their exact positions; the brick building behind it keeps its walls and windows."
+   ]
+  },
+  "riverhaze": {
+   "rect": [
+    1471,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1824,
+     274,
+     1862,
+     300
+    ],
+    [
+     1751,
+     284,
+     1767,
+     316
+    ]
+   ],
+   "protect": [],
+   "fixes": [
+    "Upper outline (the small brown brick house beside the white house): a pale haze frames the house on its left, right and lower sides. Keep the house as it is, crisp, sitting on clean, solid lawn with its bushes, with no haze, fade or pale halo around it.",
+    "Lower-left outline (just right of the warehouse's corner): a pale grey haze fills the gap between the warehouse wall and the road. Clean lawn up to a crisp warehouse corner, and the road runs through at its exact position and width."
+   ]
+  }
+ },
+ "paints": [
+  {
+   "rect": [
+    1887,
+    309,
+    1897,
+    313
+   ],
+   "from": [
+    1901,
+    306
+   ]
+  }
+ ],
+ "notes": {
+  "school": "Joe (mid-turn, circling the brick school on the riverfront): the top of the building is fuzzy. Round nine protected the school, so its roof kept soft panels and a white haze where the trees behind it fade into the roof line; its own tile, cut from the round-nine result, redraws the roof and those trees",
+  "fragment": "round nine's riverfront redraw dropped the footpath that ran from the school down behind the MONSTER COMMERCE roof, leaving a few pale pixels at the roof's corner (tiles.py check); painted lawn",
+  "stub": "the footpath entering from the map's west edge ran into the back tree of round nine's redrawn cluster and never came out; its stub is relaid as lawn (path-only fill), so no path ends in a tree",
+  "bigtree": "found in the round-nine 4x check: round nine protected the big tree beside the ballfield but its ghost bush reached into the repaint area, so the model's lawn left the crown ending in a straight vertical line at the protect edge; its own tile redraws the tree whole",
+  "riverhaze": "found in the round-nine 4x check: the protected boxes round the brown house and the warehouse kept the old haze inside them, so a pale frame showed round the house and a pale strip between the warehouse corner and the road"
+ },
+ "pathfill": [],
+ "pathfillExtra": [
+  [
+   0,
+   215,
+   40,
+   223
+  ]
+ ]
+}

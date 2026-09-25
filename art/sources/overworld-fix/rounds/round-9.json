@@ -1,0 +1,233 @@
+{
+ "round": 9,
+ "base": "rounds/base-9.png",
+ "tiles": {
+  "c0r0": {
+   "rect": [
+    0,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     192,
+     166,
+     240,
+     210
+    ],
+    [
+     0,
+     188,
+     94,
+     278
+    ]
+   ],
+   "protect": [
+    [
+     0,
+     168,
+     33,
+     211
+    ]
+   ],
+   "fixes": [
+    "Upper outline (the Forest Park lawn below the Grand Basin balustrade): a bush stands on the footpath with its crown cut flat along the path, and a loose tree shadow floats on the lawn below the path with no tree. Remove that bush and the floating shadow: plain lawn, and the footpath runs straight and unbroken through the outline at its exact width and angle. The small round bush just left of it stays whole.",
+    "Left outline (the tree cluster at the left edge): four trees overlap with a translucent ghost trunk and branches between them. Redraw the cluster as four distinct, whole, crisp trees in the same places and sizes, each with one crown, one trunk and its shadow on the lawn, with no translucent or ghost parts. The footpaths entering the outline continue at their exact positions and widths."
+   ]
+  },
+  "ballfield": {
+   "rect": [
+    400,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     470,
+     104,
+     596,
+     192
+    ]
+   ],
+   "protect": [
+    [
+     578,
+     146,
+     640,
+     200
+    ],
+    [
+     593,
+     80,
+     640,
+     146
+    ]
+   ],
+   "fixes": [
+    "Outline (the baseball field north of the CENTRAL WEST END sign and the trees above it): clean it up. A crisp dark-green chain-link backstop fence, fully opaque; the dirt infield arc and base paths crisp; the lawn clean and even. The trees above and beside the field are each drawn whole and crisp (one crown, one trunk, its shadow), with no translucent ghost trees or ghost bushes overlapping them; remove every faint ghost shape. Footpaths keep their exact positions and join the paths outside the outline. The brick building and the big tree at the right edge of the outline stay untouched."
+   ]
+  },
+  "c3r0": {
+   "rect": [
+    1471,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1716,
+     250,
+     1983,
+     318
+    ]
+   ],
+   "protect": [
+    [
+     1688,
+     272,
+     1760,
+     320
+    ],
+    [
+     1801,
+     270,
+     1829,
+     295
+    ],
+    [
+     1829,
+     279,
+     1857,
+     296
+    ],
+    [
+     1884,
+     262,
+     1956,
+     300
+    ],
+    [
+     1745,
+     310,
+     1955,
+     340
+    ]
+   ],
+   "fixes": [
+    "Outline (the riverfront between the warehouse, the houses and the MONSTER COMMERCE roof): several objects are translucent or cut off: a faint ghost row of small white buildings just behind the warehouse roof, a tree trunk standing with no crown just above the MONSTER COMMERCE roof, ghost bushes below the brick school, faint ghost shrubs and a partial grey roof among the trees. Redraw every object inside the outline solid and whole: the small buildings as complete, crisp little houses with roofs and walls, each tree with one full crown on its trunk and its shadow, bushes crisp, no translucent shapes anywhere. Footpaths and roads keep their exact positions and join the ones outside the outline. The brick school, the two houses, the warehouse and the MONSTER COMMERCE roof stay exactly as they are."
+   ]
+  }
+ },
+ "tones": [
+  {
+   "polygon": [
+    [
+     388,
+     556
+    ],
+    [
+     506,
+     556
+    ],
+    [
+     506,
+     577
+    ],
+    [
+     388,
+     577
+    ]
+   ],
+   "from": [
+    199,
+    222,
+    82
+   ],
+   "to": [
+    174,
+    205,
+    55
+   ],
+   "maxBlue": 100
+  }
+ ],
+ "paints": [
+  {
+   "polygon": [
+    [
+     343,
+     527
+    ],
+    [
+     340,
+     529
+    ],
+    [
+     339,
+     531
+    ],
+    [
+     337,
+     533
+    ],
+    [
+     335,
+     535
+    ],
+    [
+     335,
+     545
+    ],
+    [
+     357,
+     545
+    ],
+    [
+     357,
+     527
+    ]
+   ],
+   "from": [
+    360,
+    536
+   ],
+   "all": true
+  },
+  {
+   "rect": [
+    357,
+    540,
+    362,
+    545
+   ],
+   "from": [
+    364,
+    538
+   ]
+  }
+ ],
+ "stamps": [
+  {
+   "src": [
+    412,
+    98,
+    431,
+    114
+   ],
+   "dst": [
+    338,
+    531
+   ]
+  }
+ ],
+ "notes": {
+  "house": "Joe (4x crop by the north-shore house): the house grass is choppy and a tree is cut off. The light yard blocks below the first two houses (round eight carried the first down to the ring) are recoloured to the surrounding lawn along the yard-to-lawn line, light pixels next to the ring (blue over 100) untouched; the sheared tree's crown is painted lawn along the path edge and a whole round tree from Forest Park (414,100) is stamped on its trunk, its shadow kept; a two-pixel speck beside it painted lawn",
+  "forestpark": "Joe (4x crop by the Grand Basin): the tree is cut off. A bush cut flat along the footpath and a floating shadow below it go to the model with the path through the outline",
+  "west": "a four-tree cluster at the left edge with a ghost trunk between the trees (5x) goes to the model as four whole trees",
+  "ballfield": "Joe: the baseball field north of Central West End needs cleaning: translucent fence, ghost trees and bushes",
+  "riverfront": "Joe: trees around Monster Commerce and the buildings on the waterfront are cut off and ghosted"
+ }
+}

@@ -608,12 +608,18 @@ def stitch():
             pm = Image.new('L', img.size, 0)  # a rect, or a polygon for a shape no rect fits
             if tn.get('polygon'): ImageDraw.Draw(pm).polygon([tuple(q) for q in tn['polygon']], fill=255)
             else: pm.paste(255, tuple(tn['rect']))
-            x0, y0, x1, y1 = pm.getbbox(); (fa, fb), sh = tn.get('fadeX', (x1, x1 + 1)), tn['shift']; n = 0; pp = pm.load()
+            x0, y0, x1, y1 = pm.getbbox(); (fa, fb), sh = tn.get('fadeX', (x1, x1 + 1)), tn.get('shift'); n = 0; pp = pm.load()
             for y in range(y0, y1):
                 for x in range(x0, x1):
                     k = 1 if x <= fa else max(0.0, (fb - x) / (fb - fa))
-                    if k and pp[x, y] and LAWN(px[x, y]): px[x, y] = tuple(min(255, max(0, round(c + s_ * k))) for c, s_ in zip(px[x, y], sh)); n += 1
-            union.paste(255, (0, 0), pm); print('   tone', tn.get('rect') or tn['polygon'], sh, n, 'px')
+                    if not (k and pp[x, y] and LAWN(px[x, y])): continue
+                    if tn.get('from'):  # colour-keyed: move a pixel along the from -> to line by how far it sits towards from (a light yard back to lawn)
+                        c = px[x, y]; fr_, to_ = tn['from'], tn['to']; d_ = [a - b for a, b in zip(fr_, to_)]
+                        t_ = max(0.0, min(1.0, sum((c[i] - to_[i]) * d_[i] for i in range(3)) / sum(v * v for v in d_)))
+                        if not t_ or c[2] > tn.get('maxBlue', 255): continue
+                        px[x, y] = tuple(round(c[i] - t_ * d_[i]) for i in range(3)); n += 1
+                    else: px[x, y] = tuple(min(255, max(0, round(c + s_ * k))) for c, s_ in zip(px[x, y], sh)); n += 1
+            union.paste(255, (0, 0), pm); print('   tone', tn.get('rect') or tn['polygon'], sh or (tn['from'], '->', tn['to']), n, 'px')
         img.save(f'{D}/stitched.png')
     if tm.get('shorebands'):  # a jagged shore path redrawn as one band along the smoothed water edge (north-facing shore: water below)
         img = Image.open(f'{D}/stitched.png').convert('RGB'); px = img.load(); print('shorebands:')
@@ -644,11 +650,11 @@ def stitch():
         img = Image.open(f'{D}/stitched.png').convert('RGB'); print('paints:')
         for pt in tm['paints']:
             c = tuple(pt['color']) if pt.get('color') else img.getpixel(tuple(pt['from'])); m = Image.new('L', img.size, 0)
-            if pt.get('polygon'):  # a polygon paint touches only light pixels (lawn, path and their blends), never a tree or roof
+            if pt.get('polygon'):  # a polygon paint touches only light pixels (lawn, path and their blends), never a tree or roof, unless all
                 ImageDraw.Draw(m).polygon([tuple(q) for q in pt['polygon']], fill=255); mp, ip = m.load(), img.load()
                 for yy in range(img.height):
                     for xx in range(img.width):
-                        if mp[xx, yy] and ip[xx, yy][1] < 185: mp[xx, yy] = 0
+                        if mp[xx, yy] and ip[xx, yy][1] < 185 and not pt.get('all'): mp[xx, yy] = 0  # all: a crown or trunk goes too
             else: x0, y0, x1, y1 = pt['rect']; ImageDraw.Draw(m).rectangle((x0, y0, x1 - 1, y1 - 1), fill=255)
             img.paste(Image.new('RGB', img.size, c), (0, 0), m.filter(ImageFilter.GaussianBlur(0.5))); union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   paint', pt.get('rect') or pt['polygon'], c)
         img.save(f'{D}/stitched.png')

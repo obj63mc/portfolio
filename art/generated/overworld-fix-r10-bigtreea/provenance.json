@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "cb7ac3ca9a35698619b0a699c33f2430553ade72395d999821feccf1959ee5cd",
+  "run": "art/runs/overworld-fix-r10-bigtreea/2026-09-25T20-26-28.849Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

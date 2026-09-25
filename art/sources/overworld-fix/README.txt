@@ -39,8 +39,8 @@ A round:
    A round spec can also carry deterministic ops that run after the pastes: lawnfill / ghostfill / blurfill / forcefill /
    waterfill / shorefill loops (with <kind>Extra rectangles, <kind>Polygons and <kind>Protect), restore rectangles (base
    pixels put back, or {rect, src} from an earlier round's rounds/base-N.png), tones (a lawn tone shift in a rect or polygon,
-   optionally fading out along x), shorebands (a jagged shore path redrawn as one band on the smoothed water edge),
-   paints (a flat colour; a polygon paint touches only light pixels), stamps (a tree cloned from elsewhere), bridges (a path stub carried on to the
+   optionally fading out along x, or colour-keyed with from/to so only pixels towards `from` move, e.g. a yard back to lawn), shorebands (a jagged shore path redrawn as one band on the smoothed water edge),
+   paints (a flat colour; a polygon paint touches only light pixels unless `all`), stamps (a tree cloned from elsewhere), bridges (a path stub carried on to the
    path beyond) and corridors on a tile (the base path's own line handed to the repaint area up to its junction).
 6. install stitched.png as the master: see art/README.md, "Filling the map" (process overworld-master --source ...,
    then regenerate overworld and the five derived mattes, sync the geometry, validate)
