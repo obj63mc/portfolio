@@ -1,52 +1,45 @@
 {
- "round": 3,
- "base": "rounds/base-3.png",
+ "round": 4,
+ "base": "rounds/base-4.png",
  "tiles": [
   {
-   "name": "bridge",
+   "name": "c0r0",
    "rect": [
-    1215,
     0,
-    768,
+    0,
+    512,
     512
    ],
-   "loops": [
-    0
-   ],
-   "repaintPx": 29454,
+   "loops": [],
+   "repaintPx": 5883,
    "edit": true
   },
   {
-   "name": "foundry",
+   "name": "midtown",
+   "rect": [
+    700,
+    150,
+    512,
+    512
+   ],
+   "loops": [],
+   "repaintPx": 4949,
+   "edit": true
+  },
+  {
+   "name": "c2r1",
    "rect": [
     1000,
     281,
     512,
     512
    ],
-   "loops": [
-    3
-   ],
-   "repaintPx": 4727,
-   "edit": true
-  },
-  {
-   "name": "lake",
-   "rect": [
-    100,
-    373,
-    1050,
-    420
-   ],
-   "loops": [
-    4,
-    5,
-    6,
-    7,
-    8
-   ],
-   "repaintPx": 189632,
-   "edit": true
+   "loops": [],
+   "repaintPx": 27963,
+   "edit": true,
+   "keepBaseWater": true
   }
- ]
+ ],
+ "stamps": [],
+ "paints": []
 }

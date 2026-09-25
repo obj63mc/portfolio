@@ -116,7 +116,7 @@ GREY = lambda c: abs(c[0] - c[1]) < 22 and abs(c[1] - c[2]) < 28 and c[0] > 110
 WATER = lambda c: c[2] > 150 and c[1] > 150 and c[0] < 130
 HARD = lambda c: PATH(c) or GREY(c) or WATER(c)  # footpath, road, water: never lawn, never tree
 
-def lawn_fill(img, loop, reach=24, min_px=8, ghost=None):
+def lawn_fill(img, loop, reach=24, min_px=8, ghost=None, force=False):
     """Delete the tree(s) inside one loop. Every tree-like pixel inside the loop goes (not lawn, footpath, road or water;
     with `ghost` set, also lawn-like pixels that far from the loop's surrounding lawn colour and not next to a footpath,
     road or water: the ghost of a half-transparent tree), in blobs of at least `min_px`. A strict-tree blob that reaches
@@ -140,6 +140,7 @@ def lawn_fill(img, loop, reach=24, min_px=8, ghost=None):
     strict = lambda x, y: not HARD(px[x, y]) and not LAWN_DEEP(px[x, y])  # canopy and trunk, not shaded lawn
     def inside_class(x, y):  # 2: tree-like (any dark pixel), 1: ghost (lawn-like but far from the surrounding lawn), 0: keep
         c = px[x, y]
+        if force: return 0 if WATER(c) else 2  # a forced loop: everything but water is refilled as lawn
         if HARD(c): return 0
         if not LAWN(c): return 2
         return 1 if ghost is not None and not nearhard[x, y] and y in rows and sum(abs(c[i] - rows[y][i]) for i in range(3)) > ghost else 0
@@ -171,7 +172,8 @@ def lawn_fill(img, loop, reach=24, min_px=8, ghost=None):
                 if rp[p_]: rp[p_] = 0; n -= 1
     if not n: print('   lawn fill: nothing tree-like inside the loop'); return rep
     rep = rep.filter(ImageFilter.MaxFilter(5))  # two pixels over the edge: anti-aliased rims and a ghost's halo go too
-    rep.paste(0, (0, 0), hard.filter(ImageFilter.MaxFilter(3))); rp = rep.load()  # but never a footpath, road or water, nor their edge pixels
+    if not force: rep.paste(0, (0, 0), hard.filter(ImageFilter.MaxFilter(3)))  # never a footpath, road or water, nor their edge pixels (a forced loop clears everything but lawn)
+    rp = rep.load()
     pad = 40; box = (max(0, x0 - pad), max(0, y0 - pad), min(W, x1 + pad), min(H, y1 + pad))
     crop = img.crop(box); rc = rep.crop(box); cw, ch = crop.size; cp, rcp = crop.load(), rc.load()
     keep = Image.new('L', (cw, ch), 0); kp = keep.load()
@@ -223,6 +225,31 @@ def check():
         xs = [p[0] for p in c]; ys = [p[1] for p in c]; print('  ', len(c), 'px at', (min(xs), min(ys), max(xs), max(ys)))
     return clusters
 
+def water_fill(img, loop):
+    """Delete whatever stands in the water inside one loop: every non-water pixel becomes the median water colour
+    of the loop's surroundings (the water is flat). Returns the mask of replaced pixels."""
+    W, H = img.size; px = img.load(); lp = loop.load(); b = loop.getbbox(); rep = Image.new('L', (W, H), 0); rp = rep.load()
+    if not b: return rep
+    ring = [px[x, y] for y in range(max(0, b[1] - 30), min(H, b[3] + 30)) for x in range(max(0, b[0] - 30), min(W, b[2] + 30)) if not lp[x, y] and WATER(px[x, y])]
+    if not ring: print('   water fill: no water around the loop'); return rep
+    ring.sort(key=sum); c = ring[len(ring) // 2]; n = 0
+    for y in range(b[1], b[3]):
+        for x in range(b[0], b[2]):
+            if lp[x, y] and not WATER(px[x, y]): rp[x, y] = 255; n += 1
+    rep = rep.filter(ImageFilter.MaxFilter(5)); img.paste(Image.new('RGB', (W, H), c), (0, 0), rep.filter(ImageFilter.GaussianBlur(1.0)))
+    print('   water fill: replaced', n, 'pixels'); return rep
+
+def stamp(img, src, dst, feather=1.0):
+    """Clone a tree: copy the non-lawn pixels of the `src` rectangle (x0, y0, x1, y1) onto the same-size rectangle at
+    `dst` (x, y of its top left), so a deleted tree can be replaced by a crisp one from elsewhere on the same map."""
+    x0, y0, x1, y1 = src; crop = img.crop(src); cp = crop.load(); m = Image.new('L', crop.size, 0); mp = m.load()
+    for y in range(crop.height):
+        for x in range(crop.width):
+            if not LAWN(cp[x, y]) and not PATH(cp[x, y]) and not WATER(cp[x, y]): mp[x, y] = 255
+    m = m.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.MinFilter(3))
+    img.paste(crop, tuple(dst), m.filter(ImageFilter.GaussianBlur(feather)))
+    out = Image.new('L', img.size, 0); out.paste(m, tuple(dst)); print('   stamp:', src, '->', dst); return out
+
 def components(mask):
     """Each separate loop of a mask as its own full-size mask."""
     W, H = mask.size; mp = mask.load(); seen = set(); out = []
@@ -271,11 +298,12 @@ def detect(ref):
 
 def prepare(spec_path):
     spec = json.load(open(spec_path)); table = []
-    for kind in ('lawnfill', 'ghostfill', 'cleanup'):  # loops handled without a model: tree-like pixels become lawn (see lawn_fill)
+    for kind in ('lawnfill', 'ghostfill', 'cleanup', 'waterfill', 'forcefill'):  # loops handled without a model: tree-like pixels become lawn (see lawn_fill)
         m = Image.new('L', (1983, 793), 0)
         for i in spec.get(kind, []): m.paste(255, (0, 0), Image.open(f'{D}/rounds/detected/{i}.png').convert('L'))
         d = ImageDraw.Draw(m)
         for r in spec.get(kind + 'Extra', []): d.rectangle(r, fill=255)
+        for poly in spec.get(kind + 'Polygons', []): d.polygon([tuple(p_) for p_ in poly], fill=255)
         for r in spec.get(kind + 'Protect', []): d.rectangle(r, fill=0)
         m.save(f'{T}/{kind}.png')
     if spec['base'] == 'stitched.png':  # a round starts from the previous result: keep that base aside, stitch overwrites stitched.png
@@ -289,7 +317,7 @@ def prepare(spec_path):
         magick(base, '-crop', f'{w}x{h}+{x}+{y}', '+repage', f'{T}/t-{name}.png')
         mask = Image.new('L', (1983, 793), 0)
         for i in t.get('loops', []):
-            if i in spec.get('lawnfill', []) or i in spec.get('ghostfill', []): continue
+            if any(i in spec.get(k, []) for k in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill')): continue
             mask.paste(255, (0, 0), Image.open(f'{D}/rounds/detected/{i}.png').convert('L'))
         d = ImageDraw.Draw(mask)
         for r in t.get('extra', []): d.rectangle(r, fill=255)
@@ -317,12 +345,12 @@ def prepare(spec_path):
         tile.paste((230, 20, 20), (0, 0), ring); tile.save(f'{T}/t-{name}-marked.png')
         prompt = PRE + '\n'.join(f'{i + 1}. {s}' for i, s in enumerate(t['fixes']))
         open(f'{T}/t-{name}-prompt.txt', 'w').write(prompt + '\n')
-        table.append({'name': name, 'rect': t['rect'], 'loops': t.get('loops', []), 'repaintPx': mask.histogram()[255], 'edit': True})
+        table.append({'name': name, 'rect': t['rect'], 'loops': t.get('loops', []), 'repaintPx': mask.histogram()[255], 'edit': True, **({'keepBaseWater': True} if t.get('keepBaseWater') else {})})
         if os.path.exists(f'{T}/t-{name}-out.png'): os.remove(f'{T}/t-{name}-out.png')
         changed = before(f'{T}/t-{name}.png') != old_crop or before(f'{T}/t-{name}-prompt.txt') != old_prompt
         if changed and os.path.exists(f'{T}/t-{name}-model.png'): os.remove(f'{T}/t-{name}-model.png'); print(name, 'crop or prompt changed: model output dropped')
         print(name, t['rect'], 'repaint px', mask.histogram()[255])
-    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table}, open(f'{D}/tilemap.json', 'w'), indent=1)
+    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
 
 def loops():
     """Filled red loops from marked.png, in base pixels, as a list of full-size L masks (sorted by x)."""
@@ -437,20 +465,47 @@ def stitch():
     for t in tm['tiles']:
         x, y, w, h = t['rect']; n = t['name']; out = f'{T}/t-{n}-model.png'
         if not os.path.exists(out): print(n, 'no model output, base kept'); continue
+        bm = Image.open(base).convert('RGB').crop((x, y, x + w, y + h)); mm = Image.open(out).convert('RGB').resize((w, h), Image.LANCZOS)
+        km = Image.open(f'{T}/t-{n}-mask.png').convert('L').filter(ImageFilter.MaxFilter(9)).load(); bp_, mp_ = bm.load(), mm.load()
+        diff = [sum(abs(a - b) for a, b in zip(bp_[xx, yy], mp_[xx, yy])) for yy in range(0, h, 2) for xx in range(0, w, 2) if not km[xx, yy]]
+        drift = sum(diff) / max(1, len(diff)) / 3
+        if drift > 14: print(n, f'REJECTED: the model output is misaligned with the tile (mean drift {drift:.1f} outside the mask); rerun it'); continue
+        print(n, f'aligned (drift {drift:.1f})')
         layer = f'{T}/.layer-{n}.png'  # the model's pixels, alpha = mask (1 px feather), on a transparent full-size canvas
-        magick('-size', '1983x793', 'xc:none', '(', out, '-filter', 'Lanczos', '-resize', f'{w}x{h}!', '(', f'{T}/t-{n}-mask.png', '-blur', '0x0.7', ')',
+        maskfile = f'{T}/t-{n}-mask.png'
+        if t.get('keepBaseWater'):  # flat water: where base and model are both water, keep the base so no retinted box shows
+            bm = Image.open(base).convert('RGB').crop((x, y, x + w, y + h)); mm = Image.open(out).convert('RGB').resize((w, h), Image.LANCZOS)
+            mk = Image.open(maskfile).convert('L'); bp, mp, kp = bm.load(), mm.load(), mk.load()
+            for yy in range(h):
+                for xx in range(w):
+                    if kp[xx, yy] and WATER(bp[xx, yy]) and WATER(mp[xx, yy]): kp[xx, yy] = 0
+            mk = mk.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3)); maskfile = f'{T}/.mask-{n}.png'; mk.save(maskfile)
+        magick('-size', '1983x793', 'xc:none', '(', out, '-filter', 'Lanczos', '-resize', f'{w}x{h}!', '(', maskfile, '-blur', '0x0.7', ')',
                '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', ')', '-geometry', f'+{x}+{y}', '-compose', 'Over', '-composite', layer)
+        if maskfile != f'{T}/t-{n}-mask.png': os.remove(maskfile)
         layers.append(layer); print(n, 'pasted inside its mask')
     magick(base, *layers, '-flatten', '-alpha', 'off', f'{D}/stitched.png')
     for l in layers: os.remove(l)
     union = Image.new('L', (1983, 793), 0)
     for t in tm['tiles']:
         x, y, w, h = t['rect']; union.paste(255, (x, y), Image.open(f"{T}/t-{t['name']}-mask.png").convert('L').filter(ImageFilter.MaxFilter(5)))
-    for kind in ('lawnfill', 'ghostfill', 'cleanup'):
+    for kind in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill', 'cleanup'):  # cleanup last: it tidies what the other fills and pastes leave
         if os.path.exists(f'{T}/{kind}.png'):
             m = Image.open(f'{T}/{kind}.png').convert('L'); img = Image.open(f'{D}/stitched.png').convert('RGB'); print(kind + ':')
-            for loop in components(m): union.paste(255, (0, 0), lawn_fill(img, loop, ghost=45 if kind == 'ghostfill' else None).filter(ImageFilter.MaxFilter(9)))
+            for loop in components(m):
+                fill = water_fill(img, loop) if kind == 'waterfill' else lawn_fill(img, loop, ghost=45 if kind == 'ghostfill' else None, force=kind == 'forcefill')
+                union.paste(255, (0, 0), fill.filter(ImageFilter.MaxFilter(9)))
             img.save(f'{D}/stitched.png')
+    if tm.get('paints'):  # flat repaint: a rectangle takes the colour at a sample point (a roof, a wall), 0.5 px feather
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); print('paints:')
+        for pt in tm['paints']:
+            x0, y0, x1, y1 = pt['rect']; c = tuple(pt['color']) if pt.get('color') else img.getpixel(tuple(pt['from'])); m = Image.new('L', img.size, 0); ImageDraw.Draw(m).rectangle((x0, y0, x1 - 1, y1 - 1), fill=255)
+            img.paste(Image.new('RGB', img.size, c), (0, 0), m.filter(ImageFilter.GaussianBlur(0.5))); union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   paint', pt['rect'], c)
+        img.save(f'{D}/stitched.png')
+    if tm.get('stamps'):
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); print('stamps:')
+        for st in tm['stamps']: union.paste(255, (0, 0), stamp(img, tuple(st['src']), tuple(st['dst'])).filter(ImageFilter.MaxFilter(7)))
+        img.save(f'{D}/stitched.png')
     # proof: outside the union of masks and lawn fills, stitched.png equals the round's base pixel for pixel
     union.save(f'{T}/.union.png')
     magick(base, '-alpha', 'off', '(', f'{D}/stitched.png', '-alpha', 'off', ')', '-compose', 'Difference', '-composite', '-threshold', '0', '(', f'{T}/.union.png', '-negate', ')', '-compose', 'Multiply', '-composite', '-format', '%[fx:mean*w*h]', '-write', 'info:/tmp/ae.txt', 'null:')

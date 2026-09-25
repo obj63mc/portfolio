@@ -1,0 +1,365 @@
+{
+ "round": 4,
+ "base": "rounds/base-4.png",
+ "marked": "rounds/marked-4.png",
+ "tiles": {
+  "c0r0": {
+   "rect": [
+    0,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     392,
+     220,
+     502,
+     272
+    ]
+   ],
+   "fixes": [
+    "Below the FOREST PARK sign: the lawn is blurred and the footpath that ran there is broken. Redraw the outlined area sharp: crisp flat lawn, and the footpath continuing as one clean line of constant width that joins the paths around it. Keep the sign exactly."
+   ]
+  },
+  "midtown": {
+   "rect": [
+    700,
+    150,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     995,
+     360,
+     1095,
+     408
+    ]
+   ],
+   "fixes": [
+    "East of the glass-fronted campus building, among the three trees: a stray V-shaped fragment of footpath that leads nowhere. Remove it; plain lawn. Keep the three trees and the real paths beyond the outline exactly."
+   ]
+  },
+  "c2r1": {
+   "rect": [
+    1000,
+    281,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1276,
+     620,
+     1352,
+     684
+    ],
+    [
+     1258,
+     395,
+     1400,
+     492
+    ]
+   ],
+   "polygons": [
+    [
+     [
+      1352,
+      592
+     ],
+     [
+      1428,
+      592
+     ],
+     [
+      1428,
+      708
+     ],
+     [
+      1352,
+      708
+     ]
+    ]
+   ],
+   "fixes": [
+    "South of the ballpark by the river, in the small outline: a stray arrow-shaped fragment of cream footpath in the lawn that leads nowhere. Remove all of it; plain lawn. The real footpath running north-south just east of it stays exactly.",
+    "The riverbank in the outlined strip is jagged. Redraw the water's edge there as one smooth curve with a clean shore line, the lawn and its trees sharp.",
+    "Below the Arch's west leg: the lawn is blotchy and there are cut-off path stubs. Redraw the outlined area as clean, even lawn; every path in it either connects properly to the paths around it or is removed."
+   ],
+   "keepBaseWater": true
+  }
+ },
+ "notes": {
+  "marked": "Joe's thin lines did not survive the WebP encode (59 red pixels), so the regions are placed by his descriptions and the crops read at 3x",
+  "c2r1": "the bank polygon reaches into the river; keepBaseWater keeps the base water where the model also drew water, so its retint never shows as a box",
+  "park-west": "the 512 px square tile zoomed in twice on the model side (houses at 1.5x), so it was split: the tree in the lake is a water fill, the ghost tree south of the church a forced lawn fill, and only the shop's ghost block and the tangled connector go to the model on a 768 x 512 tile",
+  "waterfill": "the tree in the lake stood on a green bump of the south shore; the fill turns everything above the shoreline the shore has on either side (row 690) into water, ending 10 px above the loop path",
+  "park-w": "three model outputs for this area came back zoomed in (drift 93 outside the mask); the shop's ghost block, the roof band it covered, the isolated cream sliver south of the junction and the trunk stub were fixed deterministically instead (forced fills and a flat repaint)",
+  "shopBlock": "the ghost block's fill is a polygon bounded two pixels short of the loop path's west edge on every row, so the path is never touched"
+ },
+ "waterfill": [],
+ "waterfillExtra": [
+  [
+   400,
+   606,
+   478,
+   690
+  ]
+ ],
+ "forcefill": [],
+ "forcefillExtra": [
+  [
+   434,
+   484,
+   464,
+   524
+  ],
+  [
+   431,
+   686,
+   446,
+   705
+  ]
+ ],
+ "cleanup": [],
+ "cleanupExtra": [
+  [
+   428,
+   684,
+   466,
+   704
+  ]
+ ],
+ "paints": [],
+ "forcefillPolygons": [
+  [
+   [
+    304,
+    603
+   ],
+   [
+    323,
+    603
+   ],
+   [
+    323,
+    624
+   ],
+   [
+    312,
+    612
+   ],
+   [
+    304,
+    610
+   ]
+  ],
+  [
+   [
+    322,
+    604
+   ],
+   [
+    330,
+    604
+   ],
+   [
+    329,
+    605
+   ],
+   [
+    329,
+    606
+   ],
+   [
+    329,
+    607
+   ],
+   [
+    328,
+    608
+   ],
+   [
+    328,
+    609
+   ],
+   [
+    328,
+    610
+   ],
+   [
+    328,
+    611
+   ],
+   [
+    328,
+    612
+   ],
+   [
+    322,
+    613
+   ],
+   [
+    324,
+    614
+   ],
+   [
+    327,
+    615
+   ],
+   [
+    331,
+    616
+   ],
+   [
+    333,
+    617
+   ],
+   [
+    334,
+    618
+   ],
+   [
+    335,
+    619
+   ],
+   [
+    334,
+    620
+   ],
+   [
+    330,
+    621
+   ],
+   [
+    332,
+    622
+   ],
+   [
+    329,
+    623
+   ],
+   [
+    332,
+    624
+   ],
+   [
+    330,
+    625
+   ],
+   [
+    320,
+    626
+   ],
+   [
+    326,
+    627
+   ],
+   [
+    333,
+    628
+   ],
+   [
+    324,
+    629
+   ],
+   [
+    321,
+    630
+   ],
+   [
+    321,
+    631
+   ],
+   [
+    323,
+    632
+   ],
+   [
+    322,
+    633
+   ],
+   [
+    321,
+    634
+   ],
+   [
+    321,
+    635
+   ],
+   [
+    321,
+    636
+   ],
+   [
+    321,
+    637
+   ],
+   [
+    339,
+    638
+   ],
+   [
+    340,
+    639
+   ],
+   [
+    340,
+    640
+   ],
+   [
+    340,
+    641
+   ],
+   [
+    340,
+    642
+   ],
+   [
+    339,
+    643
+   ],
+   [
+    339,
+    644
+   ],
+   [
+    338,
+    645
+   ],
+   [
+    337,
+    646
+   ],
+   [
+    336,
+    647
+   ],
+   [
+    335,
+    648
+   ],
+   [
+    334,
+    649
+   ],
+   [
+    333,
+    650
+   ],
+   [
+    331,
+    651
+   ],
+   [
+    330,
+    652
+   ],
+   [
+    322,
+    652
+   ]
+  ]
+ ]
+}
