@@ -1,0 +1,152 @@
+{
+ "round": 8,
+ "base": "rounds/base-8.png",
+ "tiles": {},
+ "restore": [
+  {
+   "rect": [
+    200,
+    555,
+    326,
+    740
+   ],
+   "src": "rounds/base-7.png"
+  }
+ ],
+ "tones": [
+  {
+   "rect": [
+    326,
+    562,
+    480,
+    612
+   ],
+   "shift": [
+    5,
+    4,
+    1
+   ],
+   "fadeX": [
+    340,
+    420
+   ]
+  },
+  {
+   "polygon": [
+    [
+     390,
+     562
+    ],
+    [
+     481,
+     562
+    ],
+    [
+     481,
+     574
+    ],
+    [
+     440,
+     575
+    ],
+    [
+     398,
+     579
+    ],
+    [
+     390,
+     580
+    ]
+   ],
+   "shift": [
+    27,
+    20,
+    27
+   ]
+  }
+ ],
+ "notes": {
+  "west": "Joe: leaving the park to the west the road is broken and buildings are cut out. Round seven's park tile had removed the outer road that joins Maplewood's streets into the park (taken for a parallel footpath) and clipped the storefront, its parking pad and the shop. The round-six pixels west of the ring are put back from rounds/base-7.png, so that road runs whole from the north junction around the storefront and the shop to the ring below the lake.",
+  "seam": "round seven's corner repair laid its lawn about five levels darker than the lawn beside it; a tone shift fading out eastward evens the step, and a flat lawn paint (the surrounding lawn is flat 174,205,55) removes the faint tip of the old wedge left at the restore edge",
+  "sliver": "east of the storefront a thin lawn crescent split the caf\u00e9's sidewalk from the road it joins: painted road colour (light pixels only), so they read as one surface",
+  "north": "Joe (mid-turn, a loop over the north shore): the road around the water is still jagged. Measured column by column: the water edge stepped up to four pixels (a notch at x 504, a step at x 600), the ring swung from five to nine pixels wide and the lawn strip under it came and went. shorebands redraws x 398 to 700 as one band on the smoothed water edge (7-px median then a 41-px mean): a 3.5 px lawn strip and a 7.5 px path, anti-aliased, joining the ring where it is already even; path pixels just above the band become lawn except in the two house connectors' columns",
+  "yard": "round seven's corner repair cut the first house's light yard off in a straight line at y 562 (the other houses' yards run down to the ring); the lawn between that line and the ring is shifted to the yard's colour (199,222,82 in round six), and the band op keeps yard pixels, trimming only path and its blends"
+ },
+ "paints": [
+  {
+   "rect": [
+    314,
+    584,
+    330,
+    590
+   ],
+   "color": [
+    174,
+    205,
+    55
+   ]
+  },
+  {
+   "polygon": [
+    [
+     281,
+     557
+    ],
+    [
+     285,
+     557
+    ],
+    [
+     289,
+     564
+    ],
+    [
+     289,
+     578
+    ],
+    [
+     285,
+     582
+    ],
+    [
+     281,
+     582
+    ],
+    [
+     283,
+     576
+    ],
+    [
+     283,
+     566
+    ]
+   ],
+   "from": [
+    292,
+    570
+   ]
+  }
+ ],
+ "shorebands": [
+  {
+   "x": [
+    398,
+    700
+   ],
+   "rim": 3.5,
+   "width": 7.5,
+   "grow": 3,
+   "smooth": 41,
+   "protectX": [
+    [
+     426,
+     441
+    ],
+    [
+     540,
+     549
+    ]
+   ]
+  }
+ ]
+}

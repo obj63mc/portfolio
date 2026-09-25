@@ -449,7 +449,7 @@ def prepare(spec_path):
         changed = before(f'{T}/t-{name}.png') != old_crop or before(f'{T}/t-{name}-prompt.txt') != old_prompt
         if changed and os.path.exists(f'{T}/t-{name}-model.png'): os.remove(f'{T}/t-{name}-model.png'); print(name, 'crop or prompt changed: model output dropped')
         print(name, t['rect'], 'repaint px', mask.histogram()[255])
-    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28), 'bridges': spec.get('bridges', []), 'sandfills': spec.get('sandfills', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
+    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28), 'bridges': spec.get('bridges', []), 'sandfills': spec.get('sandfills', []), 'tones': spec.get('tones', []), 'shorebands': spec.get('shorebands', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
 
 def loops():
     """Filled red loops from marked.png, in base pixels, as a list of full-size L masks (sorted by x)."""
@@ -588,9 +588,12 @@ def stitch():
     union = Image.new('L', (1983, 793), 0)
     for t in tm['tiles']:
         x, y, w, h = t['rect']; union.paste(255, (x, y), Image.open(f"{T}/t-{t['name']}-mask.png").convert('L').filter(ImageFilter.MaxFilter(5)))
-    if tm.get('restore'):
+    if tm.get('restore'):  # a rectangle put back from the round's base, or {rect, src} from an earlier round's image
         img = Image.open(f'{D}/stitched.png').convert('RGB'); bimg = Image.open(base).convert('RGB')
-        for r in tm['restore']: img.paste(bimg.crop(tuple(r)), (r[0], r[1])); print('restored base', r)
+        for r in tm['restore']:
+            rect, src = (r['rect'], Image.open(f"{D}/{r['src']}").convert('RGB')) if isinstance(r, dict) else (r, bimg)
+            img.paste(src.crop(tuple(rect)), (rect[0], rect[1])); print('restored', r)
+            if isinstance(r, dict): union.paste(255, tuple(rect))
         img.save(f'{D}/stitched.png')
     for kind in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill', 'blurfill', 'shorefill', 'pathfill', 'cleanup'):  # cleanup last: it tidies what the other fills and pastes leave
         if os.path.exists(f'{T}/{kind}.png'):
@@ -599,11 +602,55 @@ def stitch():
                 fill = water_fill(img, loop) if kind == 'waterfill' else shore_fill(img, loop, protect=Image.open(f'{T}/shorefill-protect.png').convert('L') if os.path.exists(f'{T}/shorefill-protect.png') else None) if kind == 'shorefill' else lawn_fill(img, loop, ghost=45 if kind == 'ghostfill' else tm.get('blurThreshold', 28) if kind == 'blurfill' else None, force=kind == 'forcefill', ghost_only=kind == 'blurfill', path_only=kind == 'pathfill')
                 union.paste(255, (0, 0), fill.filter(ImageFilter.MaxFilter(9)))
             img.save(f'{D}/stitched.png')
+    if tm.get('tones'):  # a lawn tone step: lawn pixels in rect shifted by `shift`, fading linearly to nothing from fadeX[0] to fadeX[1]
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); px = img.load(); print('tones:')
+        for tn in tm['tones']:
+            pm = Image.new('L', img.size, 0)  # a rect, or a polygon for a shape no rect fits
+            if tn.get('polygon'): ImageDraw.Draw(pm).polygon([tuple(q) for q in tn['polygon']], fill=255)
+            else: pm.paste(255, tuple(tn['rect']))
+            x0, y0, x1, y1 = pm.getbbox(); (fa, fb), sh = tn.get('fadeX', (x1, x1 + 1)), tn['shift']; n = 0; pp = pm.load()
+            for y in range(y0, y1):
+                for x in range(x0, x1):
+                    k = 1 if x <= fa else max(0.0, (fb - x) / (fb - fa))
+                    if k and pp[x, y] and LAWN(px[x, y]): px[x, y] = tuple(min(255, max(0, round(c + s_ * k))) for c, s_ in zip(px[x, y], sh)); n += 1
+            union.paste(255, (0, 0), pm); print('   tone', tn.get('rect') or tn['polygon'], sh, n, 'px')
+        img.save(f'{D}/stitched.png')
+    if tm.get('shorebands'):  # a jagged shore path redrawn as one band along the smoothed water edge (north-facing shore: water below)
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); px = img.load(); print('shorebands:')
+        for sb in tm['shorebands']:
+            x0, x1 = sb['x']; rim, wid, grow, win = sb.get('rim', 3.5), sb.get('width', 7.5), sb.get('grow', 3), sb.get('smooth', 41)
+            keep = lambda x: any(a <= x <= b for a, b in sb.get('protectX', []))  # connector columns: path above the band stays
+            pad = win; raw = {}
+            for x in range(x0 - pad, x1 + pad + 1):
+                raw[x] = next(y for y in range(sb.get('scanFrom', 540), img.height - 3) if WATER(px[x, y]) and WATER(px[x, y + 1]) and WATER(px[x, y + 2]))
+            med = {x: sorted(raw[x + k] for k in range(-3, 4))[3] for x in range(x0 - pad + 3, x1 + pad - 2)}  # notches out
+            ys = {x: sum(med[x + k] for k in range(-(win // 2), win // 2 + 1)) / win for x in range(x0, x1 + 1)}  # then one smooth line
+            samp = lambda test, dy0, dy1: sorted((px[x, raw[x] + dy] for x in range(x0, x1 + 1, 3) for dy in range(dy0, dy1) if test(px[x, raw[x] + dy])), key=sum)
+            P, R, Wc = (lambda v: v[len(v) // 2])(samp(PATH, -9, -4)), (lambda v: v[len(v) // 2])(samp(LAWN, -3, -1)), (lambda v: v[len(v) // 2])(samp(WATER, 2, 6))
+            Lc = (lambda v: v[len(v) // 2])(samp(LAWN, -16, -12)); m = Image.new('L', img.size, 0); mp = m.load()
+            ov = lambda a, b, y: max(0.0, min(b, y + 1) - max(a, y))
+            for x in range(x0, x1 + 1):
+                bw = ys[x]; br = bw - rim; bt = br - wid
+                local = next((px[x, y] for y in range(int(bt) - grow - 1, int(bt) - grow - 8, -1) if LAWN(px[x, y])), Lc)  # this column's lawn or yard
+                for y in range(int(bt) - grow - 1, int(bw) + 5):
+                    o = px[x, y]; fp, fr, fw = ov(bt, br, y), ov(br, bw, y), ov(bw, 1e9, y); fa = 1 - fp - fr - fw
+                    above = local if (y >= bt - grow and not keep(x) and (PATH(o) or (o[1] > 212 and o[2] > 110))) else o  # path and its blends go, yard lawn stays
+                    below = o if WATER(o) else Wc
+                    c = tuple(round(fp * P[i] + fr * R[i] + fw * below[i] + fa * above[i]) for i in range(3))
+                    if c != o: px[x, y] = c; mp[x, y] = 255
+            union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   band x', sb['x'], 'path', P, 'rim', R, 'water', Wc, 'lawn', Lc)
+        img.save(f'{D}/stitched.png')
     if tm.get('paints'):  # flat repaint: a rectangle takes the colour at a sample point (a roof, a wall), 0.5 px feather
         img = Image.open(f'{D}/stitched.png').convert('RGB'); print('paints:')
         for pt in tm['paints']:
-            x0, y0, x1, y1 = pt['rect']; c = tuple(pt['color']) if pt.get('color') else img.getpixel(tuple(pt['from'])); m = Image.new('L', img.size, 0); ImageDraw.Draw(m).rectangle((x0, y0, x1 - 1, y1 - 1), fill=255)
-            img.paste(Image.new('RGB', img.size, c), (0, 0), m.filter(ImageFilter.GaussianBlur(0.5))); union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   paint', pt['rect'], c)
+            c = tuple(pt['color']) if pt.get('color') else img.getpixel(tuple(pt['from'])); m = Image.new('L', img.size, 0)
+            if pt.get('polygon'):  # a polygon paint touches only light pixels (lawn, path and their blends), never a tree or roof
+                ImageDraw.Draw(m).polygon([tuple(q) for q in pt['polygon']], fill=255); mp, ip = m.load(), img.load()
+                for yy in range(img.height):
+                    for xx in range(img.width):
+                        if mp[xx, yy] and ip[xx, yy][1] < 185: mp[xx, yy] = 0
+            else: x0, y0, x1, y1 = pt['rect']; ImageDraw.Draw(m).rectangle((x0, y0, x1 - 1, y1 - 1), fill=255)
+            img.paste(Image.new('RGB', img.size, c), (0, 0), m.filter(ImageFilter.GaussianBlur(0.5))); union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   paint', pt.get('rect') or pt['polygon'], c)
         img.save(f'{D}/stitched.png')
     if tm.get('sandfills'):  # a wide sand band between a shore path and the water becomes lawn, keeping a thin rim
         img = Image.open(f'{D}/stitched.png').convert('RGB'); px = img.load(); print('sandfills:')
