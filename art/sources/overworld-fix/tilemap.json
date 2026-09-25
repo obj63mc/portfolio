@@ -1,0 +1,142 @@
+[
+ {
+  "name": "c0r0",
+  "rect": [
+   0,
+   0,
+   512,
+   512
+  ],
+  "loops": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "repaintPx": 32752,
+  "edit": true
+ },
+ {
+  "name": "c0r1",
+  "rect": [
+   0,
+   281,
+   512,
+   512
+  ],
+  "loops": [],
+  "repaintPx": 0,
+  "edit": false
+ },
+ {
+  "name": "c1r0",
+  "rect": [
+   500,
+   0,
+   512,
+   512
+  ],
+  "loops": [
+   4
+  ],
+  "extra": [
+   [
+    575,
+    245,
+    725,
+    320
+   ]
+  ],
+  "repaintPx": 27297,
+  "edit": true
+ },
+ {
+  "name": "c1r1",
+  "rect": [
+   500,
+   281,
+   512,
+   512
+  ],
+  "loops": [
+   5,
+   6
+  ],
+  "repaintPx": 21825,
+  "edit": true
+ },
+ {
+  "name": "c2r0",
+  "rect": [
+   1000,
+   0,
+   512,
+   512
+  ],
+  "loops": [
+   8,
+   9
+  ],
+  "repaintPx": 31876,
+  "edit": true
+ },
+ {
+  "name": "c2r1",
+  "rect": [
+   1000,
+   281,
+   512,
+   512
+  ],
+  "loops": [
+   7
+  ],
+  "repaintPx": 82807,
+  "edit": true
+ },
+ {
+  "name": "c3r0",
+  "rect": [
+   1471,
+   0,
+   512,
+   512
+  ],
+  "loops": [
+   10,
+   12,
+   13,
+   15
+  ],
+  "repaintPx": 31449,
+  "edit": true
+ },
+ {
+  "name": "c3r1",
+  "rect": [
+   1471,
+   281,
+   512,
+   512
+  ],
+  "loops": [
+   11,
+   14
+  ],
+  "repaintPx": 18475,
+  "edit": true
+ },
+ {
+  "name": "lake",
+  "rect": [
+   250,
+   281,
+   768,
+   512
+  ],
+  "loops": [],
+  "band": "lake",
+  "repaintPx": 47138,
+  "edit": true
+ }
+]

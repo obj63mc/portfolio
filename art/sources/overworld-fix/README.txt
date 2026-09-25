@@ -1,14 +1,23 @@
-Overworld fix sections (cut from art/generated/overworld-master/image.webp, 1983 x 793, native size).
+Overworld fix tile map. base.png is the master Joe marked up (commit 2bfad09, 1983 x 793, native size);
+marked.png is his review image aligned to it. Nothing here is upscaled or run through a model except the tile edits.
 
-NN-name.png          the original section, unchanged - copy it to NN-name-fixed.png and paint on that to fix by hand
-NN-name-marked.png   the same section from the marked-up review image (red loops = defects)
-NN-name-mask.png     where a model output is accepted (white); hand fixes ignore it and are pasted whole
-NN-name-prompt.txt   the fix instructions given to the model for that section
-NN-name-out.png      a model output for the section (written by the Codex run or run-api.sh)
-sections.json        section rects in master pixels: {x, y, w, h}, the issues covered and the loop indices
+tiles/t-<name>.png          exact crop of base.png (512 px squares; the lake tile is 768 x 512 so the loop path is one drawing)
+tiles/t-<name>-marked.png   the same crop of marked.png (red loops = defects)
+tiles/t-<name>-mask.png     white = repaint; filled from the red loops (plus the lake shore band). Black pixels are never touched.
+tiles/t-<name>-prompt.txt   the fix list for that tile; tiles without one need no edit
+tiles/t-<name>-out.png      the edited tile (any size; it is resized back to the tile size when stitched)
+tilemap.json                every tile's rect in base pixels, its loops and repaint count
 
-Reassemble:  python3 assemble.py ../../generated/overworld-master/image.webp master-fixed.png
-Install:     see art/README.md, "Filling the map" - process overworld-master --source master-fixed.png --force,
-             then regenerate overworld and the five derived mattes, sync the geometry and validate.
-Codex CLI:   its built-in image tool is fixed to gpt-image-2 (auto quality). For gpt-image-2.5 Sunburst at max
-             quality use run-api.sh with OPENAI_API_KEY exported (the Images API edit endpoint with a mask).
+Columns start at x = 0, 500, 1000, 1471 and rows at y = 0, 281, so tiles overlap by a few pixels; each defect belongs
+to exactly one tile, so no repaint crosses a tile edge.
+
+1. python3 tiles.py slice          rebuilds tiles/ from base.png and marked.png (ImageMagick crops)
+2. ./edit-api.sh [tile ...]        gpt-image-2.5 Sunburst, quality max, Images API edit endpoint with the mask
+                                   (OPENAI_API_KEY exported in the shell; never written to a file)
+   or fix a tile by hand: paint on a copy of t-<name>.png and save it as t-<name>-out.png
+3. python3 tiles.py stitch         ImageMagick pastes each -out.png back, only inside its mask, into stitched.png and
+                                   prints how many pixels changed outside the masks (must be 0)
+4. install stitched.png as the master: see art/README.md, "Filling the map" (process overworld-master --source ...,
+   then regenerate overworld and the five derived mattes, sync the geometry, validate)
+
+The Codex CLI cannot do step 2: its built-in image tool is fixed to gpt-image-2 at automatic quality.

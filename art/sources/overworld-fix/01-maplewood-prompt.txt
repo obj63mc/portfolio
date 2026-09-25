@@ -1,5 +1,0 @@
-REGIONAL FIX of the accepted overworld master. Reference 1 is an exact crop of the master. Reference 2 is the same crop with red loops drawn on it by the art director, marking defects. Output reference 1 pixel for pixel: same framing, camera, scale, palette and lighting, with no changes outside the red loops. Inside the loops make only the listed changes. Do not draw the red loops or any marks. Do not add new objects, signs or lettering. Where something is removed, continue the surrounding lawn, footpath, road or water naturally, matching the neighbouring pixels. Objects clipped by the crop edge stay clipped exactly as in reference 1.
-1. Far-left loop at the image edge, mid height: a blurred, broken tree. Remove it; plain lawn.
-2. Loop around the MAPLEWOOD sign: keep the sign board, lettering and posts exactly. A building is smeared into the sign's lower right; remove that building entirely, lawn and the cream path beneath.
-3. Loop above the storefront row, top left: a tree cut into a bush. Remove it; lawn.
-4. Loop right of the sign, left of the church steps: a small house. Remove it; lawn, keep the paths.
