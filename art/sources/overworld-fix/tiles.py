@@ -448,7 +448,7 @@ def prepare(spec_path):
         changed = before(f'{T}/t-{name}.png') != old_crop or before(f'{T}/t-{name}-prompt.txt') != old_prompt
         if changed and os.path.exists(f'{T}/t-{name}-model.png'): os.remove(f'{T}/t-{name}-model.png'); print(name, 'crop or prompt changed: model output dropped')
         print(name, t['rect'], 'repaint px', mask.histogram()[255])
-    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28)}, open(f'{D}/tilemap.json', 'w'), indent=1)
+    json.dump({'round': spec['round'], 'base': spec['base'], 'tiles': table, 'stamps': spec.get('stamps', []), 'paints': spec.get('paints', []), 'restore': spec.get('restore', []), 'blurThreshold': spec.get('blurThreshold', 28), 'bridges': spec.get('bridges', [])}, open(f'{D}/tilemap.json', 'w'), indent=1)
 
 def loops():
     """Filled red loops from marked.png, in base pixels, as a list of full-size L masks (sorted by x)."""
@@ -603,6 +603,26 @@ def stitch():
         for pt in tm['paints']:
             x0, y0, x1, y1 = pt['rect']; c = tuple(pt['color']) if pt.get('color') else img.getpixel(tuple(pt['from'])); m = Image.new('L', img.size, 0); ImageDraw.Draw(m).rectangle((x0, y0, x1 - 1, y1 - 1), fill=255)
             img.paste(Image.new('RGB', img.size, c), (0, 0), m.filter(ImageFilter.GaussianBlur(0.5))); union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(5))); print('   paint', pt['rect'], c)
+        img.save(f'{D}/stitched.png')
+    if tm.get('bridges'):  # a footpath stub that stops at a repaint boundary is carried on, straight, until it meets the path beyond
+        img = Image.open(f'{D}/stitched.png').convert('RGB'); px = img.load(); print('bridges:')
+        for br in tm['bridges']:
+            (x, y), (dx, dy) = br['from'], br['dir']; W, H = img.size
+            perp = (-dy, dx); wid = 1
+            for sgn in (1, -1):
+                k = 1
+                while 0 <= x + sgn * k * perp[0] < W and 0 <= y + sgn * k * perp[1] < H and PATH(px[x + sgn * k * perp[0], y + sgn * k * perp[1]]) and k < 30: k += 1
+                wid += k - 1
+            wid = min(wid, br.get('width', 12)); colour = px[x, y]; end = None; left = False
+            for d in range(1, br.get('max', 40)):  # walk past the stub's own end, then to the first path pixel beyond
+                ex, ey = x + dx * d, y + dy * d
+                if not (0 <= ex < W and 0 <= ey < H): break
+                if not PATH(px[ex, ey]): left = True
+                elif left: end = (ex, ey); break
+            if end is None: print('   bridge from', (x, y), 'found no path within reach'); continue
+            m = Image.new('L', (W, H), 0); ImageDraw.Draw(m).line([(x, y), end], fill=255, width=wid)
+            m = m.filter(ImageFilter.GaussianBlur(0.6)); img.paste(Image.new('RGB', (W, H), colour), (0, 0), m); union.paste(255, (0, 0), m.filter(ImageFilter.MaxFilter(9)))
+            print('   bridge', (x, y), '->', end, 'width', wid, colour)
         img.save(f'{D}/stitched.png')
     if tm.get('stamps'):
         img = Image.open(f'{D}/stitched.png').convert('RGB'); print('stamps:')

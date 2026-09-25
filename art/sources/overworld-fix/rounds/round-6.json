@@ -1,0 +1,94 @@
+{
+ "round": 6,
+ "base": "rounds/base-6.png",
+ "tiles": {
+  "lake": {
+   "rect": [
+    100,
+    373,
+    1050,
+    420
+   ],
+   "polygons": [
+    [
+     [
+      150,
+      586
+     ],
+     [
+      1092,
+      586
+     ],
+     [
+      1092,
+      793
+     ],
+     [
+      150,
+      793
+     ]
+    ]
+   ],
+   "fixes": [
+    "Redraw the whole park inside the outline as one clean composition. The lake has one smooth shoreline. Around it runs ONE loop footpath: a single continuous ring of uniform width (about one and a half times the width of the other footpaths), at the same short, constant distance from the water all the way round. The west side of the ring is drawn exactly like the east side: it hugs the shore, with no wiggle, no widening lawn gap, no second path beside it.",
+    "The small shop with the orange awnings stands whole on the lawn west of the ring, clear of every path: all four walls, its flat roof and awnings complete, nothing cut. One straight connector footpath joins the ring to the street on the west and one to the north; every path inside the outline meets another at a clean junction, none ends in lawn, none doubles another.",
+    "The island keeps its trees and ring path, the boat house keeps its pier with the ring passing north and east of it, the CARONDELET PARK sign with its rocks and shrubs stays exactly as it is, the benches and picnic tables stay on the lawn beside the ring. Every tree is whole and crisp. Every path that crosses the red outline keeps its exact position and width where it crosses it."
+   ]
+  },
+  "c2r1": {
+   "rect": [
+    1000,
+    281,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1165,
+     368,
+     1275,
+     450
+    ]
+   ],
+   "fixes": [
+    "The fountain in the outline has two rings of footpath around it. Redraw it with ONE circular path around the fountain basin, and the straight paths that lead to it meeting that circle at clean junctions on all four sides, including the lower left, so nothing is left unconnected; lawn between. Keep the fountain itself and the trees."
+   ]
+  },
+  "c0r0": {
+   "rect": [
+    0,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     60,
+     195,
+     185,
+     290
+    ]
+   ],
+   "fixes": [
+    "The lawn in the outline, north-west of the MAPLEWOOD storefronts, has faint blotches and pale stripes. Redraw it as clean, even lawn; every tree in it whole and crisp; the footpaths that cross the outline keep their exact position and width."
+   ]
+  }
+ },
+ "notes": {
+  "lake": "Joe: the park has been broken for several rounds; the west ring must match the east and the shop must be whole. The whole park is redrawn by the model again and accepted inside the park outline, as in round three, with the prompt demanding one uniform ring.",
+  "bridges": "the base connectors stop at the park outline about ten pixels short of the model's ring; each is carried straight on in its own colour and width until it meets the ring",
+  "west": "the accepted outline reaches west to x 150 so the model's own west connectors, which join the Maplewood street, replace the base ones instead of being bridged"
+ },
+ "bridges": [
+  {
+   "from": [
+    858,
+    583
+   ],
+   "dir": [
+    0,
+    1
+   ]
+  }
+ ]
+}

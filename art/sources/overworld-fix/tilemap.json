@@ -1,34 +1,17 @@
 {
- "round": 5,
- "base": "rounds/base-5.png",
+ "round": 6,
+ "base": "rounds/base-6.png",
  "tiles": [
   {
-   "name": "c0r0",
-   "rect": [
-    0,
-    0,
-    512,
-    512
-   ],
-   "loops": [
-    0,
-    1
-   ],
-   "repaintPx": 3934,
-   "edit": true
-  },
-  {
-   "name": "church",
+   "name": "lake",
    "rect": [
     100,
-    281,
-    512,
-    512
+    373,
+    1050,
+    420
    ],
-   "loops": [
-    4
-   ],
-   "repaintPx": 8668,
+   "loops": [],
+   "repaintPx": 195201,
    "edit": true
   },
   {
@@ -39,37 +22,37 @@
     512,
     512
    ],
-   "loops": [
-    2
-   ],
-   "repaintPx": 12362,
+   "loops": [],
+   "repaintPx": 9213,
    "edit": true
   },
   {
-   "name": "c3r1",
+   "name": "c0r0",
    "rect": [
-    1471,
-    281,
+    0,
+    0,
     512,
     512
    ],
-   "loops": [
-    3,
-    5
-   ],
-   "repaintPx": 10329,
+   "loops": [],
+   "repaintPx": 12096,
    "edit": true
   }
  ],
  "stamps": [],
  "paints": [],
- "restore": [
-  [
-   455,
-   610,
-   565,
-   680
-  ]
- ],
- "blurThreshold": 28
+ "restore": [],
+ "blurThreshold": 28,
+ "bridges": [
+  {
+   "from": [
+    858,
+    583
+   ],
+   "dir": [
+    0,
+    1
+   ]
+  }
+ ]
 }

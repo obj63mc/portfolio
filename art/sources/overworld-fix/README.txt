@@ -33,5 +33,9 @@ A round:
    python3 tiles.py check                lists every road or footpath that reaches a repaint boundary and no longer
                                          continues inside it (a cut or stepped road); widen the mask to a junction,
                                          enlarge the tile so the road's continuation is in the reference, or rerun
+   A round spec can also carry deterministic ops that run after the pastes: lawnfill / ghostfill / blurfill / forcefill /
+   waterfill / shorefill loops (with <kind>Extra rectangles, <kind>Polygons and <kind>Protect), restore rectangles (base
+   pixels put back), paints (a flat colour), stamps (a tree cloned from elsewhere), bridges (a path stub carried on to the
+   path beyond) and corridors on a tile (the base path's own line handed to the repaint area up to its junction).
 6. install stitched.png as the master: see art/README.md, "Filling the map" (process overworld-master --source ...,
    then regenerate overworld and the five derived mattes, sync the geometry, validate)
