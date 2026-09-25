@@ -49,7 +49,9 @@ function processInto(asset: Asset, input: string, outputRoot: string): Processed
     // Resize once before tiling; integer pixel boundaries at both densities prevent seams.
     const { w, h } = asset.world;
     magick([input, '-filter', 'Lanczos', '-resize', `${w * 2}x${h * 2}!`, '-quality', '85', join(outputRoot, file)]);
-    magick([input, '-filter', 'Lanczos', '-resize', `${Math.round((asset.upscale ?? 2) * 100)}%`, '-quality', '85', join(dir, 'upscale.webp')]);
+    // The 2x companion only helps a source smaller than the plate; an upscaled master already exceeds it.
+    if (dimensions(input).w * (asset.upscale ?? 2) <= w * 2) magick([input, '-filter', 'Lanczos', '-resize', `${Math.round((asset.upscale ?? 2) * 100)}%`, '-quality', '85', join(dir, 'upscale.webp')]);
+    else if (existsSync(join(dir, 'upscale.webp'))) unlinkSync(join(dir, 'upscale.webp'));
     result.tiles = [];
     for (const density of [1.25, 2]) {
       const layer = join(dir, `density-${density}.png`);

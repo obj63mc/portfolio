@@ -199,29 +199,39 @@ export const OVERWORLD: Overworld = {
 		{ key: 'park-tree', rect: { x: 2709, y: 2420, w: 271, h: 255 } }
 	],
 	river: {
-		// West bank north to south, the south edge, then the east bank south to north. Traced by water colour
-		// on the master at 100 px rows; the rows under the two bridges are interpolated.
+		// West bank north to south, the south edge, then the east bank south to north. Traced by water colour on the
+		// fill-pass master at 50 px rows (scratch rivermask.py); the rows under the Eads deck, the Poplar bridge, the
+		// Arch levee riverboat and the Belleville barge dock are hand-corrected.
 		mask: [
-			{ x: 5040, y: 270 }, { x: 5048, y: 300 }, { x: 4980, y: 400 }, { x: 4915, y: 500 }, { x: 4891, y: 600 },
-			{ x: 4956, y: 700 }, { x: 5031, y: 800 }, { x: 5085, y: 900 }, { x: 5140, y: 1000 }, { x: 5239, y: 1100 },
-			{ x: 5239, y: 1200 }, { x: 5273, y: 1300 }, { x: 5297, y: 1400 }, { x: 5283, y: 1500 }, { x: 5245, y: 1600 },
-			{ x: 5188, y: 1700 }, { x: 5090, y: 1800 }, { x: 4960, y: 1900 }, { x: 4891, y: 2000 }, { x: 4830, y: 2100 },
-			{ x: 4766, y: 2200 }, { x: 4708, y: 2300 }, { x: 4650, y: 2400 }, { x: 4595, y: 2500 }, { x: 4544, y: 2600 },
-			{ x: 4500, y: 2700 },
-			{ x: 6355, y: 2700 }, { x: 6338, y: 2600 }, { x: 6304, y: 2500 }, { x: 6256, y: 2400 }, { x: 6195, y: 2300 },
-			{ x: 6049, y: 2200 }, { x: 6049, y: 2100 }, { x: 5804, y: 2000 }, { x: 5800, y: 1900 }, { x: 5790, y: 1800 },
-			{ x: 5719, y: 1700 }, { x: 5661, y: 1600 }, { x: 5627, y: 1500 }, { x: 5616, y: 1400 }, { x: 5627, y: 1300 },
-			{ x: 5647, y: 1200 }, { x: 5715, y: 1100 }, { x: 5770, y: 1000 }, { x: 5889, y: 900 }, { x: 5988, y: 800 },
-			{ x: 5981, y: 700 }, { x: 5994, y: 600 }, { x: 6297, y: 500 }, { x: 6345, y: 400 }, { x: 6423, y: 300 },
-			{ x: 6440, y: 270 }
+			{ x: 5048, y: 300 }, { x: 5045, y: 350 }, { x: 5000, y: 400 }, { x: 4943, y: 450 }, { x: 4912, y: 500 },
+			{ x: 4880, y: 550 }, { x: 4861, y: 600 }, { x: 4925, y: 650 }, { x: 4990, y: 700 }, { x: 5040, y: 750 },
+			{ x: 5090, y: 800 }, { x: 5130, y: 850 }, { x: 5164, y: 900 }, { x: 5211, y: 950 }, { x: 5249, y: 1000 },
+			{ x: 5249, y: 1050 }, { x: 5245, y: 1100 }, { x: 5245, y: 1150 }, { x: 5249, y: 1200 }, { x: 5286, y: 1250 },
+			{ x: 5276, y: 1300 }, { x: 5283, y: 1350 }, { x: 5293, y: 1400 }, { x: 5290, y: 1450 }, { x: 5280, y: 1500 },
+			{ x: 5266, y: 1550 }, { x: 5242, y: 1600 }, { x: 5222, y: 1650 }, { x: 5188, y: 1700 }, { x: 5100, y: 1750 },
+			{ x: 5030, y: 1800 }, { x: 4990, y: 1850 }, { x: 4960, y: 1900 }, { x: 4925, y: 1950 }, { x: 4891, y: 2000 },
+			{ x: 4861, y: 2050 }, { x: 4830, y: 2100 }, { x: 4796, y: 2150 }, { x: 4766, y: 2200 }, { x: 4738, y: 2250 },
+			{ x: 4708, y: 2300 }, { x: 4680, y: 2350 }, { x: 4650, y: 2400 }, { x: 4623, y: 2450 }, { x: 4595, y: 2500 },
+			{ x: 4565, y: 2550 }, { x: 4500, y: 2600 }, { x: 4450, y: 2650 }, { x: 4411, y: 2700 }, { x: 6290, y: 2700 },
+			{ x: 6277, y: 2650 }, { x: 6260, y: 2600 }, { x: 6243, y: 2550 }, { x: 6222, y: 2500 }, { x: 6188, y: 2450 },
+			{ x: 6154, y: 2400 }, { x: 6113, y: 2350 }, { x: 6052, y: 2300 }, { x: 6022, y: 2250 }, { x: 6008, y: 2200 },
+			{ x: 5984, y: 2150 }, { x: 5940, y: 2100 }, { x: 5899, y: 2050 }, { x: 5804, y: 2000 }, { x: 5804, y: 1950 },
+			{ x: 5800, y: 1900 }, { x: 5800, y: 1850 }, { x: 5800, y: 1800 }, { x: 5800, y: 1750 }, { x: 5790, y: 1700 },
+			{ x: 5759, y: 1650 }, { x: 5736, y: 1600 }, { x: 5715, y: 1550 }, { x: 5702, y: 1500 }, { x: 5698, y: 1450 },
+			{ x: 5708, y: 1400 }, { x: 5715, y: 1350 }, { x: 5732, y: 1300 }, { x: 5753, y: 1250 }, { x: 5776, y: 1200 },
+			{ x: 5613, y: 1150 }, { x: 5634, y: 1100 }, { x: 5715, y: 1050 }, { x: 5753, y: 1000 }, { x: 5797, y: 950 },
+			{ x: 5953, y: 900 }, { x: 5994, y: 850 }, { x: 5988, y: 800 }, { x: 5988, y: 750 }, { x: 5998, y: 700 },
+			{ x: 6000, y: 650 }, { x: 6100, y: 600 }, { x: 6280, y: 550 }, { x: 6250, y: 500 }, { x: 6150, y: 450 },
+			{ x: 6000, y: 400 }, { x: 5865, y: 350 }, { x: 5770, y: 300 }
 		],
-		// The Eads deck slopes from (4880, 370) to (6320, 600); the walkable rect spans the water and reaches the east
-		// bank at every row it covers (the bank is at x 6423 by y 300), so stepping off its east edge lands on grass.
-		deck: { x: 4880, y: 340, w: 1550, h: 290 },
-		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
+		// The Eads deck slopes from (4880, 370) to (6430, 660); the walkable rect spans the water and reaches the east
+		// bank at every row it covers, so stepping off its east edge lands on grass. Its west end also claims a small
+		// wedge of water beside the Arch levee (x 4930 to 5030, y 650 to 700), which stops drift there.
+		deck: { x: 4880, y: 340, w: 1550, h: 360 },
+		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 492 } },
 		// Passing under the Poplar Street bridge is the river's end.
 		southEndY: 1900,
-		// The lawn between the Arch's legs, above the highway.
-		arch: { x: 4600, y: 1450 }
+		// The lawn between the Arch's legs, south of the museum entrance.
+		arch: { x: 4780, y: 1330 }
 	}
 };

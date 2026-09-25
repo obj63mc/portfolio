@@ -1,6 +1,6 @@
 {
   "checked": "2026-09-24",
-  "note": "Photos used as local reference only; source photos and credentials are not included in deliverable assets.",
+  "note": "Photos used as local reference only; source photos and credentials are not included in deliverable assets. Fill-scenery photos under references/local/places/fill/ come from the Google Places API (author attributions recorded per photo).",
   "sources": [
     {
       "location": "moosylvania",
@@ -226,6 +226,460 @@
         }
       ],
       "checked": "2026-09-24"
+    },
+    {
+      "location": "fill/art-museum",
+      "name": "Saint Louis Art Museum",
+      "address": "1 Fine Arts Dr, St. Louis, MO 63110, USA",
+      "maps": "https://maps.google.com/?cid=10927054154687616570",
+      "coordinates": {
+        "latitude": 38.6393062,
+        "longitude": -90.2944911
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/art-museum-1.jpg",
+          "authors": [
+            {
+              "displayName": "Cathy Griggs",
+              "uri": "https://maps.google.com/maps/contrib/115715349165710974725"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/grand-basin",
+      "name": "Emerson Grand Basin",
+      "address": "Emerson Grand Basin, St. Louis, MO 63110, USA",
+      "maps": "https://maps.google.com/?cid=7824981542459488342",
+      "coordinates": {
+        "latitude": 38.641642399999995,
+        "longitude": -90.2920901
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/grand-basin-1.jpg",
+          "authors": [
+            {
+              "displayName": "Claire G",
+              "uri": "https://maps.google.com/maps/contrib/114728129079798672820"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/planetarium",
+      "name": "James S. McDonnell Planetarium",
+      "address": "5100 Clayton Ave, St. Louis, MO 63110, USA",
+      "maps": "https://maps.google.com/?cid=18077199327528705371",
+      "coordinates": {
+        "latitude": 38.631198499999996,
+        "longitude": -90.2708916
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/planetarium-1.jpg",
+          "authors": [
+            {
+              "displayName": "acchronicles",
+              "uri": "https://maps.google.com/maps/contrib/113462159420206945194"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/ted-drewes",
+      "name": "Ted Drewes Frozen Custard",
+      "address": "6726 Chippewa St, St. Louis, MO 63109, USA",
+      "maps": "https://maps.google.com/?cid=9379446673991207513",
+      "coordinates": {
+        "latitude": 38.5894255,
+        "longitude": -90.307636
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/ted-drewes-3.jpg",
+          "authors": [
+            {
+              "displayName": "Shawn Belles",
+              "uri": "https://maps.google.com/maps/contrib/115415865433856810376"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/bevo-mill",
+      "name": "Das Bevo",
+      "address": "4749 Gravois Ave, St. Louis, MO 63116, USA",
+      "maps": "https://maps.google.com/?cid=2756981415109508219",
+      "coordinates": {
+        "latitude": 38.5820045,
+        "longitude": -90.2667007
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/bevo-mill-3.jpg",
+          "authors": [
+            {
+              "displayName": "Das Bevo",
+              "uri": "https://maps.google.com/maps/contrib/110483280594648962606"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/city-museum",
+      "name": "City Museum",
+      "address": "750 N 16th St, St. Louis, MO 63103, USA",
+      "maps": "https://maps.google.com/?cid=14518554203779680772",
+      "coordinates": {
+        "latitude": 38.6336745,
+        "longitude": -90.2006976
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/city-museum-3.jpg",
+          "authors": [
+            {
+              "displayName": "Lawrence Gray",
+              "uri": "https://maps.google.com/maps/contrib/116688211481880718463"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/lacledes-landing",
+      "name": "Laclede's Landing",
+      "address": "104 N Leonor K Sullivan Blvd, St. Louis, MO 63102, USA",
+      "maps": "https://maps.google.com/?cid=1228694956372788135",
+      "coordinates": {
+        "latitude": 38.6306927,
+        "longitude": -90.18445899999999
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/lacledes-landing-1.jpg",
+          "authors": [
+            {
+              "displayName": "Federico Salvati",
+              "uri": "https://maps.google.com/maps/contrib/102755036231149917164"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/fill/lacledes-landing-2.jpg",
+          "authors": [
+            {
+              "displayName": "Juan Pablo Tello Montoya",
+              "uri": "https://maps.google.com/maps/contrib/100455039579913304274"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/busch-stadium",
+      "name": "Busch Stadium",
+      "address": "700 Clark Ave, St. Louis, MO 63102, USA",
+      "maps": "https://maps.google.com/?cid=11923670167811301159",
+      "coordinates": {
+        "latitude": 38.6226188,
+        "longitude": -90.1928209
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/busch-stadium-3.jpg",
+          "authors": [
+            {
+              "displayName": "YOSSY",
+              "uri": "https://maps.google.com/maps/contrib/100029931954879649371"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/brewery",
+      "name": "Anheuser-Busch St. Louis Brewery",
+      "address": "1200 Lynch St, St. Louis, MO 63118, USA",
+      "maps": "https://maps.google.com/?cid=7524286315866799979",
+      "coordinates": {
+        "latitude": 38.599269899999996,
+        "longitude": -90.2144318
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/brewery-3.jpg",
+          "authors": [
+            {
+              "displayName": "Siddhartha K",
+              "uri": "https://maps.google.com/maps/contrib/101270564478498897147"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/soulard",
+      "name": "Soulard Farmers Market",
+      "address": "730 Carroll St, St. Louis, MO 63104, USA",
+      "maps": "https://maps.google.com/?cid=4607807411984196157",
+      "coordinates": {
+        "latitude": 38.6108398,
+        "longitude": -90.20098879999999
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/soulard-1.jpg",
+          "authors": [
+            {
+              "displayName": "Sarah Chandler",
+              "uri": "https://maps.google.com/maps/contrib/106134533856447053405"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/gateway-geyser",
+      "name": "Malcolm W. Martin Memorial Park",
+      "address": "185 W Trendley Ave, East St Louis, IL 62201, USA",
+      "maps": "https://maps.google.com/?cid=10899092125113328895",
+      "coordinates": {
+        "latitude": 38.6223725,
+        "longitude": -90.1754409
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/gateway-geyser-1.jpg",
+          "authors": [
+            {
+              "displayName": "Malcolm W. Martin Memorial Park",
+              "uri": "https://maps.google.com/maps/contrib/108649217806731353434"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/belleville-cathedral",
+      "name": "Cathedral of Saint Peter",
+      "address": "200 W Harrison St, Belleville, IL 62220, USA",
+      "maps": "https://maps.google.com/?cid=6875162694394807203",
+      "coordinates": {
+        "latitude": 38.5102865,
+        "longitude": -89.9879747
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/belleville-cathedral-2.jpg",
+          "authors": [
+            {
+              "displayName": "Frederick Bradbury V",
+              "uri": "https://maps.google.com/maps/contrib/106980054930823186606"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/belleville-square",
+      "name": "Belleville Square",
+      "address": "Belleville, IL 62220, USA",
+      "maps": "https://maps.google.com/?cid=6446967296101207591",
+      "coordinates": {
+        "latitude": 38.5135857,
+        "longitude": -89.9842303
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/belleville-square-1.jpg",
+          "authors": [
+            {
+              "displayName": "sutherlandk19",
+              "uri": "https://maps.google.com/maps/contrib/101738118125273615342"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/fill/belleville-square-3.jpg",
+          "authors": [
+            {
+              "displayName": "Deane Ballance-Stanley",
+              "uri": "https://maps.google.com/maps/contrib/115819130424546405736"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/bjc",
+      "name": "Barnes-Jewish Hospital",
+      "address": "One Barnes Jewish Hospital Plaza, St. Louis, MO 63110, USA",
+      "maps": "https://maps.google.com/?cid=5469434528424068304",
+      "coordinates": {
+        "latitude": 38.63525,
+        "longitude": -90.264864
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/bjc-1.jpg",
+          "authors": [
+            {
+              "displayName": "Barnes-Jewish Hospital",
+              "uri": "https://maps.google.com/maps/contrib/116422648449238875344"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/fill/bjc-3.jpg",
+          "authors": [
+            {
+              "displayName": "Barnes-Jewish Hospital",
+              "uri": "https://maps.google.com/maps/contrib/116422648449238875344"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/union-station",
+      "name": "St. Louis Union Station",
+      "address": "1820 Market St, St. Louis, MO 63103, USA",
+      "maps": "https://maps.google.com/?cid=7063051454486139603",
+      "coordinates": {
+        "latitude": 38.62728,
+        "longitude": -90.2089951
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/union-station-1.jpg",
+          "authors": [
+            {
+              "displayName": "St. Louis Union Station",
+              "uri": "https://maps.google.com/maps/contrib/116362208232676586899"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/fill/union-station-2.jpg",
+          "authors": [
+            {
+              "displayName": "M affina",
+              "uri": "https://maps.google.com/maps/contrib/105433487606882457991"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/old-cathedral",
+      "name": "Basilica of Saint Louis, King of France",
+      "address": "209 Walnut St, St. Louis, MO 63102, USA",
+      "maps": "https://maps.google.com/?cid=4823875504667336979",
+      "coordinates": {
+        "latitude": 38.6240875,
+        "longitude": -90.18728120000002
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/old-cathedral-1.jpg",
+          "authors": [
+            {
+              "displayName": "Shirley Amthauer",
+              "uri": "https://maps.google.com/maps/contrib/117418049771233406582"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/old-post-office",
+      "name": "St. Louis' Custom House and Post Office Historic Landmark (Old Post Office)",
+      "address": "815 Olive St, St. Louis, MO 63101, USA",
+      "maps": "https://maps.google.com/?cid=16792576850699164824",
+      "coordinates": {
+        "latitude": 38.6291264,
+        "longitude": -90.19297639999999
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/old-post-office-1.jpg",
+          "authors": [
+            {
+              "displayName": "Dwayne Isgrig",
+              "uri": "https://maps.google.com/maps/contrib/108567540624772209166"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/kiener-plaza",
+      "name": "Kiener Plaza Park",
+      "address": "500 Chestnut St, St. Louis, MO 63101, USA",
+      "maps": "https://maps.google.com/?cid=15568417291736226986",
+      "coordinates": {
+        "latitude": 38.6260402,
+        "longitude": -90.1908864
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/kiener-plaza-1.jpg",
+          "authors": [
+            {
+              "displayName": "Braulio Gonzalez",
+              "uri": "https://maps.google.com/maps/contrib/115217108719288617574"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "fill/ballpark-village",
+      "name": "Ballpark Village",
+      "address": "601 Clark Ave, St. Louis, MO 63102, USA",
+      "maps": "https://maps.google.com/?cid=16499647089051574574",
+      "coordinates": {
+        "latitude": 38.623904499999995,
+        "longitude": -90.1919131
+      },
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/fill/ballpark-village-1.jpg",
+          "authors": [
+            {
+              "displayName": "Ballpark Village",
+              "uri": "https://maps.google.com/maps/contrib/113643114545713010119"
+            }
+          ]
+        }
+      ],
+      "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
     }
   ],
   "slu": {

@@ -7,6 +7,14 @@ import type { Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
 const overlap = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+const inPolygon = (p: { x: number; y: number }, poly: { x: number; y: number }[]) => {
+	let inside = false;
+	for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+		const a = poly[i], b = poly[j];
+		if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+	}
+	return inside;
+};
 const world: Rect = { x: 0, y: 0, w: OVERWORLD.w, h: OVERWORLD.h };
 const props = OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props));
 const welcome = props.find((p) => p.id === 'welcome')!;
@@ -76,6 +84,7 @@ test('river: deck spans the water, bridge cut-out covers the deck, south end ins
 	assert.ok(overlap(deck, bbox), 'deck crosses the water');
 	assert.ok(inside(deck, bridge.rect), 'the bridge cut-out contains the walkable deck');
 	assert.ok(southEndY > deck.y + deck.h && southEndY <= bbox.y + bbox.h, 'south end below the deck, at the mask bottom');
-	assert.ok(!inside({ x: arch.x, y: arch.y, w: 1, h: 1 }, bbox) || arch.x < bbox.x + 200, 'reset point is on the west bank');
+	assert.ok(!inPolygon(arch, mask), 'reset point is on land');
+	assert.ok(inPolygon({ x: deck.x + deck.w / 2, y: deck.y + deck.h + 100 }, mask), 'water flows under the deck');
 	assert.ok(arch.y < southEndY);
 });

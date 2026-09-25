@@ -38,6 +38,19 @@ The Codex image tool accepts **at most five reference images** (the registration
 
 ## The overworld
 
+### Filling the map and sharpening it
+
+The accepted overworld master is a chain of regional edits on one composition, each recorded in the master's `prompt.txt` and `provenance.json`: crop a region of the current master to a native canvas (`references/local/drafts/fill-crop-<region>.png`), hand-prepare it when placement or scale matters (clear an area to flat lawn, paste a scaled-down building, mark a footprint), let Codex redraw the crop with a preserve-list and a change-list, then paste it back with a feathered border (scratch `assemble.py`, `assemble2.py`; a hard cut where a seam crosses a structure such as the Eads Bridge, and protected rectangles where a prop's ground must not move). Codex keeps what the crop shows and ignores size prose, so scale corrections are done in the prepared crop, not the prompt. Fill scenery between the key scenes follows real St. Louis (Google Places photos under `references/local/places/fill/`, attributions in `references/locations.json`): Forest Park, the medical campus, downtown, Laclede's Landing, the Arch grounds, Soulard and the brewery, the Illinois riverside and Belleville, plus ordinary housing, shops and schools; main scenes stay large, background landmarks sit at roughly their real proportion to the Arch.
+
+The final master is upscaled 4× with Real-ESRGAN before installation (`upscayl-bin`, shipped inside the Upscayl app, model `digital-art-4x`), so `art/generated/overworld-master/image.webp` is 7932 × 3172 for a 1983 × 793 composition; the plate is then a 1.7× Lanczos resize of that. Registration crops and masks are expressed in world units and normalized to the crop, so nothing else changes:
+
+```sh
+/Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin -i composite.png -o composite-x4.png -s 4 \
+  -m /Applications/Upscayl.app/Contents/Resources/models -n digital-art-4x -f png
+npm run art -- process overworld-master --source composite-x4.png --force
+```
+
+
 The overworld master is one Cursor Camp style diorama: an elevated three-quarter view, north up, one continuous ground plane with a thin skyline band, about a dozen large landmarks and connected cream footpaths, so a 32 world px cursor reads as person scale beside an 80 px doorway. A Cursor Camp screenshot (`references/local/cursor-camp/`, logged in `references/locations.json`) is attached only for camera angle and object scale; the style and palette still come from the original daytime illustration. The five district signs and the MonsterCommerce roof sign are the only lettering requested.
 
 Static props are painted into the composition and extracted by registration crop, the same as the interiors: the church door, marquee (canopy and its string of bulbs as separate layers), MonsterCommerce sign and the monster's eye (separate layers, so a blink draws over the purple monster head that forms the O), server rack, two foreground trees (one south of the church, one on the park's lower straight) and the Eads Bridge cut-out (deck, abutments and piers; the steel arches stay in the plate, under a cursor crossing the deck). Square crops use `1024x1024`; the marquee uses a 3:2 crop with `1536x1024` and the bridge a 2.5:1 crop with `1983x793`, because the extraction canvas must keep the crop's aspect ratio. The welcome board, fingerpost, bike, park notice board, moose rig and rider rig are standalone cut-outs placed by `world` rects and `sceneLayouts` (the accepted master paints no bike or notice board, so both are generated against the park at bench scale); they are re-placed with `process <id> --force`, not regenerated, when the master changes. The rider's `travelX` sweeps the lower straight of the lake loop west of the park tree.
@@ -49,7 +62,7 @@ Static props are painted into the composition and extracted by registration crop
 - `manifest.json`: prompts, dependencies, crop registration, reviewed placement and overworld rig layout. `style.txt`: brighter location-aware art direction.
 - `sources/` and `runs/<asset>/<timestamp>/`: ignored original PNGs, prompts and execution logs. Preserve locally for offline reprocessing.
 - `generated/<asset>/image.webp` and `asset.json`: portable retained pixels, source SHA-256, trim offsets, placement and tile inventory. `provenance.json` records the matching generation run or derivation; generated prompts use `<repo>` instead of an absolute machine path.
-- Background plates: **2 image px/world px**, plus `upscale.webp` at 2× source size (1.7× for the lobby), and **512 world px tiles** at **1.25×** and **2×**. The raster is resized before tiling. Upscaling adds pixels, not illustration detail.
+- Background plates: **2 image px/world px**, plus `upscale.webp` at 2× source size (1.7× for the lobby) while the source is smaller than the plate, and **512 world px tiles** at **1.25×** and **2×**. The raster is resized before tiling. Lanczos upscaling adds pixels, not illustration detail; for a sharp plate, upscale the master first with Real-ESRGAN (below) so the plate and every master-derived matte are cut from the same sharp source.
 - Cutouts: existing alpha, 10% magenta key, 2%/98% alpha endpoint clamp, 1 px erosion, tight trim, lossless WebP. Trim offsets remain in the source frame.
 - `moose-rig.json` and `rider-rig.json`: prototype-compatible `{parent,x,y,w,h,pivot}` parts plus file paths. Pivots are normalized within the trimmed part; ancestor transforms operate in master space. Both rigs are placed in the overworld.
 - `generated/composites/`: stitched inspection images and contact sheet; these do not replace separable layers.
