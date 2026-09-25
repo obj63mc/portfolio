@@ -3,7 +3,7 @@
   "scene": "overworld",
   "verdict": "Overworld prop pass: geometry and cut-outs pass every automated check and the assembled-composite inspection; workshop visual acceptance (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) is still open for Joe, so the issue stays ready-for-human.",
   "assetHashes": {
-    "overworld": "9b1e8ebfd8812669f268d78ff55dfcde3d0aacdd5c35ea7cb7be732a030c3298",
+    "overworld": "5c7bba52e9553c7990509571bc92c1e46daaf18cbdb947864a57533919cbace9",
     "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
     "signpost": "67a957f044e3dcfcc94f4d5297e44fd4e7e0b84b9c0f75135e5ea90d2cd615a8",
     "door": "e8961290b6277f51718f413871ee6c3dde848126ede89d2e26898fe1bb0ab3f2",
@@ -18,7 +18,7 @@
     "rider-body": "3cbbf50cb026b7ef0520492dadb572efc11d1cf9bd911cee5fd73fbaecba3c32",
     "rider-rear-wheel": "12c4b992ab0409e81bfd5be3b4b1567d9fbc5fae480a726b03259e169884bbcb",
     "rider-front-wheel": "cc0e685017c5d3caa8c02a5fb0eea15739fa5f1dd20cb33ec92a41ad8d59cacd",
-    "overworld-master": "61ef5759f806f34c7ae195cd226f729b4f808adf9fc7609da89d069a30a71bdf",
+    "overworld-master": "1033c9481905d9dff58e8d36188e17c2848e9a4206dafebf8a959bebd84c6ccf",
     "marquee": "0526a11c1674166550ee9db20557a566b426c345c757b415a99191de4ccafa11",
     "marquee-bulbs": "7127770a122faef82fb9dfa5345f07676331f7f9b1c6c60fdc26be99bb25a4e2",
     "mc-sign": "e9bca260df180870203dea48d292cb8426003ce640d31410ef0a65b497f8399d",
@@ -41,7 +41,8 @@
     "tileFixesRound3": "2026-09-25: nine loops on the round-two master; the park redrawn inside its outline (sign protected), the Eads deck girder removed, the Foundry roofline sharpened (Codex image tool, ImageMagick stitch, 0 pixels changed outside the masks), two ghost trees deleted by lawn_fill; tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok; the rider rig, track, bike and notice board moved onto the redrawn loop's bottom straight and the park tree matte re-traced as the new tree's outer contour",
     "tileFixesRound4": "2026-09-25: nine described spots repaired: three tiles (Codex image tool, ImageMagick stitch inside the outlines, drift-checked) plus deterministic water and forced lawn fills for the park's west end, 0 pixels changed outside the masks and fills; tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
     "tileFixesRound5": "2026-09-25: ten loops on the round-four master; four tiles (Codex image tool, ImageMagick stitch inside the loops, drift-checked) plus cell-cloned lawn fills, smoothed shore fills with a sand rim and a water fill along the island's ring path; tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
-    "tileFixesRound6": "2026-09-25: park redrawn whole (strict-registration rerun after a scaled output was rejected by the drift check), fountain given a single connected ring, Maplewood lawn relaid; ImageMagick stitch inside the outlines, tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok"
+    "tileFixesRound6": "2026-09-25: park redrawn whole (strict-registration rerun after a scaled output was rejected by the drift check), fountain given a single connected ring, Maplewood lawn relaid; ImageMagick stitch inside the outlines, tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
+    "tileFixesRound7": "2026-09-25: the parallel path west of the lake removed and the north-west junction narrowed (park tile, two openings, drift-checked); tiles.py check clean; plate, tiles and five mattes re-derived; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok"
   },
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",

@@ -1,6 +1,6 @@
 {
- "round": 6,
- "base": "rounds/base-6.png",
+ "round": 7,
+ "base": "rounds/base-7.png",
  "tiles": [
   {
    "name": "lake",
@@ -11,48 +11,39 @@
     420
    ],
    "loops": [],
-   "repaintPx": 195201,
-   "edit": true
-  },
-  {
-   "name": "c2r1",
-   "rect": [
-    1000,
-    281,
-    512,
-    512
-   ],
-   "loops": [],
-   "repaintPx": 9213,
-   "edit": true
-  },
-  {
-   "name": "c0r0",
-   "rect": [
-    0,
-    0,
-    512,
-    512
-   ],
-   "loops": [],
-   "repaintPx": 12096,
+   "repaintPx": 11561,
    "edit": true
   }
  ],
  "stamps": [],
- "paints": [],
- "restore": [],
- "blurThreshold": 28,
- "bridges": [
+ "paints": [
   {
-   "from": [
-    858,
-    583
+   "rect": [
+    481,
+    571,
+    501,
+    574
    ],
-   "dir": [
-    0,
-    1
+   "from": [
+    470,
+    570
+   ]
+  },
+  {
+   "rect": [
+    480,
+    575,
+    504,
+    578
+   ],
+   "from": [
+    470,
+    576
    ]
   }
- ]
+ ],
+ "restore": [],
+ "blurThreshold": 28,
+ "bridges": [],
+ "sandfills": []
 }
