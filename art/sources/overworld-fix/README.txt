@@ -38,6 +38,7 @@ A round:
                                          enlarge the tile so the road's continuation is in the reference, or rerun
    A round spec can also carry deterministic ops that run after the pastes: lawnfill / ghostfill / blurfill / forcefill /
    waterfill / shorefill loops (with <kind>Extra rectangles, <kind>Polygons and <kind>Protect), restore rectangles (base
+   (a tile's keepBaseWater, true or a list of master rects, keeps the base wherever base and model are both water),
    pixels put back, or {rect, src} from an earlier round's rounds/base-N.png), tones (a lawn tone shift in a rect or polygon,
    optionally fading out along x, or colour-keyed with from/to so only pixels towards `from` move, e.g. a yard back to lawn), shorebands (a jagged shore path redrawn as one band on the smoothed water edge),
    paints (a flat colour; a polygon paint touches only light pixels unless `all`), stamps (a tree cloned from elsewhere), bridges (a path stub carried on to the

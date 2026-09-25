@@ -1,7 +1,27 @@
 {
- "round": 11,
- "base": "rounds/base-11.png",
+ "round": 12,
+ "base": "rounds/base-12.png",
  "tiles": [
+  {
+   "name": "river",
+   "rect": [
+    1471,
+    0,
+    512,
+    512
+   ],
+   "loops": [],
+   "repaintPx": 5006,
+   "edit": true,
+   "keepBaseWater": [
+    [
+     1720,
+     195,
+     1800,
+     265
+    ]
+   ]
+  },
   {
    "name": "c0r1",
    "rect": [
@@ -11,75 +31,12 @@
     512
    ],
    "loops": [],
-   "repaintPx": 5455,
-   "edit": true
-  },
-  {
-   "name": "c2r0",
-   "rect": [
-    1000,
-    0,
-    512,
-    512
-   ],
-   "loops": [],
-   "repaintPx": 945,
-   "edit": true
-  },
-  {
-   "name": "c2r1",
-   "rect": [
-    1000,
-    281,
-    512,
-    512
-   ],
-   "loops": [],
-   "repaintPx": 1968,
+   "repaintPx": 2569,
    "edit": true
   }
  ],
- "stamps": [
-  {
-   "src": [
-    1325,
-    518,
-    1332,
-    525
-   ],
-   "dst": [
-    1317,
-    526
-   ]
-  }
- ],
- "paints": [
-  {
-   "polygon": [
-    [
-     345,
-     448
-    ],
-    [
-     362,
-     448
-    ],
-    [
-     362,
-     473
-    ],
-    [
-     345,
-     473
-    ]
-   ],
-   "color": [
-    172,
-    202,
-    71
-   ]
-  }
- ],
+ "stamps": [],
+ "paints": [],
  "restore": [],
  "blurThreshold": 28,
  "bridges": [],

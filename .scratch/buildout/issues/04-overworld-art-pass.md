@@ -88,3 +88,4 @@ Joe's review of the fill: an extra blurred road above the Foundry, Busch Stadium
 - 4x upscale of the round-eight master (2026-09-25): `art/sources/overworld-fix/final-4x.webp`, 7932 x 3172, Upscayl `digital-art-4x`, lossless. Not yet installed as the master source.
 - Tile map round nine (2026-09-25): five spots Joe marked on the 4x upscale fixed (north-shore yard and tree, Forest Park bush, west tree cluster, Central West End ballfield, Monster Commerce riverfront); final-4x.webp regenerated from the result.
 - Tile map round eleven (2026-09-25): five more spots from the 4x upscale fixed (campus church tower top, brick building by the highway, Carondelet front walk, Bevo Mill's four sails, a blurry tree north of the park); final-4x.webp regenerated.
+- Tile map round twelve (2026-09-25): Eads Bridge deck lamps made realistic, the riverbank below the pier made natural, and the white house and park shop awnings made consistent; final-4x.webp regenerated.

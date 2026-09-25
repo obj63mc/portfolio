@@ -444,7 +444,7 @@ def prepare(spec_path):
         tile.paste((230, 20, 20), (0, 0), ring); tile.save(f'{T}/t-{name}-marked.png')
         prompt = PRE + '\n'.join(f'{i + 1}. {s}' for i, s in enumerate(t['fixes']))
         open(f'{T}/t-{name}-prompt.txt', 'w').write(prompt + '\n')
-        table.append({'name': name, 'rect': t['rect'], 'loops': t.get('loops', []), 'repaintPx': mask.histogram()[255], 'edit': True, **({'keepBaseWater': True} if t.get('keepBaseWater') else {})})
+        table.append({'name': name, 'rect': t['rect'], 'loops': t.get('loops', []), 'repaintPx': mask.histogram()[255], 'edit': True, **({'keepBaseWater': t['keepBaseWater']} if t.get('keepBaseWater') else {})})
         if os.path.exists(f'{T}/t-{name}-out.png'): os.remove(f'{T}/t-{name}-out.png')
         changed = before(f'{T}/t-{name}.png') != old_crop or before(f'{T}/t-{name}-prompt.txt') != old_prompt
         if changed and os.path.exists(f'{T}/t-{name}-model.png'): os.remove(f'{T}/t-{name}-model.png'); print(name, 'crop or prompt changed: model output dropped')
@@ -572,12 +572,13 @@ def stitch():
         print(n, f'aligned (drift {drift:.1f})')
         layer = f'{T}/.layer-{n}.png'  # the model's pixels, alpha = mask (1 px feather), on a transparent full-size canvas
         maskfile = f'{T}/t-{n}-mask.png'
-        if t.get('keepBaseWater'):  # flat water: where base and model are both water, keep the base so no retinted box shows
+        if t.get('keepBaseWater'):  # flat water: where base and model are both water, keep the base so no retinted box shows (True, or a list of master rects)
             bm = Image.open(base).convert('RGB').crop((x, y, x + w, y + h)); mm = Image.open(out).convert('RGB').resize((w, h), Image.LANCZOS)
             mk = Image.open(maskfile).convert('L'); bp, mp, kp = bm.load(), mm.load(), mk.load()
             for yy in range(h):
                 for xx in range(w):
-                    if kp[xx, yy] and WATER(bp[xx, yy]) and WATER(mp[xx, yy]): kp[xx, yy] = 0
+                    inside = t['keepBaseWater'] is True or any(r[0] <= x + xx < r[2] and r[1] <= y + yy < r[3] for r in t['keepBaseWater'])  # True, or only inside these master rects
+                    if inside and kp[xx, yy] and WATER(bp[xx, yy]) and WATER(mp[xx, yy]): kp[xx, yy] = 0
             mk = mk.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3)); maskfile = f'{T}/.mask-{n}.png'; mk.save(maskfile)
         magick('-size', '1983x793', 'xc:none', '(', out, '-filter', 'Lanczos', '-resize', f'{w}x{h}!', '(', maskfile, '-blur', '0x0.7', ')',
                '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', ')', '-geometry', f'+{x}+{y}', '-compose', 'Over', '-composite', layer)

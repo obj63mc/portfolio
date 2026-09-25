@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "f7c5fbab946ddcdc4ed81351c3c3791682368ae6bf95ed06c1307c15b615a60a",
+  "run": "art/runs/overworld-fix-r12-rivera/2026-09-25T22-30-06.746Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

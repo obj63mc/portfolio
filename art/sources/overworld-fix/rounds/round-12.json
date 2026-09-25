@@ -1,0 +1,97 @@
+{
+ "round": 12,
+ "base": "rounds/base-12.png",
+ "tiles": {
+  "river": {
+   "rect": [
+    1471,
+    0,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     1568,
+     95,
+     1600,
+     128
+    ],
+    [
+     1778,
+     121,
+     1812,
+     157
+    ],
+    [
+     1738,
+     236,
+     1795,
+     262
+    ],
+    [
+     1728,
+     200,
+     1764,
+     237
+    ]
+   ],
+   "protect": [
+    [
+     1720,
+     259,
+     1785,
+     290
+    ],
+    [
+     1764,
+     150,
+     1790,
+     232
+    ]
+   ],
+   "fixes": [
+    "Two small outlines on the Eads Bridge deck (one between the first two arches, one by the third pier): each lamp post is a pale, translucent hook floating over the deck, one with a piece detached. Redraw each as a solid, realistic street lamp standing on the deck by the railing: a straight dark-slate post, a short curved arm and a lantern head with a warm light, matching the dark lamp posts on the west bank. The bridge arches, hangers, deck, railing and the water behind stay as they are.",
+    "Lower outline (the riverbank just below the bridge pier, beside the two small houses): a hard vertical line and a pale haze strip in the water cut against the tree. Redraw the water clean and even up to a natural, gently curved grassy bank with a thin sand edge, and the trees whole on the bank with rounded crowns. The pier above, the houses below and the road stay as they are."
+   ],
+   "keepBaseWater": [
+    [
+     1720,
+     195,
+     1800,
+     265
+    ]
+   ]
+  },
+  "c0r1": {
+   "rect": [
+    0,
+    281,
+    512,
+    512
+   ],
+   "extra": [
+    [
+     266,
+     486,
+     336,
+     507
+    ],
+    [
+     266,
+     618,
+     318,
+     636
+    ]
+   ],
+   "fixes": [
+    "Upper outline (the white house with the yellow scalloped awning round its glassed porch): the awning's scallops are uneven, of different widths and shapes. Redraw the awning so every scallop is identical: one continuous pale-yellow and cream striped awning with evenly spaced, equal scallops along both faces of the porch. The house, its roofs, the porch windows and the parking lot stay as they are.",
+    "Lower outline (the small park shop's three orange awnings): the three awnings differ in size, shape and stripes. Redraw them identical: the same orange-and-cream striped awning, the same size and scallop, one over each window (two on the front wall and one on the side wall, drawn in the side wall's perspective). The shop's walls, windows and roof stay as they are."
+   ]
+  }
+ },
+ "notes": {
+  "lamps": "Joe (4x crop of the Eads Bridge): fix the light posts to look more realistic; the two deck lamps were pale floating hooks (the west-bank lamps and the one at the east edge are solid dark posts and stay)",
+  "riverbank": "Joe: the tree has a hard cut line on the water; a vertical edge and a pale haze strip in the water below the bridge pier; the first stitch cut the model's new bank flat at the area's top edge and left the pale column against the pier, so the area runs up the pier's left side (pier protected) and keeps the base water wherever base and model are both water (the water keep is limited to the bank: across the whole tile it also kept the old pale lamp hooks, which read as water)",
+  "awnings": "Joe: the awnings must be consistent: the white house's yellow scallops all the same, and the park shop's three orange awnings the same"
+ }
+}

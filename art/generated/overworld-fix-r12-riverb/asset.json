@@ -1,0 +1,19 @@
+{
+  "id": "overworld-fix-r12-riverb",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld-fix-r12-riverb/image.webp",
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "e94312d3c3f6da8900d1bbc3e57cf4de5791011379005ccb47d2c0f39ee8d45b"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}
