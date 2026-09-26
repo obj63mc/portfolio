@@ -6,8 +6,8 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 ASSET: slu-chair
 Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.
 
-Target image size: 1024x1024. Preserve the exact framing of the final crop, including objects clipped by its edge.
+Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/slu-chair/2026-09-24T20-50-25.159Z/registration.png
+2. <repo>/art/runs/slu-chair/2026-09-26T01-06-20.252Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

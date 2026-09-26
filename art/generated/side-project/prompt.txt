@@ -4,12 +4,9 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: side-project
-PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved side-project room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:
-side-project-taps: the complete narrow silver row of beer taps with drip tray mounted on the bar, no wood counter or back wall (original 2048x1152 pixels x=470 y=510 w=340 h=170)
-side-project-stool: the ONE white-metal stool with honey wood back and seat that is second from the LEFT in the front bar row. Keep its clipped lower feet as shown; exclude every neighboring stool and the countertop (original 2048x1152 pixels x=430 y=675 w=320 h=477)
-The extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.
+Use the final approved side-project composition unchanged, preserving the room, furniture, palette and framing. No new objects or text.
 
-Target image size: 2048x1152. Fill the image edge to edge.
+Target aspect ratio and size: 2048x1152. Save the tool's native output; never resize it. Fill the image edge to edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
 2. <repo>/art/generated/side-project-master/image.webp

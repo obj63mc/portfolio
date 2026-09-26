@@ -4,12 +4,9 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: brennans
-PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved brennans room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:
-brennans-humidor: the tall glass-front humidor display fitted into the right wall, dark frame and warm shelves with bottles/cigar boxes. Preserve the right/top scene-edge clipping; exclude the cream foreground chair and brick wall (original 2048x1152 pixels x=1696 y=0 w=352 h=1024)
-brennans-chair: the cream molded foreground lounge chair with dark wooden legs facing inward toward the low coffee table. Keep its bottom edge clipping; no rug, table, side stool or sofa (original 2048x1152 pixels x=1446 y=550 w=602 h=602)
-The extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.
+Use the final approved brennans composition unchanged, preserving the room, furniture, palette and framing. No new objects or text.
 
-Target image size: 2048x1152. Fill the image edge to edge.
+Target aspect ratio and size: 2048x1152. Save the tool's native output; never resize it. Fill the image edge to edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
 2. <repo>/art/generated/brennans-master/image.webp

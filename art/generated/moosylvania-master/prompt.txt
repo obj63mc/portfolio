@@ -1,3 +1,9 @@
+MOOSYLVANIA MASTER DERIVATION, 2026-09-26 (round zero, upscaled 4x for the background)
+
+Initial install: the approved Codex master of 2026-09-24 (art/sources/moosylvania-master.png) is the native stitched.png. The plate now derives from the master, as the overworld's does, instead of a Codex clean-plate redraw that had drifted everywhere.
+
+The retained image is art/sources/moosylvania-fix/stitched.png, the native 2048 x 1152 master after the tile-map rounds (round specs in art/sources/moosylvania-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The moosylvania plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
 STYLE: Flat vector illustration matching the supplied original daytime artwork. Broad layered solid-color shapes, clean edges, no outlines, no grain or painted texture, no gradients. Bright and clear palette: light cyan #87CDD5, turquoise #2FB8B0, yellow-green #AFC652, ivory #FFF4D4, sunny golden yellow #FFD34F, fresh leaf green #719B50, small coral accents #DF7554, dark teal #244F55. Use cream for walls and pale surfaces, not as an all-over tint. Brown only where the actual reference contains wood or brick; keep it a minority color. Slightly elevated perspective with consistent scale, one light source upper left. No sepia wash, no muddy olive/brown shadows. No people, animals, text or lettering unless explicitly requested. Nothing photographic.
 
 REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.

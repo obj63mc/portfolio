@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exact tile map for fixing the overworld master.
+"""Exact tile map for fixing a scene's native master: the overworld by default, an interior with SCENE=<id> (slu, foundry, ...).
 
   python3 scripts/art/overworld/tiles.py slice    cut base.png into square tiles (tiles/t-<name>.png), the same tiles of marked.png,
                             a repaint mask per tile filled from the red loops (white = repaint) and a prompt per tile
@@ -16,24 +16,26 @@
                             each tile's mask from the assigned loops, extra rectangles and the lake band, draw the mask
                             outline in red as the tile's -marked.png, and write its prompt
 
-Paths above are in the data folder, art/sources/overworld-fix/; run from anywhere. slice (and loops) served round one
+Paths above are in the scene's data folder, art/sources/<scene>-fix/; run from anywhere. slice (and loops) served round one
 only and read its base.png and marked.png, which now live in git history (see that folder's README.txt).
 
 Cutting, pasting and the outside-the-masks proof are ImageMagick. The deterministic repair ops (lawn, shore, water and road
 fills, paints, tones, bridges, stamps) edit pixels with Pillow, each inside the area it records, and the proof covers them.
 No model touches the stitch.
 """
-import json, os, shutil, subprocess, sys
+import json, math, os, shutil, subprocess, sys
 from collections import deque
 from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
-D = f'{ROOT}/art/sources/overworld-fix'; T = f'{D}/tiles'  # the data; this file is the tool
+SCENE = os.environ.get('SCENE', 'overworld')
+D = f'{ROOT}/art/sources/{SCENE}-fix'; T = f'{D}/tiles'  # the data; this file is the tool
+SIZE = Image.open(f'{D}/stitched.png').size  # the native master: 1983 x 793 for the overworld, 2048 x 1152 for an interior
 BASE, MARKED = f'{D}/base.png', f'{D}/marked.png'
 def magick(*args): subprocess.run(['magick', '-define', 'png:exclude-chunks=date,time', *[str(a) for a in args]], check=True)  # no timestamps: a re-slice is byte-identical
 
 # Square 512 windows: columns at 0, 500, 1000, 1471 and rows at 0, 281 cover 1983 x 793 with small overlaps so
 # every marked defect fits inside one tile with margin. The lake loop needs the whole lake, so it gets one 3:2 tile.
-TILES = [
+OVERWORLD_TILES = [
  {'name': 'c0r0', 'rect': [0, 0, 512, 512],      'loops': [0, 1, 2, 3]},
  {'name': 'c0r1', 'rect': [0, 281, 512, 512],    'loops': []},
  {'name': 'c1r0', 'rect': [500, 0, 512, 512],    'loops': [4], 'extra': [[575, 245, 725, 320]]},
@@ -44,10 +46,15 @@ TILES = [
  {'name': 'c3r1', 'rect': [1471, 281, 512, 512], 'loops': [11, 14]},
  {'name': 'lake', 'rect': [250, 281, 768, 512],  'loops': [], 'band': 'lake'},
 ]
-PRE = ("Edit this tile of a flat-colour isometric illustrated city map. Repaint ONLY the transparent (masked) areas; every other pixel "
+# An interior's standard grid: 512 squares spread evenly from edge to edge (2048 x 1152: four columns, three rows).
+spread = lambda n: [round(i * (n - 512) / max(1, math.ceil(n / 512) - 1)) for i in range(math.ceil(n / 512))]
+TILES = OVERWORLD_TILES if SCENE == 'overworld' else [
+ {'name': f'c{i}r{j}', 'rect': [x, y, 512, 512], 'loops': []} for i, x in enumerate(spread(SIZE[0])) for j, y in enumerate(spread(SIZE[1]))]
+SUBJECT, GROUND, LETTERING = ('isometric illustrated city map', 'lawn, footpath, road or water', '') if SCENE == 'overworld' else ('illustrated room interior', 'wall, floor, ceiling or furniture', ' unless a fix asks for it')
+PRE = (f"Edit this tile of a flat-colour {SUBJECT}. Repaint ONLY the transparent (masked) areas; every other pixel "
        "stays exactly as in the input, same framing, scale, camera, palette and line weight. Image 2 is the same tile with the defects "
-       "circled in red by the art director, for reference only: never draw red marks. Do not add signs or lettering. Where something is "
-       "removed, continue the surrounding lawn, footpath, road or water so it matches the neighbouring pixels. Objects cut by the tile edge "
+       f"circled in red by the art director, for reference only: never draw red marks. Do not add signs or lettering{LETTERING}. Where something is "
+       f"removed, continue the surrounding {GROUND} so it matches the neighbouring pixels. Objects cut by the tile edge "
        "stay cut, the tile is part of a larger image.\n")
 FIXES = {
  'c0r0': ["Far-left loop at the image edge: a blurred, broken tree. Remove it; plain lawn.",
@@ -405,13 +412,13 @@ def detect_master(marked):
 
 def detect(ref):
     """New loops drawn since git ref on the out and marked tiles, saved as master-size masks."""
-    os.makedirs(f'{D}/rounds/detected', exist_ok=True); tiles = {t['name']: t for t in TILES + json.load(open(f'{D}/tilemap.json'))['tiles']}  # the standard grid and this round's tiles
+    os.makedirs(f'{D}/rounds/detected', exist_ok=True); tiles = {t['name']: t for t in TILES + (json.load(open(f'{D}/tilemap.json'))['tiles'] if os.path.exists(f'{D}/tilemap.json') else [])}  # the standard grid and this round's tiles
     found = []
     for name, t in tiles.items():
         for kind in ('out', 'marked'):
             path = f'{T}/t-{name}-{kind}.png'
             if not os.path.exists(path): continue
-            r = subprocess.run(['git', 'show', f'{ref}:art/sources/overworld-fix/tiles/t-{name}-{kind}.png'], capture_output=True, cwd=D)
+            r = subprocess.run(['git', 'show', f'{ref}:{os.path.relpath(T, ROOT)}/t-{name}-{kind}.png'], capture_output=True, cwd=D)
             if r.returncode: continue
             open(f'{T}/.prev.png', 'wb').write(r.stdout)
             now = Image.open(path).convert('RGB'); prev = Image.open(f'{T}/.prev.png').convert('RGB'); os.remove(f'{T}/.prev.png')
@@ -419,16 +426,16 @@ def detect(ref):
             k = 9 if now.width > 1000 else 5
             x, y, w, h = t['rect']; sx, sy = w / now.width, h / now.height
             for f in loop_fill(red_strokes(now, prev).filter(ImageFilter.MaxFilter(k)), k):
-                m = Image.new('L', (1983, 793), 0); m.paste(f.resize((w, h), Image.BILINEAR).point(lambda v: 255 if v > 127 else 0), (x, y))
+                m = Image.new('L', SIZE, 0); m.paste(f.resize((w, h), Image.BILINEAR).point(lambda v: 255 if v > 127 else 0), (x, y))
                 i = len(found); m.save(f'{D}/rounds/detected/{i}.png'); b = m.getbbox()
                 found.append({'id': i, 'from': f't-{name}-{kind}.png', 'bbox': b, 'px': m.histogram()[255]}); print(i, found[-1])
     json.dump(found, open(f'{D}/rounds/detected.json', 'w'), indent=1)
 
 def prepare(spec_path):
     if not os.path.exists(spec_path): spec_path = f'{D}/{spec_path}'  # accept rounds/round-N.json relative to the data
-    spec = json.load(open(spec_path)); table = []
+    spec = json.load(open(spec_path)); table = []; os.makedirs(T, exist_ok=True)  # a scene's first round starts with no tiles/
     for kind in ('lawnfill', 'ghostfill', 'cleanup', 'waterfill', 'forcefill', 'blurfill', 'shorefill', 'pathfill'):  # loops handled without a model: tree-like pixels become lawn (see lawn_fill)
-        m = Image.new('L', (1983, 793), 0)
+        m = Image.new('L', SIZE, 0)
         for i in spec.get(kind, []): m.paste(255, (0, 0), Image.open(f'{D}/rounds/detected/{i}.png').convert('L'))
         d = ImageDraw.Draw(m)
         for r in spec.get(kind + 'Extra', []): d.rectangle(r, fill=255)
@@ -436,7 +443,7 @@ def prepare(spec_path):
         for r in spec.get(kind + 'Protect', []): d.rectangle(r, fill=0)
         m.save(f'{T}/{kind}.png')
         if kind == 'shorefill':  # the shore strip grows past the loop, so its protection is kept as its own mask
-            pm = Image.new('L', (1983, 793), 0); dp = ImageDraw.Draw(pm)
+            pm = Image.new('L', SIZE, 0); dp = ImageDraw.Draw(pm)
             for r in spec.get('shorefillProtect', []): dp.rectangle(r, fill=255)
             pm.save(f'{T}/shorefill-protect.png')
     if spec['base'] == 'stitched.png':  # a round starts from the previous result: keep that base aside, stitch overwrites stitched.png
@@ -448,7 +455,7 @@ def prepare(spec_path):
         before = lambda f: open(f, 'rb').read() if os.path.exists(f) else None
         old_crop, old_prompt = before(f'{T}/t-{name}.png'), before(f'{T}/t-{name}-prompt.txt')
         magick(base, '-crop', f'{w}x{h}+{x}+{y}', '+repage', f'{T}/t-{name}.png')
-        mask = Image.new('L', (1983, 793), 0)
+        mask = Image.new('L', SIZE, 0)
         for i in t.get('loops', []):
             if any(i in spec.get(k, []) for k in ('lawnfill', 'ghostfill', 'waterfill', 'forcefill', 'blurfill', 'shorefill', 'pathfill')): continue
             mask.paste(255, (0, 0), Image.open(f'{D}/rounds/detected/{i}.png').convert('L'))
@@ -461,7 +468,7 @@ def prepare(spec_path):
                 cx, cy = q.popleft()
                 if (cx, cy) in seen or not (bx0 <= cx < bx1 and by0 <= cy < by1) or not PATH(bpx[cx, cy]): continue
                 seen.add((cx, cy)); q.extend(((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)))
-            cm = Image.new('L', (1983, 793), 0); cp = cm.load()
+            cm = Image.new('L', SIZE, 0); cp = cm.load()
             for p_ in seen: cp[p_] = 255
             mask.paste(255, (0, 0), cm.filter(ImageFilter.MaxFilter(2 * c.get('pad', 6) + 1))); print(name, 'corridor from', c['seed'], len(seen), 'path px')
         mask = mask.crop((x, y, x + w, y + h))
@@ -580,7 +587,7 @@ def slice_tiles():
         x, y, w, h = t['rect']; n = t['name']
         magick(BASE, '-crop', f'{w}x{h}+{x}+{y}', '+repage', f'{T}/t-{n}.png')
         magick(MARKED, '-crop', f'{w}x{h}+{x}+{y}', '+repage', f'{T}/t-{n}-marked.png')
-        mask = Image.new('L', (1983, 793), 0)
+        mask = Image.new('L', SIZE, 0)
         for i in t['loops']: mask.paste(255, (0, 0), L[i])
         d = ImageDraw.Draw(mask)
         for r in t.get('extra', []): d.rectangle(r, fill=255)
@@ -614,13 +621,13 @@ def stitch():
                     inside = t['keepBaseWater'] is True or any(r[0] <= x + xx < r[2] and r[1] <= y + yy < r[3] for r in t['keepBaseWater'])  # True, or only inside these master rects
                     if inside and kp[xx, yy] and WATER(bp[xx, yy]) and WATER(mp[xx, yy]): kp[xx, yy] = 0
             mk = mk.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3)); maskfile = f'{T}/.mask-{n}.png'; mk.save(maskfile)
-        magick('-size', '1983x793', 'xc:none', '(', out, '-filter', 'Lanczos', '-resize', f'{w}x{h}!', '(', maskfile, '-blur', '0x0.7', ')',
+        magick('-size', f'{SIZE[0]}x{SIZE[1]}', 'xc:none', '(', out, '-filter', 'Lanczos', '-resize', f'{w}x{h}!', '(', maskfile, '-blur', '0x0.7', ')',
                '-alpha', 'off', '-compose', 'CopyOpacity', '-composite', ')', '-geometry', f'+{x}+{y}', '-compose', 'Over', '-composite', layer)
         if maskfile != f'{T}/t-{n}-mask.png': os.remove(maskfile)
         layers.append(layer); print(n, 'pasted inside its mask')
     magick(base, *layers, '-flatten', '-alpha', 'off', f'{D}/stitched.png')
     for l in layers: os.remove(l)
-    union = Image.new('L', (1983, 793), 0)
+    union = Image.new('L', SIZE, 0)
     for t in tm['tiles']:
         x, y, w, h = t['rect']; union.paste(255, (x, y), Image.open(f"{T}/t-{t['name']}-mask.png").convert('L').filter(ImageFilter.MaxFilter(5)))
     if tm.get('restore'):  # a rectangle put back from the round's base, or {rect, src} from an earlier round's image

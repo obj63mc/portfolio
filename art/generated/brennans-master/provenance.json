@@ -1,6 +1,13 @@
 {
-  "sourceSha256": "916ada8029750b5a6fc8c36006d65415addb9d5b3496d634d2deb7ab0493d206",
-  "run": "art/runs/brennans-master/2026-09-24T20-25-33.550Z",
-  "provider": "codex",
+  "sourceSha256": "d14a62400f6ba6050adfacf4115637c2d7816231453449303f559ce186c0061c",
+  "run": "art/runs/brennans-master/2026-09-26T01-07-05.000Z-upscale-4x",
+  "provider": "derived",
+  "derivation": {
+    "operation": "real-esrgan-4x",
+    "base": "art/sources/brennans-fix/stitched.png (native 2048 x 1152, tile-map round zero)",
+    "baseSha256": "916ada8029750b5a6fc8c36006d65415addb9d5b3496d634d2deb7ab0493d206",
+    "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
+    "script": "scripts/art/overworld/install-master.sh"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

@@ -1,6 +1,13 @@
 {
-  "sourceSha256": "1c13161c7855d3674c085813a58dce888f4ba88fcc122b9080478f37954aef7d",
-  "run": "art/runs/slu-master/2026-09-24T20-25-37.527Z",
-  "provider": "codex",
+  "sourceSha256": "4700c57ff0625a556133db670bb6010c7f9088441259c5aefadb1795cb5cbbf9",
+  "run": "art/runs/slu-master/2026-09-26T01-05-56.000Z-upscale-4x",
+  "provider": "derived",
+  "derivation": {
+    "operation": "real-esrgan-4x",
+    "base": "art/sources/slu-fix/stitched.png (native 2048 x 1152, tile-map round zero)",
+    "baseSha256": "1c13161c7855d3674c085813a58dce888f4ba88fcc122b9080478f37954aef7d",
+    "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
+    "script": "scripts/art/overworld/install-master.sh"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

@@ -1,6 +1,13 @@
 {
-  "sourceSha256": "bfee15e7a259fa1b389e3ef20ed5e54f23200a2cb35c83503df970e42047a4b1",
-  "run": "art/runs/foundry-master/2026-09-24T20-26-54.013Z",
-  "provider": "codex",
+  "sourceSha256": "e432e61b79c361f7f63fae98a45227f68f40d9e3b4e3f7cb81d68f050de4a579",
+  "run": "art/runs/foundry-master/2026-09-26T01-04-34.000Z-upscale-4x",
+  "provider": "derived",
+  "derivation": {
+    "operation": "real-esrgan-4x",
+    "base": "art/sources/foundry-fix/stitched.png (native 2048 x 1152, tile-map round zero)",
+    "baseSha256": "bfee15e7a259fa1b389e3ef20ed5e54f23200a2cb35c83503df970e42047a4b1",
+    "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
+    "script": "scripts/art/overworld/install-master.sh"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

@@ -1,0 +1,56 @@
+{
+  "date": "2026-09-25",
+  "scenes": [
+    "moosylvania",
+    "slu",
+    "foundry",
+    "side-project",
+    "brennans"
+  ],
+  "verdict": "Tooling parity, not art acceptance: each interior now has a committed native master (sources/<scene>-fix/stitched.png) upscaled 4x as <scene>-master, and its plate derives from that master instead of a drifted Codex clean-plate redraw. The props, depth regions, exits and art direction are still issue 05 work.",
+  "nativeMasterHashes": {
+    "moosylvania": "923d095c0197687114520ca7d22b691903278114603a9ef87057b48da5def35f",
+    "slu": "1c13161c7855d3674c085813a58dce888f4ba88fcc122b9080478f37954aef7d",
+    "foundry": "bfee15e7a259fa1b389e3ef20ed5e54f23200a2cb35c83503df970e42047a4b1",
+    "side-project": "2f93703977649f1e494bcd2a35e628dc40a5b815a08d12b1e67d50ebd6f29426",
+    "brennans": "916ada8029750b5a6fc8c36006d65415addb9d5b3496d634d2deb7ab0493d206"
+  },
+  "assetHashes": {
+    "moosylvania": "9398f2e04f611044fd3d3145a4c23c25d05f5c5bc8599afbfba012998e480830",
+    "slu": "94198776a812d1dfc2a1e2c795fd72dd6968abd20c73ceae5095cde22ca621f2",
+    "foundry": "bd6facf7fe3403cadbbbfb1593058cad9e47e93767bdfa37e83c8bbdb11e93d1",
+    "side-project": "411a4c54bce48dee833955e35de8aea0ae57ff8ccb04e125b962aae40ba53324",
+    "brennans": "8d07f5d84468b81d4e55e4cc8d0556841a5ca08ba7961d4dfee4bb7b5b4116e1",
+    "lobby-desk": "3683c38a6ba0b04e36d807919bfd5b8986f34463375780b4cc491c1c296d6229",
+    "lobby-plant": "2df44176ec22730ccd342fadae4f9bf49465b479c9be68e69ccc8681c8515d72",
+    "slu-workstation": "c75bc3a4f97d530f04c53adc7ebdb8369024fb08374056c318108fe855de149f",
+    "slu-diploma": "eeed9bce5c322254dd9061ca225b3d20cb5da91d0b0b7fa9b6428e1ec944306d",
+    "slu-chair": "77aa441aa4cc261048a878fc2565e36933abfb4a16bd63eb71259ea8cfd52e2e",
+    "foundry-projector": "6ce2e0ff29d2d5b2be0512bd20fafa540fbdf07e9d833d6f72bdaf60bc76ebe2",
+    "foundry-seats": "36981cef80fa61dff6be3ecffa580ba8afbbf4d3140bec6bcd2e22111b353957",
+    "side-project-taps": "5db93ea1615a36dedeb0733bb34b3c303b25cb5c89eb57beb37b1e73f1011772",
+    "side-project-stool": "32ca6140bf324c66dbc2665a8e9efffc9d4ba4ddef2301ebc17c63f6c409bb43",
+    "brennans-casework": "cedfa5e8182722f3f8177681fd96b02234954319ce021161bac01123f585a0c7",
+    "brennans-humidor": "38fe42bd5b436e98ab4cf5a87377f4855ff31cd29409842d6f940c90eb0495e7",
+    "brennans-chair": "1f760b75db3f1372767c590a90e2b350f7337383b6fc84c1b1b851464491682b",
+    "moosylvania-master": "f6246ff394a0a407f288bb93b2c36b19c618839dd8886a80dfc5e02706a703a8",
+    "side-project-master": "b03a141cc657dc8204e5c088a94f665972689f7ab116a810d373c555a170a976",
+    "brennans-master": "09e2ef8bedbf916835d54cce8ec7519867a19651d057f8f9c890f68f6ca8b1fb",
+    "foundry-master": "7594d6d23c3bd17d7bb1cb2fbf6a20361688c3ebf8d60b1839cdd0acb3a615c3",
+    "slu-master": "1b8a6d6ebe58e057324a88c467b8dedbc34615f739c8b071134e091fdab2e6ff",
+    "lobby-desk-2": "4623dfdde76a77341a5fd023756afa085468e84724c4bebe1fec27614709dc45",
+    "lobby-desk-3": "44bdbceaffba923ddb93259c845b05e107571aed99f2d1a16e4fac63a60b058f",
+    "lobby-desk-4": "176635bc39526616e38f4c6b52a59a17f1a8d5165ac9ca27f450356b252d8ab8",
+    "brennans-atm": "6556758b0367e5b9c20d83284a203057663c5aa5f1228f7ef123732fb627df7f"
+  },
+  "checks": [
+    "art:validate PASS (50 assets)",
+    "art:check",
+    "art:test 3/3",
+    "svelte-check 0 errors",
+    "build",
+    "npm test 16/16",
+    "overworld reinstall through the scene-aware install-master.sh: every image and tile byte-identical",
+    "foundry identity round: prepare, stitch (0 px changed), tile-manifest, --dry-run, detect-master"
+  ]
+}

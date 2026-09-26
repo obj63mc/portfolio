@@ -4,15 +4,9 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: moosylvania
-PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved moosylvania room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:
-lobby-desk: the large foreground teal computer monitor with pale frame, its stand and base on the nearest right-hand communal desk. Retain only the monitor, not the desk or chair (original 2048x1152 pixels x=1740 y=590 w=240 h=240)
-lobby-desk-2: the teal monitor and its stand on the back-center desk, left of the little yellow angled lamp (original 2048x1152 pixels x=805 y=545 w=130 h=130)
-lobby-desk-3: the teal monitor and its stand on the back-center desk, right of the orange chair (original 2048x1152 pixels x=1000 y=550 w=130 h=130)
-lobby-desk-4: the dark teal monitor and its stand on the left window-side desk, just behind the teal task chair (original 2048x1152 pixels x=410 y=540 w=130 h=130)
-lobby-plant: the entire large broad-leaf plant and white cylindrical planter at the far-left foreground. Keep the left-edge clipping exactly (original 2048x1152 pixels x=0 y=375 w=300 h=690)
-The extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.
+Use the final approved moosylvania composition unchanged, preserving the room, furniture, palette and framing. No new objects or text.
 
-Target image size: 2048x1152. Fill the image edge to edge.
+Target aspect ratio and size: 2048x1152. Save the tool's native output; never resize it. Fill the image edge to edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
 2. <repo>/art/generated/moosylvania-master/image.webp

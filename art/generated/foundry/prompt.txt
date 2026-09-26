@@ -4,12 +4,9 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: foundry
-PRECISE BACKGROUND CLEAN-PLATE EDIT. The final reference is the fully composed, approved foundry room, 2048x1152. Preserve exactly the camera, architecture, palette, furniture positions and all other pixels. Remove ONLY these separable objects, filling their silhouettes with the naturally revealed wall, tabletop or floor behind. Do not move, resize, recolor or redesign ANY remaining object. Do not remove the underlying desks or counters. Do not change scene framing or canvas size. Objects to remove:
-foundry-projector: the charcoal ceiling-mounted projector clipped by the top edge. Keep that exact clipped silhouette and position, no ceiling or wall (original 2048x1152 pixels x=245 y=0 w=250 h=150)
-foundry-seats: ALL cinema chair backs, chairs and attached dine-in tables in this foreground crop as ONE aligned seating layer. Preserve the stair aisle as transparent and remove walls, screen, ceiling and floor visible between the rows. Keep every seat in the exact original pixel position; never rearrange rows (original 2048x1152 pixels x=0 y=384 w=2048 h=768)
-The extracted versions of these exact objects will be composited back at their measured pixel positions; all geometry must remain registered. No text or new objects.
+Use the final approved foundry composition unchanged, preserving the room, furniture, palette and framing. No new objects or text.
 
-Target image size: 2048x1152. Fill the image edge to edge.
+Target aspect ratio and size: 2048x1152. Save the tool's native output; never resize it. Fill the image edge to edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
 2. <repo>/art/generated/foundry-master/image.webp

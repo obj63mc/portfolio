@@ -1,6 +1,13 @@
 {
-  "sourceSha256": "923d095c0197687114520ca7d22b691903278114603a9ef87057b48da5def35f",
-  "run": "art/runs/moosylvania-master/2026-09-24T20-25-29.558Z",
-  "provider": "codex",
+  "sourceSha256": "d4678e75569b4b8e6f8a0108fe8f27c03c16e87b744fe800ef149bbe169c33d4",
+  "run": "art/runs/moosylvania-master/2026-09-26T01-05-21.000Z-upscale-4x",
+  "provider": "derived",
+  "derivation": {
+    "operation": "real-esrgan-4x",
+    "base": "art/sources/moosylvania-fix/stitched.png (native 2048 x 1152, tile-map round zero)",
+    "baseSha256": "923d095c0197687114520ca7d22b691903278114603a9ef87057b48da5def35f",
+    "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
+    "script": "scripts/art/overworld/install-master.sh"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }
