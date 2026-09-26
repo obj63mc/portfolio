@@ -1,5 +1,12 @@
-Overworld fix tile map. base.png is the master Joe marked up (commit 2bfad09, 1983 x 793, native size) and marked.png
-his review image aligned to it; each later round starts from the previous stitched.png, kept aside as rounds/base-N.png.
+Overworld fix tile map. stitched.png is the editable native master (1983 x 793): every fix is made on it, and each
+round starts from it (prepare keeps the previous one aside as rounds/base-N.png).
+
+Kept here: the tools (tiles.py, edit-api.sh, assembly/), every round's spec (rounds/round-N.json, with each fix list),
+stitched.png, and the last round's working set (tilemap.json, rounds/base-14.png, tiles/) so stitch and check rerun.
+Cleaned out 2026-09-25 and recoverable from git: round one's base.png and marked.png, the earlier rounds' bases and
+markups, the detected loops and the earlier tiles, e.g.
+  git show 0cece1a:art/sources/overworld-fix/rounds/base-13.png > base-13.png
+  git show 0cece1a:art/sources/overworld-fix/base.png > base.png      (tiles.py slice and loops, round one only, read it)
 Nothing here is upscaled or run through a model except the tile edits. The paste and its proof are ImageMagick; the
 deterministic repair ops edit pixels with Pillow inside the areas they record, and the proof covers them. The 4x upscale of stitched.png
 is the overworld master itself (art/generated/overworld-master/image.webp), the background's source: see art/README.md.
@@ -12,7 +19,8 @@ tiles/t-<name>-marked.png   the same crop with this round's repaint areas outlin
 tiles/t-<name>-mask.png     white = repaint. Black pixels are never touched.
 tiles/t-<name>-prompt.txt   the fix list for that tile
 tiles/t-<name>-model.png    the model's edited tile (any size; resized back to the tile when stitched)
-tiles/t-<name>-out.png      that tile cut from the stitched result. MARK THE NEXT ROUND ON THESE (red loops).
+tiles/t-<name>-out.png      that tile cut from the stitched result, and the standard 512 px grid, written by stitch.
+                            MARK THE NEXT ROUND ON THESE (red loops). Rerun python3 tiles.py stitch to regenerate them.
 tiles/union.png             every area the last stitch touched (tile masks and each fill, paint, band and stamp); check reads it
 assembly/                   the earlier regional-edit scripts (assemble.py, assemble2.py with regions.json, bridge-restore.py,
                             paste-mc.py) and rivermask.py, which traced the river polygon in src/lib/scenes/overworld.ts
