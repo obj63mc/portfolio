@@ -22,6 +22,7 @@ Before generating, editing, placing or reviewing assets, read [the art workflow]
 - Use actual-location photographs for architecture, furniture and room arrangement, and satellite imagery for relative geography. Keep the highway west of the Arch grounds, Eads Bridge north and the Poplar crossing south. The illustrated map compresses distances; interiors interpret references rather than certify floor plans. Record sources and distinguish verified details from invented portfolio fixtures.
 - Use the original daytime illustration for the bright cyan, green, cream and coral palette. Restrict brown to local wood, brick and upholstery. Cursor Camp informs connected paths and coherent composition; follow this project's illustration style.
 - Establish a complete scene composition before separating its layers. Props share its camera, perspective, scale and lighting. Monitors sit on existing desks, taps rest on the bar, chairs meet the floor and cinema seats face the screen.
+- The overworld background is cut from a 4× Real-ESRGAN upscale of the native stitched master (`art/sources/overworld-fix/stitched.png`), installed as `overworld-master`. Fix defects on the native image, then re-upscale and reinstall; see [the art workflow](art/README.md).
 - Foreground scenery never covers an interactive prop, including a moving rig's full travel. Separate passive scenery from interactive faces when necessary: Brennan's cabinet is scenery, while its unobscured upper glass face is a prop.
 
 ### Creation and review

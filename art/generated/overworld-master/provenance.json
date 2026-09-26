@@ -1,12 +1,13 @@
 {
-  "sourceSha256": "b498a4f2848e9d580a08aecbc1c4c47794988ddef721d346bd009d82027ed7fc",
-  "run": "art/runs/overworld-master/2026-09-25T23-57-22.000Z-tile-fixes-r13",
+  "sourceSha256": "5f860025776728cf981448e508c2d45c793ef64aa6e0f567a3311d8be23e797b",
+  "run": "art/runs/overworld-master/2026-09-26T00-03-22.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
-    "operation": "masked-tile-fixes-round-13",
-    "base": "overworld-master (fill pass, native size)",
-    "edit": "thirteen rounds of overworld-fix tile redraws stitched by ImageMagick inside Joe's loops, the deck band and the park outline; single trees deleted by lawn_fill (see prompt.txt)",
-    "script": "art/sources/overworld-fix/tiles.py stitch"
+    "operation": "real-esrgan-4x",
+    "base": "art/sources/overworld-fix/stitched.png (tile-map round thirteen, native 1983 x 793)",
+    "baseSha256": "b498a4f2848e9d580a08aecbc1c4c47794988ddef721d346bd009d82027ed7fc",
+    "upscaler": "Upscayl 2.15 upscayl-bin, model digital-art-4x, scale 4",
+    "script": "see art/README.md, Filling the map and sharpening it"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

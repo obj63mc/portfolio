@@ -1,13 +1,11 @@
 Overworld fix tile map. base.png is the master Joe marked up (commit 2bfad09, 1983 x 793, native size) and marked.png
 his review image aligned to it; each later round starts from the previous stitched.png, kept aside as rounds/base-N.png.
-Nothing here is upscaled or run through a model except the tile edits and final-4x.webp; the stitch is ImageMagick only.
+Nothing here is upscaled or run through a model except the tile edits; the stitch is ImageMagick only. The 4x upscale of stitched.png
+is the overworld master itself (art/generated/overworld-master/image.webp), the background's source: see art/README.md.
 A repaint area must end well inside its tile and should not cross a road except at a junction: the model lines
 its redraw up with what it can see in the reference, so a road that leaves the area needs its continuation in the
 tile, or it steps at the boundary (tiles.py check finds these).
 
-final-4x.webp               stitched.png upscaled 4x (7932 x 3172) by Real-ESRGAN, Upscayl upscayl-bin, model digital-art-4x;
-                            lossless WebP, pixel-identical to the PNG it was encoded from. Regenerate after every round:
-                            upscayl-bin -i stitched.png -o final-4x.png -s 4 -m <Upscayl>/Resources/models -n digital-art-4x
 tiles/t-<name>.png          exact crop of the round's base (512 px squares; wider tiles where one drawing must stay whole)
 tiles/t-<name>-marked.png   the same crop with this round's repaint areas outlined in red (round 1: Joe's own loops)
 tiles/t-<name>-mask.png     white = repaint. Black pixels are never touched.
@@ -44,5 +42,5 @@ A round:
    roadbands (a road redrawn as one clean band from its fitted edges, flat surface, evenly spaced centre dashes),
    paints (a flat colour; a polygon paint touches only light pixels unless `all`), stamps (a tree cloned from elsewhere), bridges (a path stub carried on to the
    path beyond) and corridors on a tile (the base path's own line handed to the repaint area up to its junction).
-6. install stitched.png as the master: see art/README.md, "Filling the map" (process overworld-master --source ...,
+6. upscale stitched.png 4x and install it as the master: see art/README.md, "Filling the map" (process overworld-master --source ...,
    then regenerate overworld and the five derived mattes, sync the geometry, validate)
