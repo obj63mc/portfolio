@@ -1,7 +1,7 @@
 {
   "date": "2026-09-24",
   "scene": "overworld",
-  "verdict": "Overworld prop pass: geometry and cut-outs pass every automated check and the assembled-composite inspection; workshop visual acceptance (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) is still open for Joe, so the issue stays ready-for-human.",
+  "verdict": "Overworld accepted: geometry and cut-outs pass every automated check and the assembled-composite inspection, and Joe accepted the workshop (art/review.html overlays, phone crop, ambient motion, click reactions, reduced motion) on 2026-09-25; issue 04 resolved.",
   "assetHashes": {
     "overworld": "6445be8cf4ac3794f92351a773b9ca7679e6f4c1888961b670fede84067f952c",
     "welcome": "8defa969510357a5b63c8d53a8af379a017197fa525aea609cd9be22b9482022",
@@ -50,7 +50,8 @@
     "tileFixesRound13": "2026-09-25: road north-east of the Carondelet lake redrawn with evenly spaced dashes (tiles.py roadbands); Bevo Mill redrawn crisp on a 256 px tile; Eads Bridge arches redrawn with one consistent truss arch and hanger structure on every span (piers, deck slab and lamps kept); 0 pixels changed outside the masks; tiles.py check clean; plate, tiles and five mattes re-derived; eads-bridge cutout read on a checkerboard; 4x upscale regenerated; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, production build ok",
     "master4x": "2026-09-25: overworld-master = Real-ESRGAN digital-art-4x upscale of the round-thirteen stitched.png (7932 x 3172); plate, tiles and five mattes re-derived; geometry unchanged; bridge matte over plate read; validate PASS, 16/16 tests, 3/3 art tests, svelte-check 0 errors, art typecheck clean, production build ok",
     "tileFixesRound14": "2026-09-25: glass tower top north-west of the Arch and the brick block's see-through corner redrawn on one 256 px tile; 0 pixels changed outside the mask; tiles.py check clean; upscaled 4x and reinstalled as the master; plate, tiles and five mattes re-derived",
-    "codeReviewSinceD8c73dc": "2026-09-25: standards and spec reviews; river east bank rows 800-900 re-traced, tiles.py check reads the full stitch union, assembly scripts committed, docs corrected, dead code and /tmp files removed, model-attempt folders removed from generated/ and ignored"
+    "codeReviewSinceD8c73dc": "2026-09-25: standards and spec reviews; river east bank rows 800-900 re-traced, tiles.py check reads the full stitch union, assembly scripts committed, docs corrected, dead code and /tmp files removed, model-attempt folders removed from generated/ and ignored",
+    "workshopAcceptance": "2026-09-25: Joe accepted the depth-region, river/deck and phone-frame overlays, phone crop, motion and reduced motion in art/review.html"
   },
   "limitations": [
     "The bike and the park notice board are invented portfolio fixtures generated at bench scale and placed by world rect; the master paints neither.",

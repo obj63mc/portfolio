@@ -6,14 +6,14 @@ Prop art is tightly trimmed because the hit area is the rect; moving props (moos
 
 **Blocked by:** 01 (scene-data module), 02 (pipeline and harness)
 
-**Status:** ready-for-human
+**Status:** resolved
 
 - [x] Overworld tiles at both densities for the whole scene, and the districts read as one continuous world in the harness with no seams
 - [x] Every overworld prop has a trimmed cut-out and its world rect written to scene data; the build-output test still passes
-- [ ] Depth regions written to scene data and accepted in the harness overlay
+- [x] Depth regions written to scene data and accepted in the harness overlay
 - [x] Foreground scenery cut-outs with rects written to scene data, none overlapping a prop rect, and the same pieces painted into the tiles
-- [ ] River mask, deck rect, bridge cut-out, south-end line and Arch reset point written to scene data and accepted in the harness overlay; the deck rect is excluded from the mask
-- [ ] The signpost sits inside the 390 x 844 frame at 0.6 scale centred on the welcome sign, checked in the harness
+- [x] River mask, deck rect, bridge cut-out, south-end line and Arch reset point written to scene data and accepted in the harness overlay; the deck rect is excluded from the mask
+- [x] The signpost sits inside the 390 x 844 frame at 0.6 scale centred on the welcome sign, checked in the harness
 - [x] Moving props delivered as parts with pivots
 - [x] Prompts and judge notes recorded so a scene can be regenerated alone later
 
@@ -119,4 +119,12 @@ Joe's review of the fill: an extra blurred road above the Foundry, Busch Stadium
 **Checks:** art:validate PASS (50 assets), 16/16 tests, 3/3 art tests, svelte-check 0 errors, art typecheck clean, production build ok. Hashes are in `art/reviews/2026-09-24-overworld.json`.
 
 **Still Joe's (why this stays ready-for-human):** the three "in the harness" checklist items: depth regions, river/deck overlay (now including the re-traced east bank), and the 390 x 844 phone frame at 0.6. Serve the repo (`python3 -m http.server 4174 --bind 127.0.0.1`), open `art/review.html`, toggle depth and river geometry, check the phone crop, ambient motion, click reactions and reduced motion, then tick them and resolve the ticket.
+
+### Accepted in the harness, resolved, 2026-09-25
+
+Joe checked the overworld in `art/review.html` on his MacBook Air (served from the moose laptop over Tailscale): the depth-region, river/deck and 390 x 844 phone-frame overlays, the phone crop, motion and reduced motion. "All looks good." The three harness items are ticked and the ticket is resolved.
+
+The depth overlay first showed nothing: its 2 px lines and 20 px labels were in world pixels, so on the 6750 px world shown about 1200 px wide they thinned to a fraction of a screen pixel. `art/review.js` now keeps overlay strokes and labels at a constant on-screen size, tints each depth region, labels the horizon (y 250, x0.85) and foreground (y 2700, x1.0) lines, and draws sample cursors at the spec's depth scale (own cursor 1.25 x 32 px x d); the legend in `review.html` says what to check (commit e0270f5).
+
+Follow-ups owned elsewhere: the deck rect covering open water above and below the sloped deck (ticket 20, noted there), and the cyclist lapping the loop (engine work).
 
