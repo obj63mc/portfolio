@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """Exact tile map for fixing the overworld master.
 
-  python3 tiles.py slice    cut base.png into square tiles (tiles/t-<name>.png), the same tiles of marked.png,
+  python3 scripts/art/overworld/tiles.py slice    cut base.png into square tiles (tiles/t-<name>.png), the same tiles of marked.png,
                             a repaint mask per tile filled from the red loops (white = repaint) and a prompt per tile
-  python3 tiles.py stitch   paste every tiles/t-<name>-model.png back with ImageMagick, only inside its mask, onto the
+  python3 scripts/art/overworld/tiles.py stitch   paste every tiles/t-<name>-model.png back with ImageMagick, only inside its mask, onto the
                             round's base into stitched.png, prove every pixel outside the masks is unchanged, and refresh
                             every tiles/t-<name>-out.png as that tile cut from stitched.png (mark the next round on those)
-  python3 tiles.py detect-master <png>   find the red loops drawn on a copy of the whole stitched master (any size)
-  python3 tiles.py detect <git-ref>      find the red loops drawn since <git-ref> on tiles/*-out.png and *-marked.png,
+  python3 scripts/art/overworld/tiles.py detect-master <png>   find the red loops drawn on a copy of the whole stitched master (any size)
+  python3 scripts/art/overworld/tiles.py detect <git-ref>      find the red loops drawn since <git-ref> on tiles/*-out.png and *-marked.png,
                             fill each one and save it in master pixels under rounds/detected/ (see rounds/detected.json)
-  python3 tiles.py check    after a stitch: every footpath or road of the round's base that reaches a repaint boundary
+  python3 scripts/art/overworld/tiles.py check    after a stitch: every footpath or road of the round's base that reaches a repaint boundary
                             must continue inside it in the result; prints each dead end (a road cut or stepped at a
                             boundary) so the mask can be widened to a junction, the tile enlarged, or the tile rerun
-  python3 tiles.py prepare rounds/round-N.json   cut this round's tiles from its base (the previous stitched.png), build
+  python3 scripts/art/overworld/tiles.py prepare rounds/round-N.json   cut this round's tiles from its base (the previous stitched.png), build
                             each tile's mask from the assigned loops, extra rectangles and the lake band, draw the mask
                             outline in red as the tile's -marked.png, and write its prompt
+
+Paths above are in the data folder, art/sources/overworld-fix/; run from anywhere. slice (and loops) served round one
+only and read its base.png and marked.png, which now live in git history (see that folder's README.txt).
 
 Cutting, pasting and the outside-the-masks proof are ImageMagick. The deterministic repair ops (lawn, shore, water and road
 fills, paints, tones, bridges, stamps) edit pixels with Pillow, each inside the area it records, and the proof covers them.
@@ -23,7 +26,8 @@ No model touches the stitch.
 import json, os, shutil, subprocess, sys
 from collections import deque
 from PIL import Image, ImageDraw, ImageFilter
-D = os.path.dirname(os.path.abspath(__file__)); T = f'{D}/tiles'
+ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+D = f'{ROOT}/art/sources/overworld-fix'; T = f'{D}/tiles'  # the data; this file is the tool
 BASE, MARKED = f'{D}/base.png', f'{D}/marked.png'
 def magick(*args): subprocess.run(['magick', '-define', 'png:exclude-chunks=date,time', *[str(a) for a in args]], check=True)  # no timestamps: a re-slice is byte-identical
 
@@ -401,7 +405,7 @@ def detect_master(marked):
 
 def detect(ref):
     """New loops drawn since git ref on the out and marked tiles, saved as master-size masks."""
-    os.makedirs(f'{D}/rounds/detected', exist_ok=True); tiles = {t['name']: t for t in json.load(open(f'{D}/tilemap.json'))}
+    os.makedirs(f'{D}/rounds/detected', exist_ok=True); tiles = {t['name']: t for t in TILES + json.load(open(f'{D}/tilemap.json'))['tiles']}  # the standard grid and this round's tiles
     found = []
     for name, t in tiles.items():
         for kind in ('out', 'marked'):
@@ -421,6 +425,7 @@ def detect(ref):
     json.dump(found, open(f'{D}/rounds/detected.json', 'w'), indent=1)
 
 def prepare(spec_path):
+    if not os.path.exists(spec_path): spec_path = f'{D}/{spec_path}'  # accept rounds/round-N.json relative to the data
     spec = json.load(open(spec_path)); table = []
     for kind in ('lawnfill', 'ghostfill', 'cleanup', 'waterfill', 'forcefill', 'blurfill', 'shorefill', 'pathfill'):  # loops handled without a model: tree-like pixels become lawn (see lawn_fill)
         m = Image.new('L', (1983, 793), 0)

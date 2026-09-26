@@ -1,8 +1,8 @@
 #!/bin/zsh
 # Run this round's tiles through gpt-image-2.5 Sunburst (the precision-editing variant) at max quality on the Images API
 # edit endpoint, masked so only the marked areas are repainted. Needs OPENAI_API_KEY in the environment; it is never
-# written to a file. Usage: ./edit-api.sh [tile-name ...]      e.g. ./edit-api.sh lake bridge
-set -e; cd "$(dirname "$0")"
+# written to a file. Usage: scripts/art/overworld/edit-api.sh [tile-name ...]   e.g. ... lake bridge
+set -e; cd "$(dirname "$0")/../../../art/sources/overworld-fix"  # the data: tilemap.json and tiles/
 : "${OPENAI_API_KEY:?export OPENAI_API_KEY first}"
 MODEL=${IMAGE_MODEL:-gpt-image-2.5-sunburst}; QUALITY=${IMAGE_QUALITY:-max}
 names=("$@"); [[ ${#names} -eq 0 ]] && names=($(python3 -c "import json; print(' '.join(t['name'] for t in json.load(open('tilemap.json'))['tiles']))"))

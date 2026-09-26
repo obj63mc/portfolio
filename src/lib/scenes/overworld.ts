@@ -200,7 +200,7 @@ export const OVERWORLD: Overworld = {
 	],
 	river: {
 		// West bank north to south, the south edge, then the east bank south to north. Traced by water colour on the
-		// fill-pass master at 50 px rows (art/sources/overworld-fix/assembly/rivermask.py); the rows under the Eads arches
+		// fill-pass master at 50 px rows (scripts/art/overworld/assembly/rivermask.py); the rows under the Eads arches
 		// and the Poplar bridge, the Arch levee riverboat and the Belleville barge dock are read by eye on gridded crops
 		// instead. East bank rows 800 to 900 re-traced on the round-thirteen master (the bank below the east pier).
 		mask: [
