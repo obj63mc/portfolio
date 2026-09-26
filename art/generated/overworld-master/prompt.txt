@@ -1,6 +1,8 @@
-OVERWORLD MASTER DERIVATION, 2026-09-25 (round thirteen, upscaled 4x for the background)
+OVERWORLD MASTER DERIVATION, 2026-09-25 (round fourteen, upscaled 4x for the background)
 
-The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after thirteen tile-map rounds (below), upscaled 4x to 7932 x 3172 by Real-ESRGAN: Upscayl 2.15 upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the five master-derived mattes are cut from this 4x source, so the scrollable background is a downscale-sharp 1.7x Lanczos of it rather than a 6.8x resize of the native master. Every later fix is made on the native stitched.png and re-upscaled.
+Round fourteen (Joe, after round thirteen: this building's top is completely blurred out) redrew the top of the pale blue glass tower behind the Second Empire building north-west of the Arch, and the see-through upper-left corner of the brick block beside it, on one 256 px tile (art/sources/overworld-fix/tiles/t-downtown-prompt.txt, rounds/round-14.json); the mansard roof below was protected. Stitched inside its mask only (0 pixels changed outside); tiles.py check clean.
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (below), upscaled 4x to 7932 x 3172 by Real-ESRGAN: Upscayl 2.15 upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the five master-derived mattes are cut from this 4x source, so the scrollable background is a downscale-sharp 1.7x Lanczos of it rather than a 6.8x resize of the native master. Every later fix is made on the native stitched.png and re-upscaled.
 
 OVERWORLD MASTER DERIVATION, 2026-09-25 (tile-map fixes, round thirteen, native size)
 

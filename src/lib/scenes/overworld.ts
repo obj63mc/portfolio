@@ -200,8 +200,9 @@ export const OVERWORLD: Overworld = {
 	],
 	river: {
 		// West bank north to south, the south edge, then the east bank south to north. Traced by water colour on the
-		// fill-pass master at 50 px rows (scratch rivermask.py); the rows under the Eads arches and the Poplar bridge, the
-		// Arch levee riverboat and the Belleville barge dock are read by eye on gridded crops instead.
+		// fill-pass master at 50 px rows (art/sources/overworld-fix/assembly/rivermask.py); the rows under the Eads arches
+		// and the Poplar bridge, the Arch levee riverboat and the Belleville barge dock are read by eye on gridded crops
+		// instead. East bank rows 800 to 900 re-traced on the round-thirteen master (the bank below the east pier).
 		mask: [
 			{ x: 4870, y: 250 }, { x: 4880, y: 300 }, { x: 4900, y: 350 }, { x: 4960, y: 400 }, { x: 4943, y: 450 },
 			{ x: 4912, y: 500 }, { x: 4880, y: 550 }, { x: 4861, y: 600 }, { x: 4925, y: 650 }, { x: 4990, y: 700 },
@@ -220,13 +221,13 @@ export const OVERWORLD: Overworld = {
 			{ x: 5790, y: 1700 }, { x: 5759, y: 1650 }, { x: 5736, y: 1600 }, { x: 5715, y: 1550 }, { x: 5702, y: 1500 },
 			{ x: 5698, y: 1450 }, { x: 5708, y: 1400 }, { x: 5715, y: 1350 }, { x: 5732, y: 1300 }, { x: 5753, y: 1250 },
 			{ x: 5776, y: 1200 }, { x: 5613, y: 1150 }, { x: 5634, y: 1100 }, { x: 5715, y: 1050 }, { x: 5753, y: 1000 },
-			{ x: 5797, y: 950 }, { x: 5953, y: 900 }, { x: 5994, y: 850 }, { x: 5988, y: 800 }, { x: 5988, y: 750 },
+			{ x: 5797, y: 950 }, { x: 5896, y: 900 }, { x: 5943, y: 850 }, { x: 5926, y: 800 }, { x: 5988, y: 750 },
 			{ x: 5998, y: 700 }, { x: 6000, y: 650 }, { x: 6150, y: 600 }, { x: 6300, y: 550 }, { x: 6320, y: 500 },
 			{ x: 6300, y: 450 }, { x: 6200, y: 400 }, { x: 6080, y: 350 }, { x: 6030, y: 300 }, { x: 6000, y: 250 }
 		],
 		// The Eads deck slopes from (4880, 370) to (6430, 580); the walkable rect spans the water and reaches the east
-		// bank at every row it covers, so stepping off its east edge lands on grass. Its west end also claims a small
-		// wedge of water beside the Arch levee (x 4930 to 5030, y 650 to 700), which stops drift there.
+		// bank at every row it covers, so stepping off its east edge lands on grass. Being a rect round a sloped deck, it
+		// also covers open water above and below the deck band (widest at its west end), where no drift applies.
 		deck: { x: 4880, y: 340, w: 1550, h: 310 },
 		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
 		// Passing under the Poplar Street bridge is the river's end.

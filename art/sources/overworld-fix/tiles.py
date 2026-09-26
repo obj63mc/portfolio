@@ -16,7 +16,9 @@
                             each tile's mask from the assigned loops, extra rectangles and the lake band, draw the mask
                             outline in red as the tile's -marked.png, and write its prompt
 
-Every pixel operation is ImageMagick; this file only decides rectangles and writes masks. No model touches the stitch.
+Cutting, pasting and the outside-the-masks proof are ImageMagick. The deterministic repair ops (lawn, shore, water and road
+fills, paints, tones, bridges, stamps) edit pixels with Pillow, each inside the area it records, and the proof covers them.
+No model touches the stitch.
 """
 import json, os, shutil, subprocess, sys
 from collections import deque
@@ -165,28 +167,6 @@ def clone_fill(img, rep, box, rows, cell=28):
         cloned += len(pts)
     img.paste(fill, (0, 0), rep.filter(ImageFilter.GaussianBlur(1.0))); print(f'   refill: cloned lawn in {len(cells)} cells ({cloned} px), flat {flat} px')
 
-def propagate_fill(img, rep, box, rows):
-    W, H = img.size; px = img.load(); x0, y0, x1, y1 = box
-    pad = 40; bx = (max(0, x0 - pad), max(0, y0 - pad), min(W, x1 + pad), min(H, y1 + pad))
-    crop = img.crop(bx); rc = rep.crop(bx); cw, ch = crop.size; cp, rcp = crop.load(), rc.load()
-    keep = Image.new('L', (cw, ch), 0); kp = keep.load()
-    for y in range(ch):
-        for x in range(cw):
-            if not rcp[x, y] and LAWN_DEEP(cp[x, y]): kp[x, y] = 255
-    prem = Image.composite(crop, Image.new('RGB', (cw, ch), (0, 0, 0)), keep); pp = prem.load()
-    fill = crop.copy(); fp = fill.load(); todo = {(x, y) for y in range(ch) for x in range(cw) if rcp[x, y]}
-    for _ in range(40):
-        pb = prem.filter(ImageFilter.GaussianBlur(5)).load(); kb = keep.filter(ImageFilter.GaussianBlur(5)).load(); done = []
-        for x, y in todo:
-            k = kb[x, y]
-            if k > 60:
-                c = tuple(min(255, int(round(v * 255 / k))) for v in pb[x, y]); fp[x, y] = c; done.append((x, y, c))
-        if not done: break
-        for x, y, c in done: todo.discard((x, y)); pp[x, y] = c; kp[x, y] = 255
-    for x, y in todo:
-        if y + bx[1] in rows: fp[x, y] = rows[y + bx[1]]
-    img.paste(fill, bx, rc.filter(ImageFilter.GaussianBlur(1.5)))
-
 def lawn_fill(img, loop, reach=24, min_px=8, ghost=None, force=False, ghost_only=False, path_only=False):
     """Delete the tree(s) inside one loop. Every tree-like pixel inside the loop goes (not lawn, footpath, road or water;
     with `ghost` set, also lawn-like pixels that far from the loop's surrounding lawn colour and not next to a footpath,
@@ -254,11 +234,8 @@ def check():
     them in the base but does not in the result (within 5 px). Clusters of 4 px or more are printed; a cream wall or
     a shrub's rim can trip the colour test, so read each one at 6x before acting."""
     tm = json.load(open(f'{D}/tilemap.json')); base = Image.open(f"{D}/{tm['base']}").convert('RGB'); out = Image.open(f'{D}/stitched.png').convert('RGB')
-    W, H = base.size; union = Image.new('L', (W, H), 0)
-    for t in tm['tiles']:
-        x, y, w, h = t['rect']; union.paste(255, (x, y), Image.open(f"{T}/t-{t['name']}-mask.png").convert('L'))
-    for kind in ('lawnfill', 'ghostfill', 'cleanup'):
-        if os.path.exists(f'{T}/{kind}.png'): union.paste(255, (0, 0), Image.open(f'{T}/{kind}.png').convert('L').filter(ImageFilter.MaxFilter(9)))
+    W, H = base.size
+    union = Image.open(f'{T}/union.png').convert('L')  # written by stitch: tile masks and every fill, paint, band and stamp
     up, op = union.load(), union.filter(ImageFilter.MaxFilter(7)).load(); bp, sp = base.load(), out.load()
     def cont(px, x, y):
         return any(up[x + dx, y + dy] and HARD(px[x + dx, y + dy]) for dy in range(-5, 6) for dx in range(-5, 6) if 0 <= x + dx < W and 0 <= y + dy < H)
@@ -432,8 +409,8 @@ def detect(ref):
             if not os.path.exists(path): continue
             r = subprocess.run(['git', 'show', f'{ref}:art/sources/overworld-fix/tiles/t-{name}-{kind}.png'], capture_output=True, cwd=D)
             if r.returncode: continue
-            open('/tmp/prev.png', 'wb').write(r.stdout)
-            now = Image.open(path).convert('RGB'); prev = Image.open('/tmp/prev.png').convert('RGB')
+            open(f'{T}/.prev.png', 'wb').write(r.stdout)
+            now = Image.open(path).convert('RGB'); prev = Image.open(f'{T}/.prev.png').convert('RGB'); os.remove(f'{T}/.prev.png')
             if prev.size != now.size: prev = prev.resize(now.size)
             k = 9 if now.width > 1000 else 5
             x, y, w, h = t['rect']; sx, sy = w / now.width, h / now.height
@@ -761,8 +738,9 @@ def stitch():
         img.save(f'{D}/stitched.png')
     # proof: outside the union of masks and lawn fills, stitched.png equals the round's base pixel for pixel
     union.save(f'{T}/.union.png')
-    magick(base, '-alpha', 'off', '(', f'{D}/stitched.png', '-alpha', 'off', ')', '-compose', 'Difference', '-composite', '-threshold', '0', '(', f'{T}/.union.png', '-negate', ')', '-compose', 'Multiply', '-composite', '-format', '%[fx:mean*w*h]', '-write', 'info:/tmp/ae.txt', 'null:')
-    os.remove(f'{T}/.union.png'); print('pixels changed outside the masks:', open('/tmp/ae.txt').read().strip())
+    magick(base, '-alpha', 'off', '(', f'{D}/stitched.png', '-alpha', 'off', ')', '-compose', 'Difference', '-composite', '-threshold', '0', '(', f'{T}/.union.png', '-negate', ')', '-compose', 'Multiply', '-composite', '-format', '%[fx:mean*w*h]', '-write', f'info:{T}/.ae.txt', 'null:')
+    print('pixels changed outside the masks:', open(f'{T}/.ae.txt').read().strip()); os.remove(f'{T}/.ae.txt')
+    os.replace(f'{T}/.union.png', f'{T}/union.png')  # every area this round touched, for check
     done = set()
     for t in tm['tiles']:  # what each tile looks like in the result: mark the next round on these
         x, y, w, h = t['rect']; magick(f'{D}/stitched.png', '-crop', f'{w}x{h}+{x}+{y}', '+repage', f"{T}/t-{t['name']}-out.png"); done.add(t['name'])

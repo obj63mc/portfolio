@@ -1,6 +1,7 @@
 Overworld fix tile map. base.png is the master Joe marked up (commit 2bfad09, 1983 x 793, native size) and marked.png
 his review image aligned to it; each later round starts from the previous stitched.png, kept aside as rounds/base-N.png.
-Nothing here is upscaled or run through a model except the tile edits; the stitch is ImageMagick only. The 4x upscale of stitched.png
+Nothing here is upscaled or run through a model except the tile edits. The paste and its proof are ImageMagick; the
+deterministic repair ops edit pixels with Pillow inside the areas they record, and the proof covers them. The 4x upscale of stitched.png
 is the overworld master itself (art/generated/overworld-master/image.webp), the background's source: see art/README.md.
 A repaint area must end well inside its tile and should not cross a road except at a junction: the model lines
 its redraw up with what it can see in the reference, so a road that leaves the area needs its continuation in the
@@ -12,9 +13,14 @@ tiles/t-<name>-mask.png     white = repaint. Black pixels are never touched.
 tiles/t-<name>-prompt.txt   the fix list for that tile
 tiles/t-<name>-model.png    the model's edited tile (any size; resized back to the tile when stitched)
 tiles/t-<name>-out.png      that tile cut from the stitched result. MARK THE NEXT ROUND ON THESE (red loops).
+tiles/union.png             every area the last stitch touched (tile masks and each fill, paint, band and stamp); check reads it
+assembly/                   the earlier regional-edit scripts (assemble.py, assemble2.py with regions.json, bridge-restore.py,
+                            paste-mc.py) and rivermask.py, which traced the river polygon in src/lib/scenes/overworld.ts
 tilemap.json                this round's tiles: rect in master pixels, loop ids, repaint count
 rounds/round-N.json         the round's spec: base, tiles, which detected loops each tile takes, extra rectangles,
                             polygons, protected rectangles, the lake band, the fix list; loops skipped and why;
+                            a tile's keepBaseWater (true, or a list of master rects) keeps the base wherever base and
+                            model are both water, so no retinted box shows; keep it off where old strokes are water-coloured;
                             lawnfill / ghostfill / cleanup: loops fixed without a model by lawn_fill (a single tree
                             deleted and refilled with the surrounding lawn; ghostfill also takes a half-transparent
                             tree's lawn-like pixels; cleanup runs after a tile's paste), each with optional
@@ -36,7 +42,6 @@ A round:
                                          enlarge the tile so the road's continuation is in the reference, or rerun
    A round spec can also carry deterministic ops that run after the pastes: lawnfill / ghostfill / blurfill / forcefill /
    waterfill / shorefill loops (with <kind>Extra rectangles, <kind>Polygons and <kind>Protect), restore rectangles (base
-   (a tile's keepBaseWater, true or a list of master rects, keeps the base wherever base and model are both water),
    pixels put back, or {rect, src} from an earlier round's rounds/base-N.png), tones (a lawn tone shift in a rect or polygon,
    optionally fading out along x, or colour-keyed with from/to so only pixels towards `from` move, e.g. a yard back to lawn), shorebands (a jagged shore path redrawn as one band on the smoothed water edge),
    roadbands (a road redrawn as one clean band from its fitted edges, flat surface, evenly spaced centre dashes),

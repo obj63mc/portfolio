@@ -85,9 +85,38 @@ Joe's review of the fill: an extra blurred road above the Foundry, Busch Stadium
 - Tile map round six (2026-09-25): the park redrawn whole with one uniform ring (a scaled model output rejected by the drift check, strict-registration rerun kept), the courthouse fountain's double ring replaced by one connected ring, Maplewood lawn relaid.
 - Tile map round seven (2026-09-25): the second path parallel to the lake ring on the west removed and the north-west junction narrowed to one clean join.
 - Tile map round eight (2026-09-25): the outer road west of the park put back (round seven had removed it as a parallel path), with the storefront and shop whole; the ring along the north shore redrawn as one even band on a smoothed water edge.
-- 4x upscale of the round-eight master (2026-09-25): `art/sources/overworld-fix/final-4x.webp`, 7932 x 3172, Upscayl `digital-art-4x`, lossless. Not yet installed as the master source.
+- 4x upscale of the round-eight master (2026-09-25): `art/sources/overworld-fix/final-4x.webp`, 7932 x 3172, Upscayl `digital-art-4x`, lossless. Not yet installed as the master source. (Installed later the same day; see the close-out below.)
 - Tile map round nine (2026-09-25): five spots Joe marked on the 4x upscale fixed (north-shore yard and tree, Forest Park bush, west tree cluster, Central West End ballfield, Monster Commerce riverfront); final-4x.webp regenerated from the result.
 - Tile map round eleven (2026-09-25): five more spots from the 4x upscale fixed (campus church tower top, brick building by the highway, Carondelet front walk, Bevo Mill's four sails, a blurry tree north of the park); final-4x.webp regenerated.
 - Tile map round twelve (2026-09-25): Eads Bridge deck lamps made realistic, the riverbank below the pier made natural, and the white house and park shop awnings made consistent; final-4x.webp regenerated.
 - Tile map round thirteen (2026-09-25): the road north-east of the Carondelet lake redrawn with consistent striping. Bevo Mill and the Eads Bridge arches are prepared as model tiles and wait on Codex, which returned 401 Unauthorized for every run.
 - Tile map round thirteen, completed after the Codex outage (2026-09-25): Bevo Mill redrawn crisp with four even sails, and the Eads Bridge given one consistent truss arch and hanger structure on every span; final-4x.webp regenerated.
+
+### Tile map finished, 4x master installed, close-out, 2026-09-25
+
+**Decision (Joe):** keep the 4x upscale as the overworld background's source. `art/generated/overworld-master/image.webp` is now the native `art/sources/overworld-fix/stitched.png` upscaled 4x by Real-ESRGAN (Upscayl 2.15 `upscayl-bin`, `digital-art-4x`), 7932 x 3172. The plate (13500 x 5400), its tiles at both densities and the five master-derived mattes are cut from it, so the scrollable background is a 1.7x resize of sharp pixels. This reverses the "Real-ESRGAN 4x was dropped" note above: that pass sharpened seam blur, and the seams have since been fixed on the tile map. Fixes are always made on the native `stitched.png`, then re-upscaled and reinstalled (commands in `art/README.md`, "Filling the map and sharpening it"; the decision is also in the Scene artwork section of CLAUDE.md and AGENTS.md). Registration rects are world coordinates, so no geometry moved. The retired lossless preview `final-4x.webp` was removed from `sources/overworld-fix/`.
+
+- Tile map round ten (2026-09-25, missing above): the brick school's hazy roof redrawn crisp, the big tree by the ballfield made whole where round nine's protect edge had cut it, and the haze kept inside round nine's protected boxes cleared.
+- Tile map round fourteen (2026-09-25): the glass tower north-west of the Arch, whose top dissolved into the trees, redrawn whole with the see-through corner of the brick block beside it (one 256 px tile).
+- Tools: `art/sources/overworld-fix/tiles.py` (slice, detect, prepare, stitch with a drift check and a proof that 0 pixels change outside the masks, check for dead-end roads) plus deterministic repair ops for what the model kept getting wrong (lawn, shore, water and path fills, paints, tones, shore and road bands, bridges, stamps). Every round's spec is in `rounds/round-N.json`, every tile prompt in `tiles/`, and the earlier regional-edit scripts in `assembly/`.
+
+**Code review since d8c73dc** (standards and spec, run in parallel):
+
+- Fixed:
+  - The river polygon's east bank at rows 800 to 900 was re-traced. Round twelve's new bank below the east pier had left it 45 to 60 world px on land.
+  - `tiles.py check` now reads every area a stitch touched (`tiles/union.png`), so the edges of all fills, bands and paints are checked. No dead ends were found.
+  - `assembly/` now holds the scripts the docs cite, including `rivermask.py`.
+  - Docs no longer call the stitch ImageMagick-only or say `sources/` is wholly ignored.
+  - Dead code and the fixed `/tmp` files were removed, and the deck comment was corrected.
+  - 33 model-attempt folders were removed from `art/generated/` and are now ignored.
+  - The review record's stale verdict and scene-data line were corrected.
+- Recorded, not changed:
+  - `tiles.py` duplication and its long `stitch()`.
+  - The lake tile is 1050 px wide, kept whole on purpose.
+  - Roughly 130 MB of history from the lossless preview, which was committed per round and later removed. Removing it would mean rewriting pushed history.
+- Engine follow-up: the deck is a rect round a sloped deck. It covers open water above and below the deck band, where no drift applies. A polygon deck belongs to the river-current ticket (20).
+
+**Checks:** art:validate PASS (50 assets), 16/16 tests, 3/3 art tests, svelte-check 0 errors, art typecheck clean, production build ok. Hashes are in `art/reviews/2026-09-24-overworld.json`.
+
+**Still Joe's (why this stays ready-for-human):** the three "in the harness" checklist items: depth regions, river/deck overlay (now including the re-traced east bank), and the 390 x 844 phone frame at 0.6. Serve the repo (`python3 -m http.server 4174 --bind 127.0.0.1`), open `art/review.html`, toggle depth and river geometry, check the phone crop, ambient motion, click reactions and reduced motion, then tick them and resolve the ticket.
+

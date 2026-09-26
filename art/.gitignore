@@ -4,3 +4,4 @@ sources/*
 generated/**/*.png
 generated/.processing-*/
 references/local/
+generated/overworld-fix-*/

@@ -3,17 +3,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
-import type { Rect } from '../src/lib/scenes/types.ts';
+import type { Point, Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
 const overlap = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-const inPolygon = (p: { x: number; y: number }, poly: { x: number; y: number }[]) => {
-	let inside = false;
+const inPolygon = (p: Point, poly: Point[]) => {
+	let hit = false;
 	for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
 		const a = poly[i], b = poly[j];
-		if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+		if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) hit = !hit;
 	}
-	return inside;
+	return hit;
 };
 const world: Rect = { x: 0, y: 0, w: OVERWORLD.w, h: OVERWORLD.h };
 const props = OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props));

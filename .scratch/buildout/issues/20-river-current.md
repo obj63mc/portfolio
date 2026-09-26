@@ -13,3 +13,7 @@ Carries over the pointer-lock prototype's river module.
 - [ ] Reaching the south end resets to the Arch with the fade and the "you" tag; peers see the snap
 - [ ] Drift stops while paused and resumes on resume
 - [ ] The river state machine is a pure module stepped with a fake clock and tested for bank entry, deck exit, under-deck, bank exit and south-end reset (seam 2)
+
+## Comments
+
+- From ticket 04's close-out (2026-09-25): `OVERWORLD.river.deck` is an axis-aligned rect round the sloped Eads deck, so it also covers open water above and below the deck band (widest at its west end), where a cursor would not drift. Consider a deck polygon (or the deck band's top and bottom lines) when implementing drift.

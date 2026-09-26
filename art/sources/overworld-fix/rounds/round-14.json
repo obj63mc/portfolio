@@ -1,0 +1,36 @@
+{
+ "round": 14,
+ "base": "rounds/base-14.png",
+ "tiles": {
+  "downtown": {
+   "rect": [
+    1100,
+    0,
+    256,
+    256
+   ],
+   "extra": [
+    [
+     1203,
+     70,
+     1262,
+     113
+    ]
+   ],
+   "protect": [
+    [
+     1212,
+     111,
+     1262,
+     125
+    ]
+   ],
+   "fixes": [
+    "Outline (behind the grey mansard-roofed building, north-west of the Arch): the top of the pale blue glass office tower dissolves into a blur of trees, and the brick building beside it has a translucent upper-left corner that the trees show through. Redraw the glass tower whole and crisp: a modern office tower with pale blue glass bands and white mullions, its full height visible up to a clean flat roof with a crisp parapet edge. Redraw the brick building's upper-left corner solid: red brick walls with rows of dark windows and a cream roof edge, matching the rest of that building. The trees behind both are solid, rounded crowns against the sky, with no haze or blur. The grey mansard-roofed building, the white tower at the far left and the rest of the brick building stay exactly as they are."
+   ]
+  }
+ },
+ "notes": {
+  "downtown": "Joe (after the round-thirteen run, a loop above the Arch grounds): this building's top is completely blurred out. The pale blue glass tower behind the Second Empire building dissolved into the trees and the brick block beside it had a see-through upper-left corner; one 256 px tile (the model draws it at about four times the master's resolution) redraws both, the mansard roof below protected"
+ }
+}
