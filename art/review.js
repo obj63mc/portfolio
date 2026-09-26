@@ -16,13 +16,22 @@ function drawImage(context,path,r) {
   const image = load(path);
   if (image.complete && image.naturalWidth) context.drawImage(image,r.x,r.y,r.w,r.h);
 }
+// Overlay strokes and labels keep a constant on-screen size: a 6750 px world shown 600 px wide would thin a 2 px line to nothing.
+const k = () => world.width / Math.max(1, world.clientWidth);
 function rect(r,color,label) {
-  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.strokeRect(r.x,r.y,r.w,r.h);
-  ctx.fillStyle=color;ctx.font='20px system-ui';ctx.fillText(label,r.x+5,r.y+24);
+  ctx.strokeStyle=color;ctx.lineWidth=2*k();ctx.strokeRect(r.x,r.y,r.w,r.h);
+  ctx.fillStyle=color;ctx.font=`${13*k()}px system-ui`;ctx.fillText(label,r.x+5*k(),r.y+16*k());
 }
-function line(y,color,x=0,w=scene.w) {
-  ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w,y);ctx.stroke();
+function line(y,color,x=0,w=scene.w,label) {
+  ctx.strokeStyle=color;ctx.lineWidth=3*k();ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w,y);ctx.stroke();
+  if(label){ctx.fillStyle=color;ctx.font=`${12*k()}px system-ui`;ctx.fillText(label,x+5*k(),y-5*k());}
 }
+function cursorShape(context,x,y,height) {
+  const s=height/36;context.fillStyle='#fff';context.strokeStyle='#243830';context.lineWidth=2*s;context.beginPath();
+  context.moveTo(x,y);context.lineTo(x+11*s,y+36*s);context.lineTo(x+18*s,y+23*s);context.lineTo(x+33*s,y+20*s);context.closePath();context.fill();context.stroke();
+}
+// Spec: d runs from 1.0 at foregroundY to 0.85 at horizonY and holds at 0.85 above it; own cursor 1.25 x the 32 px base x d.
+const depthFactor = (d,y) => y<=d.horizonY?0.85:y>=d.foregroundY?1:0.85+0.15*(y-d.horizonY)/(d.foregroundY-d.horizonY);
 function frame() {
   const w=390/.6,h=844/.6;
   return {x:Math.max(0,Math.min(scene.w-w,camera.x-w/2)),y:Math.max(0,Math.min(scene.h-h,camera.y-h/2)),w,h};
@@ -75,10 +84,16 @@ function draw(time) {
     for(const r of instances)drawRig(r.name,{...r.rect,x:r.rect.x+(enabled('motion')&&!enabled('reduced')?Math.sin(time/4000)*r.travelX:0)},time);
   }
   // A cursor silhouette makes occlusion testable between scenery and foreground scenery.
-  ctx.fillStyle='#fff';ctx.strokeStyle='#243830';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(camera.x,camera.y);ctx.lineTo(camera.x+11,camera.y+36);ctx.lineTo(camera.x+18,camera.y+23);ctx.lineTo(camera.x+33,camera.y+20);ctx.closePath();ctx.fill();ctx.stroke();
+  cursorShape(ctx,camera.x,camera.y,36);
   if(enabled('foreground')&&!showMaster)for(const layer of scene.layers.filter(l=>l.kind==='foreground')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
   if(enabled('depth'))for(const [i,d] of scene.depth.entries()){
-    rect(d.rect,'#e8c576',`depth ${i+1}`);line(d.horizonY,'#e8c576',d.rect.x,d.rect.w);line(d.foregroundY,'#a9b866',d.rect.x,d.rect.w);
+    // Tinted so the tiling reads; the horizon should sit at the treeline, and the sample cursors (own size, 1.25 x 32 x d)
+    // should read as person scale beside the buildings from the treeline down to the foreground.
+    ctx.fillStyle=i%2?'#e8c57633':'#7fc3e833';ctx.fillRect(d.rect.x,d.rect.y,d.rect.w,d.rect.h);
+    rect(d.rect,'#e8c576',`depth ${i+1}`);
+    line(d.horizonY,'#e8c576',d.rect.x,d.rect.w,`horizon y ${d.horizonY} · ×0.85`);
+    line(Math.min(d.foregroundY,scene.h-2*k()),'#a9b866',d.rect.x,d.rect.w,`foreground y ${d.foregroundY} · ×1.0`);
+    for(const f of [0.2,0.5,0.8]){const y=d.rect.y+d.rect.h*f;cursorShape(ctx,d.rect.x+d.rect.w/2,y,40*depthFactor(d,y));}
   }
   if(enabled('rects')){
     for(const p of scene.props??[])rect(p.rect,'#31be82',p.id);
@@ -147,3 +162,4 @@ try {
   const requested=new URLSearchParams(location.search).get('scene');if(data.scenes.some(s=>s.id===requested))$('scene').value=requested;
   selectScene();requestAnimationFrame(draw);
 }catch(error){$('status').textContent=`${error.message} Serve this repository over HTTP, then open art/review.html.`;}
+addEventListener('resize',()=>{dirty=true;});
