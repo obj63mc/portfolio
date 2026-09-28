@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "2a7b894bbd859867be2d4d20ed5c0b61a3fbb2e36ef92a3307039dc54e201415",
-  "run": "art/runs/foundry/2026-09-26T01-04-45.630Z",
+  "sourceSha256": "d6495324ffe8f74505190f901af49b93f88b6b10dc6e707672b16df6aa41829f",
+  "run": "art/runs/foundry/2026-09-28T17-28-14.560Z",
   "provider": "derived",
   "derivation": {
     "asset": "foundry-master",
-    "referenceSha256": "7594d6d23c3bd17d7bb1cb2fbf6a20361688c3ebf8d60b1839cdd0acb3a615c3",
+    "referenceSha256": "5fa0afb0f841131757c0920441e82c5da958279559ae866e63126c66622ef520",
     "operation": "copy-composition"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

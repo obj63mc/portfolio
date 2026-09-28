@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-28",
+  "scenes": [
+    "side-project"
+  ],
+  "verdict": "New composition for the Side Project scene (issue 05): the front bar and its navy wall of bottles, nearly face-on, replacing the entry view, because the ten brands are now bottles with their logos on the back bar, not taps. Joe chose Codex draft b1 of six (a gentle three-quarter view; the ten brand bottles in one lit row on the lower shelf; the back bar's cooler with its chalkboard at the right). Round one, painted by construction, repainted the ten labels from the brands' logo files and hung a round Side Project sign with the light-bulb logo on the cooler door, which grants the beer mug. The ten bottles, the sign and the chalkboard are prop mattes and the two counters walk-behind scenery mattes, all measured from the master; scene data measured on it. Checks pass. The opening camera is centred on the sign (Joe). Workshop acceptance of the assembled scene and the walk-behind counters is Joe's, in art/review.html.",
+  "nativeMasterHashes": {
+    "side-project": "1c2ca2adfba9e10f4ab5b8e318395fb6c5894a400d64093479de713baff8af34"
+  },
+  "assetHashes": {
+    "side-project-master": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "side-project": "bf3ca2b1c0c1ca94324f8f6c117a884026bffa18b0d3747f7ae90d322bca6ef5",
+    "side-project-bottle-bacardi": "8989e821fdfdba76ba45fc7d9d467646ca4a2f434fb119761cdb148107712e4e",
+    "side-project-bottle-grey-goose": "264ea8bdef4dd876a5de693aee3748549df63ea1f6bdaee4856a03df61e07c81",
+    "side-project-bottle-new-amsterdam": "0931e77f4c612c2e8c7dc4aaba366b0828ff38e3689735126f37e6fe06b9f7b0",
+    "side-project-bottle-camarena": "7b985cce3f5e4d706b8bafd8459195dea98ee31906207868e952526d3dd68586",
+    "side-project-bottle-barefoot": "b04bd874b34fedc89b8c727fa019d670c4858c83a682a9f025deb7db81dd322f",
+    "side-project-bottle-bud-light": "a7adcc45208c3d184edf7309a941e4b984779ed7023d150b4b68e707d733915a",
+    "side-project-bottle-ej": "81c7b79ee3f9ac37d048334738aa29dc9d3ddd0146749d61160f16a69e311c68",
+    "side-project-bottle-pink-whitney": "9e91b5b24aca1ad5d3f316ff3d0c727232452c0cce5c1d3bc666cb06743995d1",
+    "side-project-bottle-rumchata": "f19657575addd5b76b6b49bff3626aecab8b06a8fd713f13fdb783b5ff512f90",
+    "side-project-bottle-soonhari": "9c9ff2ea4a2f4e485543d55dd176dbbd672fdb955d2c16c553812645f369f40d",
+    "side-project-sign": "bc392fc00c5d238fb1ea53a8cb897204c42a73b9c0af6865d1dcfecf3cfc883e",
+    "side-project-chalkboard": "3f3b2c377fa8d0dc6f6ecde30472042ad6756026fda91ec954ad63f942c420bb",
+    "side-project-front-bar": "ee1cc9e1ae5378849dbb1ec4bead04ab287f13d6dec3390f0c6bfb2f6648ea64",
+    "side-project-back-bar": "5210e8f8c017b8582b72430d767f206360057e43facb91f0c2fe7e65c728564d"
+  },
+  "checks": [
+    "art:validate PASS (72 assets)",
+    "art:check",
+    "art:test (3)",
+    "svelte-check (0 errors)",
+    "production build",
+    "npm test (21/21)"
+  ]
+}

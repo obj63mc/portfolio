@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "5f06910a15933b41c685ac447960c2ed57099d8be4a712d70c6977dc1f10aa91",
-  "run": "art/runs/brennans/2026-09-26T01-07-18.047Z",
+  "sourceSha256": "9fb8fa2f27854b6230ea93d779ddc1622dd4feffd349d5c66c55ed6cd3568d85",
+  "run": "art/runs/brennans/2026-09-28T21-09-22.452Z",
   "provider": "derived",
   "derivation": {
     "asset": "brennans-master",
-    "referenceSha256": "09e2ef8bedbf916835d54cce8ec7519867a19651d057f8f9c890f68f6ca8b1fb",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
     "operation": "copy-composition"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

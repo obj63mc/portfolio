@@ -1,0 +1,77 @@
+{
+ "round": 2,
+ "base": "rounds/base-2.png",
+ "tiles": {
+  "stairs": {
+   "rect": [
+    0,
+    300,
+    640,
+    427
+   ],
+   "polygons": [
+    [
+     [
+      0,
+      528
+     ],
+     [
+      345,
+      424
+     ],
+     [
+      376,
+      420
+     ],
+     [
+      376,
+      470
+     ],
+     [
+      347,
+      474
+     ],
+     [
+      345,
+      530
+     ],
+     [
+      338,
+      549
+     ],
+     [
+      252,
+      526
+     ],
+     [
+      213,
+      563
+     ],
+     [
+      207,
+      597
+     ],
+     [
+      143,
+      587
+     ],
+     [
+      0,
+      581
+     ]
+    ]
+   ],
+   "references": [
+    "art/references/local/drafts/foundry-tier-ends.png",
+    "art/references/local/places/alamo/02.jpg"
+   ],
+   "keep": "the orange wall and its light column, the poster frame, the seats and tray tables, the projector and its ledge railing outside the outline",
+   "fixes": [
+    "Inside the outline are three glowing turquoise light strips on the carpet of a stair aisle in a stadium-seating cinema. Right now each strip sits on top of a dark vertical band, a riser face turned toward the viewer, so the steps look like they climb toward the upper right. That is wrong: the seats beside the aisle stand on tiers that are higher toward the lower left and lower toward the upper right (reference 3 shows the tier ends stepping down toward the upper right), and the stairs must do the same, going DOWN toward the upper right, like the stairs in the lower right of reference 4, whose risers are hidden. Make exactly these 2D changes and nothing else: (1) ERASE every dark riser band directly under and to the lower left of each strip, and every small dark end face where a step meets the wall; the carpet on the lower-left side of each strip continues flat right up to the strip, the same deep teal as the tread around it. (2) KEEP each glowing strip where it is, the same length, width, colour and direction. (3) On the upper-right side of each strip, directly beyond it, paint a narrow band of noticeably darker teal carpet, about as wide as the strip, fading out: the shadow of a step edge dropping down. (4) The dark skirting along the foot of the wall steps DOWN a little at each strip: beyond each strip (toward the upper right) the skirting and the carpet line under it sit a few pixels lower than before the strip. The result reads as a staircase seen from the top, descending away from the viewer toward the upper right: no vertical riser faces are visible anywhere in the outline."
+   ]
+  }
+ },
+ "notes": {
+  "stairs": "Joe (after round one, 2026-09-28): the stairs go the wrong direction, down toward the back of the picture instead of up; the seats at the back stand on higher blocks than the seats in front of them, and the stairs should match. The r4 stairs rose toward the screen, each lit step with its riser facing the viewer; redrawn to descend toward the screen, the risers hidden. The first four Codex attempts (a to d, a 3D description) kept visible risers; the second four (e to h) were given the change as 2D steps (erase the riser bands, keep the strips, shade beyond each strip, step the skirting down); g was kept"
+ }
+}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { readingOrder } from './scenes/index.ts';
 	import type { SubScene } from './scenes/types';
 	import PropCard from './Prop.svelte';
 
@@ -11,7 +12,7 @@
 </svelte:head>
 
 <h1 tabindex="-1">{scene.venue}</h1>
-{#each [...scene.props].sort((a, b) => a.rect.x - b.rect.x) as prop (prop.id)}
+{#each readingOrder(scene) as prop (prop.id)}
 	<PropCard {prop} level={2} />
 {/each}
 <a class="door" href="/#{scene.id}">Back to {scene.district}</a>

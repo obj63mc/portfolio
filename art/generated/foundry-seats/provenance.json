@@ -1,6 +1,0 @@
-{
-  "sourceSha256": "85061d7ec19f12ee9bd60aefb75102fefeba91b91722d6018b9daaab344e917a",
-  "run": "art/runs/foundry-seats/2026-09-24T20-40-31.122Z",
-  "provider": "codex",
-  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
-}

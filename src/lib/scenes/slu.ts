@@ -28,7 +28,9 @@ export const SLU: SubScene = {
 			name: 'Whiteboard',
 			gist: 'basis path testing, the senior project',
 			body: ['A diagram of basis path testing, the senior project.'],
-			rect: { x: 627, y: 0, w: 784, h: 672 }
+			rect: { x: 627, y: 0, w: 784, h: 672 },
+			// Clipped where its lower edge reaches behind the near-left desk's monitor (spec: an irregular prop gets a clip-path).
+			clip: 'polygon(100% 0%, 0% 0%, 0% 100%, 30.36% 100%, 30.36% 96.8%, 30.58% 96.46%, 64.6% 86.33%, 65.43% 87.42%, 65.28% 100%, 100% 100%)'
 		},
 		{
 			id: 'workstation',
@@ -36,7 +38,9 @@ export const SLU: SubScene = {
 			gist: 'Joe’s GitHub',
 			body: ['The code lives on GitHub.'],
 			links: [{ label: 'GitHub', href: 'https://github.com/obj63mc' }],
-			rect: { x: 788, y: 1017, w: 292, h: 243 }
+			rect: { x: 793, y: 1021, w: 284, h: 239 },
+			// Clipped where its top edge reaches behind the near-left desk's back leg and chair base (spec: an irregular prop gets a clip-path).
+			clip: 'polygon(0% 100%, 100% 100%, 100% 3.12%, 74.31% 5.86%, 62.62% 4.85%, 61.76% 0%, 22.53% 0%, 22.52% 21.33%, 21.74% 22.16%, 11.81% 22.91%, 11.74% 0%, 0% 0%)'
 		}
 	],
 	exit: { x: 72, y: 200, w: 353, h: 774 },

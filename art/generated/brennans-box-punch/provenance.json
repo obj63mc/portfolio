@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "6da6ea485cb30b151744079b6fa482bf2e7a30f784940901a0e5372848c1f4f4",
+  "run": "art/runs/brennans-box-punch/2026-09-28T21-09-36.989Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-master",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "3aafe3875a5291cf04805c445da057edfe67348700094dd4e8c9ad45784bf45b",
+  "run": "art/runs/foundry-projector-ledge/2026-09-28T17-28-40.219Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "foundry-master",
+    "referenceSha256": "5fa0afb0f841131757c0920441e82c5da958279559ae866e63126c66622ef520",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

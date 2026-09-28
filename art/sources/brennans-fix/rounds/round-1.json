@@ -1,0 +1,181 @@
+{
+ "round": 1,
+ "base": "rounds/base-1.png",
+ "notes": {
+  "table": "Joe (2026-09-28): add an extra table and chairs so the room has more objects in depth for the cursor to walk in front of and behind. One caf\u00e9 table with two chairs, matching the banquette tables, on the empty floor in front of the humidor, clear of the brand boxes and the door.",
+  "lids": "Joe (2026-09-28): turn the camera toward the humidor, with larger boxes carrying their labels; he supplied new Punch and La Gloria Cubana marks (punch-new.svg, lgc.png). Draft b1 set the five brand boxes on easels at eye level, one per glass door, but drew its own versions of the logos. Each lid is repainted from the brand's logo file (art/references/local/brands/, ignored): the face laid out flat at 8x on the draft lid's own ground and warped onto its quad (the boxes lean back). Cohiba is the wordmark Joe supplied later the same day (cohiba-new.svg, the first file looked off), white with its red O straight on the black lacquer as on the real boxes, in place of the draft's cream label; Macanudo's MONTEGO Y CIA, Partagas's Y NADA MAS and Punch's REAL FABRICA DE TABACOS and EST. 1840 are left off, being under 4 px on a lid, where lettering garbles in the 4x upscale. For the same reason La Gloria Cubana's ring lettering (about 5 px, which the upscale read as LA OLODIA CUBANS) is reset larger along the ring in Futura Condensed ExtraBold, around the feather as on the logo.",
+  "plaque": "The Scandinavian Tobacco Group plaque on the humidor's crown keeps the draft's frame, drawn in the wall's perspective (Joe, 2026-09-28: it should sit in line with the wall like the boxes, not face the viewer). Its face is repainted from STG's own files, warped onto the draft face's quad as the lids are: the lion mark and red bar over the wordmark."
+ },
+ "tiles": {
+  "table": {
+   "rect": [
+    256,
+    429,
+    768,
+    512
+   ],
+   "polygons": [
+    [
+     [
+      322,
+      612
+     ],
+     [
+      792,
+      612
+     ],
+     [
+      806,
+      660
+     ],
+     [
+      806,
+      926
+     ],
+     [
+      322,
+      926
+     ]
+    ]
+   ],
+   "keep": "the humidor with its doors, shelves and boxes, the dark plinth under it, the door frame at the left, the cream lounge chair, the teal rug and the floor outside the outline",
+   "fixes": [
+    "Inside the outline, on the empty gray floor in front of the humidor, add one caf\u00e9 table with two chairs, matching the two tables beside the leather banquette elsewhere in this room: a square table with a flat cream top on a single dark metal pedestal with a round base, a small glass candle holder with a lit tea light and a small green glass vase with a sprig of leaves on the top; two dark wood bistro chairs with caramel leather seats, one on each side of the table, left and right, both turned toward it. Draw them in the room's raised three-quarter view, the same camera as the lounge chair at the right edge of the tile: the table top seen slightly from above, verticals straight. The feet of the chairs and the table base stand on the floor in the lower part of the outline, each with a soft flat shadow on the floor under it. Size: the table top is about as wide as one of the humidor's glass doors; the chair backs are about as tall as the lounge chair's back. The chair backs may overlap the humidor's lower doors but stay below the humidor's middle shelf. Keep the floor's pale sunlight stripes running continuously around and behind the new furniture."
+   ]
+  },
+  "lids": {
+   "rect": [
+    318,
+    354,
+    712,
+    110
+   ],
+   "fixes": [
+    "Painted by construction (no model): see notes and rounds/round-1-paint.py."
+   ],
+   "polygons": [
+    [
+     [
+      325,
+      362
+     ],
+     [
+      433,
+      363
+     ],
+     [
+      443,
+      455
+     ],
+     [
+      333,
+      461
+     ]
+    ],
+    [
+     [
+      485,
+      364
+     ],
+     [
+      588,
+      367
+     ],
+     [
+      598,
+      456
+     ],
+     [
+      493,
+      457
+     ]
+    ],
+    [
+     [
+      638,
+      370
+     ],
+     [
+      734,
+      372
+     ],
+     [
+      745,
+      457
+     ],
+     [
+      645,
+      461
+     ]
+    ],
+    [
+     [
+      785,
+      375
+     ],
+     [
+      878,
+      377
+     ],
+     [
+      890,
+      456
+     ],
+     [
+      793,
+      459
+     ]
+    ],
+    [
+     [
+      930,
+      378
+     ],
+     [
+      1011,
+      379
+     ],
+     [
+      1023,
+      457
+     ],
+     [
+      943,
+      458
+     ]
+    ]
+   ]
+  },
+  "plaque": {
+   "rect": [
+    552,
+    16,
+    272,
+    170
+   ],
+   "fixes": [
+    "Painted by construction (no model): see notes and rounds/round-1-paint.py."
+   ],
+   "polygons": [
+    [
+     [
+      583,
+      45
+     ],
+     [
+      802,
+      67
+     ],
+     [
+      802,
+      172
+     ],
+     [
+      583,
+      155
+     ]
+    ]
+   ]
+  }
+ }
+}

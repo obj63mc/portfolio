@@ -2,8 +2,9 @@
 // front line here; these checks are the spec rules a builder relies on, not the artwork's look.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SUB_SCENES } from '../src/lib/scenes/index.ts';
-import type { Point, Rect } from '../src/lib/scenes/types.ts';
+import { readingOrder, SUB_SCENES } from '../src/lib/scenes/index.ts';
+import { POSTER_LAMPS, PROJECTOR_LENS, SCREEN_SURFACE, SCREEN_TITLES, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
+import type { Point, Prop, Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
 const overlap = (a: Rect, b: Rect) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -22,6 +23,33 @@ const frontY = (front: Point[], x: number) => {
 	for (let i = 1; i < front.length; i++)
 		if (x <= front[i].x) return front[i - 1].y + ((front[i].y - front[i - 1].y) * (x - front[i - 1].x)) / (front[i].x - front[i - 1].x);
 	return front[front.length - 1].y;
+};
+const corners = (r: Rect): Point[] => [{ x: r.x, y: r.y }, { x: r.x + r.w, y: r.y }, { x: r.x + r.w, y: r.y + r.h }, { x: r.x, y: r.y + r.h }];
+// A prop's hit area is its rect, cut to its clip-path when it has one (spec: an irregular prop gets a clip-path).
+const hitArea = (p: Prop): Point[] =>
+	p.clip
+		? [...p.clip.matchAll(/(-?[\d.]+)% (-?[\d.]+)%/g)].map((m) => ({ x: p.rect.x + (+m[1] / 100) * p.rect.w, y: p.rect.y + (+m[2] / 100) * p.rect.h }))
+		: corners(p.rect);
+// World px (pixel centres) inside both polygons.
+const shared = (a: Point[], b: Point[]) => {
+	const box = (ps: Point[]) => ({ x0: Math.min(...ps.map((p) => p.x)), y0: Math.min(...ps.map((p) => p.y)), x1: Math.max(...ps.map((p) => p.x)), y1: Math.max(...ps.map((p) => p.y)) });
+	const ba = box(a), bb = box(b);
+	let n = 0;
+	for (let y = Math.floor(Math.max(ba.y0, bb.y0)); y < Math.max(ba.y1, bb.y1) && y < Math.min(ba.y1, bb.y1); y++)
+		for (let x = Math.floor(Math.max(ba.x0, bb.x0)); x < Math.min(ba.x1, bb.x1); x++)
+			if (inPolygon({ x: x + 0.5, y: y + 0.5 }, a) && inPolygon({ x: x + 0.5, y: y + 0.5 }, b)) n++;
+	return n;
+};
+const lowestFront = (w: { front: Point[] }) => Math.max(...w.front.map((p) => p.y));
+// The outline's outermost point on one side, the lower one where that side is an upright edge.
+const side = (w: { outline: Point[] }, s: 'left' | 'right') =>
+	w.outline.reduce((a, b) => ((s === 'left' ? b.x < a.x : b.x > a.x) || (b.x === a.x && b.y > a.y) ? b : a));
+// Scenery that faces one way: stepping on from that side is stepping on from in front, so the front line runs up that
+// side of the outline, while from the other side (a sofa's or chair's back) it counts as behind.
+const faces = (w: { key: string; outline: Point[]; front: Point[] }, toward: 'left' | 'right') => {
+	const near = side(w, toward), far = side(w, toward === 'left' ? 'right' : 'left');
+	assert.ok(near.y >= frontY(w.front, near.x) - 1, `${w.key}: stepping on from the ${toward} is from in front`);
+	assert.ok(far.y < frontY(w.front, far.x), `${w.key}: stepping on over its back is from behind`);
 };
 const scenes = Object.values(SUB_SCENES);
 
@@ -49,8 +77,20 @@ test('walk-behind scenery: outline inside its cut-out, front line left to right,
 				assert.ok(prop, `${s.id}: ${w.key} lists unknown prop ${id}`);
 				assert.ok(inPolygon(centre(prop.rect), w.outline), `${s.id}: ${id} does not stand on ${w.key}`);
 			}
+			// Every other prop's hit area, and the exit, is clear of it: a cursor hidden behind the scenery never hovers them.
+			for (const p of s.props.filter((p) => !w.props.includes(p.id)))
+				assert.equal(shared(hitArea(p), w.outline), 0, `${s.id}: ${w.key} covers part of ${p.id}`);
+			assert.equal(shared(corners(s.exit), w.outline), 0, `${s.id}: ${w.key} covers part of the exit`);
 		}
 	}
+});
+
+test('walk-behind scenery is drawn back to front: of two overlapping cut-outs, the nearer front line comes later', () => {
+	for (const s of scenes)
+		s.walkBehind.forEach((w, i) => {
+			for (const v of s.walkBehind.slice(i + 1))
+				if (overlap(w.rect, v.rect)) assert.ok(lowestFront(w) <= lowestFront(v), `${s.id}: ${v.key} is drawn after ${w.key}, but is farther back`);
+		});
 });
 
 test('SLU: the lit workstation is used from in front of its desk', () => {
@@ -63,4 +103,99 @@ test('SLU: the lit workstation is used from in front of its desk', () => {
 	// The chair's feet reach below the front line: stepping on there is stepping on from in front.
 	const lowest = desk.outline.reduce((a, b) => (b.y > a.y ? b : a));
 	assert.ok(lowest.y >= frontY(desk.front, lowest.x));
+});
+
+test('Foundry: posters left to right beside the screen, the beam from the ledge to the screen surface', () => {
+	const foundry = SUB_SCENES.foundry;
+	const rect = (id: string) => foundry.props.find((p) => p.id === id)!.rect;
+	const posters = (Object.keys(SCREEN_TITLES) as ScreenTitle[]).map((id) => rect(`poster-${id}`));
+	const screen = rect('screen');
+	// Clicking reads left to right: the three posters in title order, then the screen they play on.
+	posters.forEach((p, i) => assert.ok(i === 0 || p.x >= posters[i - 1].x + posters[i - 1].w, `poster ${i} overlaps the one before`));
+	assert.ok(posters[2].x + posters[2].w < screen.x);
+	// Each picture light hangs at the top of its poster's rect, where the hover light starts.
+	for (const id of Object.keys(POSTER_LAMPS) as ScreenTitle[]) {
+		const lamp = POSTER_LAMPS[id], p = rect(`poster-${id}`);
+		assert.ok(inPolygon(lamp, [{ x: p.x, y: p.y }, { x: p.x + p.w, y: p.y }, { x: p.x + p.w, y: p.y + p.h / 5 }, { x: p.x, y: p.y + p.h / 5 }]), id);
+	}
+	// The timeline's quad is the screen's own surface, and the beam leaves the lens on the ledge, below and left of it.
+	const grown = { x: screen.x - 6, y: screen.y - 6, w: screen.w + 12, h: screen.h + 12 };
+	for (const c of SCREEN_SURFACE) assert.ok(c.x >= grown.x && c.x <= grown.x + grown.w && c.y >= grown.y && c.y <= grown.y + grown.h);
+	const ledge = foundry.walkBehind.find((w) => w.key === 'foundry-projector-ledge')!;
+	assert.ok(inPolygon(PROJECTOR_LENS, ledge.outline));
+	assert.ok(PROJECTOR_LENS.x < screen.x && PROJECTOR_LENS.y > screen.y + screen.h);
+});
+
+test('Side Project: ten bottles in a row on one shelf, the sign on the cooler door grants the beer mug', () => {
+	const bar = SUB_SCENES['side-project'];
+	const bottles = bar.props.filter((p) => p.id.startsWith('bottle-'));
+	assert.equal(bottles.length, 10);
+	// One row, left to right, none overlapping: every bottle stands on the same shelf (bases within a few px).
+	bottles.forEach((b, i) => assert.ok(i === 0 || b.rect.x >= bottles[i - 1].rect.x + bottles[i - 1].rect.w, `${b.id} overlaps the one before`));
+	const bases = bottles.map((b) => b.rect.y + b.rect.h);
+	assert.ok(Math.max(...bases) - Math.min(...bases) < 20, 'bottles stand on one shelf');
+	// The counters stand below the shelf, so no cursor behind the bar is ever over a bottle.
+	for (const w of bar.walkBehind) assert.ok(Math.min(...w.outline.map((p) => p.y)) > Math.max(...bases), w.key);
+	// The beer mug comes from the sign alone, right of the bottles and left of the chalkboard on the same cooler.
+	const sign = bar.props.find((p) => p.id === 'brewery-sign')!;
+	assert.deepEqual(bar.props.filter((p) => p.cosmetic === 5).map((p) => p.id), ['brewery-sign']);
+	const chalkboard = bar.props.find((p) => p.id === 'chalkboard')!;
+	assert.ok(sign.rect.x > bottles[9].rect.x + bottles[9].rect.w && sign.rect.x + sign.rect.w < chalkboard.rect.x);
+});
+
+test("Brennan's: five brand boxes in a row on one humidor shelf, each grants the cigar, the STG plaque above them", () => {
+	const room = SUB_SCENES['brennans'];
+	const boxes = room.props.filter((p) => p.id.startsWith('humidor-'));
+	assert.equal(boxes.length, 5);
+	boxes.forEach((b, i) => assert.ok(i === 0 || b.rect.x >= boxes[i - 1].rect.x + boxes[i - 1].rect.w, `${b.id} overlaps the one before`));
+	const bases = boxes.map((b) => b.rect.y + b.rect.h);
+	assert.ok(Math.max(...bases) - Math.min(...bases) < 20, 'boxes stand on one shelf');
+	// Any box grants the cigar, and nothing else in the room does.
+	assert.deepEqual(room.props.filter((p) => p.cosmetic === 6).map((p) => p.id), boxes.map((b) => b.id));
+	// The plaque hangs on the humidor's crown, above the boxes and within their span.
+	const stg = room.props.find((p) => p.id === 'stg-logo')!;
+	assert.ok(stg.rect.y + stg.rect.h < Math.min(...boxes.map((b) => b.rect.y)));
+	assert.ok(stg.rect.x > boxes[0].rect.x && stg.rect.x + stg.rect.w < boxes[4].rect.x + boxes[4].rect.w);
+	// The furniture stands on the floor below the shelf, so no cursor behind it is ever over a box; the door is left of the humidor.
+	for (const w of room.walkBehind) assert.ok(Math.min(...w.outline.map((p) => p.y)) > Math.max(...bases), w.key);
+	assert.ok(room.exit.x + room.exit.w < boxes[0].rect.x);
+	// The lounge's coffee table is open to the rug on its right: stepping on from there is from in front.
+	faces(room.walkBehind.find((w) => w.key === 'brennans-lounge')!, 'right');
+	assert.ok(!room.props.some((p) => p.id === 'atm'), 'the ATM left Brennan’s for the overworld (buildout ticket 25)');
+});
+
+test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers over the doors, the statue, then the TV', () => {
+	const lobby = SUB_SCENES.moosylvania;
+	assert.ok(lobby.h > lobby.w, 'a tall scene, scrolled up and down the nave');
+	assert.equal(lobby.pushBand, 0.25, "the overworld's push band");
+	for (const s of scenes.filter((s) => s !== lobby)) assert.equal(s.pushBand, undefined, `${s.id} keeps the sub-scene band`);
+	const computers = ['computer-frontend', 'computer-backend', 'computer-cms', 'computer-data'];
+	assert.deepEqual(readingOrder(lobby).map((p) => p.id), [...computers, 'moose-statue', 'meeting-tv'], 'props read top to bottom');
+	const rect = (id: string) => lobby.props.find((p) => p.id === id)!.rect;
+	// Each loft computer stands on its own desk and is used from in front of it, from the chair's side.
+	for (const id of computers) {
+		const desk = lobby.walkBehind.filter((w) => w.props.includes(id));
+		assert.equal(desk.length, 1, id);
+		const c = centre(rect(id));
+		assert.ok(c.y < frontY(desk[0].front, c.x), `${id} stands behind its desk's front feet`);
+	}
+	// The loft is above the front doors beneath it, the front desk's statue below them, the meeting TV nearest.
+	const bottom = (r: Rect) => r.y + r.h;
+	assert.ok(Math.max(...computers.map((id) => bottom(rect(id)))) < lobby.exit.y);
+	assert.ok(bottom(lobby.exit) < rect('moose-statue').y);
+	assert.ok(bottom(rect('moose-statue')) < rect('meeting-tv').y);
+	// The TV hangs on the moose wall and is used from the meeting area in front of it; the statue is on no walk-behind scenery.
+	const wall = lobby.walkBehind.find((w) => w.props.includes('meeting-tv'))!;
+	assert.equal(wall.key, 'moosylvania-moose-wall');
+	const tv = rect('meeting-tv');
+	assert.ok(bottom(tv) <= frontY(wall.front, tv.x + tv.w / 2) + 2);
+	assert.ok(!lobby.walkBehind.some((w) => w.props.includes('moose-statue')));
+	// The round sofas face the coffee table between them, and the armchairs the meeting table.
+	const unit = (key: string) => lobby.walkBehind.find((w) => w.key === `moosylvania-${key}`)!;
+	faces(unit('sofa-left'), 'right');
+	faces(unit('sofa-right'), 'left');
+	faces(unit('meeting-chairs-left'), 'right');
+	faces(unit('meeting-chairs-right'), 'left');
+	// The lobby grants nothing: Moosylvania's antlers come from the moose outside.
+	assert.ok(!lobby.props.some((p) => p.cosmetic));
 });

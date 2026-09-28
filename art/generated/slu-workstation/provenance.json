@@ -1,6 +1,6 @@
 {
-  "sourceSha256": "4f1871124523728cb8ab323d6490050c1ffebf29b3f46624205b3f2b812d55c0",
-  "run": "art/runs/slu-workstation/2026-09-28T15-00-27.790Z",
+  "sourceSha256": "f2702ea6e5055a039ba0897eb962b31373ba1e430100148cd0e53a1339868719",
+  "run": "art/runs/slu-workstation/2026-09-28T23-15-47.241Z",
   "provider": "derived",
   "derivation": {
     "asset": "slu-master",

@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "545aeaa79170cfbb496e4f29a1b5049b761abc608e40eab2be6883185d35d4e1",
+  "run": "art/runs/brennans-box-macanudo/2026-09-28T21-09-34.722Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-master",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

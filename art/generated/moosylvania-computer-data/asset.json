@@ -1,0 +1,68 @@
+{
+  "id": "moosylvania-computer-data",
+  "scene": "moosylvania",
+  "kind": "prop",
+  "file": "moosylvania-computer-data/image.webp",
+  "world": {
+    "x": 1136.41,
+    "y": 995.72,
+    "w": 124.46425531914893,
+    "h": 105.52425
+  },
+  "source": {
+    "w": 188,
+    "h": 160,
+    "sha256": "09fdb8753d1867a0a81f776a967f0c3151370e1609b3fd6ab3bff4beaffd0d23"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 184,
+    "h": 156
+  },
+  "width": 184,
+  "height": 156,
+  "registration": {
+    "asset": "moosylvania-master",
+    "rect": {
+      "x": 1136.41,
+      "y": 995.72,
+      "w": 127.17,
+      "h": 108.23
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        0.9787,
+        0
+      ],
+      [
+        0.9787,
+        0.7
+      ],
+      [
+        0.8723,
+        0.7
+      ],
+      [
+        0.8723,
+        0.975
+      ],
+      [
+        0.0851,
+        0.975
+      ],
+      [
+        0.0851,
+        0.7
+      ],
+      [
+        0,
+        0.7
+      ]
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "bd5bee5c62a21b2596f195c75be418da5c6ee1119512ccceace36dfd9502b1c1",
+  "run": "art/runs/foundry-poster-lorax/2026-09-28T17-28-27.968Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "foundry-master",
+    "referenceSha256": "5fa0afb0f841131757c0920441e82c5da958279559ae866e63126c66622ef520",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

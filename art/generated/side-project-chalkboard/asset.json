@@ -1,0 +1,52 @@
+{
+  "id": "side-project-chalkboard",
+  "scene": "side-project",
+  "kind": "prop",
+  "file": "side-project-chalkboard/image.webp",
+  "world": {
+    "x": 2227.34,
+    "y": 561.11,
+    "w": 289.2684210526316,
+    "h": 261.84967741935486
+  },
+  "source": {
+    "w": 684,
+    "h": 620,
+    "sha256": "f920408201e39504d6cad3133dedbab54ff14d53ea89a26c8626aaf80a760a66"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 680,
+    "h": 616
+  },
+  "width": 680,
+  "height": 616,
+  "registration": {
+    "asset": "side-project-master",
+    "rect": {
+      "x": 2227.34,
+      "y": 561.11,
+      "w": 290.97,
+      "h": 263.55
+    },
+    "mask": [
+      [
+        0,
+        0.0774
+      ],
+      [
+        0.9825,
+        0
+      ],
+      [
+        0.9942,
+        0.9935
+      ],
+      [
+        0,
+        0.9806
+      ]
+    ]
+  }
+}

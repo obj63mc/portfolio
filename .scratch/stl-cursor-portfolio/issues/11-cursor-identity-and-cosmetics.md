@@ -46,7 +46,7 @@ Seven, one worn at a time. Earning a new one replaces the worn one. There is no 
 | 2 | 3D glasses | face | Foundry poster (any of the three) | the poster click that sends the screen op, granted whether or not the op is accepted |
 | 3 | Monster hat: two purple pointed cat-like ears on a band, in the MonsterCommerce mascot's purple | head | MonsterCommerce logo sign; the "O" is the mascot's eyeball | click the eye, it blinks shut |
 | 4 | Antlers | head | The moose, Moosylvania exterior | click |
-| 5 | Beer mug | side | Any tap behind the Side Project bar | click |
+| 5 | Beer mug | side | The Side Project sign on the cooler door | click |
 | 6 | Cigar | side | Any humidor box at Brennan's | click |
 | 7 | Bike helmet | head | Joe's bike, Carondelet Park | click |
 

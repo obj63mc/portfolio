@@ -1,0 +1,65 @@
+{
+ "round": 1,
+ "base": "rounds/base-1.png",
+ "tiles": {
+  "projector": {
+   "rect": [
+    0,
+    470,
+    384,
+    384
+   ],
+   "polygons": [
+    [
+     [
+      45,
+      625
+     ],
+     [
+      120,
+      575
+     ],
+     [
+      215,
+      560
+     ],
+     [
+      240,
+      580
+     ],
+     [
+      268,
+      640
+     ],
+     [
+      280,
+      700
+     ],
+     [
+      250,
+      727
+     ],
+     [
+      147,
+      760
+     ],
+     [
+      100,
+      733
+     ],
+     [
+      45,
+      700
+     ]
+    ]
+   ],
+   "keep": "the ledge box, the front railing bars, the seats, the stairs and the floor outside the outline",
+   "fixes": [
+    "Inside the outline, a charcoal digital cinema projector stands on a raised ledge inside a black railing, but it faces the wrong way: its round lens points to the lower right, along the wall. Redraw the same projector, the same size, colour and style, standing on the same ledge, centred a little further left than now, but rotated 90 degrees counter-clockwise as seen from above. Its long box body now runs from the lower left to the upper right, parallel to the railing bar on its left, and its round lens barrel sticks out of the body's upper-right end, pointing up and to the right, out over the seats toward the cinema screen (off this tile to the upper right). The viewer sees the projector's long lower-right side with its vent slots, its short back end facing the lower left with a small vent grille, and its top. The lens glass faces away from the viewer, so only the side of the dark lens barrel shows. It is switched off: no light, no beam, no glow. Redraw the railing bars behind the projector continuous and straight, the same thickness and colour as the rest of the railing. At the right edge of the outline, the first seat of the nearest row stands just beyond the railing: keep its visible parts exactly, and where the old lens covered its left armrest, complete the armrest in the same charcoal. The rotated projector and its lens do not overlap the seat."
+   ]
+  }
+ },
+ "notes": {
+  "projector": "Joe (after picking revision r4 of draft A1, 2026-09-28): the projector is not pointing at the screen; rotate it 90 degrees counter-clockwise. The lens faced down-right along the screen wall; turned, it faces up-right toward the screen so the beam can be drawn from the lens"
+ }
+}

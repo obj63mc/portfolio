@@ -65,10 +65,10 @@ Eleven looping beds, no bed for the scenery strips (they are where neighbours ov
 | The moose | Antler wobble or a low moose call |
 | MonsterCommerce eye | Blink squelch |
 | Server rack | Fan whir |
-| Side Project taps | Pour |
+| Side Project bottles | Pour |
 | Chalkboard | Chalk tap |
 | Humidor | Wooden lid creak |
-| Brennan's ATM | Receipt printer |
+| ATM (overworld) | Receipt printer |
 | Joe's bike | Bell ding |
 | Ride sign | Wood knock |
 | Bike track | Finish-line beep on a new personal best |
@@ -78,7 +78,9 @@ Eleven looping beds, no bed for the scenery strips (they are where neighbours ov
 | Whiteboard | Marker squeak |
 | Lab workstation | Keyboard clack |
 | Welcome sign, signpost | Wood knock |
-| Lobby desks | Desk tap |
+| Lobby loft computers | Desk tap |
+| Lobby moose statue | Antler wobble or a low moose call |
+| Lobby meeting TV | The video's own sound; the lobby playlist ducks while it plays |
 | Venue doors, exit doors | Door open, door close |
 
 - **Cosmetic earned**: one chime. **Gold cursor**: a short fanfare. A cosmetic applied from another tab plays nothing (persistence ticket).
@@ -135,7 +137,7 @@ Plain Web Audio in one Svelte module beside the persistence rune module, reading
 2026-09-24, wayfinder session (claimed, grilling in progress). Round 1 accepted as recommended except music:
 - Beds: 11 (five districts, the river, five sub-scenes); scenery strips are where neighbours overlap.
 - Crossfade driven by the camera centre: full inside a bed's footprint, fading to zero over about 400 world px, equal power; sub-scene beds swap during the 300 ms scene fade.
-- Prop sounds: soft generic card open/close for every card, a signature sound per prop (moose, eye blink, taps pour, humidor, ATM receipt, bike bell, poster projector, marquee buzz, diploma, marker, keyboard, server fans, signpost knock, doors, personal-best beep), a cosmetic chime and a gold fanfare. Hover is silent.
+- Prop sounds: soft generic card open/close for every card, a signature sound per prop (moose, eye blink, bottle pour, humidor, ATM receipt, bike bell, poster projector, marquee buzz, diploma, marker, keyboard, server fans, signpost knock, doors, personal-best beep), a cosmetic chime and a gold fanfare. Hover is silent.
 - Peers: only the Foundry screen is audible to the whole theatre; everything else a peer does is silent.
 - Toggle: bottom-left cluster (sound, then analytics icon), `<button aria-pressed>` named "Sound", prerendered; edge-push suppressed within 40 px of a control; no slider, no shortcut.
 - Start: no context or fetch while off; the enabling gesture creates and resumes the context; `audioSession.type = 'ambient'` on iOS.

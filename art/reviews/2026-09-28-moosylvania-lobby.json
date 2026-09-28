@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-28",
+  "scenes": [
+    "moosylvania"
+  ],
+  "verdict": "New composition for the Moosylvania lobby (issue 05): one larger, tall scene scrolled like the overworld, looking up the nave of the converted church from above the chancel, replacing the white open office of 2026-09-24 (Joe). Joe chose Codex draft t1 of six (three tall, three diagonal) and asked for a bigger loft of loosely arranged desks and for the meeting area to run to the bottom edge with no steps down; attempt r1a of three, on a 1:2 canvas, is the base. Round one lit two more loft computers so four mark the four stack props, redrew the moose statue, opened both stair tops onto the loft and took the glass fronts off the offices, keeping the glass along the hall (Joe); round two removed railing pieces floating at the stair tops and turned the reception desk to bow out toward the sofas (Joe); round three turned the desk's monitor toward the receptionist's chair and set the statue wholly on the counter (Joe). The four computers, the moose statue and the meeting TV are prop mattes; the loft desks, the lounge armchairs, the moose wall with the TV panel, the round sofas and their table and the meeting furniture are walk-behind mattes traced from the pixels; the six lanterns are foreground mattes, all measured from the master; scene data measured on it (2400 x 4800, the overworld's push band). Checks pass. Workshop acceptance of the assembled scene, the walk-behind feel and the opening camera is Joe's, in art/review.html.",
+  "nativeMasterHashes": {
+    "moosylvania": "d54193442381046980c7bd87bab7334fea4617f7006b44d487e1b23df45fb7d3"
+  },
+  "assetHashes": {
+    "moosylvania-master": "4504376eba3e99358f20b54b8686605225321e0ef43354c9294114e0bc860b38",
+    "moosylvania": "97650f234a8c36d200b8b2ef5b67dc4ffc7d4550059ee73523693ce3e70af4d4",
+    "moosylvania-computer-frontend": "c91286b6bb3ce334e5d7c3c81572ae19917121f0863544eb4632e75614d8f749",
+    "moosylvania-computer-backend": "b6cdfa4aa0a4b4c60a2fae6cacc98e12889852d7b2aed4e077e3cb1c7046f74b",
+    "moosylvania-computer-cms": "412801ff1f7407f04aa492336ea95efe404e91564822ba001e77e1ec5bb3abce",
+    "moosylvania-computer-data": "ddf6713ee224895edeb07862e7da9bf110acb433d80602f34a52c443ed522646",
+    "moosylvania-tv": "a1eaa50853c65d09f834cbd405996de8d6a2bb5ed4b5afc4742540e714051027",
+    "moosylvania-statue": "44035eaaed32e48cf136678fd8120ddddd299a9f1e6a69624f49219ad2d82285",
+    "moosylvania-desk-back": "0043c197211605495e9a37f0f134c769bc7f02df7703d9a72527a1b2df9c28c5",
+    "moosylvania-lounge-chairs": "93ebb71c6dcec2e9754fcc8675bbe8f172329d1a875b4175f0ecbf51972203cd",
+    "moosylvania-desk-right": "52f5bbfd2e8b19e6c442f9a8533080cd2ba050f8c0e7b5e252184f1c16347073",
+    "moosylvania-desk-left": "70ee9b6a813aa3846abb1ba4425bfefa3ff6bb6d4e9e5d478569dd1603e19480",
+    "moosylvania-desk-centre": "241a04957456da20f7bcfb29638fe637233df5ee16a519625a29d4d6a8eb3696",
+    "moosylvania-desk-front": "617adf1cc4a6de47cad7e718d1148606b4014d176f25bc568aa7542bc6f84f0e",
+    "moosylvania-coffee-table": "c58b343813b110dde2b5074365bc3c53eac21d950fe2e4e04fd3566653df46f6",
+    "moosylvania-sofa-left": "6e072e45a937c40b14e69d2d9847431ecadc051ac0ba68d730564a90c52e5e01",
+    "moosylvania-sofa-right": "687f6bdf1cfccc7a583ca01656858095ffddff25cf7e3aaac9ef31a27a5219de",
+    "moosylvania-moose-wall": "a43bd7d5a67d90875e0237638c3cdfca48a103c89f0b80fc837cfc7f0e9d3214",
+    "moosylvania-meeting-sofa": "8c6b7c20fe7491810ed8ad365901a9377ebdaaa2a1f6383f0771c8ac7ecf13e7",
+    "moosylvania-meeting-table": "0c5e38515f131ee53aba1e50e7ed18ea4f1a0bf9bdd696b91695adc498707c11",
+    "moosylvania-meeting-chairs-left": "81a769f6f8b4413ed7fd7ad6802551927154d8262e96ef76f9c03f6eeebfea5c",
+    "moosylvania-meeting-chairs-right": "dcef4d108aa29a0e2bde2314a39720b7a1ace467ae66e881ccc8e305bd88b475",
+    "moosylvania-lanterns-left": "849f5139a4f11f33132d9bd94faaafc77d1e244eb3cd127370c81e981cc251c7",
+    "moosylvania-lanterns-right": "3a2ae7642db455e859baa37254162f46e501af27456e2961246271e85180fcd4"
+  },
+  "checks": [
+    "art:validate PASS (94 assets)",
+    "art:check",
+    "art:test (3)",
+    "svelte-check (0 errors)",
+    "production build",
+    "npm test (23/23)"
+  ]
+}

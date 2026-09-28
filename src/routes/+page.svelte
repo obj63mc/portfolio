@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { OVERWORLD as overworld } from '$lib/scenes/overworld';
-	import type { Prop } from '$lib/scenes/types';
+	import { leftToRight } from '$lib/scenes/index';
 	import PropCard from '$lib/Prop.svelte';
-
-	const leftToRight = (props: Prop[]) => [...props].sort((a, b) => a.rect.x - b.rect.x);
 </script>
 
 <svelte:head>

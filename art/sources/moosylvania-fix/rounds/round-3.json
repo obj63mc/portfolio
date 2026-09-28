@@ -1,0 +1,60 @@
+{
+ "round": 3,
+ "base": "rounds/base-3.png",
+ "notes": {
+  "desk": "Joe (2026-09-28, on round two): the front desk's computer monitor faces the wrong way, and the moose statue hangs off the desk. The receptionist sits inside the desk's curve facing the sofas, so the monitor is turned to face the chair (and this camera), and the statue is set wholly on the counter at the desk's right-hand end."
+ },
+ "tiles": {
+  "desk3": {
+   "rect": [
+    360,
+    860,
+    384,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      420,
+      980
+     ],
+     [
+      484,
+      980
+     ],
+     [
+      484,
+      1016
+     ],
+     [
+      420,
+      1016
+     ]
+    ],
+    [
+     [
+      592,
+      926
+     ],
+     [
+      664,
+      926
+     ],
+     [
+      664,
+      1014
+     ],
+     [
+      592,
+      1014
+     ]
+    ]
+   ],
+   "keep": "the curved walnut reception desk with its counter and work surface, the dark desk chair, the desk lamp, the red sofas, the frosted glass wall's top frame and the floor outside the outlines",
+   "fixes": [
+    "Inside the left outline, the reception desk's monitor shows its back to the viewer; turn it round so it faces the desk chair just below it, where the receptionist sits: its screen, a plain dark blue-grey rectangle with a thin black bezel and no picture or text, faces the viewer and the chair, with a short stand on the work surface behind it. Same size and place.",
+    "Inside the right outline, the white moose statue hangs off the end of the desk. Set it wholly on the counter top at the desk's right-hand end: its low white base rests flat on the walnut counter, and its base, legs and body stay within the desk's end, nothing overhanging the floor; its antlers may rise above the counter. The same glossy white bull moose statue, a little smaller if it needs to be to fit. Where the statue used to overhang, draw the desk's end and the honey plank floor as around it."
+   ]
+  }
+ }
+}

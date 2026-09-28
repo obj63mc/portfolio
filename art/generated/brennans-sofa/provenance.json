@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "5cc025b1fdd802f486ca4219cd848e89b00641935d53b5a09207b9b4180d9b46",
+  "run": "art/runs/brennans-sofa/2026-09-28T21-09-43.451Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-master",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

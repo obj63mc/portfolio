@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "1f1aa42eb38ebc7e6df26a70b79128581cfd3ae23722782ed1ea1abdb3ee59bd",
+  "run": "art/runs/brennans-lounge/2026-09-28T21-09-40.816Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-master",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

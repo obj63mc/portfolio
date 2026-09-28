@@ -1,6 +1,6 @@
 # 11: Sub-scene handoff: door fade, exit door, browser back, focus
 
-**What to build:** Clicking a venue door (a real link, intercepted client-side so middle-click and crawlers still work) plays a 300 ms fade, places the cursor just inside the sub-scene's door with the camera centred on it, and moves focus to the sub-scene's `<h1>`. The exit door or the browser back button returns the visitor to the overworld at that venue's door, camera centred, focus on the door link. The lock survives the hop because its element lives in the shared layout; pause and Join state carry across. The push band switches to 12 percent inside a sub-scene.
+**What to build:** Clicking a venue door (a real link, intercepted client-side so middle-click and crawlers still work) plays a 300 ms fade, places the cursor just inside the sub-scene's door with the camera centred on it, and moves focus to the sub-scene's `<h1>`. The exit door or the browser back button returns the visitor to the overworld at that venue's door, camera centred, focus on the door link. The lock survives the hop because its element lives in the shared layout; pause and Join state carry across. The push band switches to 12 percent inside a sub-scene, except the Moosylvania lobby, which keeps the overworld's 25 percent.
 
 **Blocked by:** 03 (all five sub-scenes), 09 (Join and lock in the layout)
 

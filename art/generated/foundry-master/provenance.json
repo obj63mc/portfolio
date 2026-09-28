@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "e432e61b79c361f7f63fae98a45227f68f40d9e3b4e3f7cb81d68f050de4a579",
-  "run": "art/runs/foundry-master/2026-09-26T01-04-34.000Z-upscale-4x",
+  "sourceSha256": "4cb18726296fc30aed109df546fb9b93886f54e2abbb0b0db6456000b577333d",
+  "run": "art/runs/foundry-master/2026-09-28T17-28-00.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/foundry-fix/stitched.png (native 2048 x 1152, tile-map round zero)",
-    "baseSha256": "bfee15e7a259fa1b389e3ef20ed5e54f23200a2cb35c83503df970e42047a4b1",
+    "base": "art/sources/foundry-fix/stitched.png (native 1672 x 941, tile-map round 3)",
+    "baseSha256": "cf0b3d3f237f7f85a86759b471de1297a9f88d3490d4ae350c9766fe67f7bce7",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
     "script": "scripts/art/overworld/install-master.sh"
   },

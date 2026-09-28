@@ -29,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 SCENE = os.environ.get('SCENE', 'overworld')
 D = f'{ROOT}/art/sources/{SCENE}-fix'; T = f'{D}/tiles'  # the data; this file is the tool
-SIZE = Image.open(f'{D}/stitched.png').size  # the native master: 1983 x 793 for the overworld, 2048 x 1152 for an interior, 1672 x 941 for SLU
+SIZE = Image.open(f'{D}/stitched.png').size  # the native master: 1983 x 793 for the overworld, 1672 x 941 for SLU, the Foundry, Side Project and Brennan's, 887 x 1774 for the Moosylvania lobby
 BASE, MARKED = f'{D}/base.png', f'{D}/marked.png'
 def magick(*args): subprocess.run(['magick', '-define', 'png:exclude-chunks=date,time', *[str(a) for a in args]], check=True)  # no timestamps: a re-slice is byte-identical
 
@@ -46,7 +46,7 @@ OVERWORLD_TILES = [
  {'name': 'c3r1', 'rect': [1471, 281, 512, 512], 'loops': [11, 14]},
  {'name': 'lake', 'rect': [250, 281, 768, 512],  'loops': [], 'band': 'lake'},
 ]
-# An interior's standard grid: 512 squares spread evenly from edge to edge (2048 x 1152: four columns, three rows; 1672 x 941: four columns, two rows).
+# An interior's standard grid: 512 squares spread evenly from edge to edge (1672 x 941: four columns, two rows; 887 x 1774: two columns, four rows).
 spread = lambda n: [round(i * (n - 512) / max(1, math.ceil(n / 512) - 1)) for i in range(math.ceil(n / 512))]
 TILES = OVERWORLD_TILES if SCENE == 'overworld' else [
  {'name': f'c{i}r{j}', 'rect': [x, y, 512, 512], 'loops': []} for i, x in enumerate(spread(SIZE[0])) for j, y in enumerate(spread(SIZE[1]))]

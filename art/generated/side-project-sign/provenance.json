@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "b7594c32e0352dde68fbcd69dbf627041409cc9fd5fe46553eda752eebe6dd49",
+  "run": "art/runs/side-project-sign/2026-09-28T19-03-15.381Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "side-project-master",
+    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

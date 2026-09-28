@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-28",
+  "scenes": [
+    "brennans"
+  ],
+  "verdict": "New composition for Brennan's (issue 05): the camera faces the humidor, replacing the view down the centre aisle, so the five cigar brand boxes are large and labelled; the ATM leaves the room for the overworld (Joe). Joe chose Codex draft b1 of six (a gentle three-quarter view nearly face-on to the humidor wall; the five boxes on easels at eye level, one per glass door; the STG plaque on the crown). Round one added a café table with two chairs in front of the humidor (a Codex tile) for more furniture to walk in front of and behind, and, painted by construction, repainted the five lids from the brands' logo files (Cohiba, Punch and La Gloria Cubana from Joe's files; La Gloria Cubana's ring lettering reset larger to survive the upscale) and the plaque's face, kept in the wall's perspective (Joe). The five boxes and the plaque are prop mattes, the café set and the lounge walk-behind scenery mattes traced from the pixels, the sofa a foreground matte, all measured from the master; scene data measured on it. Checks pass. Workshop acceptance of the assembled scene, the walk-behind feel and the opening camera is Joe's, in art/review.html.",
+  "nativeMasterHashes": {
+    "brennans": "bfd6ce334268aa69db1716ae8b3a33838ac4e7ef45343466a640a27a5206583a"
+  },
+  "assetHashes": {
+    "brennans-master": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "brennans": "f7b09286290eb23567fef2bb18f79530eb959819a6d042c224d163b7a48f5179",
+    "brennans-box-cohiba": "bbd8e6c8f961aa3991c887c5600585753f20c84ed934e7f269324df356ae74de",
+    "brennans-box-macanudo": "7a5e5ab0412a629fa22b406fd2a59da87f9e56a3f6c9c08d62efaa601c9fe86f",
+    "brennans-box-partagas": "9e86ab44f118d437af45c20fe9784d2ff4e2dadc385441a37536811c1acad325",
+    "brennans-box-la-gloria-cubana": "3d1d20d519d86dec86236958cb0d8eaf4395d78a38d65f48d71c61093951eb39",
+    "brennans-box-punch": "b02296552b2852004f75e269e25a1547d059b7d13e9bb8b0e2d8afbd89c055c0",
+    "brennans-stg": "8763b4581b1e0b432354073147451486fbcf248b3ec0d503677bca05024280ca",
+    "brennans-cafe": "2d568cdd0598e7624b37ccaeac87b425503903b87438897e4d732ab8ea484b53",
+    "brennans-lounge": "ccc4e4a81d7c4b4d824851e9d02079a22493f3d0c1287ad5e724d2cfde184319",
+    "brennans-sofa": "9f153f3a0cb91fc4ba163d4f4c4d12420dfd3f644be14b6a37d9eb51ccb167c1"
+  },
+  "checks": [
+    "art:validate PASS (77 assets)",
+    "art:check",
+    "art:test (3)",
+    "svelte-check (0 errors)",
+    "production build",
+    "npm test (22/22)"
+  ]
+}

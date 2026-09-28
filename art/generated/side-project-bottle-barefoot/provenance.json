@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "65d78e956cb82a8ede6af62db169435231690665d50c9481ca2ae38c5a6d2580",
+  "run": "art/runs/side-project-bottle-barefoot/2026-09-28T19-03-10.243Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "side-project-master",
+    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

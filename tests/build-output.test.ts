@@ -76,7 +76,7 @@ test('overworld: a door link to every sub-scene', () => {
 	}
 });
 
-test('sub-scenes: title with district, focusable h1, props left to right, exit link to the venue anchor', () => {
+test('sub-scenes: title with district, focusable h1, props in reading order, exit link to the venue anchor', () => {
 	for (const s of subScenes) {
 		const html = page(`${s.id}.html`);
 		assert.equal(texts(html, 'title')[0], `${s.venue}, ${s.district}`);
@@ -87,7 +87,10 @@ test('sub-scenes: title with district, focusable h1, props left to right, exit l
 		const buttons = opens(layer, 'button').filter((b) => b.includes('aria-haspopup="dialog"'));
 		assert.equal(buttons.length, s.props.length, s.id);
 		assert.equal(opens(layer, 'dialog').length, s.props.length, s.id);
-		const expected = [...s.props].sort((a, b) => a.rect.x - b.rect.x).map((p) => `${p.name}: ${p.gist}`);
+		// Spec: props left to right, or top to bottom in a scene taller than wide (the Moosylvania lobby).
+		const expected = [...s.props]
+			.sort(s.h > s.w ? (a, b) => a.rect.y - b.rect.y : (a, b) => a.rect.x - b.rect.x)
+			.map((p) => `${p.name}: ${p.gist}`);
 		assert.deepEqual(texts(withoutDialogs(layer), 'button').slice(0, expected.length), expected, s.id);
 		assert.ok(hrefs(withoutDialogs(layer)).includes(`/#${s.id}`), s.id);
 	}
@@ -96,13 +99,14 @@ test('sub-scenes: title with district, focusable h1, props left to right, exit l
 test('inventory: every prop from the content inventory is on some scene, one grant per cosmetic', () => {
 	const ids = new Set(allProps.map((p) => p.id));
 	const inventory = [
-		'welcome', 'moose', 'desk-frontend', 'desk-backend', 'desk-cms', 'desk-data',
+		'welcome', 'moose', 'computer-frontend', 'computer-backend', 'computer-cms', 'computer-data', 'moose-statue', 'meeting-tv',
 		'diploma', 'whiteboard', 'workstation',
 		'marquee', 'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
 		'mc-sign', 'server-rack',
-		'chalkboard', 'tap-bacardi', 'tap-grey-goose', 'tap-new-amsterdam', 'tap-camarena', 'tap-barefoot',
-		'tap-bud-light', 'tap-ej', 'tap-pink-whitney', 'tap-rumchata', 'tap-soonhari',
-		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo', 'atm',
+		'chalkboard', 'bottle-bacardi', 'bottle-grey-goose', 'bottle-new-amsterdam', 'bottle-camarena', 'bottle-barefoot',
+		'bottle-bud-light', 'bottle-ej', 'bottle-pink-whitney', 'bottle-rumchata', 'bottle-soonhari', 'brewery-sign',
+		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it (ticket 25).
+		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo',
 		'track', 'bike', 'ride-sign'
 	];
 	for (const id of inventory) assert.ok(ids.has(id), id);
@@ -116,13 +120,16 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	assert.match(cards('diploma'), /2005/);
 });
 
+test.todo('inventory: the ATM on the overworld, for PayPal and Venmo (buildout ticket 25)');
+
 test('clearance: the Universal titles are told only on the Foundry screen and under its posters', () => {
 	const titles = /Fast Five|Snow White|Lorax/;
 	for (const file of files.filter((f) => f !== 'foundry.html')) assert.doesNotMatch(page(file), titles, file);
 	let foundry = page('foundry.html');
 	assert.match(foundry, /Universal Pictures Home Entertainment/);
+	// Each match is one prop's own block: it never runs across another prop's opening tag, so the order doesn't matter.
 	for (const id of ['screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
-		const card = new RegExp(`<div class="prop">[\\s\\S]*?<dialog[^>]*aria-labelledby="card-${id}-title"[\\s\\S]*?</dialog>`);
+		const card = new RegExp(`<div class="prop">(?:(?!<div class="prop">)[\\s\\S])*?<dialog[^>]*aria-labelledby="card-${id}-title"[\\s\\S]*?</dialog>`);
 		assert.match(foundry, card, id);
 		foundry = foundry.replace(card, '');
 	}

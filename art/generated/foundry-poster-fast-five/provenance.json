@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "211ecc33bb0d2d1cf912e75b7253842216df0dbdbbde8cdc0fc6fba6533b7ea6",
+  "run": "art/runs/foundry-poster-fast-five/2026-09-28T17-28-25.630Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "foundry-master",
+    "referenceSha256": "5fa0afb0f841131757c0920441e82c5da958279559ae866e63126c66622ef520",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -12,3 +12,10 @@
 - [ ] Pause ducks to 30 percent, a hidden tab suspends, resume restores, on desktop and on a phone
 - [ ] All eleven beds, the theme and the four sub-scene music pieces are sourced, encoded by the script, and listed in the ledger with licences
 - [ ] The crossfade gain per bed is a pure function of camera centre tested with plain inputs (seam 2)
+
+## Comments
+
+### The lobby playlist ducks under the meeting TV, 2026-09-28
+
+While the Moosylvania meeting TV plays its video (ticket 15's comment, spec: "Local prop, the Moosylvania meeting TV"), the lobby playlist ducks and the video's own sound plays. The row is in the sound design table (`../stl-cursor-portfolio/issues/19-sound-design.md`). Moved here from ticket 05.
+

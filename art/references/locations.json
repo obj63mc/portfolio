@@ -29,6 +29,33 @@
               "uri": "https://maps.google.com/maps/contrib/117906335586020784674"
             }
           ]
+        },
+        {
+          "localFile": "art/references/local/places/moosylvania/06.jpg",
+          "authors": [
+            {
+              "displayName": "Lobby toward the entrance end: twin curved staircases, mezzanine desks, the offices beneath (photo supplied by Joe Madden, 2026-09-28, l.jpg)",
+              "uri": "https://www.moosylvania.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/moosylvania/07.jpg",
+          "authors": [
+            {
+              "displayName": "Lobby toward the front desk and the moose glass wall, first floor (photo supplied by Joe Madden, 2026-09-28, Emabassy+interior1a.webp; white border and caption cropped)",
+              "uri": "https://www.moosylvania.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/places/moosylvania/08.jpg",
+          "authors": [
+            {
+              "displayName": "Overhead from behind the front desk wall toward the stairs and mezzanine (photo supplied by Joe Madden, 2026-09-28, MUS+space1.webp)",
+              "uri": "https://www.moosylvania.com/"
+            }
+          ]
         }
       ]
     },
@@ -68,6 +95,16 @@
               "uri": "https://maps.google.com/maps/contrib/103470780200660640943"
             }
           ]
+        },
+        {
+          "localFile": "art/references/local/places/side-project/11-back-bar.jpg",
+          "authors": [
+            {
+              "displayName": "Side Project Brewing (photograph on the brewery website)",
+              "uri": "https://www.sideprojectbrewing.com/cdn/shop/files/SideProject-Cellar-TB-210524-030-Edit_1069806d-f06c-4f20-9aea-4982cb065adb.jpg"
+            }
+          ],
+          "note": "The front bar from the entry, 2026-09-28: the navy liquor wall with floating shelves and wine bottles along its top, the back bar cooler with its chalkboard, white-tile counters and white stools. The composition reference for the 2026-09-28 scene."
         }
       ],
       "layoutReferences": [
@@ -863,6 +900,33 @@
             {
               "displayName": "Punch Cigars logo",
               "uri": "https://www.punchcigars.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/cohiba-new.svg",
+          "authors": [
+            {
+              "displayName": "Cohiba wordmark (file supplied by Joe Madden, 2026-09-28)",
+              "uri": "https://www.cohiba.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/punch-new.svg",
+          "authors": [
+            {
+              "displayName": "Punch crest, est. 1840 (file supplied by Joe Madden, 2026-09-28)",
+              "uri": "https://www.punchcigars.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/lgc.png",
+          "authors": [
+            {
+              "displayName": "La Gloria Cubana emblem (file supplied by Joe Madden, 2026-09-28)",
+              "uri": "https://www.lagloriacubana.com/"
             }
           ]
         },

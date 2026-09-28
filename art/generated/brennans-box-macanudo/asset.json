@@ -1,0 +1,52 @@
+{
+  "id": "brennans-box-macanudo",
+  "scene": "brennans",
+  "kind": "prop",
+  "file": "brennans-box-macanudo/image.webp",
+  "world": {
+    "x": 825.25,
+    "y": 618.92,
+    "w": 192.27842105263156,
+    "h": 157.27952127659574
+  },
+  "source": {
+    "w": 456,
+    "h": 376,
+    "sha256": "545aeaa79170cfbb496e4f29a1b5049b761abc608e40eab2be6883185d35d4e1"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 452,
+    "h": 370
+  },
+  "width": 452,
+  "height": 370,
+  "registration": {
+    "asset": "brennans-master",
+    "rect": {
+      "x": 825.25,
+      "y": 618.92,
+      "w": 193.98,
+      "h": 159.83
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        0.9035,
+        0.0319
+      ],
+      [
+        0.9912,
+        0.9734
+      ],
+      [
+        0.0702,
+        0.984
+      ]
+    ]
+  }
+}

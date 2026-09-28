@@ -1,3 +1,9 @@
+SIDE-PROJECT MASTER DERIVATION, 2026-09-28 (round 1, upscaled 4x for the background)
+
+New composition, 2026-09-28: the Side Project scene now faces the front bar and its navy wall of bottles (issue 05), replacing the entry view of 2026-09-24, because the ten brands are now bottles with their logos on the back bar, not taps. Codex draft b1 (one of six, art/references/local/drafts/side-project-b1.png: a gentle three-quarter view nearly face-on to the navy bar wall, the ten brand bottles in one lit row on its lower floating shelf, the front bar with six white stools, the exit door at the far left, the reclaimed-wood cooler of the back bar with its chalkboard at the right) is the approved composition, from the real Cellar's back-bar photograph, its cooler photograph and a logo sheet. Round one (rounds/round-1.json, painted by construction with rounds/round-1-paint.py) repainted the ten bottles' labels from the brands' own logo files and hung a round Side Project sign with the light-bulb logo on the cooler door. It pasted inside its masks with 0 px changed outside them. Native 1672 x 941, Codex's own 16:9 canvas, unresized.
+
+The retained image is art/sources/side-project-fix/stitched.png, the native 1672 x 941 master after the tile-map rounds (round specs in art/sources/side-project-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The side-project plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
 SIDE-PROJECT MASTER DERIVATION, 2026-09-26 (round zero, upscaled 4x for the background)
 
 Initial install: the approved Codex master of 2026-09-24 (art/sources/side-project-master.png) is the native stitched.png. The plate now derives from the master, as the overworld's does, instead of a Codex clean-plate redraw that had drifted everywhere.

@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "9d7101710412b0b38e3a50349a667f8fa363423d4e71498614f09f271c1a1a52",
-  "run": "art/runs/side-project/2026-09-26T01-06-41.846Z",
+  "sourceSha256": "460e91e0b361af5a6bd4cfb1d265694190fe525e19fca683f6c3fb1fcdc5f6a7",
+  "run": "art/runs/side-project/2026-09-28T18-58-16.485Z",
   "provider": "derived",
   "derivation": {
     "asset": "side-project-master",
-    "referenceSha256": "b03a141cc657dc8204e5c088a94f665972689f7ab116a810d373c555a170a976",
+    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
     "operation": "copy-composition"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

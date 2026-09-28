@@ -114,4 +114,9 @@ export interface SubScene extends SceneBase {
 	exit: Rect;
 	/** Back to front, the order they are drawn in. */
 	walkBehind: WalkBehind[];
+	/**
+	 * Edge-push band, a fraction of the viewport's width and height: 0.12 in a sub-scene unless set. The Moosylvania lobby,
+	 * which scrolls like the overworld, uses the overworld's 0.25.
+	 */
+	pushBand?: number;
 }

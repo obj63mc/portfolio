@@ -13,3 +13,14 @@ Carries over the prototype's screen module (state machine and local fallback) an
 - [ ] The screen returns to idle at the sequence's end and when the room empties
 - [ ] Offline, a poster click plays the timeline locally
 - [ ] Seam 1: the op is accepted only while idle and the snapshot carries state and server time; seam 2: the timeline is a pure function of server time with one test per title length
+
+## Comments
+
+### The screen and the projector in the art, 2026-09-28
+
+The Foundry art pass (ticket 05) redrew the theatre as a small isometric auditorium, so the projector, its beam and the whole screen share one view. `src/lib/scenes/foundry.ts` exports what the timeline needs:
+
+- **`SCREEN_SURFACE`:** the screen's painted quad, clockwise from the top left. The camera sees the right wall at an angle, so the quad is not a rectangle, and not a parallelogram either: its bottom edge falls more steeply than its top. Draw the sequence through a projective mapping of the quad, or two triangles, not a plain rect.
+- **`PROJECTOR_LENS`:** the end of the lens barrel on the ledge at the lower left, pointing up-right at the screen. "Projector lights up" starts the beam here, a cone to the four corners of `SCREEN_SURFACE`.
+- **Idle:** the screen is painted idle, a blank, dim ivory surface; the room's lighting is dimmer than the daytime palette at Joe's request.
+- **Walk-behind:** the seat rows the beam crosses are walk-behind scenery (ticket 19). Draw the beam over the scene canvas and under the cursors.

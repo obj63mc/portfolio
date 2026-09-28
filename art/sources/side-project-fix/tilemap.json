@@ -1,0 +1,39 @@
+{
+ "round": 1,
+ "base": "rounds/base-1.png",
+ "tiles": [
+  {
+   "name": "labels",
+   "rect": [
+    244,
+    404,
+    696,
+    84
+   ],
+   "loops": [],
+   "repaintPx": 19359,
+   "edit": true
+  },
+  {
+   "name": "sign",
+   "rect": [
+    1170,
+    366,
+    96,
+    96
+   ],
+   "loops": [],
+   "repaintPx": 5091,
+   "edit": true
+  }
+ ],
+ "stamps": [],
+ "paints": [],
+ "restore": [],
+ "blurThreshold": 28,
+ "bridges": [],
+ "sandfills": [],
+ "tones": [],
+ "shorebands": [],
+ "roadbands": []
+}

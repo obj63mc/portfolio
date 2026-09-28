@@ -1,0 +1,27 @@
+{
+ "round": 3,
+ "base": "rounds/base-3.png",
+ "tiles": [
+  {
+   "name": "desk3",
+   "rect": [
+    360,
+    860,
+    384,
+    256
+   ],
+   "loops": [],
+   "repaintPx": 8902,
+   "edit": true
+  }
+ ],
+ "stamps": [],
+ "paints": [],
+ "restore": [],
+ "blurThreshold": 28,
+ "bridges": [],
+ "sandfills": [],
+ "tones": [],
+ "shorebands": [],
+ "roadbands": []
+}

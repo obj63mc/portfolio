@@ -1,0 +1,51 @@
+{
+ "round": 1,
+ "base": "rounds/base-1.png",
+ "tiles": [
+  {
+   "name": "table",
+   "rect": [
+    256,
+    429,
+    768,
+    512
+   ],
+   "loops": [],
+   "repaintPx": 152431,
+   "edit": true
+  },
+  {
+   "name": "lids",
+   "rect": [
+    318,
+    354,
+    712,
+    110
+   ],
+   "loops": [],
+   "repaintPx": 43077,
+   "edit": true
+  },
+  {
+   "name": "plaque",
+   "rect": [
+    552,
+    16,
+    272,
+    170
+   ],
+   "loops": [],
+   "repaintPx": 23670,
+   "edit": true
+  }
+ ],
+ "stamps": [],
+ "paints": [],
+ "restore": [],
+ "blurThreshold": 28,
+ "bridges": [],
+ "sandfills": [],
+ "tones": [],
+ "shorebands": [],
+ "roadbands": []
+}

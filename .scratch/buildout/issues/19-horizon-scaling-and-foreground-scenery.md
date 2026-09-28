@@ -26,3 +26,7 @@ Joe's call for the SLU lab. He wants the lab to behave like walking round the ro
 - Peers get the same rule locally from their successive positions; nothing goes on the wire.
 
 Foreground scenery is unchanged: always over every cursor. The SLU lab has none now; its two front chairs were dropped as foreground and belong to their desks instead. The workshop previews the rule: tick **Walk the cursor with the mouse** in `art/review.html` and step onto a desk from either side. Data rules are checked in `tests/sub-scene-geometry.test.ts`.
+
+### The Foundry's rows, 2026-09-28
+
+The Foundry theatre follows the same rule: its three seat rows (front row nearest the screen) and the projector ledge are walk-behind scenery, listed back to front in `src/lib/scenes/foundry.ts`. No prop stands on them, so they only decide drawing. A cursor in the walkway between two rows is covered by the row nearer the viewer and drawn over the row beyond it, as if walking between the seats. `tests/sub-scene-geometry.test.ts` now also checks, in every scene, that walk-behind scenery never covers a prop it does not carry.

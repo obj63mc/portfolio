@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "972d0d3c6c4feef8cdbe5536f7a17290c8e479768b994ef26a1078eddcaa7607",
+  "run": "art/runs/brennans-box-cohiba/2026-09-28T21-09-34.008Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-master",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-28",
+  "scenes": [
+    "foundry"
+  ],
+  "verdict": "New composition for the Foundry scene: a small Alamo Drafthouse auditorium (issue 05), replacing the large house. Joe chose Codex draft A1 of six (true isometric cutaway; posters on the left wall, screen on the right) and revision r4 of four (stadium tiers, turquoise step lights, picture lights off, the room dimmed). Round one turned the projector toward the screen (Codex tile); rounds two and three made the stairs descend toward the screen with one step per row, the wall's black border stepping down in right angles (Codex tile, then built as geometry by a script). The three posters and the screen are prop mattes and the three seat rows and the projector ledge walk-behind scenery mattes, all measured from the master; scene data, the screen surface, the projector lens and the poster lamps measured on it. Checks pass. Workshop acceptance of the assembled scene, the walk-behind rows and the opening camera is Joe's, in art/review.html.",
+  "nativeMasterHashes": {
+    "foundry": "cf0b3d3f237f7f85a86759b471de1297a9f88d3490d4ae350c9766fe67f7bce7"
+  },
+  "assetHashes": {
+    "foundry-master": "5fa0afb0f841131757c0920441e82c5da958279559ae866e63126c66622ef520",
+    "foundry": "25dad67d39030b6dde46a612ee011f941f48d96934e9a03d26b7e1338ca10052",
+    "foundry-poster-fast-five": "3ca11112afcb32eb6f8e6cb2bc62ecde63a0a68319d1737369fa24a125a169f5",
+    "foundry-poster-snow-white": "59d36064dd9391651d48561acbba58b408e16fb52c2a8bccd64917405ddc19d1",
+    "foundry-poster-lorax": "fca7f74d36989e4f3836856b838f0e57ede67e99e3bf6c077fe3df03766ab077",
+    "foundry-screen": "d07e404e2c91c78e2af1b3caa21a33d29d815c07829a95ab6e9501dbb66ff029",
+    "foundry-row-front": "8670a107ef5735010b8d80771e7e623e2123b99e658d51dc1a32c5fbe36abffb",
+    "foundry-row-middle": "6dc100151fad15ff5b4aae2dfcda65032ec9362536f280f105648f9b2a8f8117",
+    "foundry-row-back": "094d719a146d44ecf16ac220c97b2faa43cb782a561b28982e00ff5bbd1dda51",
+    "foundry-projector-ledge": "610e659eea5151239b2b575d8e234afda2f32555d2668779343a00a4b60c971a"
+  },
+  "checks": [
+    "art:validate PASS (60 assets)",
+    "art:check",
+    "art:test (3)",
+    "svelte-check (0 errors)",
+    "production build",
+    "npm test (20/20)"
+  ]
+}

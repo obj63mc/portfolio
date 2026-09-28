@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "f00a9234ec2217bde848cb47c94a745341ed32248b08e6ce425a461100cd279f",
+  "run": "art/runs/side-project-bottle-soonhari/2026-09-28T19-03-13.828Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "side-project-master",
+    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

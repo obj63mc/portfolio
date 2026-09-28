@@ -6,22 +6,22 @@
   "world": {
     "x": 0,
     "y": 0,
-    "w": 2845,
-    "h": 1600
+    "w": 2400,
+    "h": 4800
   },
   "source": {
-    "w": 8192,
-    "h": 4608,
-    "sha256": "9fbcbd63cee04f56f4b02f5bb71beb4f0f094ab12a1f14b85a0322adc68ba86a"
+    "w": 3548,
+    "h": 7096,
+    "sha256": "3ca82c2ea56ec309e7d256586f5ac599e5abc0246590201d9cf39c2c21166a20"
   },
   "trim": {
     "x": 0,
     "y": 0,
-    "w": 8192,
-    "h": 4608
+    "w": 3548,
+    "h": 7096
   },
-  "width": 5690,
-  "height": 3200,
+  "width": 4800,
+  "height": 9600,
   "tiles": [
     {
       "density": 1.25,
@@ -59,17 +59,9 @@
       "density": 1.25,
       "x": 2048,
       "y": 0,
-      "w": 512,
+      "w": 352,
       "h": 512,
       "file": "moosylvania/1.25/4-0.webp"
-    },
-    {
-      "density": 1.25,
-      "x": 2560,
-      "y": 0,
-      "w": 285,
-      "h": 512,
-      "file": "moosylvania/1.25/5-0.webp"
     },
     {
       "density": 1.25,
@@ -107,17 +99,9 @@
       "density": 1.25,
       "x": 2048,
       "y": 512,
-      "w": 512,
+      "w": 352,
       "h": 512,
       "file": "moosylvania/1.25/4-1.webp"
-    },
-    {
-      "density": 1.25,
-      "x": 2560,
-      "y": 512,
-      "w": 285,
-      "h": 512,
-      "file": "moosylvania/1.25/5-1.webp"
     },
     {
       "density": 1.25,
@@ -155,24 +139,16 @@
       "density": 1.25,
       "x": 2048,
       "y": 1024,
-      "w": 512,
+      "w": 352,
       "h": 512,
       "file": "moosylvania/1.25/4-2.webp"
-    },
-    {
-      "density": 1.25,
-      "x": 2560,
-      "y": 1024,
-      "w": 285,
-      "h": 512,
-      "file": "moosylvania/1.25/5-2.webp"
     },
     {
       "density": 1.25,
       "x": 0,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/1.25/0-3.webp"
     },
     {
@@ -180,7 +156,7 @@
       "x": 512,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/1.25/1-3.webp"
     },
     {
@@ -188,7 +164,7 @@
       "x": 1024,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/1.25/2-3.webp"
     },
     {
@@ -196,24 +172,256 @@
       "x": 1536,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/1.25/3-3.webp"
     },
     {
       "density": 1.25,
       "x": 2048,
       "y": 1536,
-      "w": 512,
-      "h": 64,
+      "w": 352,
+      "h": 512,
       "file": "moosylvania/1.25/4-3.webp"
     },
     {
       "density": 1.25,
-      "x": 2560,
-      "y": 1536,
-      "w": 285,
-      "h": 64,
-      "file": "moosylvania/1.25/5-3.webp"
+      "x": 0,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/0-4.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/1-4.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/2-4.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1536,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/3-4.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 2048,
+      "y": 2048,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/1.25/4-4.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/0-5.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/1-5.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/2-5.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1536,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/3-5.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 2048,
+      "y": 2560,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/1.25/4-5.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/0-6.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/1-6.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/2-6.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1536,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/3-6.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 2048,
+      "y": 3072,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/1.25/4-6.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/0-7.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/1-7.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/2-7.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1536,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/3-7.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 2048,
+      "y": 3584,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/1.25/4-7.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/0-8.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/1-8.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/2-8.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1536,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/1.25/3-8.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 2048,
+      "y": 4096,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/1.25/4-8.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 0,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/1.25/0-9.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 512,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/1.25/1-9.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1024,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/1.25/2-9.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 1536,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/1.25/3-9.webp"
+    },
+    {
+      "density": 1.25,
+      "x": 2048,
+      "y": 4608,
+      "w": 352,
+      "h": 192,
+      "file": "moosylvania/1.25/4-9.webp"
     },
     {
       "density": 2,
@@ -251,17 +459,9 @@
       "density": 2,
       "x": 2048,
       "y": 0,
-      "w": 512,
+      "w": 352,
       "h": 512,
       "file": "moosylvania/2/4-0.webp"
-    },
-    {
-      "density": 2,
-      "x": 2560,
-      "y": 0,
-      "w": 285,
-      "h": 512,
-      "file": "moosylvania/2/5-0.webp"
     },
     {
       "density": 2,
@@ -299,17 +499,9 @@
       "density": 2,
       "x": 2048,
       "y": 512,
-      "w": 512,
+      "w": 352,
       "h": 512,
       "file": "moosylvania/2/4-1.webp"
-    },
-    {
-      "density": 2,
-      "x": 2560,
-      "y": 512,
-      "w": 285,
-      "h": 512,
-      "file": "moosylvania/2/5-1.webp"
     },
     {
       "density": 2,
@@ -347,24 +539,16 @@
       "density": 2,
       "x": 2048,
       "y": 1024,
-      "w": 512,
+      "w": 352,
       "h": 512,
       "file": "moosylvania/2/4-2.webp"
-    },
-    {
-      "density": 2,
-      "x": 2560,
-      "y": 1024,
-      "w": 285,
-      "h": 512,
-      "file": "moosylvania/2/5-2.webp"
     },
     {
       "density": 2,
       "x": 0,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/2/0-3.webp"
     },
     {
@@ -372,7 +556,7 @@
       "x": 512,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/2/1-3.webp"
     },
     {
@@ -380,7 +564,7 @@
       "x": 1024,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/2/2-3.webp"
     },
     {
@@ -388,24 +572,256 @@
       "x": 1536,
       "y": 1536,
       "w": 512,
-      "h": 64,
+      "h": 512,
       "file": "moosylvania/2/3-3.webp"
     },
     {
       "density": 2,
       "x": 2048,
       "y": 1536,
-      "w": 512,
-      "h": 64,
+      "w": 352,
+      "h": 512,
       "file": "moosylvania/2/4-3.webp"
     },
     {
       "density": 2,
-      "x": 2560,
-      "y": 1536,
-      "w": 285,
-      "h": 64,
-      "file": "moosylvania/2/5-3.webp"
+      "x": 0,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/0-4.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/1-4.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/2-4.webp"
+    },
+    {
+      "density": 2,
+      "x": 1536,
+      "y": 2048,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/3-4.webp"
+    },
+    {
+      "density": 2,
+      "x": 2048,
+      "y": 2048,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/2/4-4.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/0-5.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/1-5.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/2-5.webp"
+    },
+    {
+      "density": 2,
+      "x": 1536,
+      "y": 2560,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/3-5.webp"
+    },
+    {
+      "density": 2,
+      "x": 2048,
+      "y": 2560,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/2/4-5.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/0-6.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/1-6.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/2-6.webp"
+    },
+    {
+      "density": 2,
+      "x": 1536,
+      "y": 3072,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/3-6.webp"
+    },
+    {
+      "density": 2,
+      "x": 2048,
+      "y": 3072,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/2/4-6.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/0-7.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/1-7.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/2-7.webp"
+    },
+    {
+      "density": 2,
+      "x": 1536,
+      "y": 3584,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/3-7.webp"
+    },
+    {
+      "density": 2,
+      "x": 2048,
+      "y": 3584,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/2/4-7.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/0-8.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/1-8.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/2-8.webp"
+    },
+    {
+      "density": 2,
+      "x": 1536,
+      "y": 4096,
+      "w": 512,
+      "h": 512,
+      "file": "moosylvania/2/3-8.webp"
+    },
+    {
+      "density": 2,
+      "x": 2048,
+      "y": 4096,
+      "w": 352,
+      "h": 512,
+      "file": "moosylvania/2/4-8.webp"
+    },
+    {
+      "density": 2,
+      "x": 0,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/2/0-9.webp"
+    },
+    {
+      "density": 2,
+      "x": 512,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/2/1-9.webp"
+    },
+    {
+      "density": 2,
+      "x": 1024,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/2/2-9.webp"
+    },
+    {
+      "density": 2,
+      "x": 1536,
+      "y": 4608,
+      "w": 512,
+      "h": 192,
+      "file": "moosylvania/2/3-9.webp"
+    },
+    {
+      "density": 2,
+      "x": 2048,
+      "y": 4608,
+      "w": 352,
+      "h": 192,
+      "file": "moosylvania/2/4-9.webp"
     }
   ]
 }

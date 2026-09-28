@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "b582e5d5f7937b3288a24726011ccd4d9d4fe8caa0977bab6c478d3099a83aed",
+  "run": "art/runs/brennans-box-partagas/2026-09-28T21-09-35.423Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "brennans-master",
+    "referenceSha256": "c862dcd2665e512a09d0672cc5a5c59383bf01d34ce9748e352b3bb9ccde80f4",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

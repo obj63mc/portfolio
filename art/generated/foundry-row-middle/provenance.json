@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "78b1598a37ea5436e36647f3ed28a59f6dba249ce0dd01e981575e8e97b186bd",
+  "run": "art/runs/foundry-row-middle/2026-09-28T17-28-32.578Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "foundry-master",
+    "referenceSha256": "5fa0afb0f841131757c0920441e82c5da958279559ae866e63126c66622ef520",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

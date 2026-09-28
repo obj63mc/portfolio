@@ -1,0 +1,178 @@
+{
+ "round": 2,
+ "base": "rounds/base-2.png",
+ "notes": {
+  "tops": "Joe (2026-09-28, on round one): at the very top of the stairs there are artifacts, extra railing in space. Opening the stair tops left a short bent handrail piece floating on the loft floor beside each stair top, and the end rail of each removed mesh panel along the wall; both are removed, the loft floor running on.",
+  "desk": "Joe (2026-09-28, on round one): the front desk is turned the wrong way; its curve should face out from the glass wall, not toward it. The draft bowed the desk toward the wall with its ends reaching for the sofas; it is redrawn reversed, bowing out toward the round sofas with its ends curving back to the glass wall, as in Joe's lobby photograph (reference 3), the moose statue on its right-hand end."
+ },
+ "tiles": {
+  "topl": {
+   "rect": [
+    120,
+    380,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      248,
+      454
+     ],
+     [
+      278,
+      454
+     ],
+     [
+      278,
+      478
+     ],
+     [
+      248,
+      478
+     ]
+    ],
+    [
+     [
+      166,
+      446
+     ],
+     [
+      198,
+      446
+     ],
+     [
+      198,
+      534
+     ],
+     [
+      166,
+      534
+     ]
+    ]
+   ],
+   "keep": "the potted plant, the loft's front railing and its end post, the staircase with its treads and both handrails, the wall and wainscot and the loft floor outside the outlines",
+   "fixes": [
+    "Inside both outlines, remove the stray railing pieces: the short bent dark handrail fragment floating on the loft floor in the upper outline, and the thin dark rail and post running along the loft's edge beside the wall in the left outline. The loft's pale wood plank floor simply continues through both outlines, its planks running on in the same direction, meeting the wainscot at the wall cleanly. Nothing else changes: the staircase's own handrails and the loft railing's end post stay."
+   ]
+  },
+  "topr": {
+   "rect": [
+    520,
+    380,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      612,
+      454
+     ],
+     [
+      636,
+      454
+     ],
+     [
+      636,
+      478
+     ],
+     [
+      612,
+      478
+     ]
+    ],
+    [
+     [
+      698,
+      446
+     ],
+     [
+      726,
+      446
+     ],
+     [
+      726,
+      534
+     ],
+     [
+      698,
+      534
+     ]
+    ]
+   ],
+   "keep": "the desk with its laptop and legs, the potted plant, the loft's front railing and its end post, the staircase with its treads and both handrails, the wall and wainscot and the loft floor outside the outlines",
+   "fixes": [
+    "Inside both outlines, remove the stray railing pieces: the short bent dark handrail fragment floating on the loft floor under the desk's front edge in the left outline (keep the desk's own legs), and the thin dark rail and post running along the loft's edge beside the wall in the right outline. The loft's pale wood plank floor simply continues through both outlines, its planks running on in the same direction, meeting the wainscot at the wall cleanly. Nothing else changes: the staircase's own handrails and the loft railing's end post stay."
+   ]
+  },
+  "desk": {
+   "rect": [
+    180,
+    760,
+    540,
+    360
+   ],
+   "polygons": [
+    [
+     [
+      200,
+      950
+     ],
+     [
+      300,
+      950
+     ],
+     [
+      300,
+      972
+     ],
+     [
+      384,
+      972
+     ],
+     [
+      386,
+      928
+     ],
+     [
+      506,
+      928
+     ],
+     [
+      508,
+      972
+     ],
+     [
+      596,
+      972
+     ],
+     [
+      596,
+      906
+     ],
+     [
+      690,
+      906
+     ],
+     [
+      690,
+      1049
+     ],
+     [
+      200,
+      1049
+     ]
+    ]
+   ],
+   "references": [
+    "art/references/local/places/moosylvania/07.jpg"
+   ],
+   "keep": "the two curved red sofas and the round coffee table, the bottoms of both staircases, the frosted glass wall's dark top frame along the bottom of the tile and the floor outside the outline",
+   "fixes": [
+    "Inside the outline, redraw the curved walnut reception desk turned the other way round. Now it bows toward the glass wall with its two ends reaching toward the sofas; instead it must bow OUTWARD, away from the glass wall and toward the red sofas, like the real desk in reference 3: its middle is the part nearest the sofas and its two ends curve back toward the glass wall, so the desk follows the arc of a wide circle whose centre is behind the glass wall. It stands on the floor between the glass wall and the sofas and never touches the sofas. We see it from behind the glass wall, looking into the inside of its curve: the receptionist's side, with a lower walnut work surface along the inside holding one dark monitor that faces the glass wall and a small desk lamp, one dark desk chair on the floor inside the curve, and the desk's high counter ledge running along its outer, sofa-facing edge. Same walnut colour, height and length as now.",
+    "The glossy white moose statue on its low white base stands on the counter ledge at the desk's right-hand end, the same statue at the same size as now, clearly visible."
+   ]
+  }
+ }
+}

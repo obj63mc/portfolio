@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "6b0c4f2f0efb5f50953db354765bd29f35ce692be238ced09a5cc6226d78aea6",
+  "run": "art/runs/side-project-bottle-bud-light/2026-09-28T19-03-10.947Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "side-project-master",
+    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

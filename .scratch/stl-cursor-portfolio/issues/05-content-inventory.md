@@ -54,23 +54,26 @@ Confirmed by Joe: full time from 2005.
 
 ### Maplewood
 
-**Moosylvania** (7303 Marietta; sub-scene: lobby with desks)
+**Moosylvania** (7303 Marietta; sub-scene: the lobby, from the meeting area behind the front desk up the stairs to the loft)
 
 | Prop | Content | Cosmetic |
 | --- | --- | --- |
 | Welcome sign (exterior, styled like the old site) | 2011 to present. Senior Developer to Chief Architect. Leads all web work with a small team of writers, creatives and developers. | |
 | The moose (exterior) | A personal line, to be written | Antlers |
 | Building door | Enters the lobby | |
-| Lobby desk: Frontend | Nuxt, Next, Svelte, modern JS, TypeScript, SCSS | |
-| Lobby desk: Backend | Node.js/TypeScript and PHP platforms; experience with ASP.NET C#, Ruby, Python | |
-| Lobby desk: CMS | WordPress, SilverStripe, Strapi; headless Prismic and Storyblok | |
-| Lobby desk: Data | MySQL, PostgreSQL, Redis; MongoDB experience | |
+| Moose statue on the front desk | What Moosylvania is, with general information about the agency; text to be written by Joe | |
+| Meeting TV (behind the front desk) | Plays a video Joe provides, for the visitor who clicks it; file to come | |
+| Loft computer: Frontend | Nuxt, Next, Svelte, modern JS, TypeScript, SCSS | |
+| Loft computer: Backend | Node.js/TypeScript and PHP platforms; experience with ASP.NET C#, Ruby, Python | |
+| Loft computer: CMS | WordPress, SilverStripe, Strapi; headless Prismic and Storyblok | |
+| Loft computer: Data | MySQL, PostgreSQL, Redis; MongoDB experience | |
 
 **Side Project Cellar** (7373 Marietta, across the street from Moosylvania; sub-scene: bar)
 
 | Prop | Content | Cosmetic |
 | --- | --- | --- |
-| Bottles and taps behind the bar, one per brand | Bacardi, Grey Goose, New Amsterdam Vodka, Camarena Tequila, Barefoot Wine, Bud Light, E&J Brandy, Pink Whitney, RumChata, Soonhari. Each with a one-line "what we did". | Beer mug (from the taps) |
+| Bottles on the shelves behind the front bar, one per brand, each with its logo | Bacardi, Grey Goose, New Amsterdam Vodka, Camarena Tequila, Barefoot Wine, Bud Light, E&J Brandy, Pink Whitney, RumChata, Soonhari. Each with a one-line "what we did". | |
+| Side Project sign (the light-bulb logo on the cooler door) | The brewery's mark; a line to be written. | Beer mug |
 | Chalkboard | Side Project is Joe's favourite brewery; favourite styles are stouts and barleywines. | |
 
 Clearance: New Amsterdam, Camarena, Bud Light, E&J, Pink Whitney, RumChata and Soonhari are on Moosylvania's public work page. Bacardi, Grey Goose and Barefoot Wine are former Moosylvania clients no longer on the work page; Joe built their websites and confirms they may be shown.
@@ -82,9 +85,14 @@ Clearance: New Amsterdam, Camarena, Bud Light, E&J, Pink Whitney, RumChata and S
 | Prop | Content | Cosmetic |
 | --- | --- | --- |
 | Humidor with one box per brand | Cohiba, Macanudo, Partagas, La Gloria Cubana, Punch, plus a Scandinavian Tobacco Group logo. Each with a one-line "what we did". | Cigar |
-| ATM in the corner | PayPal and Venmo as fintech clients. | |
 
 Clearance: CAO and General Cigar are on the public work page; La Gloria Cubana is listed by a third party; Venmo is on the work page. The others are named by Joe as cleared.
+
+**On the overworld** (moved from Brennan's; placement to come)
+
+| Prop | Content | Cosmetic |
+| --- | --- | --- |
+| ATM | PayPal and Venmo as fintech clients. | |
 
 ### Carondelet Park
 
@@ -107,3 +115,9 @@ Five sub-scenes: CS lab, theatre, Moosylvania lobby, Side Project bar, Brennan's
 ## Comments
 
 2026-09-23, from the cursor identity ticket (11): the MonsterCommerce sign no longer flips to Network Solutions. It is the MonsterCommerce logo with the eyeball "O"; clicking the eye blinks it and grants the monster ears. The acquisition text stays in the sign content.
+
+2026-09-28, Joe: the ten Side Project brands are bottles, not taps: one bottle per brand with its logo on the label, on the shelves of the wall behind the front bar (the navy liquor wall of the real Cellar). Props are `bottle-<brand>` in `src/lib/scenes/side-project.ts`; the sound and ambient-motion lists (tickets 13 and 19, the spec) follow. Later the same day Joe added a round Side Project sign with the brewery's light-bulb logo on the door of the back bar's cooler (prop `brewery-sign`); clicking it, not a bottle, grants the beer mug.
+
+2026-09-28, Joe: Brennan's is redrawn facing the humidor, with larger brand boxes whose lids carry their labels. The ATM leaves Brennan's: it becomes a new overworld asset, to give the overworld more interactivity; Joe places it later.
+
+2026-09-28, Joe: the Moosylvania lobby becomes one larger scene that scrolls like the overworld, along the nave of the converted church: the meeting area behind the front desk (a sofa, a table and chairs and a TV), the front desk with its frosted glass moose wall and the round coffee table between two curved red sofas, then up the twin staircases to a bigger loft of loosely arranged desks. The four stack computers live in the loft. A mini moose statue on the front desk explains what Moosylvania is; its text is Joe's to write. The meeting TV plays a video Joe will provide, for the visitor who clicks it only (a local prop).

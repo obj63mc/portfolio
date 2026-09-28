@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "d14a62400f6ba6050adfacf4115637c2d7816231453449303f559ce186c0061c",
-  "run": "art/runs/brennans-master/2026-09-26T01-07-05.000Z-upscale-4x",
+  "sourceSha256": "30729fa33aff0584692b8d85fd6069b2d46b3258ab9dbc4f7cf8c7c9c4a7ec99",
+  "run": "art/runs/brennans-master/2026-09-28T21-09-06.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/brennans-fix/stitched.png (native 2048 x 1152, tile-map round zero)",
-    "baseSha256": "916ada8029750b5a6fc8c36006d65415addb9d5b3496d634d2deb7ab0493d206",
+    "base": "art/sources/brennans-fix/stitched.png (native 1672 x 941, tile-map round 1)",
+    "baseSha256": "bfd6ce334268aa69db1716ae8b3a33838ac4e7ef45343466a640a27a5206583a",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
     "script": "scripts/art/overworld/install-master.sh"
   },

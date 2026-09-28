@@ -1,0 +1,182 @@
+{
+ "round": 1,
+ "base": "rounds/base-1.png",
+ "notes": {
+  "master": "Joe (2026-09-28): the lobby becomes one larger scene that scrolls like the overworld, along the nave from the meeting area behind the front desk, past the front desk and the round sofas, up the stairs to the loft. Six drafts (t1-t3 tall, i1-i3 diagonal; art/references/local/drafts/, ignored); Joe chose t1 and asked for a bigger loft of loosely arranged desks, and for the area behind the desk to run to the bottom edge like t3's hard wall, with no extra stairs down. Of three attempts at that revision on a 1:2 canvas, r1a (887 x 1774) is Joe's pick and this round's base.",
+  "computers": "Joe: the computers visitors click to see his stacks live in the loft. The revision lit only two of its desks; the laptops on the middle desk and the back desk become desktop computers with softly lit screens, so four lit computers mark the four props.",
+  "statue": "Joe: the front desk carries a clickable mini moose statue explaining what Moosylvania is. The revision's statue is small and smudged; it is redrawn larger and cleaner on the same end of the counter.",
+  "front": "Joe (2026-09-28, on r1a): the staircases should look open at the top where they reach the loft, not closed off; and the two offices beneath the loft should have glass only along the hall leading in from the front doors, not across their fronts. The mesh railing panels and the loft's front beam across each stair top are removed so the top treads land on the loft floor; the offices' glass fronts facing the nave are removed, the glass along the hall stays."
+ },
+ "tiles": {
+  "computers": {
+   "rect": [
+    300,
+    210,
+    384,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      410,
+      354
+     ],
+     [
+      476,
+      354
+     ],
+     [
+      476,
+      410
+     ],
+     [
+      410,
+      410
+     ]
+    ],
+    [
+     [
+      510,
+      243
+     ],
+     [
+      567,
+      243
+     ],
+     [
+      567,
+      291
+     ],
+     [
+      510,
+      291
+     ]
+    ]
+   ],
+   "keep": "the desks, chairs, books, desk lamp, potted plants, the lit computer on the right-hand desk, the lounge armchairs, the bookshelf, the wainscot, the window and the floor outside the outlines",
+   "fixes": [
+    "Inside the lower outline, on the middle desk, replace the closed dark laptop with a desktop computer exactly like the lit one on the right-hand desk in this tile: a dark monitor on a short stand, its screen glowing softly in plain light cyan with no text or picture, facing the viewer, and a dark keyboard on the desk top in front of it. The same size as that lit monitor, standing on the desk top in the same camera. Keep the books to its right and the potted plant to its left.",
+    "Inside the upper outline, on the desk at the back, replace the small closed laptop the same way with a lit desktop computer and keyboard of the same design and size, facing the viewer, between the books on its left and the desk lamp on its right."
+   ]
+  },
+  "statue": {
+   "rect": [
+    512,
+    850,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      596,
+      912
+     ],
+     [
+      676,
+      912
+     ],
+     [
+      676,
+      1008
+     ],
+     [
+      596,
+      1008
+     ]
+    ]
+   ],
+   "keep": "the curved walnut reception desk and its counter, the dark monitor on the desk, the red sofa, the frosted glass wall's top frame and the floor outside the outline",
+   "fixes": [
+    "Inside the outline, redraw the small white moose statue standing on the right-hand end of the reception desk's counter, larger and cleaner: a glossy white statue of a standing bull moose with broad palmate antlers, body side-on, head turned slightly toward the viewer, on four legs on a low white base resting flat on the counter top, in the flat illustration style with a pale grey shaded side and no outline. About one and a half times its current size: its antlers reach up to the top of the outline, its base sits on the counter where the current statue's feet are. It stays on the counter, clear of the desk's dark monitor to its left, drawn in the room's high overhead three-quarter view."
+   ]
+  },
+  "front": {
+   "rect": [
+    140,
+    440,
+    612,
+    408
+   ],
+   "polygons": [
+    [
+     [
+      165,
+      472
+     ],
+     [
+      296,
+      472
+     ],
+     [
+      296,
+      558
+     ],
+     [
+      165,
+      558
+     ]
+    ],
+    [
+     [
+      594,
+      472
+     ],
+     [
+      730,
+      472
+     ],
+     [
+      730,
+      558
+     ],
+     [
+      594,
+      558
+     ]
+    ],
+    [
+     [
+      256,
+      558
+     ],
+     [
+      332,
+      558
+     ],
+     [
+      332,
+      744
+     ],
+     [
+      256,
+      744
+     ]
+    ],
+    [
+     [
+      554,
+      558
+     ],
+     [
+      630,
+      558
+     ],
+     [
+      630,
+      744
+     ],
+     [
+      554,
+      744
+     ]
+    ]
+   ],
+   "keep": "the loft floor and its desks, the loft's front railing between the two staircases, both staircases below the upper outlines, the arched double front doors, the glass walls along the hall leading in from the doors, the potted plants beside the stairs and the floor outside the outlines",
+   "fixes": [
+    "Inside the two upper outlines, open the top of each curved staircase onto the loft: remove the mesh railing panel and the dark front beam that cross the top of the stair, so the stair's top treads continue up and land flush on the loft's pale wood floor, with open floor beyond them. The stair's two slim steel handrails run up both sides of the treads to the loft floor and end there at a short post each; the loft's front railing stops at a post beside each stair top. Both staircases are opened the same way, in mirror image.",
+    "Inside the two lower outlines, the two small offices beneath the loft lose their glass fronts: remove the glass panes and the steel frames across the front of each office, facing the viewer, so each office is open to the lobby, its desk, teal chair and pale floor seen directly with the honey plank floor running straight in. Keep the glass walls that run along the hall from the front doors into the lobby, the office's side facing the doors, unchanged."
+   ]
+  }
+ }
+}

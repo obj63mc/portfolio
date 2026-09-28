@@ -1,0 +1,27 @@
+{
+ "round": 3,
+ "base": "rounds/base-3.png",
+ "tiles": [
+  {
+   "name": "stairs3",
+   "rect": [
+    0,
+    300,
+    640,
+    427
+   ],
+   "loops": [],
+   "repaintPx": 69875,
+   "edit": true
+  }
+ ],
+ "stamps": [],
+ "paints": [],
+ "restore": [],
+ "blurThreshold": 28,
+ "bridges": [],
+ "sandfills": [],
+ "tones": [],
+ "shorebands": [],
+ "roadbands": []
+}
