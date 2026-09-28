@@ -6,7 +6,8 @@
 
 Each tile of the round becomes one asset per variant (<scene>-fix-r<N>-<tile><v>) whose references are the tile and
 its red-outlined copy, and whose prompt is the preamble, the tile's numbered fix list and a strict-registration line
-(naming the tile's optional "keep" text, the objects that must not move). The manifest is written next to the spec as
+(naming the tile's optional "keep" text, the objects that must not move). A tile's optional "references" (repo paths,
+such as brand logos under art/references/local/brands/) follow the two tile images; its fixes cite them as reference 3 on. The manifest is written next to the spec as
 rounds/codex-<N>.json. Outputs land in art/sources/<scene>-fix-r<N>-<tile><v>.png; copy the one you keep to
 tiles/t-<tile>-model.png, then run tiles.py stitch (its drift check rejects a zoomed or panned output)."""
 import json, os, sys
@@ -42,7 +43,8 @@ for name, t in spec['tiles'].items():
     fixes = '\n'.join(f'{i + 1}. {f}' for i, f in enumerate(t['fixes']))
     for v in variants:
         assets.append({'id': f'{SCENE}-fix-r{n}-{name}{v}', 'kind': 'reference', 'scene': SCENE, 'size': size,
-                       'references': [f'art/sources/{SCENE}-fix/tiles/t-{name}.png', f'art/sources/{SCENE}-fix/tiles/t-{name}-marked.png'],
+                       'references': [f'art/sources/{SCENE}-fix/tiles/t-{name}.png', f'art/sources/{SCENE}-fix/tiles/t-{name}-marked.png',
+                                      *t.get('references', [])],  # e.g. brand logos the fixes name as reference 3 onward (five at most)
                        'prompt': f'{PRE}\n{fixes}\n{reg}'})
 out = f'{D}/rounds/codex-{n}.json'
 json.dump({'version': 1, 'style': 'art/style.txt', 'references': [], 'assets': assets}, open(out, 'w'), indent=1)

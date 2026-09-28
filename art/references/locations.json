@@ -680,6 +680,453 @@
         }
       ],
       "note": "Overworld fill scenery between the key scenes (issue 04): architecture reference for the regional edits; position on the map is compressed, not surveyed."
+    },
+    {
+      "location": "brands",
+      "name": "Client and employer logos for the interiors (issue 05)",
+      "note": "Brand marks cleared by Joe for display in the portfolio; local references for the image model only, never committed or shipped. Each logo is redrawn in the scene style. Vector sources sit beside their PNG renders as .svg; white marks are flattened onto a plain dark background.",
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/brands/bacardi.png",
+          "authors": [
+            {
+              "displayName": "Bacardi Limited logo (bat emblem)",
+              "uri": "https://en.wikipedia.org/wiki/File:Bacardi_Limited_(logo).svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/bacardi-wordmark.png",
+          "authors": [
+            {
+              "displayName": "Bacardi wordmark",
+              "uri": "https://commons.wikimedia.org/wiki/File:Bacardi_-_wordmark_(Cuba,_2013-).svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/grey-goose.png",
+          "authors": [
+            {
+              "displayName": "Grey Goose logo",
+              "uri": "https://en.wikipedia.org/wiki/File:Grey_Goose_(vodka,_logo).svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/new-amsterdam.png",
+          "authors": [
+            {
+              "displayName": "New Amsterdam Vodka logo",
+              "uri": "https://www.newamsterdamvodka.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/camarena.png",
+          "authors": [
+            {
+              "displayName": "Camarena Tequila logo",
+              "uri": "https://www.tequilacamarena.com/images/logo.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/barefoot.png",
+          "authors": [
+            {
+              "displayName": "Barefoot Wine logo",
+              "uri": "https://www.barefootwine.com/on/demandware.static/-/Sites-barefoot-Library/default/dw3ed4d6b8/age-gate-logo/logo.png"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/bud-light.png",
+          "authors": [
+            {
+              "displayName": "Bud Light logo (third-party vector; budlight.com blocks automated access)",
+              "uri": "https://worldvectorlogo.com/logo/bud-light"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/ej-brandy.png",
+          "authors": [
+            {
+              "displayName": "E&J Brandy logo",
+              "uri": "https://www.ejbrandy.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/ej-brandy-emblem.png",
+          "authors": [
+            {
+              "displayName": "E&J Brandy emblem",
+              "uri": "https://www.ejbrandy.com/images/emblem.png"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/pink-whitney.png",
+          "authors": [
+            {
+              "displayName": "Pink Whitney logo",
+              "uri": "https://www.pinkwhitney.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/rumchata.png",
+          "authors": [
+            {
+              "displayName": "RumChata logo (Brandfetch vector)",
+              "uri": "https://brandfetch.com/rumchata.com"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/soonhari.png",
+          "authors": [
+            {
+              "displayName": "Soonhari logo (stacked)",
+              "uri": "https://soonhariusa.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/soonhari-horizontal.png",
+          "authors": [
+            {
+              "displayName": "Soonhari logo (horizontal)",
+              "uri": "https://soonhariusa.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/side-project.png",
+          "authors": [
+            {
+              "displayName": "Side Project Brewing logo",
+              "uri": "https://www.sideprojectbrewing.com/cdn/shop/files/SideProject_LOGO_800px.png"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/cohiba.png",
+          "authors": [
+            {
+              "displayName": "Cohiba logo",
+              "uri": "https://www.cohiba.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/macanudo.png",
+          "authors": [
+            {
+              "displayName": "Macanudo logo",
+              "uri": "https://www.macanudo.com/images/logo.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/macanudo-horizontal.png",
+          "authors": [
+            {
+              "displayName": "Macanudo logo (horizontal)",
+              "uri": "https://www.macanudo.com/images/logo-horizontal.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/partagas.png",
+          "authors": [
+            {
+              "displayName": "Partagás logo",
+              "uri": "https://www.partagas.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/la-gloria-cubana.png",
+          "authors": [
+            {
+              "displayName": "La Gloria Cubana logo",
+              "uri": "https://www.lagloriacubana.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/punch.png",
+          "authors": [
+            {
+              "displayName": "Punch Cigars logo",
+              "uri": "https://www.punchcigars.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/stg.png",
+          "authors": [
+            {
+              "displayName": "Scandinavian Tobacco Group lion mark",
+              "uri": "https://www.st-group.com/images/stg_lion.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/stg-wordmark.png",
+          "authors": [
+            {
+              "displayName": "Scandinavian Tobacco Group wordmark",
+              "uri": "https://www.st-group.com/images/stg_logotype.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/paypal.png",
+          "authors": [
+            {
+              "displayName": "PayPal logo (2024)",
+              "uri": "https://commons.wikimedia.org/wiki/File:PayPal_2024.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/venmo.png",
+          "authors": [
+            {
+              "displayName": "Venmo logo",
+              "uri": "https://commons.wikimedia.org/wiki/File:Venmo_Logo.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/universal-home.png",
+          "authors": [
+            {
+              "displayName": "Universal Pictures Home Entertainment logo",
+              "uri": "https://en.wikipedia.org/wiki/File:Universal_Pictures_Home_Entertainment_(2021).svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/fast-five.png",
+          "authors": [
+            {
+              "displayName": "Fast Five title logo",
+              "uri": "https://commons.wikimedia.org/wiki/File:Fast-Five-logo.png"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/fast-five-poster.jpg",
+          "authors": [
+            {
+              "displayName": "Fast Five theatrical poster (the one on Wikipedia)",
+              "uri": "http://www.impawards.com/2011/fast_five_ver5.html"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/snow-white-huntsman-poster.jpg",
+          "authors": [
+            {
+              "displayName": "Snow White and the Huntsman theatrical poster",
+              "uri": "http://www.impawards.com/2012/snow_white_and_the_huntsman_ver14.html"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/lorax-poster.jpg",
+          "authors": [
+            {
+              "displayName": "The Lorax (2012) teaser poster",
+              "uri": "http://www.impawards.com/2012/lorax.html"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/moosylvania.png",
+          "authors": [
+            {
+              "displayName": "Moosylvania logo",
+              "uri": "https://moosylvania.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/moosylvania-icon.png",
+          "authors": [
+            {
+              "displayName": "Moosylvania moose icon (three-pillar mark, Brandfetch vector)",
+              "uri": "https://brandfetch.com/moosylvania.com"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/slu.png",
+          "authors": [
+            {
+              "displayName": "Saint Louis University logo",
+              "uri": "https://en.wikipedia.org/wiki/File:Saint_Louis_University_logo.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/slu-seal.png",
+          "authors": [
+            {
+              "displayName": "Saint Louis University seal",
+              "uri": "https://en.wikipedia.org/wiki/File:Saint_Louis_University_seal.png"
+            }
+          ]
+        }
+      ],
+      "checked": "2026-09-26"
+    },
+    {
+      "location": "home-video-sites",
+      "name": "Universal home-video launch sites Joe built at Moosylvania (Foundry, issue 05)",
+      "note": "Wayback Machine captures rendered with headless Chrome at 1280 x 2000 (the if_ view, without the Wayback toolbar). Each release reused the theatrical domain for an HTML home-video page; launch captures show the pre-order state and later ones the release. US street dates: Fast Five 2011-10-04, The Lorax 2012-08-07, Snow White and the Huntsman 2012-09-11. Video players and Flash games were not archived. Local references only, never committed or shipped.",
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/home-video-sites/fast-five-2011-09-02-own-it-10-4.png",
+          "authors": [
+            {
+              "displayName": "Fast Five home-video site, pre-order (\"Own It 10/4\")",
+              "uri": "https://web.archive.org/web/20110902015557/http://www.fastfivemovie.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/fast-five-2011-10-14-own-it-now.png",
+          "authors": [
+            {
+              "displayName": "Fast Five home-video site after release (\"Own It Now\")",
+              "uri": "https://web.archive.org/web/20111014003434/http://www.fastfivemovie.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/fast-five-2011-10-05-offers.png",
+          "authors": [
+            {
+              "displayName": "Fast Five retailer offers page (some images not archived)",
+              "uri": "https://web.archive.org/web/20111005211035/http://www.fastfivemovie.com/offers/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/fast-five-speed-to-the-safe-2011-09-23.png",
+          "authors": [
+            {
+              "displayName": "Fast Five \"Speed to the Safe\" game site (Flash game not archived)",
+              "uri": "https://web.archive.org/web/20110923151946/http://fast5safe.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/snow-white-2012-08-30-own-it-9-11.png",
+          "authors": [
+            {
+              "displayName": "Snow White and the Huntsman home-video site, pre-order (\"Own It 9/11\")",
+              "uri": "https://web.archive.org/web/20120830122213/http://www.snowwhiteandthehuntsman.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/snow-white-2012-10-18-own-it-now.png",
+          "authors": [
+            {
+              "displayName": "Snow White and the Huntsman home-video site after release (header art not archived)",
+              "uri": "https://web.archive.org/web/20121018192738/http://www.snowwhiteandthehuntsman.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/snow-white-conquer-the-kingdom-2012-08-31.png",
+          "authors": [
+            {
+              "displayName": "Snow White \"Conquer the Kingdom\" game site (Flash parts not archived)",
+              "uri": "https://web.archive.org/web/20120831010422/http://www.snowwhitekingdom.com/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/lorax-2012-07-30-available-8-7.png",
+          "authors": [
+            {
+              "displayName": "The Lorax home-video site, pre-order (\"Available 8/7\")",
+              "uri": "https://web.archive.org/web/20120730021219/http://www.theloraxmovie.com/index.php"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/lorax-2012-08-16-available-now.png",
+          "authors": [
+            {
+              "displayName": "The Lorax home-video site after release (\"Available Now\")",
+              "uri": "https://web.archive.org/web/20120816155403/http://www.theloraxmovie.com/index.php"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/lorax-2012-07-18-retailers.png",
+          "authors": [
+            {
+              "displayName": "The Lorax retailer exclusives page",
+              "uri": "https://web.archive.org/web/20120718232120/http://theloraxmovie.com/retailers/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/lorax-2012-07-27-partners.png",
+          "authors": [
+            {
+              "displayName": "The Lorax partner offers page (HP, Energy Star, Ad Council, Draw Something)",
+              "uri": "https://web.archive.org/web/20120727045131/http://theloraxmovie.com/partners/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/lorax-2012-08-26-partners.png",
+          "authors": [
+            {
+              "displayName": "The Lorax partner offers page after release (GE, Sun-Maid, Converse added)",
+              "uri": "https://web.archive.org/web/20120826175634/http://theloraxmovie.com/partners/"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/moosylvania-2012-05-19-case-study-fast-five.png",
+          "authors": [
+            {
+              "displayName": "Moosylvania case study: Fast Five on Blu-ray and DVD (stylesheet not archived)",
+              "uri": "https://web.archive.org/web/20120519180618/http://www.moosylvania.com/case-studies/study/Fast+Five+Speed+To+The+Safe"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/moosylvania-2013-09-04-case-study-snow-white.png",
+          "authors": [
+            {
+              "displayName": "Moosylvania case study: Snow White and the Huntsman home release",
+              "uri": "https://web.archive.org/web/20130904000341/http://www.moosylvania.com/case-studies/study/universal"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/home-video-sites/moosylvania-2013-05-01-work.png",
+          "authors": [
+            {
+              "displayName": "Moosylvania work page listing the Fast Five, Snow White and Lorax work",
+              "uri": "https://web.archive.org/web/20130501/http://www.moosylvania.com/work/"
+            }
+          ]
+        }
+      ]
     }
   ],
   "slu": {
