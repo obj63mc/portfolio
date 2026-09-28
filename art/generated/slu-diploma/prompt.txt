@@ -4,10 +4,10 @@ REFERENCE ROLES: First illustration is the style/palette reference. Real locatio
 
 
 ASSET: slu-diploma
-Extract ONLY the small framed cream diploma on the lobby wall to the left of the large dark display. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.
+Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.
 
-Target image size: 1024x1152. Keep the entire object within the frame with a clean margin.
+Target aspect ratio and size: 808x1100. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/slu-diploma/2026-09-24T20-35-54.452Z/registration.png
+2. <repo>/art/runs/slu-diploma/2026-09-28T15-00-28.714Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

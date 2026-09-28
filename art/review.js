@@ -2,9 +2,17 @@ const $ = (id) => document.getElementById(id);
 const world = $('world'), phone = $('phone');
 const ctx = world.getContext('2d'), pc = phone.getContext('2d'), rc = $('rigview').getContext('2d');
 const cache = new Map();
-let data, scene, camera, reaction = -10000, last = 0, dirty = true, lastFrame = 0;
+let data, scene, camera, walk = {}, reaction = -10000, last = 0, dirty = true, lastFrame = 0;
 const enabled = (id) => $(id).checked;
 const overlap = (a,b) => a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+// Walk-behind scenery (spec): the side the cursor steps onto an outline from, above or below its front line, holds
+// until it steps off: behind is drawn under the cut-out and cannot use its props, in front is drawn over it and can.
+const inside = (p,poly) => {let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)c=!c;}return c;};
+const frontY = (f,x) => {if(x<=f[0].x)return f[0].y;for(let i=1;i<f.length;i++)if(x<=f[i].x)return f[i-1].y+(f[i].y-f[i-1].y)*(x-f[i-1].x)/(f[i].x-f[i-1].x);return f[f.length-1].y;};
+function stepTo(p) {
+  for(const w of scene.walkBehind??[]){if(!inside(p,w.outline))delete walk[w.key];else walk[w.key]??=p.y>=frontY(w.front,p.x)?'front':'behind';}
+  camera=p;dirty=true;updateStatus();
+}
 function load(path) {
   if (!cache.has(path)) {
     const image = new Image(); image.onload=()=>{dirty=true;}; image.src = path;
@@ -85,6 +93,7 @@ function draw(time) {
   }
   // A cursor silhouette makes occlusion testable between scenery and foreground scenery.
   cursorShape(ctx,camera.x,camera.y,36);
+  for(const w of scene.walkBehind??[])if(walk[w.key]==='behind'){const a=data.assets.find(a=>a.id===w.key);if(a)drawImage(ctx,`generated/${a.file}`,scene.layers.find(l=>l.asset===w.key)?.rect??w.rect);}
   if(enabled('foreground')&&!showMaster)for(const layer of scene.layers.filter(l=>l.kind==='foreground')){const a=data.assets.find(a=>a.id===layer.asset);drawImage(ctx,`generated/${a.file}`,layer.rect);}
   if(enabled('depth'))for(const [i,d] of scene.depth.entries()){
     // Tinted so the tiling reads; the horizon should sit at the treeline, and the sample cursors (own size, 1.25 x 32 x d)
@@ -98,6 +107,11 @@ function draw(time) {
   if(enabled('rects')){
     for(const p of scene.props??[])rect(p.rect,'#31be82',p.id);
     for(const f of scene.foreground??[])rect(f.rect,'#e083b9',f.key);
+    ctx.setLineDash([8*k(),5*k()]);ctx.lineWidth=2*k();
+    for(const w of scene.walkBehind??[])for(const [points,color,closed] of [[w.outline,'#e083b9',true],[w.front,'#55d6e5',false]]){
+      ctx.strokeStyle=color;ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));if(closed)ctx.closePath();ctx.stroke();
+    }
+    ctx.setLineDash([]);
   }
   if(enabled('draftRects')){
     ctx.setLineDash([9,6]);
@@ -122,7 +136,8 @@ function updateStatus(){
   const fits=sign&&sign.rect.x>=f.x&&sign.rect.x+sign.rect.w<=f.x+f.w&&sign.rect.y>=f.y&&sign.rect.y+sign.rect.h<=f.y+f.h;
   const conflicts=(scene.artForeground??scene.foreground??[]).flatMap(a=>(scene.artProps??scene.props??[]).filter(b=>overlap(a.rect,b.rect)).map(b=>`${a.key} overlaps ${b.id}`));
   const missing=data.pending.filter(id=>id===scene.id);
-  $('status').textContent=`${scene.w} × ${scene.h} world px. ${sign?'Signpost in phone frame: '+(fits?'PASS':'FAIL')+'. ':''}${conflicts.length?'Foreground conflicts: '+conflicts.join(', ')+'. Foreground scenery must not cover a prop.':'No foreground/prop rectangle overlaps.'}\n`+
+  const sides=(scene.walkBehind??[]).filter(w=>walk[w.key]).map(w=>`${walk[w.key]==='behind'?'behind':'in front of'} ${w.key}${w.props.length?` (${w.props.join(', ')} ${walk[w.key]==='behind'?'not usable':'usable'})`:''}`);
+  $('status').textContent=`${scene.w} × ${scene.h} world px. ${sign?'Signpost in phone frame: '+(fits?'PASS':'FAIL')+'. ':''}${conflicts.length?'Foreground conflicts: '+conflicts.join(', ')+'. Foreground scenery must not cover a prop.':'No foreground/prop rectangle overlaps.'}${sides.length?` Cursor ${sides.join(', ')}.`:''}\n`+
     (missing.length?'Background not generated yet. ':'')+'Production overlays read directly from src/lib/scenes; draft rects follow the composed artwork. Maplewood is part of the overworld.';
 }
 function edgeFacts(image){
@@ -134,7 +149,7 @@ function edgeFacts(image){
   return `${magenta} magenta pixels at ≥50% alpha · ${alpha} partial-alpha pixels · ${white} white fringe candidates`;
 }
 function selectScene(){
-  scene=data.scenes.find(s=>s.id===$('scene').value);camera={...scene.arrival};world.width=scene.w;world.height=scene.h;dirty=true;
+  scene=data.scenes.find(s=>s.id===$('scene').value);camera={...scene.arrival};walk={};world.width=scene.w;world.height=scene.h;dirty=true;
   $('rig-section').hidden=scene.rigInstances.length===0;
   $('comparison').src=`generated/${scene.id}-master/image.webp`;
   $('assets').replaceChildren();
@@ -148,10 +163,14 @@ function selectScene(){
   updateStatus();
 }
 $('scene').addEventListener('change',selectScene);
-$('reset').onclick=()=>{camera={...scene.arrival};dirty=true;updateStatus();};
+$('reset').onclick=()=>{walk={};stepTo({...scene.arrival});};
 $('react').onclick=()=>{reaction=performance.now();dirty=true;};
 document.querySelectorAll('input,select').forEach(control=>control.addEventListener('change',()=>{dirty=true;}));
-world.onclick=(event)=>{const r=world.getBoundingClientRect();camera={x:(event.clientX-r.left)*scene.w/r.width,y:(event.clientY-r.top)*scene.h/r.height};dirty=true;updateStatus();};
+const at=(event)=>{const r=world.getBoundingClientRect();return {x:(event.clientX-r.left)*scene.w/r.width,y:(event.clientY-r.top)*scene.h/r.height};};
+// A click places the cursor as if it arrived there; with Walk on, moving the mouse walks it, so stepping onto a desk from
+// behind or in front can be tried.
+world.onclick=(event)=>{walk={};stepTo(at(event));};
+world.onmousemove=(event)=>{if(enabled('walk'))stepTo(at(event));};
 $('save').onclick=()=>{
   const report={scene:scene.id,date:new Date().toISOString(),notes:$('notes').value,geometry:$('status').textContent,assetHashes:Object.fromEntries(data.assets.filter(a=>a.scene===scene.id).map(a=>[a.id,a.source.sha256]))};
   const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`${scene.id}-review.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('saved').textContent='Save under art/reviews/ with your visual verdict.';

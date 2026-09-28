@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "473053b3d55a7dede370971ffe15e282147c6b66b051c5cfa1e305b712ede27d",
+  "run": "art/runs/slu-whiteboard/2026-09-28T15-31-35.249Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "slu-master",
+    "referenceSha256": "ca944b04bb4ce188b9de5555e33fea8223029ef933c3f419d5068e02c50c2dd3",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

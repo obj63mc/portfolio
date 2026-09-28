@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "7bbb5e576dcc0278e62a07b6113306708af6b3d076709b32463f793a122427c4",
+  "run": "art/runs/slu-desk-front-right/2026-09-28T15-31-38.952Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "slu-master",
+    "referenceSha256": "ca944b04bb4ce188b9de5555e33fea8223029ef933c3f419d5068e02c50c2dd3",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

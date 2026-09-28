@@ -22,7 +22,7 @@ A written spec for the site plus locked stack decisions (SvelteKit static, realt
   - Every device opens on a modal Join card; nothing moves or is sent until Join. Desktop uses pointer lock, as Cursor Camp does. The Join click locks the pointer, and Esc or leaving the window pauses until Resume. Arrow keys and WASD move the cursor like the mouse, and the camera follows by edge-push only. Drag is touch only.
   - Every scene, sub-scenes included, has its own rooms of up to 60 visitors. Cursor shows a GeoIP flag plus one cosmetic granted by a prop. Cosmetics and progress persist in localStorage.
   - Only a small set of props are shared, server-authoritative state; the rest are local.
-  - Sound: a bed per district, river and sub-scene, an overworld theme plus diegetic music, and prop sounds; on by default from the Join press, with a toggle to turn it off. Depth is horizon scaling, foreground scenery and the river current, with no general Z-sorting.
+  - Sound: a bed per district, river and sub-scene, an overworld theme plus diegetic music, and prop sounds; on by default from the Join press, with a toggle to turn it off. Depth is horizon scaling, foreground scenery, walk-behind scenery (the SLU lab's desks, 2026-09-28) and the river current, with no general Z-sorting.
   - ADRs so far: 0001 single zoom with world coordinates, 0002 canvas-native props, 0003 canvas-drawn props with DOM hit targets, 0004 one Durable Object for every room (superseded), 0005 one Durable Object per room with 60 visitors per room.
 
 ## Decisions so far

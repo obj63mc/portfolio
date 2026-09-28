@@ -55,6 +55,10 @@ _Avoid_: background, decoration, set dressing, filler
 Scenery drawn in front of every cursor, the visitor's own included, such as a near tree or a lamp post. Never a prop, and never covers one.
 _Avoid_: occluder, foreground layer, overlay, z-index
 
+**Walk-behind scenery**:
+Scenery a cursor can pass behind or in front of, such as a lab desk with its monitor and chair. The side a cursor steps onto it from decides which, until it steps off; a prop standing on it can be used only from in front.
+_Avoid_: occluder, z-sorting, depth sorting, furniture layer
+
 **Cosmetic**:
 A decoration a prop grants to a visitor's cursor, such as a graduation cap or antlers, visible to everyone in the room. A cursor wears one cosmetic at a time, the most recently granted; earning a new one replaces the worn one.
 _Avoid_: badge, item, unlock, accessory

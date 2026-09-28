@@ -47,5 +47,6 @@ export const SIDE_PROJECT: SubScene = {
 	],
 	exit: { x: 100, y: 1000, w: 120, h: 220 },
 	depth: [{ rect: { x: 0, y: 0, w: 2845, h: 1600 }, horizonY: 500, foregroundY: 1600 }],
-	foreground: []
+	foreground: [],
+	walkBehind: []
 };

@@ -67,6 +67,21 @@ export interface Cutout {
 	rect: Rect;
 }
 
+/**
+ * Walk-behind scenery: a keyed cut-out, such as a lab desk with its monitor and chair, that a cursor passes behind or in
+ * front of. The side a cursor steps onto the outline from decides: from above the front line it is behind, drawn under
+ * the cut-out, and cannot use the props standing on it; from on or below the line it is in front, drawn over it, and
+ * can use them. It keeps that side until it steps off the outline.
+ */
+export interface WalkBehind extends Cutout {
+	/** Where a cursor is on the scenery. */
+	outline: Point[];
+	/** The front feet, left to right. The line's y at the cursor's x (flat past either end) splits behind from in front. */
+	front: Point[];
+	/** Ids of the props standing on it. */
+	props: string[];
+}
+
 interface SceneBase {
 	id: string;
 	title: string;
@@ -97,4 +112,6 @@ export interface SubScene extends SceneBase {
 	district: string;
 	props: Prop[];
 	exit: Rect;
+	/** Back to front, the order they are drawn in. */
+	walkBehind: WalkBehind[];
 }

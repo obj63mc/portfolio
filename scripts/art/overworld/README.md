@@ -3,7 +3,7 @@
 Tools for repairing a scene's master after it is accepted: built for the overworld, and used the same way for the five
 interiors. Every tool takes the scene from `SCENE=<id>` (`overworld` when unset; `moosylvania`, `slu`, `foundry`,
 `side-project`, `brennans`). The data lives in `art/sources/<scene>-fix/`: `stitched.png` is the editable native master
-(1983 × 793 for the [overworld](../../../art/sources/overworld-fix/), 2048 × 1152 for an interior),
+(1983 × 793 for the [overworld](../../../art/sources/overworld-fix/), 2048 × 1152 for an interior, 1672 × 941 for the SLU lab),
 `rounds/round-N.json` the round specs, `tiles/` and `tilemap.json` the current round's working set. Each scene's background
 is its `stitched.png` upscaled 4×; see [the art workflow](../../../art/README.md), "Filling the map and sharpening it" and
 "Interiors". Every command runs from any directory.

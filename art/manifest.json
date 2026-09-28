@@ -957,11 +957,11 @@
       }
     },
     {
-      "id": "slu-workstation",
+      "id": "slu-whiteboard",
       "scene": "slu",
       "kind": "prop",
-      "prompt": "Extract ONLY the front bright cyan computer monitor, its black frame and stand seen through the classroom glass on the LEFT of the double doors. No glass mullions, no desk, no chair. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
-      "size": "1024x1024",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "1868x1592",
       "references": [],
       "dependsOn": [
         "slu-master"
@@ -969,39 +969,113 @@
       "registration": {
         "asset": "slu-master",
         "rect": {
-          "x": 1729.50439453125,
-          "y": 548.71826171875,
-          "w": 222.265625,
-          "h": 222.265625
-        }
-      }
+          "x": 621.07,
+          "y": 0.0,
+          "w": 794.63,
+          "h": 676.73
+        },
+        "mask": [
+          [
+            0.0086,
+            0.2437
+          ],
+          [
+            0.97,
+            0.0
+          ],
+          [
+            0.9743,
+            0.6281
+          ],
+          [
+            0.9936,
+            0.6357
+          ],
+          [
+            0.9936,
+            0.6583
+          ],
+          [
+            0.0364,
+            0.9925
+          ],
+          [
+            0.0064,
+            0.9799
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
+    },
+    {
+      "id": "slu-workstation",
+      "scene": "slu",
+      "kind": "prop",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "712x596",
+      "references": [],
+      "dependsOn": [
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 782.72,
+          "y": 1011.69,
+          "w": 302.88,
+          "h": 253.35
+        },
+        "mask": [
+          [
+            0.0225,
+            0.2819
+          ],
+          [
+            0.9663,
+            0.0201
+          ],
+          [
+            0.9831,
+            0.047
+          ],
+          [
+            0.9831,
+            0.6644
+          ],
+          [
+            0.7303,
+            0.745
+          ],
+          [
+            0.7191,
+            0.8591
+          ],
+          [
+            0.3539,
+            0.9799
+          ],
+          [
+            0.2697,
+            0.8993
+          ],
+          [
+            0.0449,
+            0.9732
+          ],
+          [
+            0.0169,
+            0.9463
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
     },
     {
       "id": "slu-diploma",
       "scene": "slu",
       "kind": "prop",
-      "prompt": "Extract ONLY the small framed cream diploma on the lobby wall to the left of the large dark display. This is a precise extraction of the final cropped illustration, not a new design. Preserve all visible pixels of the named object, its exact position and perspective. Do not complete portions clipped at the original scene edge. Everything else must become pure magenta #FF00FF or fully transparent. Do not include the floor, neighboring furniture, wall, glass wall, shadows or any rectangle of background.",
-      "size": "1024x1152",
-      "references": [],
-      "dependsOn": [
-        "slu-master"
-      ],
-      "registration": {
-        "asset": "slu-master",
-        "rect": {
-          "x": 486.2060546875,
-          "y": 368.12744140625,
-          "w": 222.265625,
-          "h": 250.048828125
-        }
-      }
-    },
-    {
-      "id": "slu-chair",
-      "scene": "slu",
-      "kind": "foreground",
       "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
-      "size": "1024x1024",
+      "size": "808x1100",
       "references": [],
       "dependsOn": [
         "slu-master"
@@ -1009,115 +1083,867 @@
       "registration": {
         "asset": "slu-master",
         "rect": {
-          "x": 125.0244140625,
-          "y": 847.3876953125,
-          "w": 555.6640625,
-          "h": 555.6640625
+          "x": 2368.56,
+          "y": 161.53,
+          "w": 343.71,
+          "h": 467.59
         },
         "mask": [
           [
-            0.0425,
-            0.10375
+            0.0149,
+            0.0218
           ],
           [
-            0.05375,
-            0.09125
+            0.0495,
+            0.0109
           ],
           [
-            0.1,
-            0.07375
+            0.9851,
+            0.2327
           ],
           [
-            0.47,
-            0.1025
+            0.9851,
+            0.9745
           ],
           [
-            0.5225,
-            0.11125
+            0.9455,
+            0.9891
           ],
           [
-            0.54625,
-            0.125
+            0.0149,
+            0.7382
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
+    },
+    {
+      "id": "slu-desk-front-left",
+      "scene": "slu",
+      "kind": "scenery",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "1280x1224",
+      "references": [],
+      "dependsOn": [
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 745.28,
+          "y": 578.11,
+          "w": 544.5,
+          "h": 520.3
+        },
+        "mask": [
+          [
+            0.225,
+            0.1405
           ],
           [
-            0.5525,
-            0.14375
+            0.7094,
+            0.0098
           ],
           [
-            0.59375,
-            0.31875
+            0.7188,
+            0.0196
           ],
           [
-            0.75,
-            0.3475
+            0.7156,
+            0.281
           ],
           [
-            0.905,
-            0.3775
+            0.7625,
+            0.2712
           ],
           [
-            0.93625,
-            0.39625
+            0.9906,
+            0.4575
           ],
           [
-            0.94625,
-            0.425
+            0.9906,
+            0.4869
           ],
           [
-            0.94875,
-            0.5525
+            0.9688,
+            0.4902
           ],
           [
-            0.93625,
-            0.5625
+            0.9688,
+            0.817
           ],
           [
-            0.94375,
-            0.69625
+            0.9219,
+            0.8235
           ],
           [
-            0.92125,
-            0.7
+            0.9219,
+            0.5
           ],
           [
-            0.88875,
-            0.58
+            0.8156,
+            0.5229
           ],
           [
-            0.58,
-            0.67125
+            0.8156,
+            0.6601
           ],
           [
-            0.55,
-            0.825
+            0.7906,
+            0.6699
           ],
           [
-            0.52,
-            0.82875
+            0.7875,
+            0.7516
           ],
           [
-            0.51375,
-            0.68125
+            0.7719,
+            0.7745
           ],
           [
-            0.18,
-            0.6075
+            0.7531,
+            0.7908
           ],
           [
-            0.1425,
-            0.73375
+            0.7188,
+            0.8399
           ],
           [
-            0.11125,
-            0.73375
+            0.7188,
+            0.8922
           ],
           [
-            0.12875,
-            0.59875
+            0.7719,
+            0.9444
           ],
           [
-            0.115,
-            0.5925
+            0.775,
+            0.9837
+          ],
+          [
+            0.7312,
+            0.9902
+          ],
+          [
+            0.6469,
+            0.9216
+          ],
+          [
+            0.6188,
+            0.8595
+          ],
+          [
+            0.475,
+            0.8725
+          ],
+          [
+            0.4188,
+            0.8693
+          ],
+          [
+            0.4125,
+            0.8399
+          ],
+          [
+            0.4375,
+            0.817
+          ],
+          [
+            0.3969,
+            0.7516
+          ],
+          [
+            0.3563,
+            0.7092
+          ],
+          [
+            0.3594,
+            0.6503
+          ],
+          [
+            0.3594,
+            0.6242
+          ],
+          [
+            0.2,
+            0.6569
+          ],
+          [
+            0.2,
+            0.9477
+          ],
+          [
+            0.1531,
+            0.951
+          ],
+          [
+            0.1531,
+            0.6667
+          ],
+          [
+            0.0781,
+            0.5523
+          ],
+          [
+            0.0781,
+            0.781
+          ],
+          [
+            0.0375,
+            0.7843
+          ],
+          [
+            0.0344,
+            0.4967
+          ],
+          [
+            0.0094,
+            0.4641
+          ],
+          [
+            0.0094,
+            0.4314
+          ],
+          [
+            0.225,
+            0.3856
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
+    },
+    {
+      "id": "slu-desk-front-right",
+      "scene": "slu",
+      "kind": "scenery",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "1280x1292",
+      "references": [],
+      "dependsOn": [
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 1594.36,
+          "y": 573.01,
+          "w": 544.5,
+          "h": 549.2
+        },
+        "mask": [
+          [
+            0.2281,
+            0.1331
+          ],
+          [
+            0.6469,
+            0.0093
+          ],
+          [
+            0.6656,
+            0.0217
+          ],
+          [
+            0.6656,
+            0.2477
+          ],
+          [
+            0.7281,
+            0.2322
+          ],
+          [
+            0.9906,
+            0.418
+          ],
+          [
+            0.9906,
+            0.4458
+          ],
+          [
+            0.9625,
+            0.452
+          ],
+          [
+            0.9594,
+            0.7585
+          ],
+          [
+            0.9156,
+            0.7647
+          ],
+          [
+            0.9156,
+            0.4644
+          ],
+          [
+            0.8031,
+            0.4954
+          ],
+          [
+            0.7969,
+            0.7059
+          ],
+          [
+            0.7656,
+            0.7276
+          ],
+          [
+            0.7594,
+            0.7585
+          ],
+          [
+            0.7188,
+            0.805
+          ],
+          [
+            0.7188,
+            0.8576
+          ],
+          [
+            0.7594,
+            0.9071
+          ],
+          [
+            0.7625,
+            0.9505
+          ],
+          [
+            0.7188,
+            0.9567
+          ],
+          [
+            0.6188,
+            0.9009
+          ],
+          [
+            0.575,
+            0.9536
+          ],
+          [
+            0.5719,
+            0.9907
+          ],
+          [
+            0.525,
+            0.9907
+          ],
+          [
+            0.5219,
+            0.9536
+          ],
+          [
+            0.425,
+            0.8947
+          ],
+          [
+            0.4219,
+            0.9164
+          ],
+          [
+            0.375,
+            0.9195
+          ],
+          [
+            0.3719,
+            0.8793
+          ],
+          [
+            0.4281,
+            0.8421
+          ],
+          [
+            0.425,
+            0.805
+          ],
+          [
+            0.4625,
+            0.7771
+          ],
+          [
+            0.4094,
+            0.709
+          ],
+          [
+            0.375,
+            0.6811
+          ],
+          [
+            0.375,
+            0.6533
+          ],
+          [
+            0.3875,
+            0.6347
+          ],
+          [
+            0.3875,
+            0.6037
+          ],
+          [
+            0.2719,
+            0.6378
+          ],
+          [
+            0.2687,
+            0.9195
+          ],
+          [
+            0.225,
+            0.9226
+          ],
+          [
+            0.225,
+            0.644
+          ],
+          [
+            0.0844,
+            0.5015
+          ],
+          [
+            0.0844,
+            0.7337
+          ],
+          [
+            0.0406,
+            0.7368
+          ],
+          [
+            0.0375,
+            0.4582
+          ],
+          [
+            0.0094,
+            0.4334
+          ],
+          [
+            0.0094,
+            0.4087
+          ],
+          [
+            0.2281,
+            0.356
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
+    },
+    {
+      "id": "slu-desk-back-left",
+      "scene": "slu",
+      "kind": "scenery",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "1500x1364",
+      "references": [],
+      "dependsOn": [
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 644.89,
+          "y": 1013.39,
+          "w": 638.08,
+          "h": 579.81
+        },
+        "mask": [
+          [
+            0.2293,
+            0.1202
+          ],
+          [
+            0.6693,
+            0.0088
+          ],
+          [
+            0.68,
+            0.0176
+          ],
+          [
+            0.68,
+            0.2111
+          ],
+          [
+            0.76,
+            0.1906
+          ],
+          [
+            0.992,
+            0.3842
+          ],
+          [
+            0.992,
+            0.4135
+          ],
+          [
+            0.968,
+            0.4252
+          ],
+          [
+            0.968,
+            0.7361
+          ],
+          [
+            0.9227,
+            0.7419
+          ],
+          [
+            0.9227,
+            0.434
+          ],
+          [
+            0.7867,
+            0.4721
+          ],
+          [
+            0.784,
+            0.6716
+          ],
+          [
+            0.7547,
+            0.7009
+          ],
+          [
+            0.752,
+            0.7331
+          ],
+          [
+            0.712,
+            0.7889
+          ],
+          [
+            0.7147,
+            0.8299
+          ],
+          [
+            0.7547,
+            0.8768
+          ],
+          [
+            0.76,
+            0.9238
+          ],
+          [
+            0.72,
+            0.9296
+          ],
+          [
+            0.6293,
+            0.8944
+          ],
+          [
+            0.5867,
+            0.9472
+          ],
+          [
+            0.5867,
+            0.9883
+          ],
+          [
+            0.544,
+            0.9912
+          ],
+          [
+            0.5413,
+            0.9472
+          ],
+          [
+            0.4453,
+            0.8886
+          ],
+          [
+            0.4453,
+            0.9179
+          ],
+          [
+            0.4,
+            0.9179
+          ],
+          [
+            0.3973,
+            0.8739
+          ],
+          [
+            0.4507,
+            0.8328
+          ],
+          [
+            0.448,
+            0.7889
+          ],
+          [
+            0.456,
+            0.7625
+          ],
+          [
+            0.3947,
+            0.6745
+          ],
+          [
+            0.3893,
+            0.6334
+          ],
+          [
+            0.4027,
+            0.6217
+          ],
+          [
+            0.4027,
+            0.5836
+          ],
+          [
+            0.24,
+            0.6305
+          ],
+          [
+            0.24,
+            0.9267
+          ],
+          [
+            0.2,
+            0.9326
+          ],
+          [
+            0.2,
+            0.6422
+          ],
+          [
+            0.08,
+            0.5044
+          ],
+          [
+            0.08,
+            0.7067
+          ],
+          [
+            0.04,
+            0.7126
+          ],
+          [
+            0.04,
+            0.4575
+          ],
+          [
+            0.008,
+            0.4252
+          ],
+          [
+            0.008,
+            0.393
+          ],
+          [
+            0.2293,
+            0.3343
+          ]
+        ]
+      },
+      "deriveFrom": "slu-master"
+    },
+    {
+      "id": "slu-desk-back-right",
+      "scene": "slu",
+      "kind": "scenery",
+      "prompt": "Extract the original object pixels from the approved composition using the measured crop matte. Preserve the composition coordinate system and all interior color pixels. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "size": "1384x1400",
+      "references": [],
+      "dependsOn": [
+        "slu-master"
+      ],
+      "registration": {
+        "asset": "slu-master",
+        "rect": {
+          "x": 1915.95,
+          "y": 972.58,
+          "w": 588.74,
+          "h": 595.11
+        },
+        "mask": [
+          [
+            0.2168,
+            0.1286
+          ],
+          [
+            0.6474,
+            0.0086
+          ],
+          [
+            0.659,
+            0.02
+          ],
+          [
+            0.659,
+            0.2143
+          ],
+          [
+            0.7168,
+            0.2
+          ],
+          [
+            0.9913,
+            0.3943
+          ],
+          [
+            0.9913,
+            0.4229
+          ],
+          [
+            0.9624,
+            0.4314
+          ],
+          [
+            0.9595,
+            0.7371
+          ],
+          [
+            0.9191,
+            0.7429
+          ],
+          [
+            0.9191,
+            0.4429
+          ],
+          [
+            0.7919,
+            0.48
+          ],
+          [
+            0.789,
+            0.6686
+          ],
+          [
+            0.7572,
+            0.7029
+          ],
+          [
+            0.7486,
+            0.7429
+          ],
+          [
+            0.7052,
+            0.7943
+          ],
+          [
+            0.711,
+            0.8371
+          ],
+          [
+            0.763,
+            0.8914
+          ],
+          [
+            0.7659,
+            0.9314
+          ],
+          [
+            0.7254,
+            0.9343
+          ],
+          [
+            0.604,
+            0.8829
+          ],
+          [
+            0.5983,
+            0.9657
+          ],
+          [
+            0.5838,
+            0.9914
+          ],
+          [
+            0.5549,
+            0.9886
+          ],
+          [
+            0.5462,
+            0.9571
+          ],
+          [
+            0.5549,
+            0.9029
+          ],
+          [
+            0.4306,
+            0.8971
+          ],
+          [
+            0.4191,
+            0.9286
+          ],
+          [
+            0.3844,
+            0.9257
+          ],
+          [
+            0.3844,
+            0.8914
+          ],
+          [
+            0.4335,
+            0.8086
+          ],
+          [
+            0.4364,
+            0.7857
+          ],
+          [
+            0.3728,
+            0.6829
+          ],
+          [
+            0.3699,
+            0.6486
+          ],
+          [
+            0.3931,
+            0.6286
+          ],
+          [
+            0.3931,
+            0.5943
+          ],
+          [
+            0.2832,
+            0.6257
+          ],
+          [
+            0.2832,
+            0.9057
+          ],
+          [
+            0.2428,
+            0.9086
+          ],
+          [
+            0.2428,
+            0.6343
+          ],
+          [
+            0.078,
+            0.4657
+          ],
+          [
+            0.078,
+            0.68
+          ],
+          [
+            0.0376,
+            0.6829
+          ],
+          [
+            0.0347,
+            0.4286
+          ],
+          [
+            0.0087,
+            0.4
+          ],
+          [
+            0.0087,
+            0.3714
+          ],
+          [
+            0.2168,
+            0.32
           ]
         ]
       },
@@ -1453,10 +2279,11 @@
       "id": "slu-master",
       "scene": "slu",
       "kind": "reference",
-      "prompt": "Create one fully composed illustrated interior, 2048x1152, 16:9, looking gently downward into the room from its entry, all furniture obeying ONE camera and common floor plane. Use the supplied PHOTOS for the actual architecture, room proportions, furniture style and relative arrangement. Use the FIRST illustration only for the simple flat shape language and bright saturated palette. Translate the photographed interior into the illustration, do not invent a generic brown room. Clean flat solid fills with white/ivory and cool daylight, cyan/teal accents, sunny yellow and fresh green where appropriate; brown confined to actual wood/brick. No sepia wash. No people, no readable text/logos, no photographic texture or gradients. Fully furnish the scene NOW, including the specified objects in their natural places, so it reads as one coherent room. Objects will later be extracted in place. Do not scatter items across an empty floor. Actual McDonnell Douglas Hall at Saint Louis University, 3450 Lindell, using SLU's verified lobby photo. This is a modern university lobby beside the Oliver and Eleze Boileau computer classroom, NOT a Gothic brick church or clocktower room. Match the photographed cream-white walls, light blond double classroom doors, large glass sidelights revealing orderly rows of computer desks and blue screens, simple rectangular gray upholstered lounge seating beneath wall-mounted dark display. Widen gently to show lobby at left and glass-fronted computer teaching room at right in same perspective. Cool gray floor, white ceiling LED panels, restrained SLU royal-blue/cyan accents, sunny daylight. One visible computer workstation belongs IN the classroom front row aligned with its neighbors, a small framed diploma belongs flush on the lobby wall beside the display, and a gray/blue lounge chair belongs beside lobby sofa facing its coffee table. No arched windows, fantasy tower or terracotta floor. No people, text or lettering.",
-      "size": "2048x1152",
+      "prompt": "EDIT the FINAL reference image. It is draft A2 of the Saint Louis University computer science lab (McDonnell Douglas Hall), the approved composition. Keep its true isometric camera and exact framing, the two back walls and back corner, the blond exit double doors and side lights on the left wall, the whiteboard's frame, size and position, the windows and treetops on the right wall, the framed diploma, the bookshelf, the potted plant, and the position, size and angle of every desk, monitor, keyboard, mouse and chair. Redraw the same image with ONLY these three changes:\n1. FLOOR: replace the light-gray polished floor AND the royal-blue runner with one continuous SLU-blue low-pile carpet-tile floor over the whole room, matching the floor of reference 2: the same deep royal blue with a very subtle checker of slightly lighter and darker square tiles, laid on the isometric grid. No runner, no gray floor, no glossy reflections. Keep the gray skirting along the foot of both walls and the soft shadows under the desks and chairs.\n2. WHITEBOARD: on the existing whiteboard, a basis-path-testing control-flow graph drawn in dry-erase marker, filling most of the board, neat and bold enough to read from across the room. Exactly seven circles joined by arrows, top to bottom: node 1 at the top; an arrow down to node 2, a decision; from node 2 two arrows split down-left to node 3 and down-right to node 4 (an if/else); nodes 3 and 4 each send an arrow down into node 5 where the branches join; an arrow from node 5 down to node 6, a second decision; from node 6 one arrow curves up the right-hand side of the graph back into node 2 (the loop), and one arrow goes straight down to node 7 at the bottom. Decision nodes 2 and 6 are drawn in coral, the other nodes and all arrows in SLU blue. Arrowheads are clear. Write the node numbers 1 to 7 as small neat marker digits inside their circles, and write \"V(G) = 3\" in blue marker to the right of the graph. No other text on the board. Keep the marker tray, pens and eraser.\n3. MONITORS: the monitor on the NEAR-LEFT desk (lower left of the image, closest to the viewer, left of the aisle) is switched ON and shows the GitHub page: a dark screen with a round avatar circle at the upper left, a few pale bars for lines of text and a GitHub-style contribution graph, a wide grid of small squares in several greens, readable at a glance. The monitor on the FAR-LEFT desk (upper left, below the whiteboard), which is lit in the reference, is switched OFF like the two right-hand monitors: a glossy dark teal screen. Exactly one monitor is lit.\nEverything else stays exactly as in the final reference. Reference 1 is the style and palette reference. Use reference 2 ONLY for the colour and texture of its blue carpet floor and the marker style of its whiteboard drawing; do not copy its camera, walls or furniture. No people. Apart from the whiteboard instructions above, no readable text, letters, numbers or logos anywhere.",
+      "size": "1672x941",
       "references": [
-        "art/references/local/places/slu/lobby.jpg"
+        "art/references/local/drafts/slu-lab-a3.png",
+        "art/references/local/drafts/slu-lab-a2.png"
       ],
       "world": {
         "x": 0,
@@ -1937,6 +2764,13 @@
           "travelX": 150
         }
       ]
+    },
+    "slu": {
+      "arrival": {
+        "x": 604,
+        "y": 768
+      },
+      "rigs": []
     }
   }
 }

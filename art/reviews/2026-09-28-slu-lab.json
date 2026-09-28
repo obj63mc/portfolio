@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-28",
+  "scenes": [
+    "slu"
+  ],
+  "verdict": "New composition for the SLU scene: the computer science lab itself (issue 05), replacing the McDonnell Douglas Hall lobby. Joe chose Codex draft A2 of six (true isometric cutaway) and then revision r3 of four (solid blue carpet, the basis-path graph with nodes 1 to 7 and V(G) = 3, the near-left monitor lit). Its whiteboard, lit monitor and diploma are prop mattes and its four desks (with monitors and chairs) walk-behind scenery mattes, all measured from the master; scene data measured on it. Checks pass. Workshop acceptance of the assembled scene and the walk-behind feel is Joe's, in art/review.html.",
+  "nativeMasterHashes": {
+    "slu": "ddfd956fac4140849b9d63bb5f24612a370915db7cb791c3ca276e89c680d67c"
+  },
+  "assetHashes": {
+    "slu-master": "ca944b04bb4ce188b9de5555e33fea8223029ef933c3f419d5068e02c50c2dd3",
+    "slu": "910fe9992448b3da5a29a511196a993f4dd196c956723e9c90e365c2755d0df6",
+    "slu-whiteboard": "a668a7fb67d91630d51de59a23c03502353758a280dd93fe8f0f988a267b5bd4",
+    "slu-workstation": "7fb1766ede22986c69c1e9abe1a50488c6f9534607bda51c1d44a157bb5909f6",
+    "slu-diploma": "164be9f6b8e06ee358b1c98030825bd08decb827e8b831d90ba3e258ecd83440",
+    "slu-desk-front-left": "4b7e64bb97edcb83eec4c70d9f6c0bec56e75bad35df80211881e3432a58df57",
+    "slu-desk-front-right": "5f2545d2f501411c8bcfb7dbfa44e41092b57886a0c81a99b962cf15786634da",
+    "slu-desk-back-left": "a1aa093c4af9f89d6e95492fb9da814a0b4d33bc157cd371f80a6c53a85a2685",
+    "slu-desk-back-right": "ae0146e87cfb10698040d96b8fe66b7369ad230cf98c91fca881703508517fdd"
+  },
+  "checks": [
+    "art:validate PASS (54 assets)",
+    "art:check",
+    "art:test (3)",
+    "svelte-check (0 errors)",
+    "production build",
+    "npm test (19/19)"
+  ]
+}

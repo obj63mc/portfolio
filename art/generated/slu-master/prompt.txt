@@ -1,3 +1,9 @@
+SLU MASTER DERIVATION, 2026-09-28 (round lab, upscaled 4x for the background)
+
+New composition, 2026-09-28: the scene is now the computer science lab itself (issue 05), replacing the McDonnell Douglas Hall lobby. Codex draft A2 (true isometric cutaway, one of six drafts, art/references/local/drafts/slu-lab-a2.png) was revised with the fix list in the prompt below (revision r3: solid SLU-blue carpet after draft A3, the basis-path-testing flow graph with nodes 1 to 7 and V(G) = 3, the near-left monitor lit with a GitHub-style page and the far-left one off). One hand fix: a stray arrowhead where the loop edge leaves node 6 was erased and the line end redrawn in its own blue (a 19 x 17 px box on the whiteboard; Codex output kept as slu-lab-a2-r3.png beside the fixed copy). Native 1672 x 941, Codex's own 16:9 canvas, unresized.
+
+The retained image is art/sources/slu-fix/stitched.png, the native 1672 x 941 master after the tile-map rounds (round specs in art/sources/slu-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The slu plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
 SLU MASTER DERIVATION, 2026-09-26 (round zero, upscaled 4x for the background)
 
 Initial install: the approved Codex master of 2026-09-24 (art/sources/slu-master.png) is the native stitched.png. The plate now derives from the master, as the overworld's does, instead of a Codex clean-plate redraw that had drifted everywhere.
