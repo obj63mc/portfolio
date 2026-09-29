@@ -123,9 +123,10 @@ test.describe('two browsers on wrangler dev', () => {
 		const s = await scale(a), p: Point = { x: 600, y: 380 };
 		await a.mouse.move(p.x, p.y);
 		// b hasn't joined, so everything on its cursor canvas is a's cursor, where a's own camera shows it.
-		await expect.poll(async () => (await opaque(b))?.x ?? Infinity).toBeLessThan(p.x + 4);
+		// Polled on the distance: the first position b receives is where a joined, which may already be left of p.
+		const from = async () => ((o) => (o ? Math.hypot(o.x - p.x, o.y - p.y) : Infinity))(await opaque(b));
+		await expect.poll(from).toBeLessThan(4);
 		const peer = (await opaque(b))!;
-		expect(Math.hypot(peer.x - p.x, peer.y - p.y)).toBeLessThan(4);
 		// The tag sits right of the own arrow, clear of its body, for about two seconds.
 		const tagBox = { x: p.x + 23 * 1.25 * s, y: p.y - 2, w: 40, h: 12 * 1.25 * s };
 		expect(await opaque(a, tagBox), 'the "you" tag').not.toBeNull();

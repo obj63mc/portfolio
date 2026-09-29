@@ -16,7 +16,14 @@ const out = new URL('../src/lib/engine/', import.meta.url);
 const RIVERS = 'M0 3Q8 5 13 15Q8 25 0 27M13 15Q20 11 27 15T40 15';
 const STL = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><path fill="#c8102e" d="M0 0h${W}v${H}H0z"/><g fill="none" stroke-linecap="round"><path stroke="#fff" stroke-width="8" d="${RIVERS}"/><path stroke="#1f5fd1" stroke-width="4.5" d="${RIVERS}"/></g><circle cx="13" cy="15" r="5.5" fill="#f5c518"/><circle cx="13" cy="15" r="2.2" fill="#1f5fd1"/></svg>`;
 
-const codes = readdirSync(dir).filter((f) => /^[a-z]{2}\.svg$/.test(f)).map((f) => f.slice(0, 2)).sort();
+// flag-icons also draws `xx` (unknown, a grey placeholder), `eu` and `un`: unknown or non-country geo wears the St. Louis
+// flag (spec: flag), so they get no cell and fall back to it.
+const NOT_COUNTRIES = new Set(['xx', 'eu', 'un']);
+const codes = readdirSync(dir)
+	.filter((f) => /^[a-z]{2}\.svg$/.test(f))
+	.map((f) => f.slice(0, 2))
+	.filter((c) => !NOT_COUNTRIES.has(c))
+	.sort();
 const svgs = [STL, ...codes.map((c) => readFileSync(new URL(`${c}.svg`, dir), 'utf8'))];
 
 const browser = await chromium.launch();

@@ -1,6 +1,7 @@
-// Seam 2: peer interpolation (buildout ticket 13) as a function of a fake clock, in ms.
+// Seam 2: peer interpolation (buildout ticket 13) as a function of a fake clock, in ms, and the flag sheet's fallback.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { DELAY, record, sample, visible, type Snap } from '../src/lib/net/peers.ts';
 
 const INTERVAL = 50; // 20 Hz
@@ -60,4 +61,11 @@ test('a peer is drawn only near the camera: its newest position within a margin 
 	assert.equal(visible(s, view), false);
 	record(s, 950, 480, 100, INTERVAL); // just off the top left, its arrow reaching in
 	assert.equal(visible(s, view), true);
+});
+
+test('unknown and non-country geo has no flag of its own, so it wears the St. Louis flag, the first cell of the sheet', () => {
+	const { codes } = JSON.parse(readFileSync(new URL('../src/lib/engine/flags.json', import.meta.url), 'utf8'));
+	assert.equal(codes[0], 'stl');
+	for (const cc of ['xx', 'eu', 'un', 't1']) assert.ok(!codes.includes(cc), cc);
+	assert.ok(codes.includes('fr') && codes.includes('us'));
 });

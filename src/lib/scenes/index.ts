@@ -20,6 +20,9 @@ export const leftToRight = (props: Prop[]): Prop[] => [...props].sort((a, b) => 
 export const readingOrder = (s: SubScene): Prop[] =>
 	s.h > s.w ? [...s.props].sort((a, b) => a.rect.y - b.rect.y || a.rect.x - b.rect.x) : leftToRight(s.props);
 
+/** Every prop in a scene: the overworld's venue by venue, or a sub-scene's. */
+export const propsOf = (s: Overworld | SubScene): Prop[] => ('districts' in s ? s.districts.flatMap((d) => d.venues.flatMap((v) => v.props)) : s.props);
+
 /** A prop's cut-outs in its scene's art folder, bottom first (`Prop.art`). */
 export const artOf = (scene: Overworld | SubScene, prop: Prop): string[] =>
 	prop.art ?? ['districts' in scene ? prop.id : `${scene.id}-${prop.id}`];

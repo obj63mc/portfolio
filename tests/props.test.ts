@@ -4,12 +4,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
-import { SUB_SCENES, artOf } from '../src/lib/scenes/index.ts';
+import { SUB_SCENES, artOf, propsOf } from '../src/lib/scenes/index.ts';
 import { CLICK_MS, HOVER_MS, RIDER, blink, chase, glint, hover, moose, pop, progress, rider } from '../src/lib/engine/motion.ts';
 
 const generated = (path: string) => new URL(`../art/generated/${path}`, import.meta.url);
 const scenes = [OVERWORLD, ...Object.values(SUB_SCENES)];
-const propsOf = (s: (typeof scenes)[number]) => ('districts' in s ? s.districts.flatMap((d) => d.venues.flatMap((v) => v.props)) : s.props);
 
 test('every prop resolves to its cut-outs or a rig in its scene; only the track, whose motion is the rider, has none', () => {
 	for (const s of scenes)

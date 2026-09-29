@@ -4,7 +4,7 @@
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
 // their timing is in motion.ts. Carried over from the rendering prototype's canvas props (prototype/rendering-camera).
 import { POSTER_LAMPS, type ScreenTitle } from '../scenes/foundry.ts';
-import { artOf } from '../scenes/index.ts';
+import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { CLICK_MS, RIDER, blink, chase, glint, hover, moose, pop, progress, rider, type Pose } from './motion.ts';
 
@@ -139,7 +139,6 @@ export class Props {
 	show(scene: Overworld | SubScene, density: number) {
 		this.clear();
 		const gen = ++this.generation, overworld = 'districts' in scene;
-		const props = overworld ? scene.districts.flatMap((d) => d.venues.flatMap((v) => v.props)) : scene.props;
 		const layer = (prop: Prop | undefined, art: string[], at: Rect): Layer => {
 			const world = (id: string) => WORLDS[`/art/generated/${scene.id}/${id}/asset.json`];
 			const cuts = art.filter(world).map((id) => ({ id, rect: world(id) }));
@@ -149,7 +148,7 @@ export class Props {
 			const rig = name && this.rig(scene.id, name, at);
 			return { prop, box: union([...cuts.map((c) => c.rect), ...(rig ? [at] : [])]), cuts, rig, hover: 0, clicked: -Infinity, drawn: '' };
 		};
-		this.layers = props.map((p) => layer(p, artOf(scene, p), p.rect)).filter((l) => l.cuts.length || l.rig);
+		this.layers = propsOf(scene).map((p) => layer(p, artOf(scene, p), p.rect)).filter((l) => l.cuts.length || l.rig);
 		// The plate paints none of these: the signpost, the church door and the rider riding the park's lower straight.
 		if (overworld) {
 			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect));

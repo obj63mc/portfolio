@@ -113,7 +113,15 @@ export function readServer(text: string): ServerMessage | null {
 	if (!isObject(m)) return null;
 	const ok =
 		m.t === 'hello'
-			? Number.isInteger(m.id) && typeof m.cc === 'string' && typeof m.now === 'number' && Array.isArray(m.peers) && m.peers.every((p) => isObject(p) && isPeer(p))
+			? Number.isInteger(m.id) &&
+				typeof m.cc === 'string' &&
+				typeof m.now === 'number' &&
+				Number.isInteger(m.rate) &&
+				Number.isInteger(m.cap) &&
+				typeof m.room === 'string' &&
+				m.screen === null &&
+				Array.isArray(m.peers) &&
+				m.peers.every((p) => isObject(p) && isPeer(p))
 			: m.t === 'in'
 				? isPeer(m)
 				: m.t === 'out'

@@ -32,6 +32,8 @@ const KEEPALIVE = 30_000;
 const HIDDEN = 60_000;
 /** A socket closed sooner than this after its `hello`, ms, is an ordinary drop: the backoff keeps growing. */
 const SETTLED = 1000;
+/** The retry backoff's first and longest wait, seconds. */
+const BACKOFF = { first: 0.5, most: 30 };
 /** Seconds to wait after the room closed the socket for outrunning its token bucket. */
 const RATE_LIMITED_WAIT = 5;
 
@@ -53,7 +55,7 @@ export class Net {
 	/** Server time minus Date.now(), ms, from the last `hello`. */
 	private offset = 0;
 	/** Seconds before the next retry, doubling from 0.5 to 30. */
-	private backoff = 0.5;
+	private backoff = BACKOFF.first;
 	/** The last move sent, packed, and when the next may go (performance.now() ms). */
 	private sent = -1;
 	private nextSend = 0;
@@ -78,7 +80,7 @@ export class Net {
 	/** Joins a scene's room, closing the last scene's socket. */
 	join(scene: string) {
 		this.scene = scene;
-		this.backoff = 0.5;
+		this.backoff = BACKOFF.first;
 		this.open();
 	}
 
@@ -118,7 +120,7 @@ export class Net {
 		ws.onmessage = (e) => {
 			if (!current()) return;
 			if (typeof e.data === 'string') this.message(e.data, ws);
-			else this.frame(e.data);
+			else if (e.data instanceof ArrayBuffer) this.frame(e.data);
 		};
 		ws.onclose = (e) => {
 			if (current()) this.down(e.code === RATE_LIMITED ? RATE_LIMITED_WAIT : undefined);
@@ -135,12 +137,12 @@ export class Net {
 
 	/** The socket dropped or was refused: single-player, then a retry after a jittered backoff, or after `wait` seconds. */
 	private down(wait?: number) {
-		if (this.link.is === 'live' && performance.now() - this.link.at >= SETTLED) this.backoff = 0.5;
+		if (this.link.is === 'live' && performance.now() - this.link.at >= SETTLED) this.backoff = BACKOFF.first;
 		this.close();
 		this.setSolo(true);
 		if (document.hidden) return void (this.link = { is: 'down' });
-		const w = wait ?? Math.min(30, this.backoff * (0.8 + Math.random() * 0.4));
-		this.backoff = Math.min(30, this.backoff * 2);
+		const w = wait ?? Math.min(BACKOFF.most, this.backoff * (0.8 + Math.random() * 0.4));
+		this.backoff = Math.min(BACKOFF.most, this.backoff * 2);
 		this.link = { is: 'down', retry: setTimeout(() => this.open(), w * 1000) };
 	}
 
@@ -157,7 +159,7 @@ export class Net {
 				this.link = { is: 'down' };
 			}, HIDDEN);
 		} else if (this.link.is === 'down' && !this.link.retry) {
-			this.backoff = 0.5;
+			this.backoff = BACKOFF.first;
 			this.open();
 		}
 	};

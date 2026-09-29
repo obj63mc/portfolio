@@ -26,11 +26,6 @@ canvas {
 dialog {
 	max-width: 32rem;
 
-	& video {
-		display: block;
-		inline-size: 100%;
-	}
-
 	&::backdrop {
 		background: rgb(0 0 0 / 0.5);
 	}

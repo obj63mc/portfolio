@@ -5,6 +5,7 @@
 // the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
 // the scene canvas (ticket 15) are props.ts. Carried over from the rendering and pointer-lock prototypes' engines
 // (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
+import { propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { Net } from '../net/net.ts';
 import { sample, visible } from '../net/peers.ts';
@@ -54,7 +55,6 @@ const BACKDROP = '#1d2b3a';
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
 /** A point held inside the viewport. */
 const inView = (p: Point, v: View): Point => ({ x: Math.max(0, Math.min(v.w - 1, p.x)), y: Math.max(0, Math.min(v.h - 1, p.y)) });
-const propsOf = (s: Scene) => ('districts' in s ? s.districts.flatMap((d) => d.venues.flatMap((v) => v.props)) : s.props);
 
 /** The element a URL fragment names; a malformed one (`#%E0`) names nothing. */
 function byHash(hash: string) {

@@ -124,7 +124,7 @@ export class Cursors {
 		if (halo) g.drawImage(this.atlas, 2 * cw, 0, cw, ch, x, y, w, h);
 		g.drawImage(this.atlas, p.gold ? cw : 0, 0, cw, ch, x, y, w, h);
 		if (!this.ready) return;
-		// Unknown geo (XX), Tor (T1) and any code without a country flag wear the St. Louis flag, the sheet's first cell.
+		// Unknown geo (XX), Tor (T1), EU, UN and any code without a country flag wear the St. Louis flag, the sheet's first cell.
 		const i = this.flags.get(p.cc.toLowerCase()) ?? 0;
 		const bx = p.x + BADGE.x * k, by = p.y + BADGE.y * k, bw = BADGE.w * k, bh = BADGE.h * k;
 		g.drawImage(this.sheet, (i % FLAGS.cols) * FLAGS.w, Math.floor(i / FLAGS.cols) * FLAGS.h, FLAGS.w, FLAGS.h, bx, by, bw, bh);

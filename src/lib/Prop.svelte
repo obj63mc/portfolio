@@ -47,3 +47,10 @@
 		<form method="dialog"><button>Close</button></form>
 	</dialog>
 </div>
+
+<style>
+	video {
+		display: block;
+		inline-size: 100%;
+	}
+</style>

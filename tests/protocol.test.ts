@@ -77,6 +77,7 @@ test('server: anything else is dropped, the pong auto-response included', () => 
 		'pong',
 		'{"t":"hello","id":1}',
 		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, room: 'overworld:1', peers: [{ ...peer, gold: 'no' }], screen: null }),
+		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, peers: [peer], screen: null }),
 		JSON.stringify({ t: 'in', ...peer, id: '2' }),
 		JSON.stringify({ t: 'in', ...peer, x: undefined }),
 		JSON.stringify({ t: 'out' }),
