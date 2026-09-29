@@ -6,8 +6,8 @@
 
 **Status:** ready-for-agent
 
-- [ ] On a coarse pointer the joystick is drawn after Join and moves the cursor; the camera follows
+- [ ] On a touch-only device, one with no mouse or trackpad connected (`(any-pointer: fine)` false; Joe, 2026-09-29), the joystick is drawn after Join and moves the cursor; the camera follows. A tablet with a mouse or trackpad gets 09's model instead
 - [ ] Drag pans with the specified threshold and inertia and never moves the cursor in world space except to carry it at the edge
 - [ ] Tapping a prop moves the cursor to it and opens its card; tapping Close closes it
-- [ ] Render scale is 0.6 on phones and the signpost is in the first frame once 04 has placed it
+- [ ] Render scale is 0.6 on a screen under 768 px on its shorter side (08) and the signpost is in the first frame once 04 has placed it
 - [ ] Chrome device emulation holds 60 fps on the overworld with a flat memory profile over a few minutes of roaming (measured with the prototype's bench, numbers recorded, not asserted)

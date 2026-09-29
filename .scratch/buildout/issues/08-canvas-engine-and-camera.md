@@ -26,7 +26,7 @@ Checked by hand in headless Chrome against the production build:
 - Edge-push: about 900 px/s at the edge, easing inside the band, still in the middle. The camera holds 30 px from the marquee, stops when the pointer leaves the window and clamps at the corners. SLU does not push at 15 percent from the edge; the lobby does.
 - Focus: Tab centres the focused element. A mouse click opens a card without panning, and Escape's focus return doesn't pan either.
 - Fragments: `#belleville` glides there, and cuts there under reduced motion. Direct loads of `/#belleville` and `/#moosylvania` open on them, and a malformed fragment opens on the welcome sign.
-- Render scale: under touch emulation a 390 x 844 phone gets 0.6 with DPR 3 capped to 2 and the signpost in the first frame. An 820 px iPad gets 0.8 and a 1024 px iPad 1.0.
+- Render scale: under touch emulation a 390 x 844 phone gets 0.6 with DPR 3 capped to 2 and the signpost in the first frame. An 820 px iPad gets 0.8 and a 1024 px iPad 1.0 (before Joe's size rule below).
 
 Calls made here for Joe to confirm or veto:
 
@@ -44,3 +44,11 @@ Left for later:
 - The drawn cursor is a plain 1.25x arrow until 13's atlas.
 - The skip-draw-when-still rule is only partly in place: the scene canvas redraws only when the camera moves or a tile lands, and the overlay only when the cursor moves.
 - For 11: focusing the sub-scene `<h1>` never pans, because only placed elements pan the camera.
+
+2026-09-29, Joe's answers to the calls above:
+
+- **Render scale**: 0.6 on a screen under 768 px on its shorter side, else 1, whatever the pointer; `rendering()` and its test follow. An iPad mini (744) now gets 0.6 and an 820 px iPad 1.0. The touch controls are for a device with no mouse or trackpad connected (`(any-pointer: fine)` false); spec gap 5 and tickets 09 and 10 carry the rule.
+- **Cursor**: the drawn cursor always shows. It now draws over the controls too, with the OS cursor hidden there. Over a card the OS cursor still shows, until 09 lifts the cursor canvas above the cards.
+- **Signpost**: tap targets of at least 48 x 48, filed as ticket 27.
+- **Skip link**: open; kept for now, since the spec lists it.
+- The rest stands.

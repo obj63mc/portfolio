@@ -83,14 +83,14 @@ test('a glide to a focused prop or a fragment target eases there and lands exact
 	assert.ok(frames > 20 && frames < 120, `within two seconds: ${frames} frames`);
 });
 
-test('render scale is fixed per session: 1 on a fine pointer, 0.6 on phones, a touch tablet by its width; DPR capped at 2', () => {
-	assert.deepEqual(rendering(false, 1440, 900, 2), { s: 1, dpr: 2, density: 2 }, 'retina desktop');
-	assert.deepEqual(rendering(false, 1920, 1080, 1), { s: 1, dpr: 1, density: 1.25 }, 'plain desktop');
-	assert.deepEqual(rendering(true, 390, 844, 3), { s: 0.6, dpr: 2, density: 1.25 }, 'iPhone');
-	assert.deepEqual(rendering(true, 932, 430, 3), { s: 0.6, dpr: 2, density: 1.25 }, 'iPhone held landscape: still a phone');
-	assert.deepEqual(rendering(true, 1024, 1366, 2), { s: 1, dpr: 2, density: 2 }, '12.9-inch iPad');
-	const mini = rendering(true, 744, 1133, 2);
-	assert.ok(mini.s > 0.6 && mini.s < 1 && mini.density === 2, `iPad mini between: ${mini.s}`);
+test('render scale is fixed per session: 0.6 on a screen under 768 px on its shorter side, else 1; DPR capped at 2', () => {
+	assert.deepEqual(rendering(1440, 900, 2), { s: 1, dpr: 2, density: 2 }, 'retina desktop');
+	assert.deepEqual(rendering(1920, 1080, 1), { s: 1, dpr: 1, density: 1.25 }, 'plain desktop');
+	assert.deepEqual(rendering(1366, 768, 1), { s: 1, dpr: 1, density: 1.25 }, 'a 768 px tall laptop is not small');
+	assert.deepEqual(rendering(390, 844, 3), { s: 0.6, dpr: 2, density: 1.25 }, 'iPhone');
+	assert.deepEqual(rendering(932, 430, 3), { s: 0.6, dpr: 2, density: 1.25 }, 'iPhone held landscape: still small');
+	assert.deepEqual(rendering(744, 1133, 2), { s: 0.6, dpr: 2, density: 1.25 }, 'iPad mini');
+	assert.deepEqual(rendering(820, 1180, 2), { s: 1, dpr: 2, density: 2 }, 'iPad');
 });
 
 test('tiles: the 512 px tiles in view, grown by a ring and cut to the scene', () => {

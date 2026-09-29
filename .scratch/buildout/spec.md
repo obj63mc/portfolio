@@ -126,7 +126,7 @@ One camera model for every device and scene type. ([World layout](issues/06-worl
 - **Touch tap** on a prop moves the cursor there and activates it.
 - **Keyboard focus** (`:focus-visible`) centres the camera on the focused element, smoothly, or instantly under reduced motion. A mouse click never pans.
 - **Fragment links** from the signpost (`#belleville`) pan the camera to that district.
-- **Render scale** is fixed per session by device class: 1.0 on desktop, 0.6 on phones. DPR is capped at 2.
+- **Render scale** is fixed per session: 0.6 on a screen under 768 px on its shorter side, 1.0 on anything larger, whatever its pointer (Joe, 2026-09-29, buildout ticket 08). DPR is capped at 2.
 - **Sub-scene handoff**: entering is a short (300 ms) fade with the cursor placed just inside the door and the camera centred on it; leaving (exit door or browser back) returns the visitor to the overworld at the venue door, camera centred on it.
 
 ### Input: Join, pointer lock, keys and touch
@@ -344,7 +344,7 @@ Nothing here blocks ticketing, but each is a decision Joe hasn't explicitly made
 2. **The jukebox ruling rests on a stale premise**: ticket 10 kept Side Project's jukebox out of the shared set because sound was off by default. Sound is now on by default, and 19 gave the bar a bed and diegetic music, so nothing is missing; if Joe wants a second shared prop, the bar's music is the obvious candidate, and the shared-prop rules already cover it. Not reopened here.
 3. **Three sub-scene URL slugs** are proposed above (`/midtown/slu`, `/maplewood/side-project`, `/central-west-end/brennans`) and not fixed by any ticket.
 4. **Signpost phone framing** is unresolved by design: ticket 07 deferred it to the art regeneration pass, which must place the signpost inside the first 390 x 844 portrait frame at 0.6 scale with the camera on the welcome sign.
-5. **Tablets and coarse-pointer laptops**: render scale is 1.0 for desktop and 0.6 for phones "by device class", and pointer lock applies to "any fine pointer". A touch tablet gets the touch input model; its render scale should be chosen by viewport width in the build (a tablet at 0.6 would see far too little).
+5. **Tablets and coarse-pointer laptops**: render scale is 1.0 for desktop and 0.6 for phones "by device class", and pointer lock applies to "any fine pointer". A touch tablet gets the touch input model; its render scale should be chosen by viewport width in the build (a tablet at 0.6 would see far too little). *Settled by Joe, 2026-09-29:* the touch controls are for a device with no mouse or trackpad connected (`(any-pointer: fine)` false); any device with one, a tablet included, gets the mouse and keyboard model. The scale is 0.6 on a screen under 768 px on its shorter side and 1.0 otherwise.
 6. **Unlocked desktop fallback** when a browser refuses pointer lock is named in 22 but not detailed: the intended behaviour is the pre-lock model (drawn cursor follows the OS pointer, keys move the cursor, push stops when the pointer leaves the window, no drag or wheel).
 7. **Keepalive interval** is "as the prototype" (ticket 04 suggested 15 s); ticket 09 fixed the mechanism (a `ping` text frame with auto-response), not the number.
 8. **Screen sequence lengths per title** are "set in the prototype" (10); the prototype's values are the starting point and the trailer cues (19) must fit them.

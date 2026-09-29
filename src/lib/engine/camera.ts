@@ -75,12 +75,12 @@ export function glide(cam: Point, goal: Point, dt: number): Point {
 
 /**
  * The session's render scale (CSS px per world px), device pixel ratio and background tile density, fixed at start. A
- * fine pointer draws at 1. A touch screen scales with its shorter side, so turning it doesn't change the scale: 0.6 on
- * every phone, rising to 1 on a 1024 px tablet (spec gap 5). The DPR is capped at 2; tiles come at 1.25 image px per world
- * px where that covers scale x DPR, else 2.
+ * screen under 768 px on its shorter side draws at the phone's 0.6, turned either way; anything larger at 1, whatever its
+ * pointer (Joe, 2026-09-29). The DPR is capped at 2; tiles come at 1.25 image px per world px where that covers scale x
+ * DPR, else 2.
  */
-export function rendering(coarse: boolean, screenW: number, screenH: number, devicePixelRatio: number) {
-	const s = coarse ? Math.min(1, Math.max(0.6, Math.min(screenW, screenH) / 1024)) : 1, dpr = Math.min(2, devicePixelRatio || 1);
+export function rendering(screenW: number, screenH: number, devicePixelRatio: number) {
+	const s = Math.min(screenW, screenH) < 768 ? 0.6 : 1, dpr = Math.min(2, devicePixelRatio || 1);
 	return { s, dpr, density: s * dpr <= 1.25 ? 1.25 : 2 };
 }
 

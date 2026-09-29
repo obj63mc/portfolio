@@ -45,7 +45,7 @@ export class Engine {
 	private cam: Point = { x: 0, y: 0 };
 	/** A keyboard or fragment glide in progress. */
 	private goal: Point | null = null;
-	/** The OS pointer, CSS px; null outside the window or over a card or control. */
+	/** The OS pointer, CSS px; null outside the window or over a card. */
 	private pointer: Point | null = null;
 	/** False after a keyboard or fragment pan until the mouse moves, so a mouse resting in the band doesn't undo it. */
 	private armed = true;
@@ -70,7 +70,7 @@ export class Engine {
 		const g = canvas.getContext('2d', { alpha: false }), cg = cursors.getContext('2d');
 		// Without a canvas the engine never starts and the page stays the plain document (spec: "if the canvas fails").
 		if (!g || !cg) throw new Error('No 2D canvas');
-		const r = rendering(matchMedia('(pointer: coarse)').matches, screen.width, screen.height, devicePixelRatio);
+		const r = rendering(screen.width, screen.height, devicePixelRatio);
 		this.view = { w: innerWidth, h: innerHeight, s: r.s };
 		this.dpr = r.dpr;
 		this.density = r.density;
@@ -120,8 +120,9 @@ export class Engine {
 			'pointermove',
 			(e) => {
 				if (e.pointerType !== 'mouse') return; // touch is ticket 10
-				const over = e.target instanceof Element && e.target.closest(`dialog, ${CONTROLS}`);
-				this.pointer = over ? null : { x: e.clientX, y: e.clientY };
+				// Over a card the OS cursor shows until 09 lifts the cursor canvas above the cards.
+				const overCard = e.target instanceof Element && e.target.closest('dialog');
+				this.pointer = overCard ? null : { x: e.clientX, y: e.clientY };
 				// A real move re-arms the push; a synthetic one (content moving under a still pointer) has no movement.
 				if (e.movementX || e.movementY) this.armed = true;
 			},
