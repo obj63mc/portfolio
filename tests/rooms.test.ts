@@ -64,7 +64,7 @@ after(() => {
 });
 
 type Cursor = { id: number; x: number; y: number };
-type Inbound = ServerMessage | { t: 'frame'; bytes: number; cursors: Cursor[] };
+type Inbound = ServerMessage | { t: 'frame'; bytes: number; cursors: Cursor[] } | { t: 'pong' };
 type Of<K extends Inbound['t']> = Extract<Inbound, { t: K }>;
 interface Bot {
 	ws: WebSocket;
@@ -86,6 +86,7 @@ async function enter(scene: string): Promise<Bot> {
 	ws.binaryType = 'arraybuffer';
 	const inbox: Inbound[] = [];
 	ws.onmessage = ({ data }) => {
+		if (data === 'pong') return void inbox.push({ t: 'pong' });
 		if (typeof data === 'string') return void inbox.push(JSON.parse(data));
 		const cursors: Cursor[] = [];
 		decodeFrame(data, (id, x, y) => cursors.push({ id, x, y }));
@@ -230,11 +231,24 @@ test('a foreign Origin is refused by the Worker itself', async () => {
 	assert.equal(await upgrade('overworld', 'https://evil.example'), 403);
 });
 
+/** The objects' source without its comments. */
+const code = () => readFileSync(join(root, 'worker/rooms.ts'), 'utf8').replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '');
+
+test('rooms are on the WebSocket Hibernation API, so a still room bills no duration', async () => {
+	// Statically: sockets are accepted by the object state and their events come to its handlers. A socket's own accept()
+	// and listeners, or a setInterval, would pin the object in memory; the tick is a setTimeout chain that stops when still.
+	assert.match(code(), /this\.ctx\.acceptWebSocket\(/);
+	assert.doesNotMatch(code(), /\.accept\(\)|addEventListener|setInterval/);
+	// At run time: a keepalive ping is answered by the auto-response, which doesn't wake the object. The room's own
+	// handler has no pong, so the answer can only come from the runtime.
+	a.ws.send('ping');
+	await a.take('pong');
+});
+
 test('neither object ever touches Durable Object storage', () => {
 	// Every path, statically: the objects' source has no way into their storage (SQL, get, put, delete, setAlarm), which
 	// the local runtime types in worker/cloudflare.d.ts also leave off the object state, so a call fails the type-check.
-	const code = readFileSync(join(root, 'worker/rooms.ts'), 'utf8').replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '');
-	assert.doesNotMatch(code, /storage|\bsql\b|alarm/i);
+	assert.doesNotMatch(code(), /storage|\bsql\b|alarm/i);
 	// Every path the tests above took, at run time: each object's local database holds only wrangler's record of the
 	// object's name, and no alarm is set. A put or any SQL would add a table, and setAlarm a row.
 	const dir = join(persist, 'v3/do');

@@ -58,6 +58,7 @@ Carries over the pointer-lock prototype's Worker (Origin check, GeoIP, upgrade),
   - The token bucket: 80 moves at once pass, 20 more close 4008.
   - Placement: 60 concurrent joins to `slu:1`, the 61st to `slu:2`, and a freed seat in `slu:1` filled first.
   - The ceiling: the 71st visitor is refused with 503 and admitted after a leave. This is the "1,001st" box, with the ceiling set low for the test.
+  - Hibernation (added at Joe's request, 2026-09-29, after Cloudflare's hibernation example): statically, sockets are accepted with `this.ctx.acceptWebSocket`, with no `ws.accept()`, socket listeners or `setInterval` to pin the room in memory; at run time a `ping` gets `pong` from the runtime's auto-response, which the room's own handler can't send. Removing the auto-response or adding a `setInterval` each fails it. Eviction itself stays the hand check below, since no API forces it under `wrangler dev`.
   - Changing scene: a bot leaves the overworld's room, whose peer sees its `out`, and joins the Foundry's (added in the code review).
   - A foreign Origin refused by the real Worker.
   - The file keeps a ledger of the visitors the directory counts; a bot leaves it once a peer has seen its `out`, so the ceiling test is exact.
