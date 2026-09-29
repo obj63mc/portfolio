@@ -9,8 +9,8 @@
 - [ ] `https://barmadden.com` serves the site and `www` redirects 301 to the apex
 - [ ] A test email to and from the Google Workspace address works after the nameserver move
 - [ ] A PR branch gets a public Preview URL posted on the PR, returning `X-Robots-Tag: noindex`
-- [ ] `curl` against `/ws` with a foreign `Origin` returns 403 at the edge
-- [ ] `CF_ANALYTICS_TOKEN` is stored outside the repo
+- [x] `curl` against `/ws` with a foreign `Origin` returns 403 at the edge
+- [x] `CF_ANALYTICS_TOKEN` is stored outside the repo
 
 ## Comments
 
@@ -45,3 +45,17 @@
   - No cost: 1 of 10 Transform Rules.
 - **AI bot policies:** Training → Block on all pages; Search and Agent → Allow.
 - **SPF:** Google Workspace is the only sender and has been for years. The wizard now says to add `v=spf1 include:_spf.google.com ~all` whenever the record is missing, rather than suggesting it.
+
+2026-09-29, "This site can't be reached" on Joe's Mac. The deploy and the rules are fine. The fault is this Mac's DNS cache, plus a missing `www` record.
+
+- **Checked working, with curl pinned to Cloudflare's address.** The apex used `--resolve barmadden.com:443:104.21.80.137`, and `www` the same address through `--resolve www.barmadden.com:443:…`.
+  - `/` returns 200 with the site's title.
+  - `http://` returns 301 to `https://`.
+  - A Googlebot user agent gets `Server-Timing: bot`, and curl's own doesn't. So the Transform Rule does reach Worker asset responses.
+  - `/ws` with a foreign `Origin` gets 403 from the WAF's "Attention Required" page, and so does a bot user agent with the right `Origin`.
+  - A real upgrade over HTTP/1.1 gets 101.
+  - The `www` redirect rule sends `https://www…/midtown/foundry?x=1` to `https://barmadden.com/midtown/foundry?x=1` with a 301.
+- **Public DNS is right.** 1.1.1.1, 8.8.8.8, the router (10.1.10.1) and Cloudflare's `mike` all return the apex's A and AAAA records.
+- **This Mac's DNS cache isn't.** `dns-sd -G v4v6 barmadden.com` showed mDNSResponder holding "No Such Record" for A, with about 75 minutes left on it, most likely cached before the Custom Domain existed. Only the AAAA answers came through. The Mac has no public IPv6, only Tailscale's `fd7a:` address, so Chrome and curl had nothing they could connect to. The fix is to flush the cache: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`, then Clear host cache at `chrome://net-internals/#dns`. Otherwise it clears itself when the entry expires. The entry outlived the zone's 30-minute negative TTL (SOA minimum 1800), so how long another resolver keeps a miss isn't known. Other visitors can hit the same thing only if their resolver cached a miss before the domain was attached. Joe flushed the cache, and the apex loads from the Mac.
+- **The token** is in `~/.config/barmadden/.env` (mode 600), and ticket 14's live run read it.
+- **`www` has no DNS record.** Cloudflare's own nameserver answers NXDOMAIN for `www.barmadden.com` for A, AAAA and CNAME. Stage 5's record (AAAA `www` → `100::`, Proxied) needs adding again. The rule and Always Use HTTPS are already in place, so the box above can be ticked once the record resolves.

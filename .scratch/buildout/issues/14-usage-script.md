@@ -4,9 +4,9 @@
 
 **Blocked by:** 07 (the analytics token exists)
 
-**Status:** ready-for-human
+**Status:** resolved
 
-- [ ] The script prints month-to-date requests, messages, GB-s and a projected dollar figure
+- [x] The script prints month-to-date requests, messages, GB-s and a projected dollar figure
 - [x] A missing token prints one line saying which token to create and exits non-zero
 - [x] The projection arithmetic is a pure function with one test against the spec's worked example (30 visitors around the clock, about $11)
 
@@ -24,3 +24,18 @@
   - The docs don't list `duration`, `inboundWebsocketMsgCount`, `type` or `date_geq`/`date_leq` either; other projects' code uses them all.
   - The output has a "by type" line, so the first live run shows the real type names. If a message type doesn't match the pattern, the messages line will be near 0 and requests will be large; widen the pattern then. The pattern is marked `ponytail:` in the code.
 - The account ID is a constant (ticket 12: not a secret). The Worker's own requests (only `/ws` upgrades, with 10M included) and storage (never used) are left out.
+
+2026-09-29, the live run, with the token from 07's stage 8:
+
+```
+Durable Objects, 2026-09-01 to 2026-09-29 (UTC):
+  requests      241, billed 1:1
+  messages in   126,361, billed as requests at 20:1 (187,767 out, free)
+  duration      128 GB-s (400,000 included)
+  by type       hibernation 126,361, http 241
+Projected bill for the month: $5.00
+```
+
+- The invocation types are `hibernation` and `http`, so the pattern holds.
+- A one-off query read the periodic `inboundWebsocketMsgCount` as 0 for the month. A hibernated room's messages are counted only as `hibernation` invocations, as the docs say. Taking the larger of the two stays correct if Cloudflare ever fills the periodic count as well.
+- The figures cover the whole account, so the cursor-sync prototype's Worker is included. The bill is per account, so that's the right total. Production went live on the 29th, though, so most of this month's messages are probably the prototype's. Ticket 24's bill check will read a mixed total unless the prototype is retired first.

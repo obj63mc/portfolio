@@ -63,7 +63,8 @@ if (import.meta.main) {
 		(g) => [String(at(g, 'dimensions', 'type')), num(at(g, 'sum', 'requests'))] as const
 	);
 	const periodic = (field: string) => num(at(account, 'durableObjectsPeriodicGroups', 0, 'sum', field));
-	// ponytail: type names read as messages by pattern; the first live run's breakdown below confirms them.
+	// ponytail: message types matched by pattern (live: hibernation; http is a request); widen it if the "by type"
+	// line shows a new message type, which this bills 1:1 as a request until then.
 	const isMessage = (type: string) => /hibernat|websocket/i.test(type);
 	const total = (pick: (type: string) => boolean) => byType.reduce((s, [type, n]) => s + (pick(type) ? n : 0), 0);
 	const usage: Usage = {
