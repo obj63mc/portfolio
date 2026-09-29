@@ -2,12 +2,13 @@
 // per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. The input (ticket 09):
 // the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Touch (ticket 10):
 // the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the fade, landing at
-// the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. Carried over
-// from the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the
-// spec's rules; the layer's markup is never re-rendered here.
+// the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
+// the scene canvas (ticket 15) are props.ts. Carried over from the rendering and pointer-lock prototypes' engines
+// (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { Net } from '../net/net.ts';
 import { sample, visible } from '../net/peers.ts';
+import { Props } from './props.ts';
 import { KEYS, TILE, centreOn, clamp, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Move, type View } from './camera.ts';
 import { Cursors, type Drawn } from './cursors.ts';
 
@@ -103,10 +104,11 @@ export class Engine {
 	/** Background tiles held, by `<column>-<row>`; a tile still loading has no bitmap. */
 	private held = new Map<string, { bmp?: ImageBitmap }>();
 	private dirty = true;
-	/** The scene's room: peers, "N here" and the offline announcement. */
+	/** The scene's room: peers, "N here", the offline announcement and the server time ambient motion runs on. */
 	private net: Net;
 	/** Every cursor, from one atlas. */
 	private art: Cursors;
+	private props: Props;
 	private raf = 0;
 	private last = 0;
 	private canvas: HTMLCanvasElement;
@@ -162,6 +164,7 @@ export class Engine {
 			count: (n) => (status.here.textContent = `${n} here`),
 			solo: (on) => (status.live.textContent = on ? 'Offline, exploring solo' : '')
 		});
+		this.props = new Props(layer);
 		document.documentElement.classList.add('engine');
 		this.bind();
 		this.resize();
@@ -177,6 +180,7 @@ export class Engine {
 		cancelAnimationFrame(this.raf);
 		this.net.destroy();
 		this.listeners.abort();
+		this.props.destroy();
 		this.raise.disconnect();
 		for (const t of this.held.values()) t.bmp?.close();
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
@@ -209,6 +213,7 @@ export class Engine {
 		this.targets = [...(overworld ? [scene.signpost.rect] : []), ...propsOf(scene).map((p) => p.rect)];
 		for (const t of this.held.values()) t.bmp?.close();
 		this.held.clear();
+		this.props.show(scene, this.density);
 		this.goal = null;
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
 		const at = door ?? target;
@@ -576,7 +581,11 @@ export class Engine {
 			}
 			if (cam.x !== this.cam.x || cam.y !== this.cam.y) this.moveTo(cam);
 		}
-		if (this.dirty) this.drawTiles(scene);
+		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
+		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
+		const moved = this.props.step(dt * 1000, this.net.serverNow(), this.seen(), this.reducedMotion.matches);
+		if (this.dirty) this.drawScene(scene);
+		else if (moved) this.drawScene(scene, moved);
 		this.mark();
 		this.drawCursors(now);
 	};
@@ -619,13 +628,30 @@ export class Engine {
 		}
 	}
 
-	private drawTiles(scene: Scene) {
-		this.dirty = false;
-		const g = this.g, k = this.view.s * this.dpr, r = tileRange(this.cam, this.view, scene, 0);
-		g.fillStyle = BACKDROP;
-		g.fillRect(0, 0, this.canvas.width, this.canvas.height);
+	/** The world rect in view. */
+	private seen(): Rect {
+		return { x: this.cam.x, y: this.cam.y, w: this.view.w / this.view.s, h: this.view.h / this.view.s };
+	}
+
+	/**
+	 * The background tiles in view, then the props over them; or only those within `area` (world px), clipped to the whole
+	 * device px round it, which paint exactly what a full drawing would there.
+	 */
+	private drawScene(scene: Scene, area?: Rect) {
+		const g = this.g, k = this.view.s * this.dpr, seen = this.seen(), a = area ?? seen;
 		// Tile edges rounded to device px from world px, so neighbours meet without seams.
 		const px = (world: number, cam: number) => Math.round((world - cam) * k);
+		const x = Math.floor((a.x - this.cam.x) * k), y = Math.floor((a.y - this.cam.y) * k);
+		const w = Math.ceil((a.x + a.w - this.cam.x) * k) - x, h = Math.ceil((a.y + a.h - this.cam.y) * k) - y;
+		g.save();
+		if (area) {
+			g.beginPath();
+			g.rect(x, y, w, h);
+			g.clip();
+		} else this.dirty = false;
+		g.fillStyle = BACKDROP;
+		g.fillRect(x, y, w, h);
+		const r = tileRange({ x: a.x, y: a.y }, { w: a.w, h: a.h, s: 1 }, scene, 0);
 		for (let row = r.y0; row <= r.y1; row++)
 			for (let col = r.x0; col <= r.x1; col++) {
 				const bmp = this.held.get(`${col}-${row}`)?.bmp;
@@ -634,6 +660,8 @@ export class Engine {
 				const x1 = px(Math.min(scene.w, (col + 1) * TILE), this.cam.x), y1 = px(Math.min(scene.h, (row + 1) * TILE), this.cam.y);
 				g.drawImage(bmp, x0, y0, x1 - x0, y1 - y0);
 			}
+		this.props.draw(g, this.cam, k, a);
+		g.restore();
 	}
 
 	/**
@@ -643,7 +671,7 @@ export class Engine {
 	private drawCursors(now: number) {
 		const c = this.cursor, cam = this.cam, s = this.view.s, k = s * this.dpr;
 		if (c) this.net.move(cam.x + c.x / s, cam.y + c.y / s);
-		const view = { ...cam, w: this.view.w / s, h: this.view.h / s }, peers: Drawn[] = [];
+		const view = this.seen(), peers: Drawn[] = [];
 		for (const p of this.net.peers.values()) {
 			const at = visible(p.snaps, view) && sample(p.snaps, now);
 			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold });

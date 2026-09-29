@@ -30,7 +30,8 @@ const boxes: Prop[] = brands.map(([id, name]) => ({
 	gist: 'Moosylvania client work',
 	body: [`${name}: client work at Moosylvania.`],
 	rect: humidor[id],
-	cosmetic: 6
+	cosmetic: 6,
+	art: [`brennans-box-${id}`]
 }));
 
 export const BRENNANS: SubScene = {
@@ -49,7 +50,8 @@ export const BRENNANS: SubScene = {
 			name: 'Scandinavian Tobacco Group plaque',
 			gist: 'Moosylvania client work',
 			body: ['Scandinavian Tobacco Group: client work at Moosylvania.'],
-			rect: { x: 954, y: 43, w: 437, h: 261 }
+			rect: { x: 954, y: 43, w: 437, h: 261 },
+			art: ['brennans-stg']
 		}
 	],
 	// Brennan's teal front door at the far left. The ATM left the room for the overworld, where Joe has yet to place it

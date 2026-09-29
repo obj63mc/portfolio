@@ -35,6 +35,14 @@ export interface Prop {
 	clip?: string;
 	/** The cosmetic this prop grants on first interaction. */
 	cosmetic?: CosmeticId;
+	/**
+	 * Its cut-outs in art/generated/<scene>/, bottom first, each an asset id or a rig's name (`<name>-rig.json`); an empty
+	 * list is a prop with no art of its own. Unset, the one cut-out named for the prop: its id on the overworld,
+	 * `<scene>-<id>` in a sub-scene (`artOf` in index.ts).
+	 */
+	art?: string[];
+	/** A video its card plays, drawn onto `screen` in the scene while it plays: a file in art/sources/videos. */
+	video?: { file: string; screen: Rect; captions?: string };
 }
 
 export interface Venue {

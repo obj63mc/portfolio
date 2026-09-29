@@ -12,6 +12,13 @@ export type ScreenTitle = keyof typeof SCREEN_TITLES;
 export const screenGist = (playing?: ScreenTitle) =>
 	playing ? `now playing ${SCREEN_TITLES[playing]}` : 'idle, pick a poster to start a reel';
 
+/** The demo of the game each title's reel shows on the screen, a file in art/sources/videos (Joe, 2026-09-29). */
+export const SCREEN_VIDEOS: Record<ScreenTitle, string> = {
+	'fast-five': 'fastfive-demo-full-1024x768.mp4',
+	'snow-white': 'swath-demo-tour-1280x800.mp4',
+	lorax: 'lorax-demo-tour-1280x800.mp4'
+};
+
 const caseStudy: Record<ScreenTitle, string> = {
 	'fast-five': 'A find-and-seek and safe-cracking game promoting the home video release.',
 	'snow-white': 'Multiple mini games built from scenes in the film.',

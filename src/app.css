@@ -26,6 +26,11 @@ canvas {
 dialog {
 	max-width: 32rem;
 
+	& video {
+		display: block;
+		inline-size: 100%;
+	}
+
 	&::backdrop {
 		background: rgb(0 0 0 / 0.5);
 	}
@@ -166,6 +171,18 @@ html.engine {
 			color: transparent;
 			font: inherit;
 			overflow: hidden;
+		}
+
+		/*
+		 * An irregular prop's hit area is its rect cut to its clip-path (`--clip`, from the scene data). The canvas glows round
+		 * a focused prop (ticket 15), and the focus ring sits inside the button, where a clip-path leaves it showing.
+		 */
+		& .prop > button {
+			clip-path: var(--clip, none);
+
+			&:focus-visible {
+				outline-offset: -3px;
+			}
 		}
 
 		/* The signpost's links share its board top to bottom: the four contacts, then the five districts. */

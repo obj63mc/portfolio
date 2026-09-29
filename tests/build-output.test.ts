@@ -181,6 +181,26 @@ test('the layer: every prop, heading, door, exit and the signpost carries its wo
 	}
 });
 
+test('props (ticket 15): each wrapper names its prop for the engine, and an irregular prop clips its button', () => {
+	for (const file of files) {
+		const layer = main(page(file)), wrappers = opens(layer, 'div').filter((d) => d.includes('class="prop'));
+		const ids = file === 'index.html' ? overworldProps : SUB_SCENES[file.slice(0, -'.html'.length)].props;
+		assert.deepEqual(new Set(wrappers.map((d) => d.match(/data-prop="([^"]*)"/)?.[1])), new Set(ids.map((p) => p.id)), file);
+		for (const p of ids) {
+			const button = layer.match(new RegExp(`${propOpen(p.id).source}\\s*<button[^>]*>`))?.[0].match(/<button[^>]*>/)?.[0] ?? '';
+			if (p.clip) assert.ok(button.includes(`--clip:${p.clip}`), `${p.id} clipped`);
+			else assert.ok(!button.includes('--clip'), `${p.id} unclipped`);
+		}
+	}
+});
+
+test('the meeting TV: its card holds the video with controls, loaded only when played', () => {
+	const tv = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-meeting-tv-title"[\s\S]*?<\/dialog>/)![0];
+	const video = opens(tv, 'video')[0];
+	assert.ok(video.includes('controls') && video.includes('preload="none"'), video);
+	assert.match(video, /src="[^"]*\/_app\/immutable\/assets\/fastfive-demo-full-1024x768\.[^"]*\.mp4"/);
+});
+
 test('the shared screen: button name carries its state, prerendered idle', () => {
 	assert.ok(texts(main(page('foundry.html')), 'button').includes(`Screen: ${screenGist()}`));
 	assert.equal(screenGist('fast-five'), 'now playing Fast Five');

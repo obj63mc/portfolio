@@ -24,3 +24,7 @@ The Foundry art pass (ticket 05) redrew the theatre as a small isometric auditor
 - **`PROJECTOR_LENS`:** the end of the lens barrel on the ledge at the lower left, pointing up-right at the screen. "Projector lights up" starts the beam here, a cone to the four corners of `SCREEN_SURFACE`.
 - **Idle:** the screen is painted idle, a blank, dim ivory surface; the room's lighting is dimmer than the daytime palette at Joe's request.
 - **Walk-behind:** the seat rows the beam crosses are walk-behind scenery (ticket 19). Draw the beam over the scene canvas and under the cursors.
+
+### The screen plays the games' demo videos, 2026-09-29
+
+Joe supplied a demo video of each title's game in `art/sources/videos`, one per poster. The timeline's image is now that video, played on the screen through `SCREEN_SURFACE`'s projective mapping. `SCREEN_VIDEOS` in `src/lib/scenes/foundry.ts` maps each title to its file: Fast Five is `fastfive-demo-full`, Snow White and the Huntsman is `swath-demo-tour` and The Lorax is `lorax-demo-tour`. `Prop.svelte`'s glob already hashes all three into the build (ticket 15). Set each title's sequence length from its video's (58, 35 and 36 s) rather than the prototype's values (spec gap 8). The screen is audible to the room, so the video's own sound may replace the trailer cue.

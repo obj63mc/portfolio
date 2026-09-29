@@ -59,16 +59,21 @@ export const MOOSYLVANIA: SubScene = {
 			gist: 'about Moosylvania',
 			// TODO Joe: what Moosylvania is and general information about the agency (content inventory, 2026-09-28).
 			body: ['Moosylvania, 7303 Marietta Avenue, Maplewood.'],
-			rect: { x: 1623, y: 2549, w: 124, h: 179 }
+			rect: { x: 1623, y: 2549, w: 124, h: 179 },
+			art: ['moosylvania-statue']
 		},
 		{
 			id: 'meeting-tv',
 			name: 'Meeting TV',
 			gist: 'a video from Joe',
-			// TODO Joe: the video file. Clicking plays it on this TV for that visitor only, and its card holds the same video
-			// with controls and captions (spec: "Local prop, the Moosylvania meeting TV").
+			// Clicking plays it on this TV for that visitor only, and its card holds the same video with controls (spec:
+			// "Local prop, the Moosylvania meeting TV").
 			body: ['A video from Joe Madden.'],
-			rect: { x: 787, y: 3434, w: 828, h: 392 }
+			rect: { x: 787, y: 3434, w: 828, h: 392 },
+			art: ['moosylvania-tv'],
+			// TODO Joe: the video file and its captions. The Fast Five game's demo stands in (Joe, 2026-09-29). The screen is
+			// the panel's dark inset inside its black border, measured on the TV's matte.
+			video: { file: 'fastfive-demo-full-1024x768.mp4', screen: { x: 896, y: 3491, w: 610, h: 255 } }
 		}
 	],
 	// The arched double front doors beneath the loft, between the two offices.

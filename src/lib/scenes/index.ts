@@ -3,7 +3,7 @@ import { FOUNDRY } from './foundry.ts';
 import { MOOSYLVANIA } from './moosylvania.ts';
 import { SIDE_PROJECT } from './side-project.ts';
 import { SLU } from './slu.ts';
-import type { Prop, Rect, SubScene } from './types';
+import type { Overworld, Prop, Rect, SubScene } from './types';
 
 /** Every sub-scene by its flat URL slug, which is also the overworld venue id its exit link targets. */
 export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
@@ -19,6 +19,10 @@ export const leftToRight = (props: Prop[]): Prop[] => [...props].sort((a, b) => 
  */
 export const readingOrder = (s: SubScene): Prop[] =>
 	s.h > s.w ? [...s.props].sort((a, b) => a.rect.y - b.rect.y || a.rect.x - b.rect.x) : leftToRight(s.props);
+
+/** A prop's cut-outs in its scene's art folder, bottom first (`Prop.art`). */
+export const artOf = (scene: Overworld | SubScene, prop: Prop): string[] =>
+	prop.art ?? ['districts' in scene ? prop.id : `${scene.id}-${prop.id}`];
 
 /**
  * An element's world rect as custom properties, prerendered into its style attribute. Only the engine's stylesheet reads

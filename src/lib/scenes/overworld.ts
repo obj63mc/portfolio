@@ -79,7 +79,9 @@ const districts: District[] = [
 						gist: 'the Carondelicious Criterium and Tuesday night training',
 						body: ['The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.'],
 						// The lower straight of the lake loop, west of the foreground tree.
-						rect: { x: 2300, y: 2515, w: 400, h: 65 }
+						rect: { x: 2300, y: 2515, w: 400, h: 65 },
+						// Painted in the plate; the rider riding it is ambient motion (motion.ts RIDER).
+						art: []
 					},
 					{
 						id: 'bike',
@@ -123,7 +125,9 @@ const districts: District[] = [
 						gist: 'Universal Pictures Home Entertainment',
 						// Clearance: the three titles are told only on the screen and under the posters inside.
 						body: ['Universal Pictures Home Entertainment: three titles, now showing inside.'],
-						rect: { x: 3238, y: 1585, w: 563, h: 152 }
+						rect: { x: 3238, y: 1585, w: 563, h: 152 },
+						// The canopy, then its string of bulbs, which chase.
+						art: ['marquee', 'marquee-bulbs']
 					}
 				]
 			}
@@ -149,7 +153,9 @@ const districts: District[] = [
 							'Acquired by Network Solutions, announced December 2005.'
 						],
 						rect: { x: 5945, y: 1106, w: 581, h: 165 },
-						cosmetic: 3
+						cosmetic: 3,
+						// The sign, then the monster's eye forming its O, which blinks.
+						art: ['mc-sign', 'mc-eye']
 					},
 					{
 						id: 'server-rack',

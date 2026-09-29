@@ -371,11 +371,15 @@ test('a back or forward hop behind the Join or Paused card lands at the door and
 test.describe('a phone, with no mouse or trackpad', () => {
 	test.use({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
 
-	/** One finger's real touches, through the DevTools protocol, so the page gets real pointer events. */
+	/**
+	 * One finger's real touches, through the DevTools protocol, so the page gets real pointer events. `at` stamps a touch
+	 * (s since the epoch) instead of it happening as it is sent.
+	 */
 	async function finger(page: Page) {
 		const cdp = await page.context().newCDPSession(page);
-		const send = (type: 'touchStart' | 'touchMove' | 'touchEnd', p?: Point) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: p ? [p] : [] });
-		return { down: (p: Point) => send('touchStart', p), move: (p: Point) => send('touchMove', p), up: () => send('touchEnd') };
+		const send = (type: 'touchStart' | 'touchMove' | 'touchEnd', p?: Point, at?: number) =>
+			cdp.send('Input.dispatchTouchEvent', { type, touchPoints: p ? [p] : [], ...(at && { timestamp: at }) });
+		return { down: (p: Point) => send('touchStart', p), move: (p: Point, at?: number) => send('touchMove', p, at), up: (at?: number) => send('touchEnd', undefined, at) };
 	}
 	/** The camera, CSS px, off the layer's transform. */
 	const camera = (page: Page) =>
@@ -462,9 +466,12 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		await f.up();
 		expect(await off(page, { x: 390 - 24, y: cursor.y })).toBeLessThan(5);
 
-		// Let go while moving, it coasts on.
-		await drag(page, f, ground, { x: -30, y: 0 }, 6);
-		await f.up();
+		// Let go while moving, it coasts on. A finger moves every frame whatever the page draws, but a page drawing the
+		// moose's breathing acknowledges each sent touch a few frames late, so these are stamped a frame apart.
+		await f.down(ground);
+		const t0 = Date.now() / 1000;
+		for (let i = 1; i <= 6; i++) await f.move({ x: ground.x - 30 * i, y: ground.y }, t0 + i / 60);
+		await f.up(t0 + 7 / 60);
 		const flung = await camera(page);
 		await page.waitForTimeout(500);
 		expect((await camera(page)).x - flung.x, 'coasting').toBeGreaterThan(20);

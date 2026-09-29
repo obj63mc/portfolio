@@ -62,7 +62,8 @@ export const SIDE_PROJECT: SubScene = {
 			gist: 'Side Project Brewing',
 			body: ['Side Project Brewing’s light bulb, on the Cellar’s cooler door. The Cellar is across the street from Moosylvania.'],
 			rect: { x: 2007, y: 639, w: 124, h: 124 },
-			cosmetic: 5
+			cosmetic: 5,
+			art: ['side-project-sign']
 		},
 		{
 			id: 'chalkboard',
