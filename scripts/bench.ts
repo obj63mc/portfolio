@@ -2,25 +2,37 @@
 // overworld as a 390 x 844 phone under Chrome's device emulation, with real touches on the joystick and drags and flings
 // of the scene, and prints one line of frame rate and memory every 30 s. `npm run build` first, then
 // `npm run bench [minutes]` (default 3). `HEADED=1` draws in a window, on the GPU, instead of headless.
+//
+// On a real Android phone, with USB debugging on and Chrome open: `adb forward tcp:9222 localabstract:chrome_devtools_remote`
+// and `adb reverse tcp:4175 tcp:4175`, then `CDP=http://localhost:9222 npm run bench`. The bench opens its own tab there
+// (keep the screen on) and reads memory through adb.
 import { execFileSync } from 'node:child_process';
 import { chromium } from '@playwright/test';
 import { preview } from 'vite';
 
 const minutes = Number(process.argv[2] ?? 3);
 if (!(minutes > 0)) throw new Error('Usage: npm run bench [minutes]');
-/** The phone's viewport, and its middle, where the flings start. */
-const phone = { width: 390, height: 844 }, mid = { x: 195, y: 422 };
-const server = await preview({ preview: { port: 4175, strictPort: true }, logLevel: 'silent' });
-const browser = await chromium.launch({ headless: !process.env.HEADED });
-const page = await (await browser.newContext({ viewport: phone, deviceScaleFactor: 3, isMobile: true, hasTouch: true })).newPage();
+const device = process.env.CDP;
+const server = await preview({ preview: { host: '127.0.0.1', port: 4175, strictPort: true }, logLevel: 'silent' });
+const browser = device ? await chromium.connectOverCDP(device) : await chromium.launch({ headless: !process.env.HEADED });
+const page = device
+	? await browser.contexts()[0].newPage()
+	: await (await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true })).newPage();
 const cdp = await page.context().newCDPSession(page), browserCdp = await browser.newBrowserCDPSession();
 await cdp.send('Performance.enable');
 const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x = 0, y = 0) =>
 	cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
 
 await page.goto('http://localhost:4175/');
-await page.getByRole('button', { name: 'Join' }).tap();
-const stick = (await page.locator('.joystick').boundingBox())!, hub = { x: stick.x + stick.width / 2, y: stick.y + stick.height / 2 };
+await page.bringToFront();
+/** The middle of a box: the Join button, the joystick, or the viewport, where the flings start. */
+const centre = (b: { x: number; y: number; width: number; height: number }) => ({ x: b.x + b.width / 2, y: b.y + b.height / 2 });
+const mid = centre(await page.evaluate(() => ({ x: 0, y: 0, width: innerWidth, height: innerHeight })));
+const join = centre((await page.getByRole('button', { name: 'Join' }).boundingBox())!);
+await touch('touchStart', join.x, join.y);
+await touch('touchEnd');
+await page.locator('.joystick').waitFor();
+const hub = centre((await page.locator('.joystick').boundingBox())!);
 // Every frame's time, for the page to hand over and forget each window.
 await page.evaluate(() => {
 	const w = window as unknown as { frames_: number[] };
@@ -32,8 +44,9 @@ await page.evaluate(() => {
 /** Resident memory, MB, of the renderer and GPU processes, where the tiles' decoded bitmaps live. */
 async function rss() {
 	const { processInfo } = await browserCdp.send('SystemInfo.getProcessInfo');
-	const ids = processInfo.filter((p) => p.type === 'renderer' || p.type === 'GPU').map((p) => String(p.id));
-	return Math.round(execFileSync('ps', ['-o', 'rss=', '-p', ids.join(',')], { encoding: 'utf8' }).split('\n').reduce((s, l) => s + (Number(l) || 0), 0) / 1024);
+	const ids = processInfo.filter((p) => p.type === 'renderer' || p.type === 'GPU').map((p) => String(p.id)).join(',');
+	const [cmd, ...args] = device ? ['adb', 'shell', 'ps', '-o', 'RSS=', '-p', ids] : ['ps', '-o', 'rss=', '-p', ids];
+	return Math.round(execFileSync(cmd, args, { encoding: 'utf8' }).split('\n').reduce((s, l) => s + (Number(l) || 0), 0) / 1024);
 }
 
 /** One window's frames: mean fps, 95th-percentile frame time and the share of frames over 25 ms. */
@@ -50,7 +63,7 @@ async function sample() {
 		rssMB: await rss(),
 		camera: await page.locator('main').evaluate((m) => {
 			const t = new DOMMatrix(getComputedStyle(m).transform);
-			return `${Math.round(-t.e / 0.6)},${Math.round(-t.f / 0.6)}`; // world px at the phone's 0.6 scale
+			return `${Math.round(-t.e / t.a)},${Math.round(-t.f / t.a)}`; // world px: the layer's scale is the render scale
 		})
 	};
 }
@@ -79,7 +92,8 @@ const lap = async () => {
 	for (let i = 0; i < 2; i++) await steer(10, -60, 1500), await fling(0, 30);
 };
 
-console.log(JSON.stringify({ at: new Date().toISOString(), headed: !!process.env.HEADED, minutes, ua: await page.evaluate(() => navigator.userAgent) }));
+const about = await page.evaluate(() => ({ ua: navigator.userAgent, viewport: `${innerWidth} x ${innerHeight} @ ${devicePixelRatio}` }));
+console.log(JSON.stringify({ at: new Date().toISOString(), on: device ? 'usb' : process.env.HEADED ? 'headed' : 'headless', minutes, ...about }));
 const end = Date.now() + minutes * 60_000;
 let next = Date.now() + 30_000, n = 0;
 const clock = setInterval(async () => {
@@ -89,5 +103,6 @@ const clock = setInterval(async () => {
 }, 250);
 while (Date.now() < end) await lap();
 clearInterval(clock);
-await browser.close();
+await page.close();
+await browser.close(); // over CDP this only disconnects
 await server.close();

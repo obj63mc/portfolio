@@ -44,7 +44,7 @@ Performance (seam: measured, not asserted). The prototype's bench hooks prototyp
 | Headed (GPU) | 60 every window | 17.3 to 17.5 ms | 0 to 0.1 % | 3.5 to 4.2 MB | 680 to 688 MB |
 | Headed, after the review fixes | 60 every window | 17.4 to 17.7 ms | 0 | 3.8 to 4.3 MB | 671 to 679 MB |
 
-Memory is flat: no growth over the run, so ring eviction holds. `elementFromPoint` now runs every frame on touch as well as under the lock (09's "left for later") and doesn't show. These are emulation numbers, not a phone's; the phone verdict is still Joe's hands-on run (spec gap 9).
+Memory is flat: no growth over the run, so ring eviction holds. `elementFromPoint` now runs every frame on touch as well as under the lock (09's "left for later") and doesn't show.
 
 Calls made here for Joe to confirm or veto:
 
@@ -57,6 +57,19 @@ Calls made here for Joe to confirm or veto:
 
 Left for later:
 
-- No real-phone numbers (spec gap 9); `npm run bench` against a phone needs Joe's device.
 - The joystick is plainly styled until the art direction reaches it.
 - iOS long-press callouts and text selection on the transparent layer aren't suppressed; the properties for that aren't Baseline.
+
+2026-09-29, on a real phone. Joe connected a Pixel 11 Pro over USB, so `npm run bench` gained a device mode: `CDP=http://localhost:<port>` attaches to Chrome on the phone through `adb forward` and serves the build to it through `adb reverse`. It opens its own tab, joins by touch, reads the viewport and render scale from the page, and reads resident memory through adb. The script's header has the commands. A ten-minute soak with the same lap (Chrome 154, a 411 x 748 viewport at DPR 2.625, the display at 60 Hz, on the charger):
+
+| Minutes | fps | p95 frame | over 25 ms | JS heap | Resident (renderer + GPU) |
+| --- | --- | --- | --- | --- | --- |
+| 0.5 to 10, 20 windows | 60 every window | 16.7 to 16.8 ms | 0, one window 0.1 % | 3.3 to 4.2 MB | 402 to 451 MB, drifting down |
+
+The camera covered the full width (x 0 to 6065, the edge for this viewport) and y 0 to 1303. The battery went from 24.7 to 27.7 °C, and the thermal status stayed 0 (none) throughout. On the same phone:
+
+- Join entered the touch model, since `(any-pointer: fine)` is false.
+- The render scale was 0.6.
+- A card padded past the screen's height scrolled under a finger: scrollTop 584 after two swipes, with `touch-action: none` on the page. This bears out the modal card as its own scroll container. Today's cards are all short enough not to scroll, but ticket 15's full texts may not be.
+
+The touches are injected through the DevTools protocol, so the display doesn't boost to 120 Hz as a real finger may, and the charger hides battery drain. Still untested: an iPhone, which this can't drive, and real fingers on the joystick's feel.
