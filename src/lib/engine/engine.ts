@@ -33,8 +33,12 @@ type Gesture =
 // /art/generated/<id>/<id>/<density>/<column>-<row>.webp. Never inlined: the page's CSP has no data: source.
 const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 
-/** Screen elements that hold the camera still when the cursor is near them. Cards stop it. */
-const CONTROLS = '.controls, .joystick';
+/**
+ * The on-screen toggles: they hold the camera still when the mouse's cursor is near them. On touch they and the joystick
+ * are the finger's, and the drawn cursor over them neither marks, clicks nor holds anything (Joe, 2026-09-29). Cards stop
+ * the camera anyway.
+ */
+const CONTROLS = '.controls';
 /** The drawn cursor's height, world px: a touch drag carries it this far inside the viewport's edge, so it stays in view. */
 const CARRY = 40;
 /** A touch becomes a drag once it has gone this many CSS px, so a tap on a prop isn't eaten. */
@@ -248,7 +252,7 @@ export class Engine {
 			(e) => {
 				if (this.gesture.is === 'tap' || this.gesture.is === 'drag') return; // one finger drags
 				this.gesture = { is: 'none' }; // any touch stops a fling
-				if (this.input.is !== 'touch' || e.pointerType !== 'touch' || (e.target as Element).closest(`dialog, ${CONTROLS}`)) return;
+				if (this.input.is !== 'touch' || e.pointerType !== 'touch' || (e.target as Element).closest('dialog, .controls, .joystick')) return;
 				this.gesture = { is: 'tap', id: e.pointerId, from: { x: e.clientX, y: e.clientY } };
 			},
 			opts
@@ -348,11 +352,13 @@ export class Engine {
 
 	/**
 	 * The link or button under the drawn cursor when it is locked, or steered by touch outside a card (whose controls take
-	 * their own taps, the joystick behind it); null for the mouse's real pointer.
+	 * their own taps, the joystick behind it) and off the toggles, which are the finger's too; null for the mouse's real
+	 * pointer.
 	 */
 	private under() {
-		const c = (this.input.is === 'locked' || (this.input.is === 'touch' && !document.querySelector('dialog[open]'))) && this.cursor;
-		return c ? (document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button') ?? null) : null;
+		const touch = this.input.is === 'touch', c = (this.input.is === 'locked' || (touch && !document.querySelector('dialog[open]'))) && this.cursor;
+		const hit = c ? document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button') : null;
+		return hit && !(touch && hit.closest(CONTROLS)) ? hit : null;
 	}
 
 	/** Every change of input goes through here: the card it calls for is open and any other is closed. */
@@ -505,15 +511,12 @@ export class Engine {
 				cam = glide(this.cam, this.goal, dt);
 				if (cam === this.goal) this.goal = null;
 			} else {
-				// Layout is clean at the top of the frame, so reading the controls' rects here costs nothing. A hidden control, the
-				// joystick off touch, has no box.
+				// Layout is clean at the top of the frame, so reading the toggles' rects here costs nothing. On touch they don't count.
 				const cursor = free && this.armed && (this.input.is === 'locked' || this.inside) ? this.cursor : null;
-				const controls = cursor
-					? [...document.querySelectorAll(CONTROLS)]
-							.map((c) => c.getBoundingClientRect())
-							.filter((r) => r.width)
-							.map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
-					: [];
+				const controls =
+					cursor && this.input.is !== 'touch'
+						? [...document.querySelectorAll(CONTROLS)].map((c) => c.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
+						: [];
 				const pressed = now - this.pressedAt < 100;
 				cam = step(this.cam, { view: this.view, scene, band: scene.pushBand ?? 0.12, cursor, props: this.targets, controls, pressed }, dt);
 			}

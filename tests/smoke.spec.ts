@@ -373,6 +373,33 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		expect((await hold(60, 0)).x, 'right, into the corner by the joystick').toBeGreaterThan(150);
 	});
 
+	test('the toggles and the joystick are the finger’s: the cursor over them marks nothing and never holds the camera', async ({ page }) => {
+		// Midtown, where no prop is near the toggles once the cursor is on them. Dragging the view up to the scene's top
+		// carries the cursor down by the camera's height, so Join is tapped that far above the toggles.
+		await page.goto('/#midtown');
+		const toggles = (await page.locator('.controls').boundingBox())!, join = (await page.getByRole('button', { name: 'Join' }).boundingBox())!;
+		const at = { x: join.x + 8, y: toggles.y + toggles.height / 2 - (await camera(page)).y };
+		expect(at.y > join.y && at.y < join.y + join.height, 'the Join tap on the button').toBe(true);
+		await page.touchscreen.tap(at.x, at.y);
+		const f = await finger(page), hub = await centre(page.locator('.joystick'));
+		await drag(page, f, { x: 320, y: 100 }, { x: 0, y: 35 }, 20);
+		await page.waitForTimeout(150);
+		await f.up();
+		const on = (await tip(page))!;
+		expect(on.y > toggles.y && on.y < toggles.y + toggles.height && on.x > toggles.x && on.x < toggles.x + toggles.width, 'the cursor sits on the toggles').toBe(true);
+		await page.waitForTimeout(100);
+		await expect(page.locator('.controls .hot')).toHaveCount(0);
+		// Steered slowly right along the bottom band, still within 40 px of the toggles, it scrolls down at once.
+		const before = await camera(page);
+		await f.down(hub);
+		await f.move({ x: hub.x + 18, y: hub.y }); // 30 percent of the stick: about 64 CSS px/s
+		await page.waitForTimeout(400);
+		const after = await camera(page);
+		await f.up();
+		expect((await tip(page))!.x, 'still beside the toggles').toBeLessThan(toggles.x + toggles.width + 40);
+		expect(after.y - before.y).toBeGreaterThan(60);
+	});
+
 	test('a hidden tab pauses; the Resume tap goes back to touch without a lock', async ({ page }) => {
 		await page.goto('/');
 		await page.getByRole('button', { name: 'Join' }).tap();

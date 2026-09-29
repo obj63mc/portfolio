@@ -88,3 +88,7 @@ Afterwards the same run scrolled down to the scene's bottom and right to its eas
 
 `npm run dev` also drew no scene at all until da7639d: SvelteKit's dev-server allow list left out `art/generated`.
 
+Joe's ruling, the same day: on touch the toggles and the joystick are touch-only, so the drawn cursor over them has no effect on them. On touch they no longer hold the camera, and the joystick left the suppressing controls entirely. `under()` skips the toggles on touch, so they get no hover mark and a joystick tap doesn't click them. With a mouse, the toggles still hold the camera as before. The phone smoke covers it: the view is dragged at Midtown so the cursor is carried onto the toggles. The test checks that there is no mark, and that steering slowly along the bottom band beside them scrolls at once. With the toggles still counting on touch it fails at 0 px.
+
+Found on the way, not fixed here: the signpost's lower links sit outside its 60 x 120 board and can't be tapped or clicked. At 0.6, Midtown's box is 461 to 475 px down against a board ending at 453 px, and the board's `overflow: hidden` clips it, so the hit goes to the scene canvas. Each link keeps its text's line height (about 22 world px, not the 13 px slot), and the nine overflow the board. The keyboard still reaches them. It is ticket 27's ground (48 x 48 signpost tap targets).
+
