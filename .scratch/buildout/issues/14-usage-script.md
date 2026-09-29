@@ -12,7 +12,7 @@
 
 ## Comments
 
-2026-09-29, implemented. The live box waits on the token from 07's stage 7: run `npm run usage` once it exists.
+2026-09-29, implemented. The live box waits on the token from 07's stage 8: run `npm run usage` once it exists.
 
 - `scripts/usage.ts` is the script and exports `projectedBill(usage, now)`, which is pure. It scales month-to-date requests, inbound messages and GB-s to the whole UTC month. Inbound messages bill at 20:1, over 1M included requests at $0.15 a million and 400k included GB-s at $12.50 a million, plus the $5 base.
 - `tests/usage.test.ts` checks the spec's worked example: 30 visitors for half of September, one room awake, 35,700 inbound messages per visitor-hour (the cursor sync prototype's measure). It projects to $10.64, which rounds to $11. A second test checks that a quiet month is the $5 base.

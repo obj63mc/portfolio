@@ -158,6 +158,7 @@ Resolved 2026-09-24 by grilling with Joe. A research subagent checked the Cloudf
 
 2026-09-29, amended by buildout ticket 07.
 - Step 7's rule 2 also matches user agents containing `bot/`, `spider`, `crawl` or `headless`, so crawlers that run scripts get the page single-player.
-- "Block AI bots" is now AI bot policies under Security → Settings: Training is blocked on all pages, and Search and Agent are Joe's call.
+- "Block AI bots" is now AI bot policies under Security → Settings. Training is blocked on all pages, and Search and Agent are allowed (Joe: bots read every page but never join a room).
+- A Response Header Transform Rule adds `Server-Timing: bot` for the same bot test, so a bot's page never opens a socket.
 - Step 5 adds Always Use HTTPS, because the www template matches only `https://www.*`.
 - The walkthrough is `bash scripts/cloudflare-setup.sh`.

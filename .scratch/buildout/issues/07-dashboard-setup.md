@@ -37,3 +37,11 @@
 - **The token** goes to `~/.config/barmadden/.env` (mode 600, outside the repo). `npm run usage` loads that file, and the environment wins.
 
 **By hand after the wizard.** Open any PR to see its Preview URL and `X-Robots-Tag: noindex`. The phone and desktop check and the kill switch wait on ticket 13's client.
+
+2026-09-29, Joe's decisions on the walkthrough.
+- **Bots read every page but never connect.** Anything the edge classifies as a bot is kept off the socket, and the page itself knows not to try. Firewall rules can't add headers, so a Response Header Transform Rule (Free allows 10) adds `Server-Timing: bot` to every response for the same bot test the WAF's socket rule uses. `Server-Timing` is the one response header a page's script can read about its own document, through the navigation entry's `serverTiming`. Ticket 13's client skips the socket when it's there.
+  - The wizard keeps the expression in one variable, `BOTS`, for both rules, and gives the flag a stage of its own, so there are now nine stages.
+  - Cloudflare's docs don't say outright whether Transform Rules reach Worker static-asset responses on a Custom Domain. The wizard checks it live: a Googlebot user agent must get the flag and curl's own must not.
+  - No cost: 1 of 10 Transform Rules.
+- **AI bot policies:** Training → Block on all pages; Search and Agent → Allow.
+- **SPF:** Google Workspace is the only sender and has been for years. The wizard now says to add `v=spf1 include:_spf.google.com ~all` whenever the record is missing, rather than suggesting it.

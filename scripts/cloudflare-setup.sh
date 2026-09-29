@@ -189,7 +189,7 @@ finish() {
 # checklist. Run it from the repo root with `bash scripts/cloudflare-setup.sh`. Stages check what they can with dig and
 # curl, so a re-run shows what's already done; Enter skips past a stage that is.
 
-TOTAL_STAGES=8
+TOTAL_STAGES=9
 DOMAIN=barmadden.com
 DASH=https://dash.cloudflare.com/3edd4b87aa844db287c56527fb8dba69
 # The analytics token stays outside the repo; `npm run usage` loads this file.
@@ -209,7 +209,12 @@ blocked() {
   [[ ${out##*$'\n'} == 403 && $out != 'bad origin'* ]]
 }
 no_ga() { ! grep -q googletagmanager <<<"$(curl -s "$1")"; }
+# One bot test for the WAF's socket rule and the page's bot flag, so the two always agree.
+BOTS='cf.client.bot or lower(http.user_agent) contains "bot/" or lower(http.user_agent) contains "spider" or lower(http.user_agent) contains "crawl" or lower(http.user_agent) contains "headless"'
+# flagged curl-args...: the home page comes back with the edge's bot flag, Server-Timing: bot.
+flagged() { grep -qi '^server-timing:.*bot' <<<"$(curl -sI "$@" "https://$DOMAIN/")"; }
 GOOGLEBOT='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+bot_flag_works() { flagged -A "$GOOGLEBOT" && ! flagged; }
 # www_redirects: https://www answers 301 to the same path and query on the apex.
 www_redirects() {
   [[ $(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "https://www.$DOMAIN/midtown/foundry?x=1") \
@@ -233,8 +238,8 @@ note "DS     $(dig +short DS $DOMAIN | grep . || echo 'none (DNSSEC off at GoDad
 step "Compare with GoDaddy's DNS page for $DOMAIN, which still lists the old records. Any MX or TXT there"
 note "  (SPF v=spf1..., google-site-verification=..., _dmarc) missing above: add it under DNS → Records here."
 if ! grep -q spf1 <<<"$(dig +short TXT $DOMAIN)"; then
-  warn "No SPF record. If GoDaddy had none either and Google Workspace is the only sender, Google recommends"
-  note "  TXT, name @, content v=spf1 include:_spf.google.com ~all  (without it, mail is likelier to land in junk)."
+  warn "No SPF record, and Google Workspace is the only sender. Add it under DNS → Records → Add record:"
+  note "  Type TXT, Name @, Content v=spf1 include:_spf.google.com ~all → Save."
 fi
 if resolves A $DOMAIN || resolves AAAA $DOMAIN || resolves www.$DOMAIN || resolves AAAA www.$DOMAIN; then
   warn "$DOMAIN or www answers. Before stage 3, delete any A, AAAA or CNAME named @ or www under DNS → Records"
@@ -290,24 +295,32 @@ note "The build passes PUBLIC_GA_ID into the site only on main, so Previews neve
 note "If the page offers 'Switch to Worker Previews', take it: it's one-time and gives each PR its own Preview."
 pause "Connected? Press Enter. The next push to main deploys by itself."
 
-stage "WAF rules and bot settings"
-say "Two custom rules (of the Free plan's 5) keep the socket for real browsers on this site. A blocked request"
-say "never reaches the Worker, so it costs nothing, and bots get the prerendered page with no peers."
+stage "WAF rules: the socket is for browsers on this site"
+say "Two custom rules (of the Free plan's 5). A blocked request never reaches the Worker, so it costs nothing."
 open_url "$DASH/$DOMAIN/security/security-rules"
 step "Create rule → Custom rules. Name: socket origin. Edit expression, paste, action Block → Deploy:"
 note '  starts_with(http.request.uri.path, "/ws") and not any(http.request.headers["origin"][*] eq "https://barmadden.com")'
 step "Create another. Name: socket bots. Edit expression, paste, action Block → Deploy:"
-note '  starts_with(http.request.uri.path, "/ws") and (cf.client.bot or lower(http.user_agent) contains "bot/" or lower(http.user_agent) contains "spider" or lower(http.user_agent) contains "crawl" or lower(http.user_agent) contains "headless")'
+note "  starts_with(http.request.uri.path, \"/ws\") and ($BOTS)"
+pause "Deployed both? Press Enter to check."
+check "/ws with a foreign Origin is blocked at the edge" blocked -H 'Origin: https://evil.example'
+check "/ws from a bot's user agent is blocked at the edge" blocked -A "$GOOGLEBOT" -H "Origin: https://$DOMAIN"
+pause
+
+stage "Bot flag for the page, AI bot policies"
+say "Bots still read every page. The same bot test adds Server-Timing: bot to their responses, which the page's"
+say "script can read, so a bot's page never opens a socket at all (ticket 13 builds that side)."
+open_url "$DASH/$DOMAIN/rules/overview"
+step "Create rule → Response Header Transform Rule. Name: bot flag. Custom filter expression → Edit expression:"
+note "  $BOTS"
+step "Modify response header: Add static, Header name Server-Timing, Value bot → Deploy."
 say ""
 open_url "$DASH/$DOMAIN/security/settings"
-step "Filter Bot traffic. Configure AI bot policies: Training → Block (on all pages)."
-note "  Search (AI search engines) and Agent (assistants fetching a page for someone asking about you) are your"
-note "  call: Allow keeps the site findable there; Block matches the old Block AI bots toggle the checklist named."
+step "Filter Bot traffic. Configure AI bot policies: Training → Block (on all pages); Search → Allow; Agent → Allow."
 step "Optional, same page: 'block training in robots.txt' → on (Cloudflare serves the robots.txt lines)."
 step "Bot fight mode → leave off. On Free it can't be scoped and would challenge the socket and crawlers."
 pause "Done? Press Enter to check."
-check "/ws with a foreign Origin is blocked at the edge" blocked -H 'Origin: https://evil.example'
-check "/ws from a bot's user agent is blocked at the edge" blocked -A "$GOOGLEBOT" -H "Origin: https://$DOMAIN"
+check "a bot's user agent gets Server-Timing: bot on pages, a browser's doesn't" bot_flag_works
 pause
 
 stage "Analytics token for npm run usage"
@@ -332,6 +345,7 @@ check "/ws with a foreign Origin is blocked at the edge" blocked -H 'Origin: htt
 check "/ws from a bot's user agent is blocked at the edge" blocked -A "$GOOGLEBOT" -H "Origin: https://$DOMAIN"
 check "CF_ANALYTICS_TOKEN is stored outside the repo ($ENV_FILE)" grep -q '^CF_ANALYTICS_TOKEN=.' "$ENV_FILE"
 check "/ws from headless Chrome is blocked at the edge" blocked -A 'HeadlessChrome/140.0.0.0' -H "Origin: https://$DOMAIN"
+check "a bot's user agent gets Server-Timing: bot on pages, a browser's doesn't" bot_flag_works
 say ""
 step "Open a PR from any branch: Workers Builds comments a Preview URL on it."
 ask PREVIEW_URL "Paste the Preview URL (Enter skips if there's no PR yet):"
