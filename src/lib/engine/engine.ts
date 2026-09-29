@@ -2,10 +2,14 @@
 // per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. The input (ticket 09):
 // the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Touch (ticket 10):
 // the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the fade, landing at
-// the door and focus. Carried over from the rendering and pointer-lock prototypes' engines (prototype/rendering-camera,
-// prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
+// the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. Carried over
+// from the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the
+// spec's rules; the layer's markup is never re-rendered here.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
+import { Net } from '../net/net.ts';
+import { sample, visible } from '../net/peers.ts';
 import { KEYS, TILE, centreOn, clamp, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Move, type View } from './camera.ts';
+import { Cursors, type Drawn } from './cursors.ts';
 
 export type Scene = Overworld | SubScene;
 
@@ -45,8 +49,6 @@ const CARRY = 40;
 const DRAG = 6;
 /** Behind the scene where no tile has arrived, or beyond a scene smaller than the view. */
 const BACKDROP = '#1d2b3a';
-/** The visitor's own cursor, 32 units tall with its tip at the origin, drawn 1.25x (spec: own cursor). Ticket 13's atlas replaces it. */
-const ARROW = new Path2D('M0 0V29L7 22L11.5 32L16 30L11.5 21H21Z');
 
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
 /** A point held inside the viewport. */
@@ -101,8 +103,10 @@ export class Engine {
 	/** Background tiles held, by `<column>-<row>`; a tile still loading has no bitmap. */
 	private held = new Map<string, { bmp?: ImageBitmap }>();
 	private dirty = true;
-	/** The cursor position last drawn, so a still cursor isn't redrawn. */
-	private cursorKey = '';
+	/** The scene's room: peers, "N here" and the offline announcement. */
+	private net: Net;
+	/** Every cursor, from one atlas. */
+	private art: Cursors;
 	private raf = 0;
 	private last = 0;
 	private canvas: HTMLCanvasElement;
@@ -126,10 +130,17 @@ export class Engine {
 	});
 
 	/**
-	 * `joystick` is the touch joystick, its knob its first child; `cards` are the Join and Paused cards. The canvas holding
-	 * the pointer lock is the scene's, in the shared layout.
+	 * `joystick` is the touch joystick, its knob its first child; `cards` are the Join and Paused cards; `status` holds the
+	 * "N here" count and the polite live region. The canvas holding the pointer lock is the scene's, in the shared layout.
 	 */
-	constructor(canvas: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, cards: Engine['cards']) {
+	constructor(
+		canvas: HTMLCanvasElement,
+		layer: HTMLElement,
+		cursors: HTMLCanvasElement,
+		joystick: HTMLElement,
+		cards: Engine['cards'],
+		status: { here: HTMLElement; live: HTMLElement }
+	) {
 		const g = canvas.getContext('2d', { alpha: false }), cg = cursors.getContext('2d');
 		// Without a canvas the engine never starts and the page stays the plain document (spec: "if the canvas fails").
 		if (!g || !cg) throw new Error('No 2D canvas');
@@ -145,6 +156,12 @@ export class Engine {
 		this.g = g;
 		this.cg = cg;
 		this.cards = cards;
+		this.art = new Cursors(cursors, cg, r.s * r.dpr, r.dpr);
+		// Only the visitor's own events are announced: offline, never another visitor's comings and goings.
+		this.net = new Net({
+			count: (n) => (status.here.textContent = `${n} here`),
+			solo: (on) => (status.live.textContent = on ? 'Offline, exploring solo' : '')
+		});
 		document.documentElement.classList.add('engine');
 		this.bind();
 		this.resize();
@@ -158,6 +175,7 @@ export class Engine {
 
 	destroy() {
 		cancelAnimationFrame(this.raf);
+		this.net.destroy();
 		this.listeners.abort();
 		this.raise.disconnect();
 		for (const t of this.held.values()) t.bmp?.close();
@@ -185,6 +203,9 @@ export class Engine {
 		}
 		const from = this.scene, overworld = 'districts' in scene;
 		this.scene = scene;
+		// A new scene is a new room (ticket 13): one socket closes and the next opens, and a joined cursor is tagged "you".
+		this.net.join(scene.id);
+		if (this.cursor) this.art.tag();
 		this.targets = [...(overworld ? [scene.signpost.rect] : []), ...propsOf(scene).map((p) => p.rect)];
 		for (const t of this.held.values()) t.bmp?.close();
 		this.held.clear();
@@ -413,6 +434,7 @@ export class Engine {
 		if (this.input.is !== 'join') return;
 		const b = (e.currentTarget as Element).getBoundingClientRect(), fine = this.fine.matches;
 		this.cursor = e.detail ? { x: e.clientX, y: e.clientY } : { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+		this.art.tag();
 		this.enter({ is: fine ? 'unlocked' : 'touch' });
 		if (fine) this.lock();
 	}
@@ -487,7 +509,7 @@ export class Engine {
 			c.width = Math.round(this.view.w * this.dpr);
 			c.height = Math.round(this.view.h * this.dpr);
 		}
-		this.cursorKey = '';
+		this.art.invalidate();
 		if (this.cursor) this.cursor = inView(this.cursor, this.view);
 		if (this.scene) this.moveTo(clamp(this.cam, this.view, this.scene));
 	}
@@ -556,7 +578,7 @@ export class Engine {
 		}
 		if (this.dirty) this.drawTiles(scene);
 		this.mark();
-		this.drawCursor();
+		this.drawCursors(now);
 	};
 
 	/** Locked or on touch, the page has no hover at the drawn cursor, so the link or button under it is marked `.hot` instead. */
@@ -614,21 +636,23 @@ export class Engine {
 			}
 	}
 
-	/** The drawn cursor, from Join on, redrawn only when it moves. */
-	private drawCursor() {
-		const p = this.cursor, key = p ? `${p.x},${p.y}` : '';
-		if (key === this.cursorKey) return;
-		this.cursorKey = key;
-		const g = this.cg, k = 1.25 * this.view.s * this.dpr;
-		g.setTransform(1, 0, 0, 1, 0, 0);
-		g.clearRect(0, 0, this.cursors.width, this.cursors.height);
-		if (!p) return;
-		g.setTransform(k, 0, 0, k, p.x * this.dpr, p.y * this.dpr);
-		g.lineJoin = 'round';
-		g.lineWidth = 2;
-		g.strokeStyle = BACKDROP;
-		g.fillStyle = '#fff';
-		g.stroke(ARROW);
-		g.fill(ARROW);
+	/**
+	 * The drawn cursor, from Join on, goes to the room at its world position. Peers near the camera are drawn 100 ms behind;
+	 * the rest are neither interpolated nor drawn.
+	 */
+	private drawCursors(now: number) {
+		const c = this.cursor, cam = this.cam, s = this.view.s, k = s * this.dpr;
+		if (c) this.net.move(cam.x + c.x / s, cam.y + c.y / s);
+		const view = { ...cam, w: this.view.w / s, h: this.view.h / s }, peers: Drawn[] = [];
+		for (const p of this.net.peers.values()) {
+			const at = visible(p.snaps, view) && sample(p.snaps, now);
+			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold });
+		}
+		this.art.draw(c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold: false }, peers, now);
+	}
+
+	/** Shows the "you" tag on the own cursor again: the Arch reset (ticket 20) calls this. */
+	tagYou() {
+		this.art.tag();
 	}
 }

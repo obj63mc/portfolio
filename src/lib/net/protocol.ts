@@ -94,6 +94,34 @@ export function decodeFrame(b: ArrayBuffer, each: (id: number, x: number, y: num
 	for (let i = 0; i < n; i++) each(v.getUint16(3 + i * 6, true), v.getUint16(5 + i * 6, true), v.getUint16(7 + i * 6, true));
 }
 
+const isPresence = (m: Record<string, unknown>) => Number.isInteger(m.cos) && typeof m.gold === 'boolean' && typeof m.river === 'boolean';
+const isPeer = (m: Record<string, unknown>) =>
+	Number.isInteger(m.id) && typeof m.cc === 'string' && isPresence(m) && Number.isInteger(m.x) && Number.isInteger(m.y);
+const isObject = (m: unknown): m is Record<string, unknown> => typeof m === 'object' && m !== null;
+
+/**
+ * A text message from the room, narrowed for the client, or null to drop it: the `pong` auto-response, anything not
+ * JSON, an unknown op or a bad field. The peers' own fields are all a client reads, so extra ones pass through.
+ */
+export function readServer(text: string): ServerMessage | null {
+	let m: unknown;
+	try {
+		m = JSON.parse(text);
+	} catch {
+		return null;
+	}
+	if (!isObject(m)) return null;
+	const ok =
+		m.t === 'hello'
+			? Number.isInteger(m.id) && typeof m.cc === 'string' && typeof m.now === 'number' && Array.isArray(m.peers) && m.peers.every((p) => isObject(p) && isPeer(p))
+			: m.t === 'in'
+				? isPeer(m)
+				: m.t === 'out'
+					? Number.isInteger(m.id)
+					: m.t === 'presence' && Number.isInteger(m.id) && isPresence(m);
+	return ok ? (m as ServerMessage) : null;
+}
+
 /** A control message from a client, validated, or null to drop it: too long, not JSON, an unknown op or a bad field. */
 export function readControl(text: string): ClientMessage | null {
 	// The length check first spares encoding a long message; the byte count catches multi-byte characters under it.

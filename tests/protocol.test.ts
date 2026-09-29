@@ -2,7 +2,7 @@
 // tested through wrangler dev in rooms.test.ts).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { decodeFrame, decodeMove, encodeFrame, encodeMove, readControl } from '../src/lib/net/protocol.ts';
+import { decodeFrame, decodeMove, encodeFrame, encodeMove, readControl, readServer, type Peer } from '../src/lib/net/protocol.ts';
 
 test('a move is 5 bytes and round-trips; any other shape is not a move', () => {
 	const move = encodeMove(4799, 65535);
@@ -62,4 +62,28 @@ test('control: bad cosmetic ids and bits, unknown ops, bad JSON and anything ove
 		'7'
 	])
 		assert.equal(readControl(text), null, text);
+});
+
+test('server: hello, in, out and presence are read as the client knows them', () => {
+	const peer: Peer = { id: 2, cc: 'FR', cos: 3, gold: false, river: true, x: 10, y: -1 };
+	const hello = { t: 'hello', id: 1, cc: 'XX', now: 1_790_000_000_000, rate: 20, cap: 60, room: 'overworld:1', peers: [peer], screen: null };
+	for (const m of [hello, { t: 'in', ...peer }, { t: 'out', id: 2 }, { t: 'presence', id: 2, cos: 0, gold: true, river: false }])
+		assert.deepEqual(readServer(JSON.stringify(m)), m);
+});
+
+test('server: anything else is dropped, the pong auto-response included', () => {
+	const peer = { id: 2, cc: 'FR', cos: 3, gold: false, river: true, x: 10, y: 20 };
+	for (const text of [
+		'pong',
+		'{"t":"hello","id":1}',
+		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, room: 'overworld:1', peers: [{ ...peer, gold: 'no' }], screen: null }),
+		JSON.stringify({ t: 'in', ...peer, id: '2' }),
+		JSON.stringify({ t: 'in', ...peer, x: undefined }),
+		JSON.stringify({ t: 'out' }),
+		JSON.stringify({ t: 'presence', id: 2, cos: 1 }),
+		JSON.stringify({ t: 'screen', id: 2 }),
+		'null',
+		'[]'
+	])
+		assert.equal(readServer(text), null, text);
 });

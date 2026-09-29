@@ -51,14 +51,17 @@ const nudge = (page: Page, movementX: number, movementY: number) =>
 const lockedClick = (page: Page) => page.evaluate(() => document.pointerLockElement!.dispatchEvent(new MouseEvent('click', { bubbles: true })));
 const lockHolder = (page: Page) => page.evaluate(() => document.pointerLockElement?.className ?? null);
 
-/** The drawn cursor's tip, CSS px, read off the cursor canvas: the top-left of its painted pixels; null when none is drawn. */
+/**
+ * The drawn cursor's tip, CSS px, read off the cursor canvas: the top-left of its opaque pixels, past the halo's glow
+ * (ticket 13); null when none is drawn.
+ */
 const tip = (page: Page) =>
 	page.evaluate(() => {
 		const c = document.querySelector<HTMLCanvasElement>('canvas.cursors')!;
 		const { data, width } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
 		let x0 = Infinity, y0 = Infinity;
 		for (let i = 3; i < data.length; i += 4) {
-			if (!data[i]) continue;
+			if (data[i] < 200) continue;
 			x0 = Math.min(x0, ((i - 3) / 4) % width);
 			y0 = Math.min(y0, Math.floor((i - 3) / 4 / width));
 		}

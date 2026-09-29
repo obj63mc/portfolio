@@ -17,6 +17,7 @@
     "ci": "npm run check && npm run build && npm test",
     "smoke": "playwright test",
     "bench": "node scripts/bench.ts",
+    "flags": "node scripts/flags.ts",
     "multiplayer:off": "echo off | wrangler secret put MULTIPLAYER",
     "multiplayer:on": "wrangler secret delete MULTIPLAYER",
     "usage": "node scripts/usage.ts"
@@ -27,6 +28,7 @@
     "@sveltejs/kit": "^2.70.3",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@types/node": "^24.13.6",
+    "flag-icons": "^7.5.0",
     "svelte": "^5.57.1",
     "svelte-check": "^4.3.6",
     "typescript": "^6.0.3",

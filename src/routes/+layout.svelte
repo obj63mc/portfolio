@@ -8,6 +8,7 @@
 
 	let { children } = $props();
 	let scene: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, join: HTMLDialogElement, paused: HTMLDialogElement;
+	let here: HTMLElement, live: HTMLElement;
 	let engine: Promise<Engine | undefined> | undefined;
 
 	// The engine loads once the page has mounted (afterNavigate's first call), out of the prerender and the first paint,
@@ -16,7 +17,7 @@
 	afterNavigate(({ to }) => {
 		if (!to) return;
 		engine ??= import('$lib/engine/engine')
-			.then(({ Engine }) => new Engine(scene, layer, cursors, joystick, { join, paused }))
+			.then(({ Engine }) => new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live }))
 			.catch((err) => void console.error(err));
 		engine.then((e) => e?.show(SUB_SCENES[to.url.pathname.slice(1)] ?? OVERWORLD, to.url.hash));
 	});
@@ -27,8 +28,9 @@
 <main bind:this={layer}>
 	{@render children()}
 </main>
-<p class="presence">1 here</p>
-<div role="status" aria-live="polite"></div>
+<!-- The room's count and the visitor's own events (buildout ticket 13), both written by the engine. -->
+<p class="presence" bind:this={here}>1 here</p>
+<div role="status" aria-live="polite" bind:this={live}></div>
 <div class="controls">
 	<button type="button" aria-pressed="true">Sound</button>
 	<button type="button">Analytics settings</button>
