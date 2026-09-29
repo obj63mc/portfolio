@@ -16,7 +16,9 @@
     "art:validate": "node scripts/art.ts validate",
     "ci": "npm run check && npm run build && npm test",
     "smoke": "playwright test",
-    "bench": "node scripts/bench.ts"
+    "bench": "node scripts/bench.ts",
+    "multiplayer:off": "echo off | wrangler secret put MULTIPLAYER",
+    "multiplayer:on": "wrangler secret delete MULTIPLAYER"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
