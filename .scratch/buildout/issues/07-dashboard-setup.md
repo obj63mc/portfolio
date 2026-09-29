@@ -4,11 +4,11 @@
 
 **Blocked by:** 06 (a deployable Worker)
 
-**Status:** ready-for-human
+**Status:** resolved
 
-- [ ] `https://barmadden.com` serves the site and `www` redirects 301 to the apex
-- [ ] A test email to and from the Google Workspace address works after the nameserver move
-- [ ] A PR branch gets a public Preview URL posted on the PR, returning `X-Robots-Tag: noindex`
+- [x] `https://barmadden.com` serves the site and `www` redirects 301 to the apex
+- [x] A test email to and from the Google Workspace address works after the nameserver move
+- [x] A PR branch gets a public Preview URL posted on the PR, returning `X-Robots-Tag: noindex`
 - [x] `curl` against `/ws` with a foreign `Origin` returns 403 at the edge
 - [x] `CF_ANALYTICS_TOKEN` is stored outside the repo
 
