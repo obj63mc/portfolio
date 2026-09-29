@@ -1,0 +1,18 @@
+# One Worker serves the prerendered build as static assets and, from ticket 12, runs the rooms.
+name = "barmadden"
+main = "worker/index.ts"
+compatibility_date = "2026-09-26"
+# Production answers only on its custom domain (ticket 07); Previews keep their workers.dev URLs.
+workers_dev = false
+preview_urls = true
+
+[assets]
+directory = "build"
+not_found_handling = "404-page"
+# Only the socket path runs Worker code; every page and file is served straight from assets.
+run_worker_first = ["/ws", "/ws/*"]
+
+# Previews inherit nothing from the top level, and wrangler requires the block even when empty. Rooms
+# (ticket 12) reach their class through ctx.exports, which gives each Preview its own Durable Object
+# namespace without a binding here; any var the Worker reads must be repeated under [previews.vars].
+[previews]

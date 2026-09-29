@@ -4,10 +4,22 @@
 
 **Blocked by:** 01 (something to serve)
 
-**Status:** ready-for-agent
+**Status:** ready-for-human
 
-- [ ] `wrangler dev` serves every prerendered URL and a 404 page; `/ws` is refused cleanly
-- [ ] Response headers on a page include the CSP, `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` and the `Permissions-Policy`; the policy exists in exactly one place
-- [ ] A build with `WORKERS_CI_BRANCH` not `main` sets `X-Robots-Tag: noindex`; a `main` build does not
-- [ ] One npm script runs type-check, tests and build, and is the Workers Builds build command
+- [x] `wrangler dev` serves every prerendered URL and a 404 page; `/ws` is refused cleanly
+- [x] Response headers on a page include the CSP, `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` and the `Permissions-Policy`; the policy exists in exactly one place
+- [x] A build with `WORKERS_CI_BRANCH` not `main` sets `X-Robots-Tag: noindex`; a `main` build does not
+- [x] One npm script runs type-check, tests and build, and is the Workers Builds build command
 - [ ] `npx wrangler deploy` from a local OAuth session publishes to `barmadden.workers.dev` once (the custom domain comes in 07)
+
+## Comments
+
+2026-09-29, implemented on `main`; the deploy box waits on Joe (no wrangler login on this machine: `npx wrangler login`, then `npm run ci && npx wrangler deploy`). With `workers_dev = false` that deploy creates the Worker but gives production no URL; it answers once 07 attaches the Custom Domain.
+
+- `wrangler.toml`: Worker `barmadden`, `worker/index.ts`, assets from `build` with `not_found_handling = "404-page"`. `run_worker_first` is `["/ws", "/ws/*"]`: under `wrangler dev` a bare `/ws` fell through to the asset 404 with `/ws/*` alone. `workers_dev = false` with `preview_urls = true`, because Preview URLs otherwise default to the `workers_dev` setting and would be off. Those workers.dev URLs carry Cloudflare's own noindex. An empty `[previews]` block, which `wrangler preview` requires; Previews inherit nothing, so any var ticket 12 adds is repeated under `[previews.vars]`, and the rooms should use `ctx.exports` so each Preview gets its own namespace with no binding.
+- **Origin check without a var (deviation):** a Preview's origin is `<branch>-barmadden.barmadden.workers.dev`, different per branch, so a static `previews` var can't name it. The Worker accepts only its own origin (`Origin` equal to the request URL's origin): barmadden.com in production, which is its only hostname and is also pinned by the WAF; each Preview's own URL; localhost under `wrangler dev`. A missing Origin is refused, like at the WAF. Until ticket 12 a same-origin `/ws` gets 503 and anything else 403, both `text/plain` with `nosniff` (`_headers` doesn't reach Worker responses).
+- CSP: `kit.csp` in hash mode in `svelte.config.js` is the one page policy, written as a meta tag into each prerendered page with the bootstrap script's hash. `style-src` allows `'unsafe-inline'` for app.html's `style` attribute (the `<noscript>` sheet comes before the meta tag, so the policy doesn't reach it). `static/_headers` sends `Content-Security-Policy: frame-ancestors 'none'` (a meta tag can't), `nosniff`, the referrer policy and the permissions policy. The two policies intersect, and the header one restricts only framing.
+- `npm run build` is `vite build && node scripts/noindex.ts`. The script appends a `/*` rule with `X-Robots-Tag: noindex` when `WORKERS_CI_BRANCH` is set and isn't `main`. Local builds count as production. Cloudflare also adds noindex on workers.dev Preview URLs by itself; the rule covers custom-domain Previews too.
+- `static/404.html` is a plain `noindex` page with a link back to the overworld. It's served with status 404 at any depth.
+- `npm run ci` (check, build, test) is the build command, set in the Workers Builds dashboard in 07. Run locally with `npm run build && npx wrangler dev`. Wrangler 4.143.0 is pinned exactly. `.wrangler/` is ignored. The Worker is type-checked via `kit.typescript.config`.
+- Tests: `tests/deploy.test.ts` covers the socket refusal and Origin rule through the Worker's `fetch`, and runs the noindex step for a Preview branch, for `main` and with no branch. `tests/build-output.test.ts` checks one CSP per page with the spec's sources, every inline script's hash, and `_headers`. Verified by hand under `wrangler dev`: every scene URL 200, the headers on pages and assets, 404 at `/nope` and `/a/b/c`, `/ws` and `/ws/overworld` refused, noindex on a `WORKERS_CI_BRANCH=feature/x` build. `wrangler deploy --dry-run` accepts the config. Not checked in a browser: Chrome couldn't reach the local server.

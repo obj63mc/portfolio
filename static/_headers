@@ -1,0 +1,7 @@
+# Applied to every static asset response. The page CSP is `kit.csp` in svelte.config.js, written into each
+# prerendered page; a meta tag can't set frame-ancestors, so that one directive is sent here.
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

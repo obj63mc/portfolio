@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { screenGist } from '../src/lib/scenes/foundry.ts';
@@ -152,4 +153,32 @@ test('cards: every dialog is labelled and closes natively', () => {
 	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.length);
 	for (const s of subScenes) assert.equal(texts(page(`${s.id}.html`), 'h2').length, s.props.length, s.id);
 	assert.match(page('index.html'), /<noscript>[\s\S]*dialog \{ display: block/);
+});
+
+test('headers: one CSP per page, allowing self, the GA hosts and the socket, with every inline script hashed', () => {
+	const expected: Record<string, string[]> = {
+		'default-src': ["'self'"],
+		'script-src': ["'self'", 'https://www.googletagmanager.com'],
+		'connect-src': ["'self'", 'wss://barmadden.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com'],
+		'img-src': ["'self'", 'https://*.google-analytics.com', 'https://*.googletagmanager.com']
+	};
+	for (const file of files) {
+		const html = page(file);
+		const policies = [...html.matchAll(/<meta http-equiv="content-security-policy" content="([^"]*)"/g)].map((m) => m[1]);
+		assert.equal(policies.length, 1, file);
+		const directives = Object.fromEntries(policies[0].split(';').map((d) => d.trim().split(/\s+/)).map(([name, ...src]) => [name, src]));
+		for (const [name, sources] of Object.entries(expected)) for (const s of sources) assert.ok(directives[name]?.includes(s), `${file} ${name} ${s}`);
+		for (const [, body] of html.matchAll(/<script>([\s\S]*?)<\/script>/g))
+			assert.ok(directives['script-src'].includes(`'sha256-${createHash('sha256').update(body).digest('base64')}'`), `${file} inline script hashed`);
+	}
+});
+
+test('headers: _headers sends frame-ancestors and the other page headers, never a second page policy; a 404 page', () => {
+	const headers = page('_headers');
+	assert.deepEqual([...headers.matchAll(/Content-Security-Policy: (.*)/g)].map((m) => m[1]), ["frame-ancestors 'none'"]);
+	assert.match(headers, /^\/\*$/m);
+	assert.match(headers, /X-Content-Type-Options: nosniff/);
+	assert.match(headers, /Referrer-Policy: strict-origin-when-cross-origin/);
+	assert.match(headers, /Permissions-Policy: camera=\(\), microphone=\(\), geolocation=\(\)/);
+	assert.match(page('404.html'), /<h1>Not found<\/h1>/);
 });
