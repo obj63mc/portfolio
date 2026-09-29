@@ -2,7 +2,7 @@
 // fake clock the way the engine steps it each frame.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { centreOn, glide, rendering, step, tileRange, type Frame } from '../src/lib/engine/camera.ts';
+import { centreOn, glide, rendering, steer, step, tileRange, type Frame } from '../src/lib/engine/camera.ts';
 
 const desktop = { w: 1000, h: 800, s: 1 };
 const overworld = { w: 6750, h: 2700 };
@@ -100,4 +100,16 @@ test('tiles: the 512 px tiles in view, grown by a ring and cut to the scene', ()
 	assert.deepEqual(tileRange(cam, desktop, overworld, 2), { x0: 1, y0: 0, x1: 7, y1: 5 }, 'kept; the 2700 px scene has rows 0 to 5');
 	assert.deepEqual(tileRange({ x: 5750, y: 1900 }, desktop, overworld, 1), { x0: 10, y0: 2, x1: 13, y1: 5 }, 'the far corner');
 	assert.deepEqual(tileRange({ x: -80, y: 0 }, { w: 2560, h: 1440, s: 1 }, { w: 2400, h: 4800 }, 1), { x0: 0, y0: 0, x1: 4, y1: 3 });
+});
+
+test('arrow keys and WASD steer the cursor at 600 world px/s, diagonals normalised', () => {
+	const second = (keys: string[], s = 1) => steer(new Set(keys), s, 1);
+	assert.deepEqual(second(['ArrowRight']), { x: 600, y: 0 });
+	assert.deepEqual(second(['KeyW']), { x: 0, y: -600 });
+	assert.deepEqual(second(['KeyD', 'ArrowRight']), { x: 600, y: 0 }, 'two keys the same way are not faster');
+	assert.deepEqual(second(['ArrowLeft', 'KeyD']), { x: 0, y: 0 }, 'opposite keys cancel');
+	const diagonal = second(['ArrowDown', 'KeyA']);
+	assert.ok(Math.abs(Math.hypot(diagonal.x, diagonal.y) - 600) < 1e-9 && diagonal.x < 0 && diagonal.x === -diagonal.y, 'down-left at 600');
+	assert.deepEqual(second(['ArrowRight'], 0.6), { x: 360, y: 0 }, 'at the phone scale, 360 CSS px a second');
+	assert.deepEqual(second(['Space', 'KeyQ']), { x: 0, y: 0 }, 'other keys do nothing');
 });

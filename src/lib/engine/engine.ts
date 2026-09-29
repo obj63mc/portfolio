@@ -1,17 +1,24 @@
 // The scene loop (buildout ticket 08): background tiles on the scene canvas, the prerendered layer moved with one transform
-// per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. This is the unlocked
-// mouse, which the pointer lock (ticket 09) falls back to when the browser refuses it. Carried over from the rendering
-// prototype's engine (prototype/rendering-camera) with the spec's rules; the layer's markup is never re-rendered here.
+// per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. The input (ticket 09):
+// the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Carried over from
+// the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
+// rules; the layer's markup is never re-rendered here.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
-import { TILE, centreOn, clamp, glide, rendering, step, tileRange, type View } from './camera.ts';
+import { KEYS, TILE, centreOn, clamp, glide, rendering, steer, step, tileRange, type View } from './camera.ts';
 
 export type Scene = Overworld | SubScene;
+
+/**
+ * The visitor's input (spec: Input): the Join card up; joined with the pointer locked, or with the unlocked mouse (a
+ * refused lock, a keyboard Join, a touch device); or paused, which re-locks on resume if the lock was held.
+ */
+type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'paused'; relock: boolean };
 
 // Every scene's background tiles at both densities, keyed by path: a background's folder repeats its scene's id,
 // /art/generated/<id>/<id>/<density>/<column>-<row>.webp. Never inlined: the page's CSP has no data: source.
 const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 
-/** Screen elements that hold the camera still when the cursor is near them. Tickets 09 and 10 add the cards and joystick. */
+/** Screen elements that hold the camera still when the cursor is near them; ticket 10 adds the joystick. Cards stop it. */
 const CONTROLS = '.controls';
 /** Behind the scene where no tile has arrived, or beyond a scene smaller than the view. */
 const BACKDROP = '#1d2b3a';
@@ -19,6 +26,8 @@ const BACKDROP = '#1d2b3a';
 const ARROW = new Path2D('M0 0V29L7 22L11.5 32L16 30L11.5 21H21Z');
 
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
+/** A point held inside the viewport. */
+const inView = (p: Point, v: View): Point => ({ x: Math.max(0, Math.min(v.w - 1, p.x)), y: Math.max(0, Math.min(v.h - 1, p.y)) });
 const propsOf = (s: Scene) => ('districts' in s ? s.districts.flatMap((d) => d.venues.flatMap((v) => v.props)) : s.props);
 
 /** The element a URL fragment names; a malformed one (`#%E0`) names nothing. */
@@ -45,9 +54,16 @@ export class Engine {
 	private cam: Point = { x: 0, y: 0 };
 	/** A keyboard or fragment glide in progress. */
 	private goal: Point | null = null;
-	/** The OS pointer, CSS px; null outside the window or over a card. */
-	private pointer: Point | null = null;
-	/** False after a keyboard or fragment pan until the mouse moves, so a mouse resting in the band doesn't undo it. */
+	private input: Input = { is: 'join' };
+	/** The drawn cursor, CSS px; none before Join. */
+	private cursor: Point | null = null;
+	/** The unlocked mouse is in the window; locked, the cursor always is. */
+	private inside = false;
+	/** Arrow keys and WASD held, by code. */
+	private keys = new Set<string>();
+	/** The control under the locked cursor, marked `.hot` since the page gets no hover under the lock. */
+	private hot: Element | null = null;
+	/** False after a keyboard or fragment pan until the cursor moves, so a cursor resting in the band doesn't undo it. */
 	private armed = true;
 	/** World rects that hold the camera still: the props, and the overworld's signpost. */
 	private targets: Rect[] = [];
@@ -63,10 +79,19 @@ export class Engine {
 	private cursors: HTMLCanvasElement;
 	private g: CanvasRenderingContext2D;
 	private cg: CanvasRenderingContext2D;
+	private cards: { join: HTMLDialogElement; paused: HTMLDialogElement };
 	private reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 	private listeners = new AbortController();
+	/** Lifts the cursor canvas over each prop card as it opens. */
+	private raise = new MutationObserver((records) => {
+		if (records.some((r) => r.target instanceof HTMLDialogElement && r.target.open && !this.isGate(r.target))) {
+			this.cursors.hidePopover();
+			this.cursors.showPopover();
+		}
+	});
 
-	constructor(canvas: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement) {
+	/** `cards` are the Join and Paused cards; the canvas holding the pointer lock is the scene's, in the shared layout. */
+	constructor(canvas: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, cards: Engine['cards']) {
 		const g = canvas.getContext('2d', { alpha: false }), cg = cursors.getContext('2d');
 		// Without a canvas the engine never starts and the page stays the plain document (spec: "if the canvas fails").
 		if (!g || !cg) throw new Error('No 2D canvas');
@@ -79,18 +104,29 @@ export class Engine {
 		this.cursors = cursors;
 		this.g = g;
 		this.cg = cg;
+		this.cards = cards;
 		document.documentElement.classList.add('engine');
 		this.bind();
 		this.resize();
 		this.moveTo(this.cam);
+		// The cursor canvas enters the top layer before the Join card, so the card dims it with the scene.
+		cursors.showPopover();
+		this.raise.observe(document.body, { subtree: true, attributeFilter: ['open'] });
+		this.enter(this.input);
 		this.raf = requestAnimationFrame(this.tick);
 	}
 
 	destroy() {
 		cancelAnimationFrame(this.raf);
 		this.listeners.abort();
+		this.raise.disconnect();
 		for (const t of this.held.values()) t.bmp?.close();
+		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+		for (const card of Object.values(this.cards)) card.close();
+		this.cursors.hidePopover();
+		this.hot?.classList.remove('hot');
 		document.documentElement.classList.remove('engine');
+		delete document.documentElement.dataset.input;
 		this.layer.style.transform = '';
 	}
 
@@ -116,21 +152,47 @@ export class Engine {
 	private bind() {
 		const opts = { signal: this.listeners.signal };
 		addEventListener('resize', () => this.resize(), opts);
+		const { join, paused } = this.cards;
+		join.querySelector('button')!.addEventListener('click', (e) => this.join(e), opts);
+		paused.querySelector('button')!.addEventListener('click', () => this.resume(), opts);
+		// Esc closes a modal card, and Chrome lets a page refuse that only after a user gesture: whichever card the input
+		// calls for opens again.
+		for (const card of [join, paused]) card.addEventListener('close', () => this.enter(this.input), opts);
+		document.addEventListener(
+			'pointerlockchange',
+			() => {
+				if (document.pointerLockElement === this.canvas) this.enter({ is: 'locked' });
+				else if (this.input.is === 'locked') this.pause(); // Esc, or the browser's own release
+			},
+			opts
+		);
+		// Chrome refuses a lock for about a second after Esc releases one. At Join a refusal leaves the unlocked mouse.
+		document.addEventListener('pointerlockerror', () => { if (this.input.is === 'paused') this.refusal.hidden = false; }, opts);
 		addEventListener(
 			'pointermove',
 			(e) => {
-				if (e.pointerType !== 'mouse') return; // touch is ticket 10
-				// Over a card the OS cursor shows until 09 lifts the cursor canvas above the cards.
-				const overCard = e.target instanceof Element && e.target.closest('dialog');
-				this.pointer = overCard ? null : { x: e.clientX, y: e.clientY };
+				if (e.pointerType !== 'mouse' || !this.cursor) return; // touch is ticket 10
+				// Locked, the mouse moves the drawn cursor 1:1, OS acceleration kept, held inside the viewport; unlocked, it
+				// follows the OS pointer. Before Join and while paused it stays put.
+				if (this.input.is === 'locked') this.cursor = inView({ x: this.cursor.x + e.movementX, y: this.cursor.y + e.movementY }, this.view);
+				else if (this.input.is === 'unlocked') (this.cursor = { x: e.clientX, y: e.clientY }), (this.inside = true);
+				else return;
 				// A real move re-arms the push; a synthetic one (content moving under a still pointer) has no movement.
 				if (e.movementX || e.movementY) this.armed = true;
 			},
 			opts
 		);
-		// Push stops when the pointer leaves the window.
-		addEventListener('mouseout', (e) => { if (!e.relatedTarget) this.pointer = null; }, opts);
-		addEventListener('blur', () => (this.pointer = null), opts);
+		// Locked, the mouse's clicks come to the canvas holding the lock: each goes to the control the drawn cursor is over,
+		// a card's Close and the links inside it included.
+		this.canvas.addEventListener('click', () => this.under()?.click(), opts);
+		// Push stops when the unlocked pointer leaves the window.
+		addEventListener('mouseout', (e) => { if (!e.relatedTarget) this.inside = false; }, opts);
+		// Blur, an external link included, and a hidden tab pause.
+		addEventListener('blur', () => { this.inside = false; this.pause(); }, opts);
+		document.addEventListener('visibilitychange', () => { if (document.hidden) this.pause(); }, opts);
+		// Modifiers pass through, so the browser's shortcuts never steer.
+		addEventListener('keydown', (e) => { if (Object.hasOwn(KEYS, e.code) && !e.metaKey && !e.ctrlKey && !e.altKey) this.keys.add(e.code); }, opts);
+		addEventListener('keyup', (e) => this.keys.delete(e.code), opts);
 		// Keyboard focus centres the camera on a placed element; a click's focus (not :focus-visible), a card's contents, the
 		// focus a closing card hands back to its prop and the unplaced h1 don't.
 		this.layer.addEventListener(
@@ -154,6 +216,65 @@ export class Engine {
 		);
 	}
 
+	private isGate(card: HTMLDialogElement) {
+		return card === this.cards.join || card === this.cards.paused;
+	}
+
+	/** The Paused card's note that the browser refused the lock. */
+	private get refusal() {
+		return this.cards.paused.querySelector<HTMLElement>('.refused')!;
+	}
+
+	/** The link or button under the locked cursor; null when unlocked. */
+	private under() {
+		const c = this.input.is === 'locked' && this.cursor;
+		return c ? (document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button') ?? null) : null;
+	}
+
+	/** Every change of input goes through here: the card it calls for is open and any other is closed. */
+	private enter(input: Input) {
+		this.input = input;
+		document.documentElement.dataset.input = input.is;
+		const { join, paused } = this.cards, want = input.is === 'join' ? join : input.is === 'paused' ? paused : null;
+		for (const card of [join, paused]) if (card !== want && card.open) card.close();
+		if (want && !want.open) want.showModal();
+		if (input.is !== 'paused') this.refusal.hidden = true;
+	}
+
+	/**
+	 * Join: the cursor starts where it was pressed, or mid-button from the keyboard (`detail` 0). A click with a mouse or
+	 * trackpad connected locks the pointer (Joe, 2026-09-29: `any-pointer: fine`, a tablet with one included); the
+	 * unlocked mouse carries on until the lock arrives, and for good if it is refused. A keyboard Join doesn't lock, so Esc
+	 * keeps closing cards.
+	 */
+	private join(e: MouseEvent) {
+		if (this.input.is !== 'join') return;
+		const b = (e.currentTarget as Element).getBoundingClientRect();
+		this.cursor = e.detail ? { x: e.clientX, y: e.clientY } : { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+		this.enter({ is: 'unlocked' });
+		if (e.detail && matchMedia('(any-pointer: fine)').matches) this.lock();
+	}
+
+	private lock() {
+		// Chrome rejects the promise it returns as well as firing pointerlockerror; Safari returns nothing.
+		this.canvas.requestPointerLock?.()?.catch(() => {});
+	}
+
+	/** Esc, blur or a hidden tab: the lock released, the cursor frozen where it is, the camera and the keys stopped. */
+	private pause() {
+		if (this.input.is !== 'locked' && this.input.is !== 'unlocked') return;
+		this.keys.clear();
+		this.enter({ is: 'paused', relock: this.input.is === 'locked' });
+		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+	}
+
+	/** Re-locks with the cursor where it froze; the lock's arrival closes the card, a refusal keeps it up and says so. */
+	private resume() {
+		if (this.input.is !== 'paused') return;
+		if (this.input.relock) this.lock();
+		else this.enter({ is: 'unlocked' });
+	}
+
 	private resize() {
 		this.view = { ...this.view, w: innerWidth, h: innerHeight };
 		for (const c of [this.canvas, this.cursors]) {
@@ -161,6 +282,7 @@ export class Engine {
 			c.height = Math.round(this.view.h * this.dpr);
 		}
 		this.cursorKey = '';
+		if (this.cursor) this.cursor = inView(this.cursor, this.view);
 		if (this.scene) this.moveTo(clamp(this.cam, this.view, this.scene));
 	}
 
@@ -194,22 +316,42 @@ export class Engine {
 		this.last = now;
 		const scene = this.scene;
 		if (!scene) return;
-		let cam: Point;
-		if (this.goal) {
-			cam = glide(this.cam, this.goal, dt);
-			if (cam === this.goal) this.goal = null;
-		} else {
-			// Layout is clean at the top of the frame, so reading the controls' rects here costs nothing.
-			const cursor = this.armed && !document.querySelector('dialog[open]') ? this.pointer : null;
-			const controls = cursor
-				? [...document.querySelectorAll(CONTROLS)].map((c) => c.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
-				: [];
-			cam = step(this.cam, { view: this.view, scene, band: scene.pushBand ?? 0.12, cursor, props: this.targets, controls }, dt);
+		// Joined with no card open, the cursor steers by keys and pushes the camera. A card, or a Join or Paused card, stops
+		// both; paused, the camera doesn't move at all.
+		const free = (this.input.is === 'locked' || this.input.is === 'unlocked') && !document.querySelector('dialog[open]');
+		const c = free ? this.cursor : null, d = steer(this.keys, this.view.s, dt);
+		if (c && (d.x || d.y)) {
+			this.cursor = inView({ x: c.x + d.x, y: c.y + d.y }, this.view);
+			this.inside = this.armed = true;
 		}
-		if (cam.x !== this.cam.x || cam.y !== this.cam.y) this.moveTo(cam);
+		if (this.input.is !== 'paused') {
+			let cam: Point;
+			if (this.goal) {
+				cam = glide(this.cam, this.goal, dt);
+				if (cam === this.goal) this.goal = null;
+			} else {
+				// Layout is clean at the top of the frame, so reading the controls' rects here costs nothing.
+				const cursor = free && this.armed && (this.input.is === 'locked' || this.inside) ? this.cursor : null;
+				const controls = cursor
+					? [...document.querySelectorAll(CONTROLS)].map((c) => c.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
+					: [];
+				cam = step(this.cam, { view: this.view, scene, band: scene.pushBand ?? 0.12, cursor, props: this.targets, controls }, dt);
+			}
+			if (cam.x !== this.cam.x || cam.y !== this.cam.y) this.moveTo(cam);
+		}
 		if (this.dirty) this.drawTiles(scene);
+		this.mark();
 		this.drawCursor();
 	};
+
+	/** Locked, the page has no hover, so the link or button under the drawn cursor is marked `.hot` in its place. */
+	private mark() {
+		const hit = this.under();
+		if (hit === this.hot) return;
+		this.hot?.classList.remove('hot');
+		hit?.classList.add('hot');
+		this.hot = hit;
+	}
 
 	/** Fetch the tiles in view and one ring beyond; close and forget any beyond two rings, so phone memory stays flat. */
 	private loadTiles() {
@@ -257,9 +399,9 @@ export class Engine {
 			}
 	}
 
-	/** The drawn cursor, tip on the OS pointer, redrawn only when it moves or hides. */
+	/** The drawn cursor, from Join on, redrawn only when it moves. */
 	private drawCursor() {
-		const p = this.pointer, key = p ? `${p.x},${p.y}` : '';
+		const p = this.cursor, key = p ? `${p.x},${p.y}` : '';
 		if (key === this.cursorKey) return;
 		this.cursorKey = key;
 		const g = this.cg, k = 1.25 * this.view.s * this.dpr;

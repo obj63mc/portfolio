@@ -148,3 +148,7 @@ vite.config.ts.timestamp-*
 build/
 # wrangler dev state
 .wrangler/
+
+# Playwright smoke output
+test-results/
+playwright-report/

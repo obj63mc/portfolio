@@ -137,6 +137,22 @@ test('clearance: the Universal titles are told only on the Foundry screen and un
 	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the marquee and the head included, the titles are not told');
 });
 
+test('the Join and Paused cards: on every page, outside the layer, closed until the engine opens them', () => {
+	for (const file of files) {
+		const html = page(file), shell = html.replace(main(html), '');
+		const [join, paused, ...rest] = [...shell.matchAll(/<dialog\b[\s\S]*?<\/dialog>/g)].map((m) => m[0]);
+		assert.equal(rest.length, 0, file);
+		for (const card of [join, paused]) {
+			assert.doesNotMatch(opens(card, 'dialog')[0], /\sopen\b/, `${file}: prerendered closed, so a page without the engine never shows it`);
+			assert.match(opens(card, 'dialog')[0], /aria-label(ledby)?=/, file);
+		}
+		assert.equal(join.replace(/<[^>]+>/g, '').trim(), 'Join', `${file}: the Join card holds only the Join button`);
+		assert.deepEqual(texts(join, 'button'), ['Join']);
+		assert.match(paused, /Paused, click to resume/);
+		assert.deepEqual(texts(paused, 'button'), ['Resume']);
+	}
+});
+
 // The world rect an element carries for the engine's stylesheet to place it (buildout ticket 08), read back from its
 // opening tag's custom properties.
 const rectOf = (html: string, open: RegExp) => {
@@ -170,12 +186,12 @@ test('the shared screen: button name carries its state, prerendered idle', () =>
 	assert.equal(screenGist('fast-five'), 'now playing Fast Five');
 });
 
-test('cards: every dialog is labelled and closes natively', () => {
+test('cards: every card is labelled and closes natively', () => {
 	for (const file of files) {
-		const dialogs = opens(page(file), 'dialog');
+		const layer = main(page(file)), dialogs = opens(layer, 'dialog');
 		assert.ok(dialogs.length > 0);
 		assert.ok(dialogs.every((d) => d.includes('aria-labelledby=')), file);
-		assert.equal(page(file).match(/<form method="dialog">/g)?.length, dialogs.length, file);
+		assert.equal(layer.match(/<form method="dialog">/g)?.length, dialogs.length, file);
 	}
 	// Card titles stay inside the page's heading hierarchy when the cards read inline without JavaScript.
 	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.length);

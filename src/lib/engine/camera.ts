@@ -1,5 +1,5 @@
-// The camera (spec: Camera; buildout ticket 08) as pure functions of the view, the scene and the drawn cursor: the engine
-// steps it each frame, the tests with a fake clock (seam 2). World px everywhere (ADR 0001); the view is CSS px at the
+// The camera (spec: Camera; buildout ticket 08) as pure functions of the view, the scene and the drawn cursor, and the keys
+// that steer that cursor (ticket 09): the engine steps them each frame, the tests with a fake clock (seam 2). World px everywhere (ADR 0001); the view is CSS px at the
 // session's render scale. Carried over from the rendering prototype's engine.
 import type { Point, Rect } from '../scenes/types.ts';
 
@@ -71,6 +71,21 @@ export function step(cam: Point, f: Frame, dt: number): Point {
 export function glide(cam: Point, goal: Point, dt: number): Point {
 	const k = 1 - Math.exp(-dt / 0.2), x = cam.x + (goal.x - cam.x) * k, y = cam.y + (goal.y - cam.y) * k;
 	return Math.hypot(goal.x - x, goal.y - y) < 0.5 ? goal : { x, y };
+}
+
+/** Arrow keys and WASD by `KeyboardEvent.code`, so WASD is where it sits on any layout, and the way each steers. */
+export const KEYS: Record<string, Point> = {
+	ArrowLeft: { x: -1, y: 0 }, KeyA: { x: -1, y: 0 },
+	ArrowRight: { x: 1, y: 0 }, KeyD: { x: 1, y: 0 },
+	ArrowUp: { x: 0, y: -1 }, KeyW: { x: 0, y: -1 },
+	ArrowDown: { x: 0, y: 1 }, KeyS: { x: 0, y: 1 }
+};
+
+/** The drawn cursor's travel in `dt` seconds with `keys` held: 600 world px/s, diagonals normalised, in CSS px at scale `s`. */
+export function steer(keys: ReadonlySet<string>, s: number, dt: number): Point {
+	const axis = (a: 'x' | 'y') => Math.sign([...keys].reduce((sum, k) => sum + (KEYS[k]?.[a] ?? 0), 0));
+	const x = axis('x'), y = axis('y'), k = x || y ? (600 * s * dt) / Math.hypot(x, y) : 0;
+	return { x: x * k, y: y * k };
 }
 
 /**
