@@ -26,16 +26,24 @@ Checked in a headed Chromium with a real lock: a lock requested from inside a mo
 - Join with a mouse locks; the drawn cursor opens a card, gets the hover mark on Close, closes it and follows a link inside it; Esc pauses; Resume within a second shows the note, and a second later locks.
 - The same in Firefox and Safari.
 - A venue door clicked under the lock hops scenes with the lock held.
+- Esc in an open card closes it with no Paused card; a click takes the lock back once Chrome's cooldown passes; Esc on the Join card before any click leaves it up.
 
 Calls made here for Joe to confirm or veto:
 
-- **Keyboard Join doesn't lock.** Enter or Space on Join (a click with `detail` 0) joins with the unlocked mouse and the cursor mid-button, so Esc keeps closing cards natively. Under the lock, Esc would pause instead, and a keyboard Resume often lands in Chrome's cooldown. The spec says "the Join click locks the pointer" and "keyboard users join like everyone else". Such a visitor keeps the unlocked mouse all session, even after a mouse click on Resume.
 - **The cursor canvas sits under the Join and Paused cards,** above every prop card and control. The spec has peers "dimmed behind" the Join card, and while paused the OS cursor works the card, so the frozen cursor is dimmed with the scene.
 - **The OS cursor shows** on the Join and Paused cards; joined, it is hidden everywhere, cards included.
 - **Hover mark**: a blue outline on the link or button under the cursor in cards and the bottom-left controls, for the unlocked mouse (`:hover`) as well as under the lock (`.hot`). Layer props get it too but show nothing, until ticket 15's reactions.
 
 Left for later:
 
-- In the unlocked fallback, keys move the drawn cursor away from the hidden OS pointer, and a click then lands at the OS pointer (spec: clicks resolve "by DOM pointer events for an unlocked mouse"). The keyboard Join makes this model more common on desktop.
+- In the unlocked fallback, keys move the drawn cursor away from the hidden OS pointer, and a click then lands at the OS pointer (spec: clicks resolve "by DOM pointer events for an unlocked mouse").
 - `mark()` runs `elementFromPoint` on every locked frame. Measure it with the bench if it shows up.
 - The Join and Paused cards are plainly styled until the art direction reaches them.
+
+2026-09-29, Joe's answers:
+
+- **A keyboard Join locks**, like a click; the cursor starts mid-button.
+- **Esc with a card open closes the card instead of pausing.** The browser releases the lock on Esc and no page can stop it: Chrome doesn't even pass the key on, and only the Keyboard Lock API, in fullscreen and in Chromium alone, could keep it. So the engine reads a lock let go while a prop card is open, with the window focused and visible, as Esc in that card. It closes the card and enters a fifth input state, `released`: the drawn cursor holds still, the OS cursor shows and the keys still steer. The next mouse click takes the lock back and does nothing else, since it lands at the OS pointer rather than the drawn cursor. A keyboard click passes, and Chrome's cooldown just leaves the visitor released. Esc with no card open pauses as before, and blur or a hidden tab pauses from `released` too.
+- **The Join and Paused cards refuse Esc** both at the keydown and at the `cancel` it becomes. Any close request that can't be refused, such as Android's back gesture before the visitor has interacted, reopens the card.
+
+The smoke's stand-in lock now releases on Esc without passing the key to the page, and its lock element changes as `pointerlockchange` fires, as in a real browser. The keyboard test walks the new path: Join locks; Esc in a card closes it with no Paused card; the keys steer while the mouse doesn't; a click over a prop takes the lock back without opening it; Esc with no card pauses.

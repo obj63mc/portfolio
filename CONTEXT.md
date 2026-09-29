@@ -106,7 +106,7 @@ The click or tap that brings a visitor into the scene, on every device. Their cu
 _Avoid_: enter, start, log in, sign in
 
 **Paused**:
-A joined visitor who pressed Esc, left the window, or switched away from the tab. Their cursor stays frozen where it was until they resume.
+A joined visitor who pressed Esc with no card open, left the window, or switched away from the tab. Their cursor stays frozen where it was until they resume.
 _Avoid_: idle, away, AFK
 
 **Room**:

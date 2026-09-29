@@ -9,22 +9,35 @@ type Stand = Window & { refuseLock?: boolean };
 
 function fakeLock() {
 	let held: Element | null = null;
-	const fire = (type: string) => setTimeout(() => document.dispatchEvent(new Event(type)));
+	// The lock element changes as the event fires, as in a real browser.
+	const change = (el: Element | null) =>
+		setTimeout(() => {
+			held = el;
+			document.dispatchEvent(new Event('pointerlockchange'));
+		});
 	Object.defineProperty(Document.prototype, 'pointerLockElement', { configurable: true, get: () => held });
 	Element.prototype.requestPointerLock = function () {
 		if ((window as Stand).refuseLock) {
-			fire('pointerlockerror');
+			setTimeout(() => document.dispatchEvent(new Event('pointerlockerror')));
 			return Promise.reject(new DOMException('Refused', 'NotAllowedError'));
 		}
-		held = this;
-		fire('pointerlockchange');
+		change(this);
 		return Promise.resolve();
 	};
 	Document.prototype.exitPointerLock = function () {
-		if (!held) return;
-		held = null;
-		fire('pointerlockchange');
+		if (held) change(null);
 	};
+	// Esc releases a real lock in the browser, and the page never sees the key.
+	addEventListener(
+		'keydown',
+		(e) => {
+			if (!held || e.key !== 'Escape') return;
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			document.exitPointerLock();
+		},
+		true
+	);
 }
 
 /** Locked, the mouse moves the drawn cursor by its movement and clicks at the lock element. */
@@ -88,6 +101,9 @@ test('before Join only the Join card takes input, nothing moves and no cursor is
 		await page.keyboard.press('Tab');
 		expect(await page.evaluate(() => !!document.activeElement?.closest('main, .controls'))).toBe(false);
 	}
+	await page.keyboard.press('Escape'); // before any gesture, when Chrome won't let a page refuse the cancel
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('dialog', { name: 'Join' })).toBeVisible();
 	await page.mouse.move(1270, 360); // deep in the push band
 	await hold(page, 'ArrowRight', 400);
 	expect(await page.locator('main').getAttribute('style')).toBe(camera);
@@ -142,7 +158,7 @@ test('Esc, blur and a hidden tab pause; Resume re-locks with the cursor where it
 		expect(await off(page, frozen)).toBeLessThan(5);
 	};
 
-	await page.evaluate(() => document.exitPointerLock()); // what Esc does
+	await page.keyboard.press('Escape');
 	await expect(paused).toBeVisible();
 	await page.mouse.move(40, 40); // the freed OS pointer
 	expect(await off(page, frozen)).toBeLessThan(5);
@@ -179,13 +195,13 @@ test('a refused lock at Join leaves the unlocked mouse: the drawn cursor follows
 	expect(await lockHolder(page)).toBeNull();
 });
 
-test('the keyboard joins, opens and closes a card, and steers the cursor except while a card is open', async ({ page }) => {
+test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByRole('button', { name: 'Join' })).toBeFocused();
 	const start = await centre(page.getByRole('button', { name: 'Join' }));
 	await page.keyboard.press('Enter');
 	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
-	expect(await lockHolder(page)).toBeNull(); // Esc keeps closing cards
+	await expect.poll(() => lockHolder(page)).toBe('scene');
 	await expect.poll(() => off(page, start)).toBeLessThan(5);
 
 	for (let i = 0; i < 30 && !(await page.evaluate(() => document.activeElement?.matches('.prop > button'))); i++) await page.keyboard.press('Tab');
@@ -195,14 +211,28 @@ test('the keyboard joins, opens and closes a card, and steers the cursor except 
 	await expect(card).toBeVisible();
 	await hold(page, 'ArrowRight', 300);
 	expect(await off(page, start)).toBeLessThan(5);
+
 	await page.keyboard.press('Escape');
 	await expect(card).toBeHidden();
 	await expect(prop).toBeFocused();
+	expect(await lockHolder(page)).toBeNull();
+	const paused = page.getByRole('dialog', { name: 'Paused, click to resume' });
+	await expect(paused).toBeHidden();
 
 	await hold(page, 'ArrowRight', 300);
 	const moved = (await tip(page))!.x - start.x;
 	expect(moved).toBeGreaterThan(100); // 600 px/s for 0.3 s, give or take a frame
 	expect(moved).toBeLessThan(260);
+	const held = (await tip(page))!, over = await centre(prop);
+	await page.mouse.move(over.x, over.y); // the OS pointer moves; the drawn cursor holds still
+	await page.waitForTimeout(100);
+	expect(await off(page, held)).toBeLessThan(1);
+
+	await page.mouse.click(over.x, over.y); // over the prop, yet it only takes the lock back
+	await expect.poll(() => lockHolder(page)).toBe('scene');
+	await expect(card).toHaveCount(0);
+	await page.keyboard.press('Escape'); // no card open: a pause
+	await expect(paused).toBeVisible();
 });
 
 test.describe('without JavaScript', () => {

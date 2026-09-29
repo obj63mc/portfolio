@@ -10,9 +10,13 @@ export type Scene = Overworld | SubScene;
 
 /**
  * The visitor's input (spec: Input): the Join card up; joined with the pointer locked, or with the unlocked mouse (a
- * refused lock, a keyboard Join, a touch device); or paused, which re-locks on resume if the lock was held.
+ * refused lock, a touch device); released, the lock let go by Esc in a card until the next click takes it back; or
+ * paused, which re-locks on resume if the lock was held.
  */
-type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'paused'; relock: boolean };
+type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'released' } | { is: 'paused'; relock: boolean };
+
+/** Joined and not paused: the keys steer. */
+const joined = (i: Input) => i.is === 'locked' || i.is === 'unlocked' || i.is === 'released';
 
 // Every scene's background tiles at both densities, keyed by path: a background's folder repeats its scene's id,
 // /art/generated/<id>/<id>/<density>/<column>-<row>.webp. Never inlined: the page's CSP has no data: source.
@@ -155,16 +159,33 @@ export class Engine {
 		const { join, paused } = this.cards;
 		join.querySelector('button')!.addEventListener('click', (e) => this.join(e), opts);
 		paused.querySelector('button')!.addEventListener('click', () => this.resume(), opts);
-		// Esc closes a modal card, and Chrome lets a page refuse that only after a user gesture: whichever card the input
-		// calls for opens again.
-		for (const card of [join, paused]) card.addEventListener('close', () => this.enter(this.input), opts);
+		// Esc never closes the Join or Paused card: refused at the keydown, and at the cancel it becomes, which Chrome lets a
+		// page refuse only after a user gesture. A close request that can't be refused (Android's back) reopens the card.
+		for (const card of [join, paused]) {
+			card.addEventListener('keydown', (e) => { if (e.key === 'Escape') e.preventDefault(); }, opts);
+			card.addEventListener('cancel', (e) => e.preventDefault(), opts);
+			card.addEventListener('close', () => this.enter(this.input), opts);
+		}
 		document.addEventListener(
 			'pointerlockchange',
 			() => {
 				if (document.pointerLockElement === this.canvas) this.enter({ is: 'locked' });
-				else if (this.input.is === 'locked') this.pause(); // Esc, or the browser's own release
+				else if (this.input.is === 'locked') this.escaped();
 			},
 			opts
+		);
+		// Released, the next mouse click takes the lock back and does nothing else, since it lands at the OS pointer rather
+		// than the drawn cursor. A keyboard click (detail 0) passes. Chrome refuses for about a second after Esc; a refused
+		// click just leaves it released.
+		addEventListener(
+			'click',
+			(e) => {
+				if (this.input.is !== 'released' || !e.detail) return;
+				e.preventDefault();
+				e.stopPropagation();
+				this.lock();
+			},
+			{ ...opts, capture: true }
 		);
 		// Chrome refuses a lock for about a second after Esc releases one. At Join a refusal leaves the unlocked mouse.
 		document.addEventListener('pointerlockerror', () => { if (this.input.is === 'paused') this.refusal.hidden = false; }, opts);
@@ -242,17 +263,16 @@ export class Engine {
 	}
 
 	/**
-	 * Join: the cursor starts where it was pressed, or mid-button from the keyboard (`detail` 0). A click with a mouse or
-	 * trackpad connected locks the pointer (Joe, 2026-09-29: `any-pointer: fine`, a tablet with one included); the
-	 * unlocked mouse carries on until the lock arrives, and for good if it is refused. A keyboard Join doesn't lock, so Esc
-	 * keeps closing cards.
+	 * Join: the cursor starts where it was pressed, or mid-button from the keyboard (`detail` 0). With a mouse or trackpad
+	 * connected the pointer locks, from a keyboard Join too (Joe, 2026-09-29: `any-pointer: fine`, a tablet with one
+	 * included); the unlocked mouse carries on until the lock arrives, and for good if it is refused.
 	 */
 	private join(e: MouseEvent) {
 		if (this.input.is !== 'join') return;
 		const b = (e.currentTarget as Element).getBoundingClientRect();
 		this.cursor = e.detail ? { x: e.clientX, y: e.clientY } : { x: b.x + b.width / 2, y: b.y + b.height / 2 };
 		this.enter({ is: 'unlocked' });
-		if (e.detail && matchMedia('(any-pointer: fine)').matches) this.lock();
+		if (matchMedia('(any-pointer: fine)').matches) this.lock();
 	}
 
 	private lock() {
@@ -260,11 +280,24 @@ export class Engine {
 		this.canvas.requestPointerLock?.()?.catch(() => {});
 	}
 
-	/** Esc, blur or a hidden tab: the lock released, the cursor frozen where it is, the camera and the keys stopped. */
+	/**
+	 * The lock let go in the window, by Esc (which the page never sees) or the browser. With a card open it closes the
+	 * card instead of pausing (Joe, 2026-09-29): the drawn cursor holds still, the OS cursor shows and the keys still
+	 * steer until a click takes the lock back.
+	 */
+	private escaped() {
+		const card = this.layer.querySelector<HTMLDialogElement>('dialog[open]');
+		if (!card || !document.hasFocus() || document.hidden) return this.pause();
+		this.inside = false;
+		this.enter({ is: 'released' });
+		card.close();
+	}
+
+	/** Esc with no card, blur or a hidden tab: the lock released, the cursor frozen where it is, the camera and keys stopped. */
 	private pause() {
-		if (this.input.is !== 'locked' && this.input.is !== 'unlocked') return;
+		if (!joined(this.input)) return;
 		this.keys.clear();
-		this.enter({ is: 'paused', relock: this.input.is === 'locked' });
+		this.enter({ is: 'paused', relock: this.input.is !== 'unlocked' });
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
 	}
 
@@ -318,7 +351,7 @@ export class Engine {
 		if (!scene) return;
 		// Joined with no card open, the cursor steers by keys and pushes the camera. A card, or a Join or Paused card, stops
 		// both; paused, the camera doesn't move at all.
-		const free = (this.input.is === 'locked' || this.input.is === 'unlocked') && !document.querySelector('dialog[open]');
+		const free = joined(this.input) && !document.querySelector('dialog[open]');
 		const c = free ? this.cursor : null, d = steer(this.keys, this.view.s, dt);
 		if (c && (d.x || d.y)) {
 			this.cursor = inView({ x: c.x + d.x, y: c.y + d.y }, this.view);
