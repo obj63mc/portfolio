@@ -1,8 +1,8 @@
 import type { SubScene } from './types';
 
-// World px at 2845 x 1600, measured on the CS lab master (art/generated/slu-master, issue 05): an isometric lab with the
+// World px at 2845 x 1600, measured on the CS lab master (art/generated/slu/slu-master, issue 05): an isometric lab with the
 // whiteboard on the left back wall, the diploma on the right one and the exit doors at the far left. Prop and foreground
-// rects are each measured matte's trim (art/generated/<id>/asset.json). One depth region: the horizon is the floor at
+// rects are each measured matte's trim (art/generated/slu/<id>/asset.json). One depth region: the horizon is the floor at
 // the back corner, the foreground line the bottom edge. The four desks, each with its monitor, keyboard and chair,
 // are walk-behind scenery; their outlines are the mattes' polygons and their front lines run through the front feet.
 export const SLU: SubScene = {

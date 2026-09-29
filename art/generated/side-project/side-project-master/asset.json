@@ -1,0 +1,25 @@
+{
+  "id": "side-project-master",
+  "scene": "side-project",
+  "kind": "reference",
+  "file": "side-project/side-project-master/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 2845,
+    "h": 1600
+  },
+  "source": {
+    "w": 6688,
+    "h": 3764,
+    "sha256": "a99fc9300948b215915053d94a59dc288c8c4bcdfc4e1d936af603ba153bfce3"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 6688,
+    "h": 3764
+  },
+  "width": 6688,
+  "height": 3764
+}

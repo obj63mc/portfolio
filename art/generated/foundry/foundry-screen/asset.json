@@ -1,0 +1,52 @@
+{
+  "id": "foundry-screen",
+  "scene": "foundry",
+  "kind": "prop",
+  "file": "foundry/foundry-screen/image.webp",
+  "world": {
+    "x": 1655.61,
+    "y": 85.02,
+    "w": 1015.8284448160534,
+    "h": 833.1596741344196
+  },
+  "source": {
+    "w": 2392,
+    "h": 1964,
+    "sha256": "d905d6b72107aefd39718156cdc9bcdbc6a072a5301882dd29dd76914bf3085e"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 2388,
+    "h": 1960
+  },
+  "width": 2388,
+  "height": 1960,
+  "registration": {
+    "asset": "foundry-master",
+    "rect": {
+      "x": 1655.61,
+      "y": 85.02,
+      "w": 1017.53,
+      "h": 834.86
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        0.9983,
+        0.2546
+      ],
+      [
+        0.9967,
+        0.998
+      ],
+      [
+        0,
+        0.5886
+      ]
+    ]
+  }
+}

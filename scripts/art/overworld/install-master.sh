@@ -17,14 +17,15 @@ $UP/bin/upscayl-bin -i $NATIVE -o $RUN/source.png -s 4 -m $UP/models -n digital-
 magick identify -format "4x source %wx%h\n" $RUN/source.png
 # The run keeps the tool, the specs and the tile prompts beside the pixels it installed.
 cp scripts/art/overworld/tiles.py $FIX/tilemap.json(N) $FIX/rounds/round-*.json(N) $RUN/; prompts=($FIX/tiles/*-prompt.txt(N)); (( $#prompts )) && cp $prompts $RUN/tiles/
-PREV=$(mktemp); cp art/generated/$MASTER/prompt.txt $PREV
+PREV=$(mktemp); cp art/generated/$SCENE/$MASTER/prompt.txt $PREV
 { echo "${(U)SCENE} MASTER DERIVATION, $(date -u +%Y-%m-%d) (round $ROUND, upscaled 4x for the background)"; echo
   [[ -n $NOTE ]] && { echo "$NOTE"; echo; }
   echo "The retained image is $NATIVE, the native $SIZE master after the tile-map rounds (round specs in $FIX/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The $SCENE plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled."; echo
   cat $PREV; } > $RUN/prompt.txt
 npm run -s art -- process $MASTER --source $RUN/source.png --force
-cp $RUN/prompt.txt art/generated/$MASTER/prompt.txt
-ROUND=$ROUND MASTER=$MASTER SIZE=$SIZE python3 - "$RUN" "$NATIVE" <<'PY'
+rm -f art/sources/$MASTER.png  # committed sources/ keeps originals only; this 4x PNG is in the run and rebuilt from stitched.png
+cp $RUN/prompt.txt art/generated/$SCENE/$MASTER/prompt.txt
+ROUND=$ROUND SCENE=$SCENE MASTER=$MASTER SIZE=$SIZE python3 - "$RUN" "$NATIVE" <<'PY'
 import hashlib, json, os, sys
 run, native = sys.argv[1:3]; h = lambda f: hashlib.sha256(open(f, 'rb').read()).hexdigest()
 d = {"sourceSha256": h(run + '/source.png'), "run": run, "provider": "derived",
@@ -32,7 +33,7 @@ d = {"sourceSha256": h(run + '/source.png'), "run": run, "provider": "derived",
                     "baseSha256": h(run + '/native.png'), "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
                     "script": "scripts/art/overworld/install-master.sh"},
      "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."}
-p = f"art/generated/{os.environ['MASTER']}/provenance.json"; json.dump(d, open(p, 'w'), indent=2); open(p, 'a').write('\n')
+p = f"art/generated/{os.environ['SCENE']}/{os.environ['MASTER']}/provenance.json"; json.dump(d, open(p, 'w'), indent=2); open(p, 'a').write('\n')
 PY
 for a in $(node -e "for (const a of require('./art/manifest.json').assets) if (a.deriveFrom === '$MASTER') console.log(a.id)"); do npm run -s art -- generate $a --force; done
 [[ $SCENE == overworld ]] && python3 scripts/art/overworld/sync-geometry.py

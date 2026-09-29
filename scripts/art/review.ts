@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Manifest, ProcessedAsset } from './types.ts';
-import { RIG_DRAW_ORDER } from './types.ts';
+import { RIG_DRAW_ORDER, assetDir } from './types.ts';
 import { OVERWORLD } from '../../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../../src/lib/scenes/index.ts';
 import { compose } from './compose.ts';
@@ -9,14 +9,16 @@ import { saveProvenance } from './provenance.ts';
 
 export async function buildReview(root: string, manifest: Manifest, composites = false) {
   const assets: ProcessedAsset[] = manifest.assets.flatMap(a => {
-    const path = join(root, 'art/generated', a.id, 'asset.json');
+    const path = join(root, 'art/generated', assetDir(a), 'asset.json');
     return existsSync(path) ? [JSON.parse(readFileSync(path, 'utf8')) as ProcessedAsset] : [];
   });
   const rigs: Record<string, Record<string, { parent: string | null; x: number; y: number; w: number; h: number; pivot: number[]; file: string }>> = {};
+  const rigScenes: Record<string, string> = {};
   for (const asset of assets) saveProvenance(root, asset);
   for (const asset of assets) if (asset.rig) {
     const { name, part, parent, pivot } = asset.rig;
     const rig = rigs[name] ??= {};
+    rigScenes[name] = asset.scene;
     // Source-space trim offsets preserve registration when independently keyed parts are trimmed.
     rig[part] = { parent, x: asset.trim.x, y: asset.trim.y, w: asset.width, h: asset.height, pivot, file: asset.file };
   }
@@ -44,7 +46,7 @@ export async function buildReview(root: string, manifest: Manifest, composites =
       artForeground: layers.filter(l => l.kind === 'foreground').map(l => ({ key: l.id, rect: l.rect })) };
   });
   mkdirSync(join(root, 'art/generated'), { recursive: true });
-  for (const [name, rig] of Object.entries(rigs)) writeFileSync(join(root, `art/generated/${name}-rig.json`), JSON.stringify(rig, null, 2) + '\n');
+  for (const [name, rig] of Object.entries(rigs)) writeFileSync(join(root, `art/generated/${rigScenes[name]}/${name}-rig.json`), JSON.stringify(rig, null, 2) + '\n');
   writeFileSync(join(root, 'art/generated/review.json'), JSON.stringify({ scenes, assets, rigs, rigBounds, rigDrawOrder: RIG_DRAW_ORDER,
     pending: manifest.assets.filter(a => !assets.some(p => p.id === a.id)).map(a => a.id) }, null, 2) + '\n');
   console.log(`Review data: ${assets.length}/${manifest.assets.length} assets. art/review.html`);

@@ -1,0 +1,50 @@
+{
+  "body": {
+    "parent": null,
+    "x": 359,
+    "y": 269,
+    "w": 667,
+    "h": 647,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "file": "overworld/moose-body/image.webp"
+  },
+  "head": {
+    "parent": "body",
+    "x": 899,
+    "y": 239,
+    "w": 344,
+    "h": 298,
+    "pivot": [
+      0.18,
+      0.8
+    ],
+    "file": "overworld/moose-head/image.webp"
+  },
+  "antlers": {
+    "parent": "head",
+    "x": 639,
+    "y": 67,
+    "w": 484,
+    "h": 210,
+    "pivot": [
+      0.7,
+      0.9
+    ],
+    "file": "overworld/moose-antlers/image.webp"
+  },
+  "eye": {
+    "parent": "head",
+    "x": 1066,
+    "y": 281,
+    "w": 35,
+    "h": 37,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/moose-eye/image.webp"
+  }
+}

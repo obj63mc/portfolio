@@ -1,0 +1,25 @@
+{
+  "id": "moosylvania-master",
+  "scene": "moosylvania",
+  "kind": "reference",
+  "file": "moosylvania/moosylvania-master/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 2400,
+    "h": 4800
+  },
+  "source": {
+    "w": 3548,
+    "h": 7096,
+    "sha256": "229f4c36f8acffb7a96f0041e73d609abe4942bb6e85c647e6a58b935ba9d2e2"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 3548,
+    "h": 7096
+  },
+  "width": 3548,
+  "height": 7096
+}

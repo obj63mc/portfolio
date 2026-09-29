@@ -1,0 +1,60 @@
+{
+  "id": "side-project-back-bar",
+  "scene": "side-project",
+  "kind": "scenery",
+  "file": "side-project/side-project-back-bar/image.webp",
+  "world": {
+    "x": 2256.26,
+    "y": 892.67,
+    "w": 588.74,
+    "h": 387.6696943231441
+  },
+  "source": {
+    "w": 1384,
+    "h": 916,
+    "sha256": "14980972f096b279df91fff0ff330beb9e826b4200f063cd7f02d3f293de6bef"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1384,
+    "h": 912
+  },
+  "width": 1384,
+  "height": 912,
+  "registration": {
+    "asset": "side-project-master",
+    "rect": {
+      "x": 2256.26,
+      "y": 892.67,
+      "w": 588.74,
+      "h": 389.37
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0.0306
+      ],
+      [
+        1,
+        0.9825
+      ],
+      [
+        0.9566,
+        0.9956
+      ],
+      [
+        0.0751,
+        0.6376
+      ],
+      [
+        0,
+        0.607
+      ]
+    ]
+  }
+}

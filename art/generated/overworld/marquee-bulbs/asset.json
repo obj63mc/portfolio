@@ -1,0 +1,69 @@
+{
+  "id": "marquee-bulbs",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "overworld/marquee-bulbs/image.webp",
+  "world": {
+    "x": 3195.3385416666665,
+    "y": 1640.33203125,
+    "w": 569.9479166666667,
+    "h": 151.6484375
+  },
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "f32e385a5a195ffcbc825ea335464798be0f4dc49299c7ecb18633bd62992b26"
+  },
+  "trim": {
+    "x": 38,
+    "y": 100,
+    "w": 1412,
+    "h": 376
+  },
+  "width": 1412,
+  "height": 376,
+  "rig": {
+    "name": "marquee",
+    "part": "bulbs",
+    "parent": null,
+    "pivot": [
+      0.5,
+      0.5
+    ]
+  },
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 3180,
+      "y": 1600,
+      "w": 620,
+      "h": 413
+    },
+    "mask": [
+      [
+        0.0242,
+        0.0969
+      ],
+      [
+        0.6129,
+        0.1743
+      ],
+      [
+        0.9435,
+        0.2954
+      ],
+      [
+        0.9435,
+        0.4649
+      ],
+      [
+        0.6129,
+        0.3511
+      ],
+      [
+        0.0242,
+        0.2809
+      ]
+    ]
+  }
+}

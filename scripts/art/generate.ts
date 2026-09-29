@@ -5,6 +5,7 @@ import { homedir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { dimensions, magick } from './process.ts';
 import type { Asset, Manifest, Rect } from './types.ts';
+import { assetDir } from './types.ts';
 
 export const MAX_REFERENCES = 5;
 
@@ -17,8 +18,8 @@ export function preparePrompt(asset: Asset, manifest: Manifest, root: string, ru
   }
   function attachCrop(name: string, selection: {asset: string; rect: Rect}, resize?: string) {
     const parent = manifest.assets.find(a => a.id === selection.asset);
-    const source = resolve(root, `art/generated/${selection.asset}/image.webp`);
-    if (!parent?.world || !existsSync(source)) throw new Error(`Generate ${selection.asset} before ${asset.id}`);
+    const source = parent && resolve(root, `art/generated/${assetDir(parent)}/image.webp`);
+    if (!parent?.world || !source || !existsSync(source)) throw new Error(`Generate ${selection.asset} before ${asset.id}`);
     const size = dimensions(source), r = selection.rect;
     const sx = size.w / parent.world.w, sy = size.h / parent.world.h;
     const crop = join(run, `${name}.png`);
@@ -45,7 +46,7 @@ export function generate(asset: Asset, manifest: Manifest, root: string, provide
   const { prompt, references } = preparePrompt(asset, manifest, root, run);
   const output = join(run, 'source.png');
   if (asset.deriveFrom) {
-    const source = resolve(root, `art/generated/${asset.deriveFrom}/image.webp`);
+    const source = resolve(root, `art/generated/${asset.scene}/${asset.deriveFrom}/image.webp`);
     if (!existsSync(source)) throw new Error(`Generate ${asset.deriveFrom} before ${asset.id}`);
     const mask = asset.registration?.mask;
     if (mask) {

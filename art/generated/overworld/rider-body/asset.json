@@ -1,0 +1,28 @@
+{
+  "id": "rider-body",
+  "scene": "overworld",
+  "kind": "part",
+  "file": "overworld/rider-body/image.webp",
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "0d6953dc184dcb4d11eb0f4a5b69b5d22dee331035ff55d166ff70f904a9d671"
+  },
+  "trim": {
+    "x": 523,
+    "y": 128,
+    "w": 481,
+    "h": 661
+  },
+  "width": 481,
+  "height": 661,
+  "rig": {
+    "name": "rider",
+    "part": "body",
+    "parent": null,
+    "pivot": [
+      0.5,
+      0.7
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "overworld-master",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld/overworld-master/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 6750,
+    "h": 2700
+  },
+  "source": {
+    "w": 7932,
+    "h": 3172,
+    "sha256": "5da683ce16bf1370009d503c5bcfeb7c7be3205210b5d0549a2de77e0abcc56e"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 7932,
+    "h": 3172
+  },
+  "width": 7932,
+  "height": 3172
+}

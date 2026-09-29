@@ -1,0 +1,34 @@
+{
+  "id": "door",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "overworld/door/image.webp",
+  "world": {
+    "x": 1658.2775119617224,
+    "y": 1264.6570972886761,
+    "w": 123.44497607655502,
+    "h": 105.58213716108453
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "13c4da37dae70947441cd892bd9f4bc375d0404f554ea6d38fae82b1381ad343"
+  },
+  "trim": {
+    "x": 240,
+    "y": 280,
+    "w": 774,
+    "h": 662
+  },
+  "width": 774,
+  "height": 662,
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 1620,
+      "y": 1220,
+      "w": 200,
+      "h": 200
+    }
+  }
+}

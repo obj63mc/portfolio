@@ -9,7 +9,7 @@ interface Scene { id: string; w: number; h: number; rigInstances: RigPlacement[]
 
 /** A review composite never replaces the separable production layers. */
 export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[], rigs: Record<string, Record<string, Part>>, rigBounds: Record<string, Rect>) {
-  const out = join(root, 'art/generated/composites'); mkdirSync(out, { recursive: true });
+  const out = join(root, 'art/generated');
   for (const scene of scenes) {
     const plate = assets.find(a => a.id === scene.id);
     if (!plate) continue;
@@ -35,9 +35,10 @@ export function compose(root: string, scenes: Scene[], assets: ProcessedAsset[],
       const asset = assets.find(a => a.id === layer.asset)!;
       add(join(root, 'art/generated', asset.file), layer.rect);
     }
-    magick([...args, '-quality', '88', join(out, `${scene.id}.webp`)]);
+    mkdirSync(join(out, scene.id), { recursive: true });
+    magick([...args, '-quality', '88', join(out, scene.id, 'composite.webp')]);
   }
-  const plates = scenes.map(s => join(out, `${s.id}.webp`)).filter(existsSync);
+  const plates = scenes.map(s => join(out, s.id, 'composite.webp')).filter(existsSync);
   if (plates.length) {
     // Composite explicitly: montage tries to load a font even for an unlabelled sheet.
     const sheet = ['-size', `1328x${Math.ceil(plates.length / 2) * 384}`, 'xc:#e9dfbf'];

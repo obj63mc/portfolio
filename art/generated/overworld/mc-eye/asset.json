@@ -1,0 +1,43 @@
+{
+  "id": "mc-eye",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "overworld/mc-eye/image.webp",
+  "world": {
+    "x": 6007.177033492823,
+    "y": 1136.7145135566188,
+    "w": 65.83732057416267,
+    "h": 75.02392344497608
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "29741ab6b4274a93b2b3b0544bfd547102dcb5c4d66125bbcb704b6d0265afb1"
+  },
+  "trim": {
+    "x": 210,
+    "y": 503,
+    "w": 129,
+    "h": 147
+  },
+  "width": 129,
+  "height": 147,
+  "rig": {
+    "name": "mc-sign",
+    "part": "eye",
+    "parent": null,
+    "pivot": [
+      0.5,
+      0.5
+    ]
+  },
+  "registration": {
+    "asset": "overworld-master",
+    "rect": {
+      "x": 5900,
+      "y": 880,
+      "w": 640,
+      "h": 640
+    }
+  }
+}

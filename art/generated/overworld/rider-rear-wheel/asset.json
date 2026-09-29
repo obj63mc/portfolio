@@ -1,0 +1,28 @@
+{
+  "id": "rider-rear-wheel",
+  "scene": "overworld",
+  "kind": "part",
+  "file": "overworld/rider-rear-wheel/image.webp",
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "a60de53dce3c8c310c9bfe4170dbedcb689e56b76d19894b790b8e0ae54392cf"
+  },
+  "trim": {
+    "x": 394,
+    "y": 554,
+    "w": 293,
+    "h": 297
+  },
+  "width": 293,
+  "height": 297,
+  "rig": {
+    "name": "rider",
+    "part": "rear-wheel",
+    "parent": "body",
+    "pivot": [
+      0.5,
+      0.5
+    ]
+  }
+}

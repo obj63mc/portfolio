@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["../scripts/art.ts", "../scripts/art/**/*.ts", "scenes/**/*.ts"]
+  "include": ["../scripts/art.ts", "../scripts/art/**/*.ts"]
 }

@@ -1,7 +1,5 @@
 runs/
-sources/*
-!sources/*-fix/
 generated/**/*.png
 generated/.processing-*/
 references/local/
-generated/*-fix-*/
+generated/*/*-fix-*/

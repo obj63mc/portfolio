@@ -8,6 +8,7 @@ import { processAsset } from './art/process.ts';
 import { buildReview } from './art/review.ts';
 import { validateOutputs } from './art/validate.ts';
 import type { Asset, Manifest } from './art/types.ts';
+import { assetDir } from './art/types.ts';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { positionals, values } = parseArgs({ allowPositionals: true, options: {
@@ -24,9 +25,14 @@ try {
     if (!/^[a-z0-9-]+$/.test(asset.id) || ids.has(asset.id)) throw new Error(`Invalid/duplicate asset id: ${asset.id}`);
     ids.add(asset.id);
   }
+  for (const asset of manifest.assets) {
+    // A derivative is cut from its own scene's composition, so validation finds its parent in the same scene folder.
+    const parent = manifest.assets.find(a => a.id === asset.deriveFrom);
+    if (parent && parent.scene !== asset.scene) throw new Error(`${asset.id}: derives from ${parent.id} in scene ${parent.scene}, not ${asset.scene}`);
+  }
   const outputRoot = join(root, 'art/generated');
   if (command === 'list') {
-    console.log(manifest.assets.map(a => `${a.id.padEnd(23)} ${a.kind.padEnd(11)} ${existsSync(join(outputRoot, a.id, 'asset.json')) ? 'ready' : 'missing'}`).join('\n'));
+    console.log(manifest.assets.map(a => `${a.id.padEnd(23)} ${a.kind.padEnd(11)} ${existsSync(join(outputRoot, assetDir(a), 'asset.json')) ? 'ready' : 'missing'}`).join('\n'));
   } else if (command === 'review' || command === 'compose') {
     await buildReview(root, manifest, command === 'compose');
   } else if (command === 'validate') {
@@ -50,10 +56,10 @@ try {
       for (const dep of asset.dependsOn ?? []) {
         const dependency = manifest.assets.find(a => a.id === dep);
         if (!dependency) throw new Error(`${asset.id}: unknown dependency ${dep}`);
-        if (!existsSync(join(outputRoot, dep, 'asset.json')) || (values.force && selected.some(a => a.id === dep))) run(dependency);
+        if (!existsSync(join(outputRoot, assetDir(dependency), 'asset.json')) || (values.force && selected.some(a => a.id === dep))) run(dependency);
       }
       visiting.delete(asset.id);
-      if (existsSync(join(outputRoot, asset.id, 'asset.json')) && (!values.force || (values['keep-masters'] && asset.kind === 'reference'))) {
+      if (existsSync(join(outputRoot, assetDir(asset), 'asset.json')) && (!values.force || (values['keep-masters'] && asset.kind === 'reference'))) {
         console.log(`Keep ${asset.id}${values['keep-masters'] && asset.kind === 'reference' ? ' (--keep-masters)' : ' (use --force to regenerate)'}`); complete.add(asset.id); return;
       }
       const runDir = join(root, 'art/runs', asset.id, new Date().toISOString().replaceAll(':', '-'));
@@ -66,13 +72,14 @@ try {
       console.log(`${command} ${asset.id} (${asset.deriveFrom ? 'derived' : provider})`);
       const source = values.source && selected[0].id === asset.id ? resolve(values.source) : join(root, 'art/sources', `${asset.id}.png`);
       const input = command === 'generate' && !values.source ? generate(asset, manifest, root, provider, runDir) : source;
-      if (!existsSync(input)) throw new Error(`Missing source ${input}`);
+      if (!existsSync(input)) throw new Error(asset.deriveFrom ? `${asset.id} is re-cut from ${asset.deriveFrom}: run generate ${asset.id}` : `Missing source ${input}`);
       mkdirSync(join(root, 'art/sources'), { recursive: true });
       const saved = join(root, 'art/sources', `${asset.id}.png`);
       const result = processAsset(asset, input, outputRoot);
-      if (input !== saved) copyFileSync(input, saved);
+      // generate re-cuts a derivative from its committed parent, so sources/ keeps only originals for reprocessing.
+      if (input !== saved && !asset.deriveFrom) copyFileSync(input, saved);
       const promptPath = join(runDir, 'prompt.txt');
-      if (existsSync(promptPath)) copyFileSync(promptPath, join(outputRoot, asset.id, 'prompt.txt'));
+      if (existsSync(promptPath)) copyFileSync(promptPath, join(outputRoot, assetDir(asset), 'prompt.txt'));
       writeFileSync(join(runDir, 'processed.json'), JSON.stringify(result, null, 2) + '\n');
       complete.add(asset.id);
       console.log(`Ready ${asset.id}: ${result.width} × ${result.height}, ${result.tiles?.length ?? 0} tiles`);

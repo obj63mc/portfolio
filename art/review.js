@@ -163,7 +163,7 @@ function edgeFacts(image){
 function selectScene(){
   scene=data.scenes.find(s=>s.id===$('scene').value);camera={...scene.arrival};walk={};stepped=null;sinceLanding={};world.width=scene.w;world.height=scene.h;dirty=true;
   $('rig-section').hidden=scene.rigInstances.length===0;
-  $('comparison').src=`generated/${scene.id}-master/image.webp`;
+  $('comparison').src=`generated/${scene.id}/${scene.id}-master/image.webp`;
   $('assets').replaceChildren();
   for(const a of data.assets.filter(a=>a.scene===scene.id)){
     const card=document.createElement('article');card.className='card';const image=document.createElement('img');image.src=`generated/${a.file}`;image.alt=a.id;

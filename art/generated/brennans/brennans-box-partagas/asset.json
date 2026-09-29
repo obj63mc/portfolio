@@ -1,0 +1,52 @@
+{
+  "id": "brennans-box-partagas",
+  "scene": "brennans",
+  "kind": "prop",
+  "file": "brennans/brennans-box-partagas/image.webp",
+  "world": {
+    "x": 1085.59,
+    "y": 629.12,
+    "w": 182.06842592592594,
+    "h": 153.87951086956522
+  },
+  "source": {
+    "w": 432,
+    "h": 368,
+    "sha256": "b582e5d5f7937b3288a24726011ccd4d9d4fe8caa0977bab6c478d3099a83aed"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 428,
+    "h": 362
+  },
+  "width": 428,
+  "height": 362,
+  "registration": {
+    "asset": "brennans-master",
+    "rect": {
+      "x": 1085.59,
+      "y": 629.12,
+      "w": 183.77,
+      "h": 156.43
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        0.8889,
+        0.0217
+      ],
+      [
+        0.9907,
+        0.9402
+      ],
+      [
+        0.0648,
+        0.9837
+      ]
+    ]
+  }
+}

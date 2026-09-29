@@ -3,7 +3,7 @@ import sys
 from PIL import Image
 edit, out = sys.argv[1], sys.argv[2]
 sc = 6750/1983
-m = Image.open('art/generated/overworld-master/image.webp').convert('RGB')
+m = Image.open('art/generated/overworld/overworld-master/image.webp').convert('RGB')
 x0, y0 = round(5700/sc), round(900/sc); x1, y1 = m.width, round(1600/sc)
 w, h = x1-x0, y1-y0; F = 22
 e = Image.open(edit).convert('RGB').resize((w, h), Image.LANCZOS)

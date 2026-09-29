@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync, existsSync, mkdtempSync, rmSync, copyFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Asset, ProcessedAsset } from './types.ts';
+import { assetDir } from './types.ts';
 
 export function magick(args: string[]): string {
   return execFileSync('magick', args, { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }).trim();
@@ -17,17 +18,18 @@ export function dimensions(path: string): { w: number; h: number } {
 export function processAsset(asset: Asset, input: string, outputRoot: string): ProcessedAsset {
   mkdirSync(outputRoot, { recursive: true });
   const staging = mkdtempSync(join(outputRoot, '.processing-'));
-  const target = join(outputRoot, asset.id), previous = join(staging, 'previous');
+  const target = join(outputRoot, assetDir(asset)), staged = join(staging, assetDir(asset)), previous = join(staging, 'previous');
   try {
     const result = processInto(asset, input, staging);
     const oldPrompt = join(target, 'prompt.txt');
-    if (existsSync(oldPrompt)) copyFileSync(oldPrompt, join(staging, asset.id, 'prompt.txt'));
+    if (existsSync(oldPrompt)) copyFileSync(oldPrompt, join(staged, 'prompt.txt'));
     const oldProvenance = join(target, 'provenance.json');
     if (existsSync(oldProvenance) && JSON.parse(readFileSync(oldProvenance, 'utf8')).sourceSha256 === result.source.sha256) {
-      copyFileSync(oldProvenance, join(staging, asset.id, 'provenance.json'));
+      copyFileSync(oldProvenance, join(staged, 'provenance.json'));
     }
     if (existsSync(target)) renameSync(target, previous);
-    try { renameSync(join(staging, asset.id), target); }
+    else mkdirSync(join(outputRoot, asset.scene), { recursive: true });
+    try { renameSync(staged, target); }
     catch (error) { if (existsSync(previous)) renameSync(previous, target); throw error; }
     return result;
   } finally {
@@ -37,10 +39,10 @@ export function processAsset(asset: Asset, input: string, outputRoot: string): P
 }
 
 function processInto(asset: Asset, input: string, outputRoot: string): ProcessedAsset {
-  const dir = join(outputRoot, asset.id);
+  const dir = join(outputRoot, assetDir(asset));
   mkdirSync(dir, { recursive: true });
   const source = { ...dimensions(input), sha256: createHash('sha256').update(readFileSync(input)).digest('hex') };
-  const file = `${asset.id}/image.webp`;
+  const file = `${assetDir(asset)}/image.webp`;
   let trim = { x: 0, y: 0, w: source.w, h: source.h };
   const result: ProcessedAsset = { id: asset.id, scene: asset.scene, kind: asset.kind, file, world: asset.world,
     source, trim, width: 0, height: 0, rig: asset.rig, registration: asset.registration };
@@ -62,7 +64,7 @@ function processInto(asset: Asset, input: string, outputRoot: string): Processed
       let index = 0;
       for (let y = 0; y < h; y += 512) for (let x = 0; x < w; x += 512) {
         const tw = Math.min(512, w - x), th = Math.min(512, h - y);
-        const tile = `${asset.id}/${density}/${x / 512}-${y / 512}.webp`;
+        const tile = `${assetDir(asset)}/${density}/${x / 512}-${y / 512}.webp`;
         renameSync(join(tilesDir, `tile-${index++}.webp`), join(outputRoot, tile));
         result.tiles.push({ density, x, y, w: tw, h: th, file: tile });
       }
@@ -89,6 +91,7 @@ function processInto(asset: Asset, input: string, outputRoot: string): Processed
       result.world = asset.world ?? { x: r.x+x/source.w*r.w, y: r.y+y/source.h*r.h, w: w/source.w*r.w, h: h/source.h*r.h };
     }
     magick([keyed, '-trim', '+repage', '-define', 'webp:lossless=true', join(outputRoot, file)]);
+    unlinkSync(keyed);
   }
   const size = dimensions(join(outputRoot, file));
   result.width = size.w; result.height = size.h;

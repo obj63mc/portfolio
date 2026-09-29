@@ -1,0 +1,25 @@
+{
+  "id": "signpost",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "overworld/signpost/image.webp",
+  "world": {
+    "x": 1520,
+    "y": 1370,
+    "w": 60,
+    "h": 120
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "dee61f036f4b4113955ea4d900f90446b1c8d51b356decf06fd666457e43fb74"
+  },
+  "trim": {
+    "x": 316,
+    "y": 48,
+    "w": 622,
+    "h": 1158
+  },
+  "width": 622,
+  "height": 1158
+}

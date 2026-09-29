@@ -1,0 +1,28 @@
+{
+  "id": "moose-head",
+  "scene": "overworld",
+  "kind": "part",
+  "file": "overworld/moose-head/image.webp",
+  "source": {
+    "w": 1536,
+    "h": 1024,
+    "sha256": "9ce637be30b8931c00719428dc791a7d6feafd53a4f26ac0ed104d862c7aba54"
+  },
+  "trim": {
+    "x": 899,
+    "y": 239,
+    "w": 344,
+    "h": 298
+  },
+  "width": 344,
+  "height": 298,
+  "rig": {
+    "name": "moose",
+    "part": "head",
+    "parent": "body",
+    "pivot": [
+      0.18,
+      0.8
+    ]
+  }
+}

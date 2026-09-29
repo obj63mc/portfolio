@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import type { ProcessedAsset } from './types.ts';
+import { assetDir } from './types.ts';
 
 /** Match retained pixels to the generation prompt, even after offline reprocessing. */
 export function saveProvenance(root: string, asset: ProcessedAsset) {
@@ -11,7 +12,7 @@ export function saveProvenance(root: string, asset: ProcessedAsset) {
     if (!existsSync(processed) || !existsSync(prompt)) continue;
     const result = JSON.parse(readFileSync(processed, 'utf8')) as ProcessedAsset;
     if (result.source.sha256 !== asset.source.sha256) continue;
-    const dir = join(root, 'art/generated', asset.id);
+    const dir = join(root, 'art/generated', assetDir(asset));
     writeFileSync(join(dir, 'prompt.txt'), readFileSync(prompt, 'utf8').replaceAll(root+'/', '<repo>/'));
     writeFileSync(join(dir, 'provenance.json'), JSON.stringify({ sourceSha256: asset.source.sha256,
       run: relative(root, run), provider: existsSync(join(run, 'derivation.json')) ? 'derived' : existsSync(join(run, 'codex.jsonl')) ? 'codex' : 'api',

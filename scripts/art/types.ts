@@ -36,4 +36,6 @@ export interface ProcessedAsset {
   rig?: Asset['rig'];
   registration?: Asset['registration'];
 }
-export const RIG_DRAW_ORDER = ['body', 'rear-wheel', 'front-wheel', 'head', 'antlers', 'eye'];
+/** An asset's folder under art/generated: each scene keeps its assets together, `<scene>/<id>`. */
+export const assetDir = (asset: { id: string; scene: string }) => `${asset.scene}/${asset.id}`;
+export const RIG_DRAW_ORDER =['body', 'rear-wheel', 'front-wheel', 'head', 'antlers', 'eye'];

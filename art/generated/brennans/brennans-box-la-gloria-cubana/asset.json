@@ -1,0 +1,52 @@
+{
+  "id": "brennans-box-la-gloria-cubana",
+  "scene": "brennans",
+  "kind": "prop",
+  "file": "brennans/brennans-box-la-gloria-cubana/image.webp",
+  "world": {
+    "x": 1335.72,
+    "y": 637.62,
+    "w": 178.65849056603776,
+    "h": 141.9794705882353
+  },
+  "source": {
+    "w": 424,
+    "h": 340,
+    "sha256": "50f4c1b99d408167000d1410c5ad8316d449300a92146672c9bdb6635ffddde0"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 420,
+    "h": 334
+  },
+  "width": 420,
+  "height": 334,
+  "registration": {
+    "asset": "brennans-master",
+    "rect": {
+      "x": 1335.72,
+      "y": 637.62,
+      "w": 180.36,
+      "h": 144.53
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        0.8774,
+        0.0235
+      ],
+      [
+        0.9906,
+        0.9471
+      ],
+      [
+        0.0755,
+        0.9824
+      ]
+    ]
+  }
+}

@@ -18,7 +18,7 @@
       },
       "size": "1983x793",
       "references": [
-        "art/generated/overworld-master/image.webp"
+        "art/generated/overworld/overworld-master/image.webp"
       ],
       "dependsOn": [
         "overworld-master"
@@ -38,7 +38,7 @@
       },
       "size": "887x1774",
       "references": [
-        "art/generated/moosylvania-master/image.webp"
+        "art/generated/moosylvania/moosylvania-master/image.webp"
       ],
       "dependsOn": [
         "moosylvania-master"
@@ -7478,7 +7478,7 @@
       },
       "size": "2048x1152",
       "references": [
-        "art/generated/slu-master/image.webp"
+        "art/generated/slu/slu-master/image.webp"
       ],
       "dependsOn": [
         "slu-master"
@@ -7498,7 +7498,7 @@
       },
       "size": "2048x1152",
       "references": [
-        "art/generated/foundry-master/image.webp"
+        "art/generated/foundry/foundry-master/image.webp"
       ],
       "dependsOn": [
         "foundry-master"
@@ -7518,7 +7518,7 @@
       },
       "size": "2048x1152",
       "references": [
-        "art/generated/side-project-master/image.webp"
+        "art/generated/side-project/side-project-master/image.webp"
       ],
       "dependsOn": [
         "side-project-master"
@@ -7538,7 +7538,7 @@
       },
       "size": "2048x1152",
       "references": [
-        "art/generated/brennans-master/image.webp"
+        "art/generated/brennans/brennans-master/image.webp"
       ],
       "dependsOn": [
         "brennans-master"
@@ -7558,7 +7558,7 @@
       },
       "size": "1024x1024",
       "references": [
-        "art/generated/overworld/image.webp"
+        "art/generated/overworld/overworld/image.webp"
       ],
       "dependsOn": [
         "overworld"
@@ -7577,7 +7577,7 @@
       },
       "size": "1024x1024",
       "references": [
-        "art/generated/overworld/image.webp"
+        "art/generated/overworld/overworld/image.webp"
       ],
       "dependsOn": [
         "overworld"
@@ -8236,7 +8236,7 @@
       "prompt": "A friendly simple cartoon moose side-on facing right, four legs, dark brown body, lighter muzzle, broad mustard antlers, one white eye with black pupil. Whole animal centered on pure #FF00FF. No shadow. Large simple flat shapes, matching the church scene.",
       "size": "1536x1024",
       "references": [
-        "art/generated/overworld/image.webp"
+        "art/generated/overworld/overworld/image.webp"
       ],
       "dependsOn": [
         "overworld"
@@ -8249,7 +8249,7 @@
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY torso, all four legs and neck; remove head, antlers and eye, end neck with a flat cut. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
       "references": [
-        "art/generated/moose-master/image.webp"
+        "art/generated/overworld/moose-master/image.webp"
       ],
       "dependsOn": [
         "moose-master"
@@ -8271,7 +8271,7 @@
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY head and top of neck with extra neck overlap below; no body, legs, antlers or eye. Fill eye socket with head color. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
       "references": [
-        "art/generated/moose-master/image.webp"
+        "art/generated/overworld/moose-master/image.webp"
       ],
       "dependsOn": [
         "moose-master"
@@ -8293,7 +8293,7 @@
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY both antlers including short attachment stubs at skull. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
       "references": [
-        "art/generated/moose-master/image.webp"
+        "art/generated/overworld/moose-master/image.webp"
       ],
       "dependsOn": [
         "moose-master"
@@ -8315,7 +8315,7 @@
       "prompt": "Exact same moose as final reference, SAME SIZE AND POSITION in a 1536 by 1024 frame. ONLY one eye: cream-white oval and black pupil. Remove everything else to solid pure #FF00FF. Never recenter or enlarge the remaining part. No shadows.",
       "size": "1536x1024",
       "references": [
-        "art/generated/moose-master/image.webp"
+        "art/generated/overworld/moose-master/image.webp"
       ],
       "dependsOn": [
         "moose-master"
@@ -15903,7 +15903,7 @@
       "prompt": "A tiny friendly cyclist on a simple teal road bicycle, perfect side view facing right, mustard jersey, cream helmet, terracotta shorts, two round dark wheels. On pure #FF00FF magenta, entire cycle and rider visible. Simple flat silhouette.",
       "size": "1536x1024",
       "references": [
-        "art/generated/overworld/image.webp"
+        "art/generated/overworld/overworld/image.webp"
       ],
       "dependsOn": [
         "overworld"
@@ -15916,7 +15916,7 @@
       "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY cyclist and bicycle frame, fork and handlebars; remove both wheels entirely. Everything else pure solid #FF00FF. Never recenter or enlarge.",
       "size": "1536x1024",
       "references": [
-        "art/generated/rider-master/image.webp"
+        "art/generated/overworld/rider-master/image.webp"
       ],
       "dependsOn": [
         "rider-master"
@@ -15938,7 +15938,7 @@
       "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY the rear wheel, round dark tire with cream hub and three simple spokes. Everything else pure solid #FF00FF. Never recenter or enlarge.",
       "size": "1536x1024",
       "references": [
-        "art/generated/rider-master/image.webp"
+        "art/generated/overworld/rider-master/image.webp"
       ],
       "dependsOn": [
         "rider-master"
@@ -15960,7 +15960,7 @@
       "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY the front wheel, round dark tire with cream hub and three simple spokes. Everything else pure solid #FF00FF. Never recenter or enlarge.",
       "size": "1536x1024",
       "references": [
-        "art/generated/rider-master/image.webp"
+        "art/generated/overworld/rider-master/image.webp"
       ],
       "dependsOn": [
         "rider-master"
@@ -16274,7 +16274,7 @@
       "prompt": "A small teal road bicycle in perfect side view facing left, two dark wheels with cream hubs, standing on its own. Match the scale of the park benches and the flat cartoon style of the supplied park scene. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no fence, no other objects, no lettering. All object edges entirely inside the frame.",
       "size": "1024x1024",
       "references": [
-        "art/generated/overworld/image.webp"
+        "art/generated/overworld/overworld/image.webp"
       ],
       "dependsOn": [
         "overworld"
@@ -16293,7 +16293,7 @@
       "prompt": "A tall wooden park notice board: a small peaked roof, two dark wooden posts and a framed blank cream map panel, seen from slightly above and front. Match the scale of the park benches and the flat cartoon style of the supplied park scene. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
       "size": "1024x1024",
       "references": [
-        "art/generated/overworld/image.webp"
+        "art/generated/overworld/overworld/image.webp"
       ],
       "dependsOn": [
         "overworld"

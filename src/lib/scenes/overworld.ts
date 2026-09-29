@@ -1,7 +1,7 @@
 import type { District, Overworld, Rect } from './types';
 
-// World px at 6750 x 2700, measured on the accepted overworld master (art/generated/overworld-master, issue 04).
-// Registered prop and foreground rects are each extraction's trim (art/generated/<id>/asset.json); the welcome
+// World px at 6750 x 2700, measured on the accepted overworld master (art/generated/overworld/overworld-master, issue 04).
+// Registered prop and foreground rects are each extraction's trim (art/generated/overworld/<id>/asset.json); the welcome
 // board, signpost, bike and ride sign are placed by their manifest world rects; the moose and rider by sceneLayouts.
 // The Old Courthouse and the Maplewood storefront row are scenery painted in the plate, not venues.
 const centre = (r: Rect) => r.x + r.w / 2;

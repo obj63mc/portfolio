@@ -1,0 +1,25 @@
+{
+  "id": "ride-sign",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "overworld/ride-sign/image.webp",
+  "world": {
+    "x": 2986,
+    "y": 2600,
+    "w": 78,
+    "h": 94
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "500f92dde860b6b28f13c1b07ea44f13cb494cbcb381438638f6fa078f3f2b94"
+  },
+  "trim": {
+    "x": 194,
+    "y": 97,
+    "w": 877,
+    "h": 1057
+  },
+  "width": 877,
+  "height": 1057
+}

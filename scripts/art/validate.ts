@@ -3,12 +3,13 @@ import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { dimensions, magick } from './process.ts';
 import type { Manifest, ProcessedAsset } from './types.ts';
+import { assetDir } from './types.ts';
 
 export function validateOutputs(root: string, manifest: Manifest): string[] {
   const problems: string[] = [];
   const placed: ProcessedAsset[] = [];
   for (const asset of manifest.assets) {
-    const dir = join(root, 'art/generated', asset.id), metadata = join(dir, 'asset.json');
+    const dir = join(root, 'art/generated', assetDir(asset)), metadata = join(dir, 'asset.json');
     if (!existsSync(metadata)) { problems.push(`${asset.id}: not generated`); continue; }
     const result = JSON.parse(readFileSync(metadata, 'utf8')) as ProcessedAsset;
     if (result.world) placed.push(result);
@@ -24,7 +25,7 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
     }
     const provenance = join(dir, 'provenance.json');
     if (asset.deriveFrom) {
-      const parent = join(root, 'art/generated', asset.deriveFrom, 'image.webp');
+      const parent = join(root, 'art/generated', asset.scene, asset.deriveFrom, 'image.webp');
       const evidence = existsSync(provenance) ? JSON.parse(readFileSync(provenance, 'utf8')) : undefined;
       const derivation = evidence?.derivation;
       if (evidence?.sourceSha256 !== result.source.sha256 || derivation?.asset !== asset.deriveFrom || !/^[0-9a-f]{64}$/.test(derivation?.referenceSha256 ?? '') || !existsSync(parent)) {
@@ -57,7 +58,7 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
       if (opaque === 'True') problems.push(`${asset.id}: missing transparent background`);
     }
     if (asset.rig) {
-      const master = join(root, 'art/generated', `${asset.rig.name}-master`, 'asset.json');
+      const master = join(root, 'art/generated', asset.scene, `${asset.rig.name}-master`, 'asset.json');
       if (existsSync(master)) {
         const source = JSON.parse(readFileSync(master, 'utf8')).source;
         if (result.source.w !== source.w || result.source.h !== source.h) problems.push(`${asset.id}: master and part frame dimensions differ; registration requires review`);

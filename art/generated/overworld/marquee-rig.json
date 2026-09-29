@@ -1,0 +1,14 @@
+{
+  "bulbs": {
+    "parent": null,
+    "x": 38,
+    "y": 100,
+    "w": 1412,
+    "h": 376,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/marquee-bulbs/image.webp"
+  }
+}
