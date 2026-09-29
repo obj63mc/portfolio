@@ -84,6 +84,8 @@ export class Engine {
 	private hot: Element | null = null;
 	/** False after a keyboard or fragment pan, or a drag, until the cursor moves, so a cursor resting in the band doesn't undo it. */
 	private armed = true;
+	/** When steering last pressed the cursor against the viewport's edge (camera.ts `Frame.pressed`). */
+	private pressedAt = -Infinity;
 	private gesture: Gesture = { is: 'none' };
 	/**
 	 * The joystick held: its finger, its radius, where the finger landed and its pull from there (CSS px), and whether it
@@ -227,7 +229,7 @@ export class Engine {
 				if (e.pointerType !== 'mouse' || !this.cursor) return; // touch drags, below
 				// Locked, the mouse moves the drawn cursor 1:1, OS acceleration kept, held inside the viewport; unlocked, it
 				// follows the OS pointer. Before Join and while paused it stays put.
-				if (this.input.is === 'locked') this.cursor = inView({ x: this.cursor.x + e.movementX, y: this.cursor.y + e.movementY }, this.view);
+				if (this.input.is === 'locked') this.steerTo({ x: this.cursor.x + e.movementX, y: this.cursor.y + e.movementY }, e.timeStamp);
 				else if (this.input.is === 'unlocked') (this.cursor = { x: e.clientX, y: e.clientY }), (this.inside = true);
 				else return;
 				// A real move re-arms the push; a synthetic one (content moving under a still pointer) has no movement.
@@ -427,6 +429,12 @@ export class Engine {
 		this.knob.style.translate = '';
 	}
 
+	/** The steered cursor moved to `p`, held inside the viewport; held against an edge, it is pressed there at time `t`. */
+	private steerTo(p: Point, t: number) {
+		this.cursor = inView(p, this.view);
+		if (p.x !== this.cursor.x || p.y !== this.cursor.y) this.pressedAt = t;
+	}
+
 	/** A drag or its fling moves the camera against the finger; the cursor keeps its world place, carried at the edge. */
 	private slide(d: Point) {
 		if (!this.scene || !this.cursor) return;
@@ -483,7 +491,7 @@ export class Engine {
 		const c = free ? this.cursor : null, k = steer(this.keys, this.view.s, dt);
 		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 }, d = { x: k.x + j.x, y: k.y + j.y };
 		if (c && (d.x || d.y)) {
-			this.cursor = inView({ x: c.x + d.x, y: c.y + d.y }, this.view);
+			this.steerTo({ x: c.x + d.x, y: c.y + d.y }, now);
 			this.inside = this.armed = true;
 		} else if (this.input.is === 'touch') this.inside = false; // on touch the camera follows only a steered cursor
 		const g = this.gesture;
@@ -506,7 +514,8 @@ export class Engine {
 							.filter((r) => r.width)
 							.map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
 					: [];
-				cam = step(this.cam, { view: this.view, scene, band: scene.pushBand ?? 0.12, cursor, props: this.targets, controls }, dt);
+				const pressed = now - this.pressedAt < 100;
+				cam = step(this.cam, { view: this.view, scene, band: scene.pushBand ?? 0.12, cursor, props: this.targets, controls, pressed }, dt);
 			}
 			if (cam.x !== this.cam.x || cam.y !== this.cam.y) this.moveTo(cam);
 		}

@@ -73,3 +73,18 @@ The camera covered the full width (x 0 to 6065, the edge for this viewport) and 
 - A card padded past the screen's height scrolled under a finger: scrollTop 584 after two swipes, with `touch-action: none` on the page. This bears out the modal card as its own scroll container. Today's cards are all short enough not to scroll, but ticket 15's full texts may not be.
 
 The touches are injected through the DevTools protocol, so the display doesn't boost to 120 Hz as a real finger may, and the charger hides battery drain. Still untested: an iPhone, which this can't drive, and real fingers on the joystick's feel.
+
+2026-09-29, from Joe's testing on the Pixel under `npm run dev`: steering down or right with the joystick often didn't scroll. There were two causes, both the push suppression, reproduced on a 411 x 748 viewport:
+
+- Steering down pins the cursor at the bottom edge, 14 px from the Sound and Analytics toggles. On a phone the toggles and the joystick, each with its 40 px suppression, line nearly the whole bottom edge, so the camera stopped after 32 world px. From there, right slid the cursor into the corner 18 px from the joystick, and nothing moved at all.
+- Steering right at mid-height pins the cursor at the right edge. When a prop came within 40 px (the Server rack, 34 px), the camera stopped for good, because the pinned cursor can't move past it.
+
+The fix: while steering presses the cursor against the viewport's edge, nothing suppresses the push, since the cursor can't be aiming any further out. The steered cursor is held in view in one place, `steerTo()`, which notes the press. It serves the joystick, the keys and the locked mouse, so the same stall is gone for the keys and the lock on desktop too. `step()` reads `pressed` from the frame, true within 100 ms of the last press. The unlocked mouse can't press: its pointer leaves the window. Tests:
+
+- `tests/camera.test.ts` covers the bottom edge lined with controls, and a prop beside the pinned cursor, pressed and not.
+- The phone smoke holds the joystick down and then right. It failed at 27 CSS px down before the fix.
+
+Afterwards the same run scrolled down to the scene's bottom and right to its east edge, from the joystick's corner. The spec's push-suppression bullet carries the rule.
+
+`npm run dev` also drew no scene at all until da7639d: SvelteKit's dev-server allow list left out `art/generated`.
+

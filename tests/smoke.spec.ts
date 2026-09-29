@@ -355,6 +355,24 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		expect(await camera(page)).toEqual(stopped);
 	});
 
+	test('the joystick scrolls down and right even where the controls line the bottom edge', async ({ page }) => {
+		await page.goto('/');
+		await page.getByRole('button', { name: 'Join' }).tap();
+		const f = await finger(page), hub = await centre(page.locator('.joystick'));
+		/** The camera's travel, CSS px, with the joystick held pulled (dx, dy) for 2.5 s. */
+		const hold = async (dx: number, dy: number) => {
+			const a = await camera(page);
+			await f.down(hub);
+			await f.move({ x: hub.x + dx, y: hub.y + dy });
+			await page.waitForTimeout(2500);
+			await f.up();
+			const b = await camera(page);
+			return { x: b.x - a.x, y: b.y - a.y };
+		};
+		expect((await hold(0, 60)).y, 'down, the cursor against the toggles').toBeGreaterThan(150);
+		expect((await hold(60, 0)).x, 'right, into the corner by the joystick').toBeGreaterThan(150);
+	});
+
 	test('a hidden tab pauses; the Resume tap goes back to touch without a lock', async ({ page }) => {
 		await page.goto('/');
 		await page.getByRole('button', { name: 'Join' }).tap();

@@ -14,6 +14,7 @@ const frame = (over: Partial<Frame> = {}): Frame => ({
 	cursor: null,
 	props: [],
 	controls: [],
+	pressed: false,
 	...over
 });
 // Hold the cursor still for `seconds` at 60 fps; the camera's travel from a mid-scene start.
@@ -54,6 +55,19 @@ test('no push within 40 CSS px of a prop or an on-screen control', () => {
 	assert.equal(hold(frame({ cursor: { x: 100, y: 770 }, controls: [control] }), 1).y, 0, 'on the toggles');
 	assert.equal(hold(frame({ cursor: { x: 215, y: 790 }, controls: [control] }), 1).y, 0, '39 px right of them');
 	assert.ok(hold(frame({ cursor: { x: 217, y: 790 }, controls: [control] }), 1).y > 0, '41 px right of them');
+});
+
+test('a cursor pressed against the edge pushes even beside a prop or a control: it cannot be aiming any further out', () => {
+	// A phone's bottom edge, lined by the toggles and the joystick; the cursor steered down against it.
+	const phone = { view: { w: 411, h: 748, s: 0.6 }, cursor: { x: 200, y: 747 } };
+	const controls = [{ x: 16, y: 704, w: 190, h: 28 }, { x: 271, y: 608, w: 120, h: 120 }];
+	assert.equal(hold(frame({ ...phone, controls }), 1).y, 0, 'resting there, the toggles hold the camera');
+	const tall = { w: 6750, h: 5000 }; // room to scroll a whole second
+	assert.ok(hold(frame({ ...phone, scene: tall, controls, pressed: true }), 1).y > 850, 'pressed down, it scrolls at nearly full speed');
+	// The right edge, a prop beside the pinned cursor.
+	const prop = { x: 2000 + 990 + 10, y: 1300, w: 100, h: 200 };
+	assert.equal(hold(frame({ cursor: { x: 999, y: 400 }, props: [prop] }), 1).x, 0);
+	assert.ok(hold(frame({ cursor: { x: 999, y: 400 }, props: [prop], pressed: true }), 1).x > 800, 'pressed right, past the prop');
 });
 
 test('hard clamp at the scene bounds: pushing into a corner stops dead, no rubber band', () => {

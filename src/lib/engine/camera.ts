@@ -35,6 +35,12 @@ export interface Frame {
 	props: Rect[];
 	/** Screen rects of the on-screen controls, CSS px. */
 	controls: Rect[];
+	/**
+	 * Steering is pressing the cursor against the viewport's edge. It can't be aiming at anything further out, so nothing
+	 * holds the camera: on a phone the controls line the bottom edge, and a prop beside the pinned cursor would otherwise
+	 * stop it for good (ticket 10).
+	 */
+	pressed: boolean;
 }
 
 /** One axis of the push band: 0 up to the band's inner edge, easing to -1 or 1 at the viewport's edge. */
@@ -60,7 +66,7 @@ const within = (p: Point, r: Rect, m: number) => p.x > r.x - m && p.x < r.x + r.
 export function step(cam: Point, f: Frame, dt: number): Point {
 	const c = f.cursor, s = f.view.s;
 	const world = c && { x: cam.x + c.x / s, y: cam.y + c.y / s };
-	const held = !c || f.props.some((r) => within(world!, r, NEAR / s)) || f.controls.some((r) => within(c, r, NEAR));
+	const held = !c || (!f.pressed && (f.props.some((r) => within(world!, r, NEAR / s)) || f.controls.some((r) => within(c, r, NEAR))));
 	const pushed = held ? cam : { x: cam.x + edge(c.x, f.view.w, f.band) * PUSH * dt, y: cam.y + edge(c.y, f.view.h, f.band) * PUSH * dt };
 	return clamp(pushed, f.view, f.scene);
 }
