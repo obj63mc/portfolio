@@ -1,0 +1,399 @@
+{
+ "round": 15,
+ "base": "rounds/base-15.png",
+ "tiles": {
+  "foundry": {
+   "rect": [
+    600,
+    350,
+    384,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      638,
+      450
+     ],
+     [
+      716,
+      396
+     ],
+     [
+      762,
+      401
+     ],
+     [
+      806,
+      406
+     ],
+     [
+      809,
+      413
+     ],
+     [
+      850,
+      415.5
+     ],
+     [
+      890,
+      419.5
+     ],
+     [
+      931,
+      423.5
+     ],
+     [
+      931,
+      547
+     ],
+     [
+      640,
+      508
+     ],
+     [
+      631,
+      500
+     ],
+     [
+      631,
+      472
+     ]
+    ]
+   ],
+   "keep": "the MIDTOWN sign, the cinema block with its marquee, the road, the houses, the firehouse and every tree outside the outline",
+   "fixes": [
+    "Outline (the Foundry: the long red-brick warehouse with the sawtooth roof, south of the MIDTOWN sign): its surfaces are soft and wobbly. Redraw it crisp and clean in the map's flat illustration style, at exactly the same position, size and footprint: six identical sawtooth roof bays in dark slate, with straight parallel ridge and valley lines and one straight lighter band on each bay; six identical sunny-yellow gables, each with one small round vent at its centre; a straight red-brick front wall of six identical bays divided by straight pilasters, each bay with the same window grid (two rows of three tall windows, the middle one wider, dark blue-grey glass with white mullions), every window edge straight, the windows evenly spaced and level along each row; a straight cornice line and a straight base line; the plain brick end walls straight. The small green planters and the sidewalk along the front stay where they are. The small tree at the building's left corner stays whole."
+   ]
+  },
+  "slu": {
+   "rect": [
+    650,
+    200,
+    470,
+    313
+   ],
+   "polygons": [
+    [
+     [
+      704,
+      354
+     ],
+     [
+      705,
+      292
+     ],
+     [
+      716,
+      277
+     ],
+     [
+      771,
+      270
+     ],
+     [
+      813,
+      265
+     ],
+     [
+      840,
+      257
+     ],
+     [
+      900,
+      264
+     ],
+     [
+      944,
+      270
+     ],
+     [
+      950,
+      283
+     ],
+     [
+      1079,
+      296
+     ],
+     [
+      1083,
+      300
+     ],
+     [
+      1083,
+      362
+     ],
+     [
+      1040,
+      393
+     ],
+     [
+      1000,
+      397
+     ],
+     [
+      934,
+      397
+     ],
+     [
+      934,
+      372
+     ],
+     [
+      808,
+      372
+     ],
+     [
+      806,
+      381
+     ],
+     [
+      770,
+      377
+     ],
+     [
+      735,
+      369
+     ]
+    ]
+   ],
+   "keep": "the MIDTOWN sign, the road, the footpaths, the Foundry roof and every tree outside the outline",
+   "fixes": [
+    "Outline (McDonnell Douglas Hall, the long modern university building north of the MIDTOWN sign): its roofs are smudged and its walls and windows are soft and uneven. Redraw it crisp and clean in the map's flat illustration style, at exactly the same position, size and footprint, with the same wings and heights: flat cream roofs with straight parapet edges and a few tidy grey rooftop units with clean edges; red-brick wings with small, evenly spaced windows in straight rows; the cream wing on the left with one row of evenly spaced dark windows; the tall glass atrium in the middle and the glass bay on the right, each a regular grid of cyan-blue panes with straight white mullions, the entrance doors at the foot of the atrium. Every wall edge, roof edge and window line is straight, and every window in a row is the same size and level. The trees in front of and behind the building are whole and crisp, with round crowns and trunks."
+   ]
+  },
+  "cwe": {
+   "rect": [
+    555,
+    55,
+    530,
+    212
+   ],
+   "polygons": [
+    [
+     [
+      577,
+      145
+     ],
+     [
+      588,
+      145
+     ],
+     [
+      588,
+      106
+     ],
+     [
+      632,
+      87
+     ],
+     [
+      700,
+      88
+     ],
+     [
+      705,
+      98
+     ],
+     [
+      752,
+      98
+     ],
+     [
+      752,
+      114
+     ],
+     [
+      800,
+      105
+     ],
+     [
+      868,
+      106
+     ],
+     [
+      908,
+      98
+     ],
+     [
+      990,
+      107
+     ],
+     [
+      990,
+      124
+     ],
+     [
+      1056,
+      127
+     ],
+     [
+      1056,
+      185
+     ],
+     [
+      1046,
+      212
+     ],
+     [
+      1010,
+      214
+     ],
+     [
+      1010,
+      240
+     ],
+     [
+      970,
+      242
+     ],
+     [
+      938,
+      234
+     ],
+     [
+      850,
+      226
+     ],
+     [
+      818,
+      227
+     ],
+     [
+      780,
+      217
+     ],
+     [
+      717,
+      216
+     ],
+     [
+      717,
+      204
+     ],
+     [
+      577,
+      204
+     ]
+    ]
+   ],
+   "keep": "the CENTRAL WEST END sign, the footpaths, the ballfield, the buildings beyond the row and every tree outside the outline",
+   "fixes": [
+    "Outline (the Central West End row: the attached historic commercial buildings north of the CENTRAL WEST END sign): the facades are soft and scribbled, the cornices smudged and the windows uneven. Redraw the row crisp and clean in the map's flat illustration style, every building at exactly the same position, size, footprint, colour and height: from the left, the three-storey red-brick block with its taller dark-brick rear section and orange entrance awning; the low cream stone building with tall arched ground-floor windows; the red-brick building with arched upper windows and an orange awning; the tall cream corner building with arched windows over a deep blue ground-floor storefront with white awnings; the small cream and red-brick buildings at the right end. Each facade has straight walls, a crisp straight cornice with simple even detailing (no scribbles), a flat roof with a straight parapet edge and tidy rooftop units, and windows of equal size, evenly spaced in straight level rows with light frames and dark glass. The awnings have clean straight edges. The trees in front of the row are whole and crisp, with round crowns and trunks."
+   ]
+  },
+  "lot": {
+   "rect": [
+    140,
+    285,
+    330,
+    135
+   ],
+   "polygons": [
+    [
+     [
+      183,
+      296
+     ],
+     [
+      452,
+      342
+     ],
+     [
+      456,
+      362
+     ],
+     [
+      345,
+      416
+     ],
+     [
+      250,
+      416
+     ],
+     [
+      237,
+      380
+     ],
+     [
+      237,
+      352
+     ],
+     [
+      272,
+      334
+     ],
+     [
+      211,
+      319.5
+     ],
+     [
+      155,
+      313.5
+     ]
+    ]
+   ],
+   "fixes": [
+    "Drawn by hand, not by the model (scripts/art/overworld/lot-stripes.py writes tiles/t-lot-model.png): the Maplewood parking lot between the storefront row and the church is relaid as flat asphalt with straight, evenly spaced stall lines, one row along the storefront curb and a double row with a centre line, all parallel to the lot's side edges; trees, the roof and the curbs stay."
+   ]
+  }
+ },
+ "notes": {
+  "foundry": "Joe (2026-09-29, a screenshot of the 4x plate): the Foundry's outer surfaces need sharpening, with straighter lines, fixed windows and roofs. The marquee's registration crop (from x 934) and the MIDTOWN sign stay outside the outline.",
+  "slu": "Joe (2026-09-29): McDonnell Douglas Hall needs the same: sharper surfaces, straight lines, fixed windows and roofs. The MIDTOWN sign stays outside the outline.",
+  "cwe": "Joe (2026-09-29): the Central West End row needs the same. The CENTRAL WEST END sign stays outside the outline. The model drew the tree at the outline's west edge a little smaller, leaving 2 px of lawn between the footpath's end and the canopy (tiles.py check); a path-colour paint carries the path on under the canopy edge (light pixels only).",
+  "lot": "Joe (2026-09-29): the Maplewood parking lot's lines need to be straight and consistent. Drawn deterministically: the model does not hold a straight line. A light nub of an old stall mark on the south curb and a stray speck beside it (x 283 to 291, y 409 to 411) are painted the lot's asphalt."
+ },
+ "paints": [
+  {
+   "polygon": [
+    [
+     574,
+     154.6
+    ],
+    [
+     581,
+     156.4
+    ],
+    [
+     581,
+     158.4
+    ],
+    [
+     574,
+     157.8
+    ]
+   ],
+   "from": [
+    572,
+    156
+   ]
+  },
+  {
+   "polygon": [
+    [
+     283,
+     409.5
+    ],
+    [
+     291,
+     408.5
+    ],
+    [
+     291,
+     411
+    ],
+    [
+     283,
+     411.6
+    ]
+   ],
+   "color": [
+    185,
+    180,
+    172
+   ],
+   "all": true
+  }
+ ]
+}

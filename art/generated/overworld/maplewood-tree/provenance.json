@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "820fcac2d17a3f13a0d07f5b69a468ddca383fe2eac1da3d3357139829dd6610",
-  "run": "art/runs/maplewood-tree/2026-09-26T00-21-13.257Z",
+  "sourceSha256": "2cc982404a2a27c7be24c5915d3d6e4cedacf896321828cff50b5698ff05579e",
+  "run": "art/runs/maplewood-tree/2026-09-29T15-30-26.298Z",
   "provider": "derived",
   "derivation": {
     "asset": "overworld-master",
-    "referenceSha256": "572d7ed805fd4ee58101dc4008cc21b0b93c36e7fe96202ecf21dfd09a52e567",
+    "referenceSha256": "4c93eb2eff9d67c89c5103e7dcf9d6204c0fdb6176a3181104ef8eb4569d575a",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

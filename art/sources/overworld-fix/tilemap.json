@@ -1,22 +1,109 @@
 {
- "round": 14,
- "base": "rounds/base-14.png",
+ "round": 15,
+ "base": "rounds/base-15.png",
  "tiles": [
   {
-   "name": "downtown",
+   "name": "foundry",
    "rect": [
-    1100,
-    0,
-    256,
+    600,
+    350,
+    384,
     256
    ],
    "loops": [],
-   "repaintPx": 2487,
+   "repaintPx": 33739,
+   "edit": true
+  },
+  {
+   "name": "slu",
+   "rect": [
+    650,
+    200,
+    470,
+    313
+   ],
+   "loops": [],
+   "repaintPx": 39658,
+   "edit": true
+  },
+  {
+   "name": "cwe",
+   "rect": [
+    555,
+    55,
+    530,
+    212
+   ],
+   "loops": [],
+   "repaintPx": 55243,
+   "edit": true
+  },
+  {
+   "name": "lot",
+   "rect": [
+    140,
+    285,
+    330,
+    135
+   ],
+   "loops": [],
+   "repaintPx": 17901,
    "edit": true
   }
  ],
  "stamps": [],
- "paints": [],
+ "paints": [
+  {
+   "polygon": [
+    [
+     574,
+     154.6
+    ],
+    [
+     581,
+     156.4
+    ],
+    [
+     581,
+     158.4
+    ],
+    [
+     574,
+     157.8
+    ]
+   ],
+   "from": [
+    572,
+    156
+   ]
+  },
+  {
+   "polygon": [
+    [
+     283,
+     409.5
+    ],
+    [
+     291,
+     408.5
+    ],
+    [
+     291,
+     411
+    ],
+    [
+     283,
+     411.6
+    ]
+   ],
+   "color": [
+    185,
+    180,
+    172
+   ],
+   "all": true
+  }
+ ],
  "restore": [],
  "blurThreshold": 28,
  "bridges": [],

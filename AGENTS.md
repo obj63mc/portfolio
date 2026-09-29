@@ -12,6 +12,14 @@ Uses the five default triage labels: `needs-triage`, `needs-info`, `ready-for-ag
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
+## Coding standards
+
+Keep this section synchronized between `AGENTS.md` and `CLAUDE.md`.
+
+- **TypeScript**, strict and idiomatic: data crossing a trust boundary (sockets, `localStorage`, JSON, URLs) enters as `unknown` and is narrowed before use; state machines are discriminated unions; `satisfies` checks a literal's shape without widening it. Modules the Node test runner imports (`node --test` strips types) use erasable syntax only: union types and `as const` objects in place of `enum`, `namespace` and parameter properties.
+- **Svelte 5 in runes mode**: `$props`, `$state` and `$derived`, with `$effect` kept for syncing with the outside world (canvas, sockets, audio); event attributes such as `onclick`; snippets and `{@render}` for composition; shared reactive state in `.svelte.ts` modules.
+- **CSS** is plain and nested: native nesting with `&`, custom properties, `:has()`, container queries, logical properties and `clamp()`, with no preprocessor or utility framework. Every feature used is Baseline, shipped in the current Chrome, Edge, Firefox and Safari on desktop and iOS; confirm a feature's Baseline badge on MDN when unsure. Component styles live in the component's `<style>` block, global styles in `src/app.css`.
+
 ## Scene artwork
 
 Before generating, editing, placing or reviewing assets, read [the art workflow](art/README.md), [location references](art/landmarks.md), [the style contract](art/style.txt) and the latest applicable [review notes](art/reviews/). Keep this section synchronized between `AGENTS.md` and `CLAUDE.md`; detailed recipes and reference attribution live in `art/`.

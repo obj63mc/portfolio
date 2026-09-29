@@ -6,6 +6,7 @@
       "description": "An explorable St. Louis where Joe Madden, Chief Architect at Moosylvania, keeps his career, client work, resume and contact details. Move through it as a cursor alongside other visitors.",
       "w": 6750,
       "h": 2700,
+      "pushBand": 0.25,
       "signpost": {
         "rect": {
           "x": 1520,
@@ -6270,7 +6271,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "815b62e5f1f7ad3a4f9c22a7217fb47797391ece9cb88340b32aeb2d260dc08e"
+        "sha256": "3fd534e3d9639e46012a3ac52d169a034b01219100530280c2ab067e90b4180e"
       },
       "trim": {
         "x": 0,
@@ -17928,7 +17929,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "820fcac2d17a3f13a0d07f5b69a468ddca383fe2eac1da3d3357139829dd6610"
+        "sha256": "2cc982404a2a27c7be24c5915d3d6e4cedacf896321828cff50b5698ff05579e"
       },
       "trim": {
         "x": 35,
@@ -18252,7 +18253,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "733adc20da598a333c122b54ecc84f8f4fce6eb8ec8c9f8e0b09b2b8adb68c0f"
+        "sha256": "62805370b3c5175baed971f60f736c634eed6c6e44654d213497a4fad1874487"
       },
       "trim": {
         "x": 332,
@@ -26999,7 +27000,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "5da683ce16bf1370009d503c5bcfeb7c7be3205210b5d0549a2de77e0abcc56e"
+        "sha256": "29e52126e36b966b0a7b9f6ec31d3d94ff73bd7f261ff3d76efe170b2d70b107"
       },
       "trim": {
         "x": 0,
@@ -27058,7 +27059,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "f32e385a5a195ffcbc825ea335464798be0f4dc49299c7ecb18633bd62992b26"
+        "sha256": "b6d096a54c00f8ffec057415cca46a9432be924b976bba69a959d55ef76520ec"
       },
       "trim": {
         "x": 38,
@@ -27127,7 +27128,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "6f158f679a46a89fe87903b7cac15b1a2791615faf4d152b3de91eacfa877c6a"
+        "sha256": "b7bb01f374a175a050e7854c0a2983a5348cd0183e3e231783e8953a03aa224d"
       },
       "trim": {
         "x": 145,
@@ -27322,7 +27323,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "fe1817a2df6511fba6cfd0a3ef27608ca208c0afaac45fdfcb6660b3130879ae"
+        "sha256": "676ae2c6f841e70217e27770df640e7c880151c25eaba68c80295603766ef614"
       },
       "trim": {
         "x": 15,

@@ -1,0 +1,28 @@
+{
+ "date": "2026-09-29",
+ "scenes": [
+  "overworld"
+ ],
+ "verdict": "Overworld tile-map round fifteen: the Foundry warehouse, McDonnell Douglas Hall and the Central West End row redrawn crisp on Codex tiles inside building outlines (attempts foundry A, slu A, cwe B of three each), the Maplewood parking lot relaid by hand with straight, evenly spaced stall lines (scripts/art/overworld/lot-stripes.py), two small paints; stitched with 0 pixels changed outside the masks, tiles.py check clean, 4x master reinstalled with no stale extraction. Checks pass. Workshop acceptance is Joe's, in art/review.html.",
+ "nativeMasterHashes": {
+  "overworld": "320baa21c06cbe28bd1ac0a98ea1149d8bcab45ed4a1c9c03b33c6868efc6508"
+ },
+ "assetHashes": {
+  "overworld-master": "4c93eb2eff9d67c89c5103e7dcf9d6204c0fdb6176a3181104ef8eb4569d575a",
+  "overworld": "f4981d937c5d227caaf9d5419fc3bf50306e2810bfd08e7f666e4c7434114c4f",
+  "maplewood-tree": "88cddd4c50b9517f1c074f667a4c93b134a865a673be87f72576ed221cbc7a57",
+  "park-tree": "faf71d3be0759cf60bf3a2c8c2e183479a027b6eb12cac88d2289a071c39fde3",
+  "marquee-bulbs": "4c87bcec266d9771b4b772094afcf8990e12ba573588f36a3622b9078ec32d2d",
+  "mc-sign": "1fa029087a8e7fcf9bf7674b1c623cf17d51aa1834cb4ea9cca792e66f123f47",
+  "eads-bridge": "d7d91598db7c13e985d548ae5879e1cce48f0677a4ca7218716972f8f33efc1a"
+ },
+ "checks": {
+  "stitch": "4 tiles aligned (drift 8.6, 9.5, 13.5, 0.0), 0 pixels changed outside the masks; tiles.py check: no dead end of 4 px or more",
+  "validate": "PASS: 96 assets, exact tile coverage at both densities, transparent cut-outs and registered rig frame sizes",
+  "suite": "art:check, art:test 3/3, svelte-check 0 errors 0 warnings, production build ok, npm test 42 pass 0 fail (1 todo, ticket 25)"
+ },
+ "limitations": [
+  "The lot's south edge is mostly hidden behind trees and not parallel to the curb, so the lot's lower part is left as an open aisle rather than a third row of stalls.",
+  "The model tiles were redrawn by gpt-image-2 through the Codex CLI; they match the base outside the outlines only to a mean drift of 8.6 to 13.5 levels, which the masks keep out of the master."
+ ]
+}
