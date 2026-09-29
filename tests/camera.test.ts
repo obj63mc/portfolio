@@ -2,7 +2,8 @@
 // fake clock the way the engine steps it each frame.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { centreOn, glide, rendering, steer, step, tileRange, type Frame } from '../src/lib/engine/camera.ts';
+import { centreOn, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Frame } from '../src/lib/engine/camera.ts';
+import type { Point } from '../src/lib/scenes/types.ts';
 
 const desktop = { w: 1000, h: 800, s: 1 };
 const overworld = { w: 6750, h: 2700 };
@@ -112,4 +113,62 @@ test('arrow keys and WASD steer the cursor at 600 world px/s, diagonals normalis
 	assert.ok(Math.abs(Math.hypot(diagonal.x, diagonal.y) - 600) < 1e-9 && diagonal.x < 0 && diagonal.x === -diagonal.y, 'down-left at 600');
 	assert.deepEqual(second(['ArrowRight'], 0.6), { x: 360, y: 0 }, 'at the phone scale, 360 CSS px a second');
 	assert.deepEqual(second(['Space', 'KeyQ']), { x: 0, y: 0 }, 'other keys do nothing');
+});
+
+test('a touch drag pans against the finger, clamped, and the cursor keeps its world place unless carried at the edge', () => {
+	const phone = { w: 390, h: 844, s: 0.6 }, margin = 24; // the cursor's 40 world px at 0.6
+	const cam = { x: 2000, y: 1000 }, cursor = { x: 200, y: 400 }; // world (2333.3, 1666.7)
+	const world = (r: ReturnType<typeof pan>) => ({ x: r.cam.x + r.cursor.x / 0.6, y: r.cam.y + r.cursor.y / 0.6 });
+
+	const left = pan(cam, cursor, { x: -60, y: 0 }, phone, overworld, margin);
+	assert.deepEqual(left.cam, { x: 2100, y: 1000 }, 'dragged 60 px left, the view moves 100 world px right');
+	assert.ok(Math.abs(world(left).x - (2000 + 200 / 0.6)) < 1e-9, 'the cursor stays put in the world');
+	assert.ok(Math.abs(left.cursor.x - 140) < 1e-9, 'and so moves 60 px left on screen');
+
+	const far = pan({ x: 2000, y: 200 }, cursor, { x: -300, y: -500 }, phone, overworld, margin);
+	assert.deepEqual(far.cam, { x: 2500, y: 200 + 500 / 0.6 });
+	assert.deepEqual(far.cursor, { x: 0, y: 0 }, 'carried along at the top-left edge, where its tip is its corner');
+	const back = pan(cam, cursor, { x: 300, y: 500 }, phone, overworld, margin);
+	assert.deepEqual(back.cursor, { x: 390 - 24, y: 844 - 24 }, 'and the arrow held in view at the bottom-right');
+
+	const edge = pan({ x: 0, y: 0 }, cursor, { x: 120, y: 90 }, phone, overworld, margin);
+	assert.deepEqual(edge, { cam: { x: 0, y: 0 }, cursor }, 'at the scene edge the camera clamps and nothing moves');
+
+	// A cursor the joystick left against the right edge is carried only if the drag would take it further out.
+	const tucked = { x: 385, y: 400 };
+	assert.deepEqual(pan(cam, tucked, { x: 0, y: -60 }, phone, overworld, margin).cursor, { x: 385, y: 340 }, 'a drag up leaves it there');
+	assert.deepEqual(pan(cam, tucked, { x: 30, y: 0 }, phone, overworld, margin).cursor, tucked, 'one right carries it where it is');
+	assert.ok(Math.abs(pan(cam, tucked, { x: -30, y: 0 }, phone, overworld, margin).cursor.x - 355) < 1e-9, 'one left brings it in');
+});
+
+test('a drag let go while moving coasts on, decaying over about 300 ms; one held still first does not', () => {
+	// Moves every 16 ms, 8 px left each: 500 px/s.
+	const moves = Array.from({ length: 10 }, (_, i) => ({ t: 1000 + i * 16, x: 300 - i * 8, y: 400 }));
+	const v = fling(moves, 1144)!;
+	assert.ok(Math.abs(v.x + 500) < 1e-9 && v.y === 0, `500 px/s left: ${v.x}`);
+	assert.equal(fling(moves, 1144 + 200), null, 'held still 200 ms before lifting');
+	assert.equal(fling(moves.slice(0, 1), 1000), null, 'a single move has no speed');
+
+	// The fling's travel frame by frame, as the engine pans by it.
+	let vel: Point | null = v, travel = 0, frames = 0;
+	for (; vel && frames < 600; frames++) (travel += vel.x / 60), (vel = coast(vel, 1 / 60));
+	assert.ok(Math.abs(travel + 500 * 0.15) < 5, `about speed x tau: ${travel}`);
+	assert.ok(frames > 20 && frames < 80, `stopped within a second or so: ${frames} frames`);
+	let slowed: Point = v;
+	for (let i = 0; i < 18; i++) slowed = coast(slowed, 1 / 60)!;
+	assert.ok(Math.abs(slowed.x / v.x - Math.exp(-2)) < 1e-9, 'down to e^-2 after 300 ms');
+});
+
+test('the joystick: nothing in the 15 percent dead zone, then up to 600 world px/s at the rim', () => {
+	const second = (x: number, y: number, s = 1) => stick({ x, y }, 60, s, 1);
+	assert.deepEqual(second(0, 0), { x: 0, y: 0 });
+	assert.deepEqual(second(9, 0), { x: 0, y: 0 }, 'a thumb resting 9 of 60 px out steers nothing');
+	assert.ok(second(10, 0).x > 0, 'just past the dead zone it creeps');
+	assert.deepEqual(second(60, 0), { x: 600, y: 0 }, 'at the rim');
+	assert.deepEqual(second(0, -90), { x: 0, y: -600 }, 'pulled past the rim, no faster');
+	const halfway = second(0, 34.5); // midway from the dead zone's edge (9) to the rim
+	assert.ok(Math.abs(halfway.y - 300) < 1e-9 && halfway.x === 0, `midway: ${halfway.y}`);
+	const diagonal = second(-30, 30);
+	assert.ok(diagonal.x < 0 && diagonal.x === -diagonal.y, 'down-left, along the pull');
+	assert.deepEqual(second(60, 0, 0.6), { x: 360, y: 0 }, 'at the phone scale, 360 CSS px a second');
 });

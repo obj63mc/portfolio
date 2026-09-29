@@ -1,6 +1,7 @@
-// The camera (spec: Camera; buildout ticket 08) as pure functions of the view, the scene and the drawn cursor, and the keys
-// that steer that cursor (ticket 09): the engine steps them each frame, the tests with a fake clock (seam 2). World px everywhere (ADR 0001); the view is CSS px at the
-// session's render scale. Carried over from the rendering prototype's engine.
+// The camera (spec: Camera; buildout ticket 08) as pure functions of the view, the scene and the drawn cursor, the keys
+// that steer that cursor (ticket 09), and touch's joystick, drag and fling (ticket 10): the engine steps them each frame,
+// the tests with a fake clock (seam 2). World px everywhere (ADR 0001); the view is CSS px at the session's render scale.
+// Carried over from the rendering and pointer-lock prototypes' engines.
 import type { Point, Rect } from '../scenes/types.ts';
 
 /** Background tile edge, world px. */
@@ -73,6 +74,38 @@ export function glide(cam: Point, goal: Point, dt: number): Point {
 	return Math.hypot(goal.x - x, goal.y - y) < 0.5 ? goal : { x, y };
 }
 
+/**
+ * A touch drag of `d` CSS px (ticket 10): the camera moves against it (drag left, the view moves right), clamped. The drawn
+ * cursor keeps its world place unless the drag would take it out of view: then it is carried along with its tip on the
+ * top or left edge, or `margin` CSS px inside the right or bottom one, so the arrow stays in view. A cursor already past
+ * that line is carried where it is, never pulled in.
+ */
+export function pan(cam: Point, cursor: Point, d: Point, v: View, scene: Size, margin: number): { cam: Point; cursor: Point } {
+	const next = clamp({ x: cam.x - d.x / v.s, y: cam.y - d.y / v.s }, v, scene);
+	const hold = (p: number, moved: number, size: number) => Math.max(Math.min(p, 0), Math.min(Math.max(p, size - margin), moved));
+	return {
+		cam: next,
+		cursor: { x: hold(cursor.x, cursor.x + (cam.x - next.x) * v.s, v.w), y: hold(cursor.y, cursor.y + (cam.y - next.y) * v.s, v.h) }
+	};
+}
+
+/** A drag's move: when, and where the finger was, CSS px. */
+export interface Move extends Point {
+	t: number;
+}
+
+/** A drag's velocity as it is let go, CSS px/s, from its moves in the last 80 ms; a finger held still first flings nothing. */
+export function fling(moves: Move[], now: number): Point | null {
+	const recent = moves.filter((m) => now - m.t < 80), a = recent[0], b = recent.at(-1);
+	return a && b && b.t > a.t ? { x: ((b.x - a.x) * 1000) / (b.t - a.t), y: ((b.y - a.y) * 1000) / (b.t - a.t) } : null;
+}
+
+/** A fling's velocity after `dt` seconds more of inertia: decaying with a time constant of 0.15 s, null once under 5 px/s. */
+export function coast(vel: Point, dt: number): Point | null {
+	const k = Math.exp(-dt / 0.15), x = vel.x * k, y = vel.y * k;
+	return Math.hypot(x, y) < 5 ? null : { x, y };
+}
+
 /** Arrow keys and WASD by `KeyboardEvent.code`, so WASD is where it sits on any layout, and the way each steers. */
 export const KEYS: Record<string, Point> = {
 	ArrowLeft: { x: -1, y: 0 }, KeyA: { x: -1, y: 0 },
@@ -81,11 +114,28 @@ export const KEYS: Record<string, Point> = {
 	ArrowDown: { x: 0, y: 1 }, KeyS: { x: 0, y: 1 }
 };
 
+/** The drawn cursor's top speed under the keys and the joystick, world px/s. */
+const SPEED = 600;
+/** The joystick's dead zone, a fraction of its radius. */
+const DEAD = 0.15;
+
 /** The drawn cursor's travel in `dt` seconds with `keys` held: 600 world px/s, diagonals normalised, in CSS px at scale `s`. */
 export function steer(keys: ReadonlySet<string>, s: number, dt: number): Point {
 	const axis = (a: 'x' | 'y') => Math.sign([...keys].reduce((sum, k) => sum + (KEYS[k]?.[a] ?? 0), 0));
-	const x = axis('x'), y = axis('y'), k = x || y ? (600 * s * dt) / Math.hypot(x, y) : 0;
+	const x = axis('x'), y = axis('y'), k = x || y ? (SPEED * s * dt) / Math.hypot(x, y) : 0;
 	return { x: x * k, y: y * k };
+}
+
+/**
+ * The drawn cursor's travel in `dt` seconds with the joystick's knob pulled `pull` CSS px from the centre of a stick of
+ * radius `r` (ticket 10): nothing inside the 15 percent dead zone, then easing linearly to 600 world px/s at the rim and
+ * no faster beyond it, along the pull; CSS px at scale `s`.
+ */
+export function stick(pull: Point, r: number, s: number, dt: number): Point {
+	const len = Math.hypot(pull.x, pull.y), m = Math.min(1, len / r);
+	if (m <= DEAD) return { x: 0, y: 0 };
+	const k = (((m - DEAD) / (1 - DEAD)) * SPEED * s * dt) / len;
+	return { x: pull.x * k, y: pull.y * k };
 }
 
 /**

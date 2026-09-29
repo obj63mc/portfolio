@@ -64,6 +64,11 @@ dialog {
 	gap: 0.5rem;
 }
 
+/* The touch joystick (buildout ticket 10): the engine's, so it shows only once joined by touch (below). */
+.joystick {
+	display: none;
+}
+
 /*
  * The engine (buildout ticket 08) adds this class: the canvases fill the viewport and the layer becomes transparent hit
  * targets over their art. `main` is the camera-moved layer; each placed element carries its world rect as custom
@@ -72,6 +77,8 @@ dialog {
  */
 html.engine {
 	overflow: hidden;
+	/* Touch drags pan the scene (ticket 10), so the browser neither scrolls nor zooms it; a card, a scroll container, still scrolls. */
+	touch-action: none;
 
 	&:is([data-input='locked'], [data-input='unlocked']) {
 		&,
@@ -97,8 +104,11 @@ html.engine {
 		pointer-events: none;
 	}
 
-	/* The control under the cursor: hovered by the free mouse, or marked by the engine under the lock, where hover is stale. */
-	&:not([data-input='locked']) :is(dialog, .controls) :is(a, button):hover,
+	/*
+	 * The control under the cursor: hovered by the free mouse, or marked by the engine under the lock or on touch, where
+	 * hover is stale or sticks to the last tap.
+	 */
+	&:not([data-input='locked'], [data-input='touch']) :is(dialog, .controls) :is(a, button):hover,
 	& :is(dialog, .controls) .hot {
 		outline: 2px solid #1f5fd1;
 		outline-offset: 2px;
@@ -196,6 +206,30 @@ html.engine {
 	/* Cards read in the top layer, clear of the layer's transform, but still inherit from it. */
 	& dialog {
 		color: CanvasText;
+	}
+
+	/* Thumb-sized, bottom-right; its knob follows the finger, held to the rim. */
+	&[data-input='touch'] .joystick {
+		display: block;
+		position: fixed;
+		inset-inline-end: calc(1.25rem + env(safe-area-inset-right));
+		inset-block-end: calc(1.25rem + env(safe-area-inset-bottom));
+		inline-size: 7.5rem;
+		block-size: 7.5rem;
+		box-sizing: border-box;
+		border: 2px solid rgb(255 255 255 / 0.6);
+		border-radius: 50%;
+		background: rgb(255 255 255 / 0.25);
+
+		& > div {
+			position: absolute;
+			inset: 0;
+			margin: auto;
+			inline-size: 45%;
+			block-size: 45%;
+			border-radius: 50%;
+			background: rgb(255 255 255 / 0.85);
+		}
 	}
 
 	& .presence {

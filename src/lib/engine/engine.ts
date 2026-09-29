@@ -1,29 +1,44 @@
 // The scene loop (buildout ticket 08): background tiles on the scene canvas, the prerendered layer moved with one transform
 // per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. The input (ticket 09):
-// the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Carried over from
-// the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
-// rules; the layer's markup is never re-rendered here.
+// the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Touch (ticket 10):
+// the joystick, drag-to-pan with its fling, and tap-to-activate. Carried over from the rendering and pointer-lock
+// prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is
+// never re-rendered here.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
-import { KEYS, TILE, centreOn, clamp, glide, rendering, steer, step, tileRange, type View } from './camera.ts';
+import { KEYS, TILE, centreOn, clamp, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Move, type View } from './camera.ts';
 
 export type Scene = Overworld | SubScene;
 
 /**
- * The visitor's input (spec: Input): the Join card up; joined with the pointer locked, or with the unlocked mouse (a
- * refused lock, a touch device); released, the lock let go by Esc in a card until the next click takes it back; or
- * paused, which re-locks on resume if the lock was held.
+ * The visitor's input (spec: Input): the Join card up; joined with the pointer locked, with the unlocked mouse (a refused
+ * lock), or by touch on a device with no mouse or trackpad; released, the lock let go by Esc in a card until the next
+ * click takes it back; or paused, which re-locks on resume if the lock was held.
  */
-type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'released' } | { is: 'paused'; relock: boolean };
+type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'touch' } | { is: 'released' } | { is: 'paused'; relock: boolean };
 
 /** Joined and not paused: the keys steer. */
-const joined = (i: Input) => i.is === 'locked' || i.is === 'unlocked' || i.is === 'released';
+const joined = (i: Input) => i.is === 'locked' || i.is === 'unlocked' || i.is === 'touch' || i.is === 'released';
+
+/**
+ * A touch on the scene (ticket 10): none; a finger down that is still a tap; a drag, once it has gone 6 px; or a drag let
+ * go, coasting while `vel` has speed, whose click the browser may still send is swallowed until the next touch.
+ */
+type Gesture =
+	| { is: 'none' }
+	| { is: 'tap'; id: number; from: Point }
+	| { is: 'drag'; id: number; at: Point; moves: Move[] }
+	| { is: 'lifted'; vel: Point | null };
 
 // Every scene's background tiles at both densities, keyed by path: a background's folder repeats its scene's id,
 // /art/generated/<id>/<id>/<density>/<column>-<row>.webp. Never inlined: the page's CSP has no data: source.
 const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 
-/** Screen elements that hold the camera still when the cursor is near them; ticket 10 adds the joystick. Cards stop it. */
-const CONTROLS = '.controls';
+/** Screen elements that hold the camera still when the cursor is near them. Cards stop it. */
+const CONTROLS = '.controls, .joystick';
+/** The drawn cursor's height, world px: a touch drag carries it this far inside the viewport's edge, so it stays in view. */
+const CARRY = 40;
+/** A touch becomes a drag once it has gone this many CSS px, so a tap on a prop isn't eaten. */
+const DRAG = 6;
 /** Behind the scene where no tile has arrived, or beyond a scene smaller than the view. */
 const BACKDROP = '#1d2b3a';
 /** The visitor's own cursor, 32 units tall with its tip at the origin, drawn 1.25x (spec: own cursor). Ticket 13's atlas replaces it. */
@@ -65,10 +80,16 @@ export class Engine {
 	private inside = false;
 	/** Arrow keys and WASD held, by code. */
 	private keys = new Set<string>();
-	/** The control under the locked cursor, marked `.hot` since the page gets no hover under the lock. */
+	/** The control under the locked or touch-steered cursor, marked `.hot` since the page gets no hover there. */
 	private hot: Element | null = null;
-	/** False after a keyboard or fragment pan until the cursor moves, so a cursor resting in the band doesn't undo it. */
+	/** False after a keyboard or fragment pan, or a drag, until the cursor moves, so a cursor resting in the band doesn't undo it. */
 	private armed = true;
+	private gesture: Gesture = { is: 'none' };
+	/**
+	 * The joystick held: its finger, its radius, where the finger landed and its pull from there (CSS px), and whether it
+	 * ever left the dead zone.
+	 */
+	private joy: { id: number; r: number; from: Point; pull: Point; steered: boolean } | null = null;
 	/** World rects that hold the camera still: the props, and the overworld's signpost. */
 	private targets: Rect[] = [];
 	/** Background tiles held, by `<column>-<row>`; a tile still loading has no bitmap. */
@@ -81,10 +102,14 @@ export class Engine {
 	private canvas: HTMLCanvasElement;
 	private layer: HTMLElement;
 	private cursors: HTMLCanvasElement;
+	private joystick: HTMLElement;
+	private knob: HTMLElement;
 	private g: CanvasRenderingContext2D;
 	private cg: CanvasRenderingContext2D;
 	private cards: { join: HTMLDialogElement; paused: HTMLDialogElement };
 	private reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	/** A mouse or trackpad is connected; without one Join enters the touch model (Joe, 2026-09-29). */
+	private fine = matchMedia('(any-pointer: fine)');
 	private listeners = new AbortController();
 	/** Lifts the cursor canvas over each prop card as it opens. */
 	private raise = new MutationObserver((records) => {
@@ -94,8 +119,11 @@ export class Engine {
 		}
 	});
 
-	/** `cards` are the Join and Paused cards; the canvas holding the pointer lock is the scene's, in the shared layout. */
-	constructor(canvas: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, cards: Engine['cards']) {
+	/**
+	 * `joystick` is the touch joystick, its knob its first child; `cards` are the Join and Paused cards. The canvas holding
+	 * the pointer lock is the scene's, in the shared layout.
+	 */
+	constructor(canvas: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, cards: Engine['cards']) {
 		const g = canvas.getContext('2d', { alpha: false }), cg = cursors.getContext('2d');
 		// Without a canvas the engine never starts and the page stays the plain document (spec: "if the canvas fails").
 		if (!g || !cg) throw new Error('No 2D canvas');
@@ -106,6 +134,8 @@ export class Engine {
 		this.canvas = canvas;
 		this.layer = layer;
 		this.cursors = cursors;
+		this.joystick = joystick;
+		this.knob = joystick.firstElementChild as HTMLElement;
 		this.g = g;
 		this.cg = cg;
 		this.cards = cards;
@@ -175,15 +205,17 @@ export class Engine {
 			opts
 		);
 		// Released, the next mouse click takes the lock back and does nothing else, since it lands at the OS pointer rather
-		// than the drawn cursor. A keyboard click (detail 0) passes. Chrome refuses for about a second after Esc; a refused
-		// click just leaves it released.
+		// than the drawn cursor. Chrome refuses for about a second after Esc; a refused click just leaves it released. A
+		// touch drag's click, which the browser sends when the finger went under its own tap slop, does nothing at all. A
+		// keyboard click (detail 0) passes both.
 		addEventListener(
 			'click',
 			(e) => {
-				if (this.input.is !== 'released' || !e.detail) return;
+				if (!e.detail) return;
+				if (this.input.is === 'released') this.lock();
+				else if (this.gesture.is !== 'lifted') return;
 				e.preventDefault();
 				e.stopPropagation();
-				this.lock();
 			},
 			{ ...opts, capture: true }
 		);
@@ -192,7 +224,7 @@ export class Engine {
 		addEventListener(
 			'pointermove',
 			(e) => {
-				if (e.pointerType !== 'mouse' || !this.cursor) return; // touch is ticket 10
+				if (e.pointerType !== 'mouse' || !this.cursor) return; // touch drags, below
 				// Locked, the mouse moves the drawn cursor 1:1, OS acceleration kept, held inside the viewport; unlocked, it
 				// follows the OS pointer. Before Join and while paused it stays put.
 				if (this.input.is === 'locked') this.cursor = inView({ x: this.cursor.x + e.movementX, y: this.cursor.y + e.movementY }, this.view);
@@ -204,8 +236,74 @@ export class Engine {
 			opts
 		);
 		// Locked, the mouse's clicks come to the canvas holding the lock: each goes to the control the drawn cursor is over,
-		// a card's Close and the links inside it included.
-		this.canvas.addEventListener('click', () => this.under()?.click(), opts);
+		// a card's Close and the links inside it included. A tap on the canvas is on bare scenery and clicks nothing.
+		this.canvas.addEventListener('click', () => { if (this.input.is === 'locked') this.under()?.click(); }, opts);
+		// Touch: a finger on the scene or a prop drags the camera once it has gone 6 px, so a tap isn't eaten, and flings it
+		// when let go while moving. A tap on a prop, a door or a link moves the cursor there, and the tap's own click
+		// activates it. The joystick, the controls and the cards take their own touches.
+		addEventListener(
+			'pointerdown',
+			(e) => {
+				if (this.gesture.is === 'tap' || this.gesture.is === 'drag') return; // one finger drags
+				this.gesture = { is: 'none' }; // any touch stops a fling
+				if (this.input.is !== 'touch' || e.pointerType !== 'touch' || (e.target as Element).closest(`dialog, ${CONTROLS}`)) return;
+				this.gesture = { is: 'tap', id: e.pointerId, from: { x: e.clientX, y: e.clientY } };
+			},
+			opts
+		);
+		addEventListener(
+			'pointermove',
+			(e) => {
+				const g = this.gesture, at = { x: e.clientX, y: e.clientY };
+				// Past the threshold the scene catches up with the finger and then keeps under it.
+				if (g.is === 'tap' && g.id === e.pointerId && Math.hypot(at.x - g.from.x, at.y - g.from.y) > DRAG) {
+					this.gesture = { is: 'drag', id: g.id, at: g.from, moves: [] };
+					this.armed = false;
+					this.goal = null;
+				}
+				const d = this.gesture;
+				if (d.is !== 'drag' || d.id !== e.pointerId) return;
+				this.slide({ x: at.x - d.at.x, y: at.y - d.at.y });
+				d.at = at;
+				if (d.moves.push({ t: e.timeStamp, ...at }) > 8) d.moves.shift();
+			},
+			opts
+		);
+		const lift = (e: PointerEvent) => {
+			const g = this.gesture;
+			if ((g.is !== 'tap' && g.is !== 'drag') || g.id !== e.pointerId) return;
+			const up = e.type === 'pointerup';
+			if (g.is === 'drag') this.gesture = { is: 'lifted', vel: up ? fling(g.moves, e.timeStamp) : null };
+			else {
+				this.gesture = { is: 'none' };
+				if (up && this.layer.contains((e.target as Element).closest('a, button'))) this.cursor = { x: e.clientX, y: e.clientY };
+			}
+		};
+		addEventListener('pointerup', lift, opts);
+		addEventListener('pointercancel', lift, opts);
+		// The joystick: the finger's pull from where it landed steers the drawn cursor (camera.ts `stick`), and the camera
+		// follows through the push band. A tap, which never leaves the dead zone, clicks under the cursor.
+		this.joystick.addEventListener(
+			'pointerdown',
+			(e) => {
+				if (this.input.is !== 'touch' || this.joy) return;
+				this.joystick.setPointerCapture(e.pointerId);
+				const from = { x: e.clientX, y: e.clientY };
+				this.joy = { id: e.pointerId, r: this.joystick.getBoundingClientRect().width / 2, from, pull: { x: 0, y: 0 }, steered: false };
+			},
+			opts
+		);
+		this.joystick.addEventListener('pointermove', (e) => { if (e.pointerId === this.joy?.id) this.pull(e); }, opts);
+		this.joystick.addEventListener(
+			'pointerup',
+			(e) => {
+				if (e.pointerId !== this.joy?.id) return;
+				if (!this.joy.steered) this.under()?.click();
+				this.letGo();
+			},
+			opts
+		);
+		this.joystick.addEventListener('pointercancel', (e) => { if (e.pointerId === this.joy?.id) this.letGo(); }, opts);
 		// Push stops when the unlocked pointer leaves the window.
 		addEventListener('mouseout', (e) => { if (!e.relatedTarget) this.inside = false; }, opts);
 		// Blur, an external link included, and a hidden tab pause.
@@ -246,9 +344,12 @@ export class Engine {
 		return this.cards.paused.querySelector<HTMLElement>('.refused')!;
 	}
 
-	/** The link or button under the locked cursor; null when unlocked. */
+	/**
+	 * The link or button under the drawn cursor when it is locked, or steered by touch outside a card (whose controls take
+	 * their own taps, the joystick behind it); null for the mouse's real pointer.
+	 */
 	private under() {
-		const c = this.input.is === 'locked' && this.cursor;
+		const c = (this.input.is === 'locked' || (this.input.is === 'touch' && !document.querySelector('dialog[open]'))) && this.cursor;
 		return c ? (document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button') ?? null) : null;
 	}
 
@@ -265,14 +366,15 @@ export class Engine {
 	/**
 	 * Join: the cursor starts where it was pressed, or mid-button from the keyboard (`detail` 0). With a mouse or trackpad
 	 * connected the pointer locks, from a keyboard Join too (Joe, 2026-09-29: `any-pointer: fine`, a tablet with one
-	 * included); the unlocked mouse carries on until the lock arrives, and for good if it is refused.
+	 * included); the unlocked mouse carries on until the lock arrives, and for good if it is refused. Without one, the
+	 * touch model (ticket 10).
 	 */
 	private join(e: MouseEvent) {
 		if (this.input.is !== 'join') return;
-		const b = (e.currentTarget as Element).getBoundingClientRect();
+		const b = (e.currentTarget as Element).getBoundingClientRect(), fine = this.fine.matches;
 		this.cursor = e.detail ? { x: e.clientX, y: e.clientY } : { x: b.x + b.width / 2, y: b.y + b.height / 2 };
-		this.enter({ is: 'unlocked' });
-		if (matchMedia('(any-pointer: fine)').matches) this.lock();
+		this.enter({ is: fine ? 'unlocked' : 'touch' });
+		if (fine) this.lock();
 	}
 
 	private lock() {
@@ -297,15 +399,40 @@ export class Engine {
 	private pause() {
 		if (!joined(this.input)) return;
 		this.keys.clear();
-		this.enter({ is: 'paused', relock: this.input.is !== 'unlocked' });
+		this.enter({ is: 'paused', relock: this.input.is === 'locked' || this.input.is === 'released' });
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
 	}
 
-	/** Re-locks with the cursor where it froze; the lock's arrival closes the card, a refusal keeps it up and says so. */
+	/**
+	 * Re-locks with the cursor where it froze; the lock's arrival closes the card, a refusal keeps it up and says so. On
+	 * touch the Resume tap is where the sound engine (ticket 21) resumes audio.
+	 */
 	private resume() {
 		if (this.input.is !== 'paused') return;
 		if (this.input.relock) this.lock();
-		else this.enter({ is: 'unlocked' });
+		else this.enter({ is: this.fine.matches ? 'unlocked' : 'touch' });
+	}
+
+	/** The knob follows the finger's pull, held to the stick's rim. */
+	private pull(e: PointerEvent) {
+		const j = this.joy!, p = { x: e.clientX - j.from.x, y: e.clientY - j.from.y };
+		const t = stick(p, j.r, 1, 1), k = Math.min(1, j.r / Math.hypot(p.x, p.y));
+		j.pull = p;
+		j.steered ||= !!(t.x || t.y);
+		this.knob.style.translate = `${p.x * k}px ${p.y * k}px`;
+	}
+
+	private letGo() {
+		this.joy = null;
+		this.knob.style.translate = '';
+	}
+
+	/** A drag or its fling moves the camera against the finger; the cursor keeps its world place, carried at the edge. */
+	private slide(d: Point) {
+		if (!this.scene || !this.cursor) return;
+		const next = pan(this.cam, this.cursor, d, this.view, this.scene, CARRY * this.view.s);
+		this.cursor = next.cursor;
+		this.moveTo(next.cam);
 	}
 
 	private resize() {
@@ -349,13 +476,20 @@ export class Engine {
 		this.last = now;
 		const scene = this.scene;
 		if (!scene) return;
-		// Joined with no card open, the cursor steers by keys and pushes the camera. A card, or a Join or Paused card, stops
-		// both; paused, the camera doesn't move at all.
+		// Joined with no card open, the cursor steers by keys and the joystick and pushes the camera. A card, or a Join or
+		// Paused card, stops both and lets go of any touch; paused, the camera doesn't move at all.
 		const free = joined(this.input) && !document.querySelector('dialog[open]');
-		const c = free ? this.cursor : null, d = steer(this.keys, this.view.s, dt);
+		if (!free && (this.joy || this.gesture.is !== 'none')) (this.gesture = { is: 'none' }), this.letGo();
+		const c = free ? this.cursor : null, k = steer(this.keys, this.view.s, dt);
+		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 }, d = { x: k.x + j.x, y: k.y + j.y };
 		if (c && (d.x || d.y)) {
 			this.cursor = inView({ x: c.x + d.x, y: c.y + d.y }, this.view);
 			this.inside = this.armed = true;
+		} else if (this.input.is === 'touch') this.inside = false; // on touch the camera follows only a steered cursor
+		const g = this.gesture;
+		if (g.is === 'lifted' && g.vel) {
+			this.slide({ x: g.vel.x * dt, y: g.vel.y * dt });
+			g.vel = coast(g.vel, dt);
 		}
 		if (this.input.is !== 'paused') {
 			let cam: Point;
@@ -363,10 +497,14 @@ export class Engine {
 				cam = glide(this.cam, this.goal, dt);
 				if (cam === this.goal) this.goal = null;
 			} else {
-				// Layout is clean at the top of the frame, so reading the controls' rects here costs nothing.
+				// Layout is clean at the top of the frame, so reading the controls' rects here costs nothing. A hidden control, the
+				// joystick off touch, has no box.
 				const cursor = free && this.armed && (this.input.is === 'locked' || this.inside) ? this.cursor : null;
 				const controls = cursor
-					? [...document.querySelectorAll(CONTROLS)].map((c) => c.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
+					? [...document.querySelectorAll(CONTROLS)]
+							.map((c) => c.getBoundingClientRect())
+							.filter((r) => r.width)
+							.map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
 					: [];
 				cam = step(this.cam, { view: this.view, scene, band: scene.pushBand ?? 0.12, cursor, props: this.targets, controls }, dt);
 			}
@@ -377,7 +515,7 @@ export class Engine {
 		this.drawCursor();
 	};
 
-	/** Locked, the page has no hover, so the link or button under the drawn cursor is marked `.hot` in its place. */
+	/** Locked or on touch, the page has no hover at the drawn cursor, so the link or button under it is marked `.hot` instead. */
 	private mark() {
 		const hit = this.under();
 		if (hit === this.hot) return;

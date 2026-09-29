@@ -1,6 +1,7 @@
 // Seam 4: the browser smoke (buildout ticket 09) over the built site: Join, pause and resume, and a card opened and closed
-// with the keyboard and with the drawn cursor. A headless tab can't take a real pointer lock, so a stand-in grants it and
-// the tests send the mouse's movement and clicks to the lock element, as a real lock does; the lock itself stays hands-on.
+// with the keyboard and with the drawn cursor; and touch on an emulated phone (ticket 10), with real touches. A headless tab
+// can't take a real pointer lock, so a stand-in grants it and the tests send the mouse's movement and clicks to the lock
+// element, as a real lock does; the lock itself stays hands-on.
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import type { Point } from '../src/lib/scenes/types.ts';
 
@@ -193,6 +194,7 @@ test('a refused lock at Join leaves the unlocked mouse: the drawn cursor follows
 	await page.mouse.move(400, 300);
 	await expect.poll(() => off(page, { x: 400, y: 300 })).toBeLessThan(5);
 	expect(await lockHolder(page)).toBeNull();
+	await expect(page.locator('.joystick'), 'the touch controls only without a mouse').toBeHidden();
 });
 
 test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {
@@ -233,6 +235,141 @@ test('the keyboard joins with the lock; Esc in a card closes it without pausing,
 	await expect(card).toHaveCount(0);
 	await page.keyboard.press('Escape'); // no card open: a pause
 	await expect(paused).toBeVisible();
+});
+
+test.describe('a phone, with no mouse or trackpad', () => {
+	test.use({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+
+	/** One finger's real touches, through the DevTools protocol, so the page gets real pointer events. */
+	async function finger(page: Page) {
+		const cdp = await page.context().newCDPSession(page);
+		const send = (type: 'touchStart' | 'touchMove' | 'touchEnd', p?: Point) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: p ? [p] : [] });
+		return { down: (p: Point) => send('touchStart', p), move: (p: Point) => send('touchMove', p), up: () => send('touchEnd') };
+	}
+	/** The camera, CSS px, off the layer's transform. */
+	const camera = (page: Page) =>
+		page.locator('main').evaluate((m) => {
+			const t = new DOMMatrix(getComputedStyle(m).transform);
+			return { x: -t.e, y: -t.f };
+		});
+	/** A drag in `steps` moves of `by`, a frame apart. */
+	async function drag(page: Page, f: Awaited<ReturnType<typeof finger>>, from: Point, by: Point, steps: number) {
+		await f.down(from);
+		for (let i = 1; i <= steps; i++) {
+			await f.move({ x: from.x + by.x * i, y: from.y + by.y * i });
+			await page.waitForTimeout(16);
+		}
+	}
+
+	test('Join by tap; tap a prop, drag the scene, steer with the joystick and tap it to click under the cursor', async ({ page }) => {
+		await page.goto('/');
+		const f = await finger(page), stick = page.locator('.joystick'), ground = { x: 320, y: 650 };
+		const start = await camera(page);
+		await drag(page, f, ground, { x: -20, y: 0 }, 5);
+		await f.up();
+		expect(await camera(page), 'before Join a drag does nothing').toEqual(start);
+		await expect(stick).toBeHidden();
+		const post = (await page.locator('#signpost').boundingBox())!;
+		expect(post.x >= 0 && post.y >= 0 && post.x + post.width <= 390 && post.y + post.height <= 844, 'the signpost in the first frame').toBe(true);
+
+		const b = (await page.getByRole('button', { name: 'Join' }).boundingBox())!;
+		await page.touchscreen.tap(b.x + 8, b.y + 8);
+		await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+		await expect.poll(() => off(page, { x: b.x + 8, y: b.y + 8 })).toBeLessThan(5);
+		await expect(stick).toBeVisible();
+		expect(await lockHolder(page), 'no lock on touch').toBeNull();
+
+		// A tap on a prop moves the cursor there and opens its card; a tap on Close closes it.
+		const welcome = page.getByRole('button', { name: /^Welcome sign/ }), card = page.getByRole('dialog', { name: 'Welcome sign' });
+		const at = await centre(welcome);
+		await page.touchscreen.tap(at.x, at.y);
+		await expect(card).toBeVisible();
+		await expect.poll(() => off(page, at)).toBeLessThan(5);
+		const close = await centre(card.getByRole('button', { name: 'Close' }));
+		await page.touchscreen.tap(close.x, close.y);
+		await expect(card).toBeHidden();
+
+		// The joystick tapped without steering clicks what the cursor is over, wherever on the stick the thumb lands.
+		const hub = await centre(stick);
+		await f.down({ x: hub.x + 35, y: hub.y - 20 });
+		await f.up();
+		await expect(card).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(card).toBeHidden();
+
+		// A finger that wanders under 6 px still taps.
+		const moose = await centre(page.getByRole('button', { name: /^The moose/ }));
+		await drag(page, f, moose, { x: 2, y: 0 }, 2);
+		await f.up();
+		await expect(page.getByRole('dialog', { name: 'The moose' })).toBeVisible();
+		await page.keyboard.press('Escape');
+		expect(await camera(page), 'and pans nothing').toEqual(start);
+		const cursor = { x: moose.x + 4, y: moose.y }; // where the finger lifted
+		await expect.poll(() => off(page, cursor)).toBeLessThan(5);
+
+		// Past 6 px it is a drag, from a prop too: the view catches up with the finger, and the click the browser still sends
+		// for a finger inside its own tap slop opens nothing.
+		await drag(page, f, moose, { x: 2, y: 0 }, 4);
+		await f.up();
+		const nudged = await camera(page);
+		expect(nudged).toEqual({ x: start.x - 8, y: start.y });
+		await page.waitForTimeout(200);
+		await expect(page.getByRole('dialog', { name: 'The moose' })).toBeHidden();
+
+		// A drag pans against the finger and leaves the cursor where it is in the world; held still, it doesn't coast.
+		await drag(page, f, ground, { x: -15, y: 0 }, 10);
+		await page.waitForTimeout(150);
+		await f.up();
+		expect(await camera(page)).toEqual({ x: nudged.x + 150, y: nudged.y });
+		expect(await off(page, { x: cursor.x + 8 - 150, y: cursor.y })).toBeLessThan(5);
+		await page.waitForTimeout(200);
+		expect(await camera(page), 'no fling').toEqual({ x: nudged.x + 150, y: nudged.y });
+
+		// Dragged the other way far enough, the cursor is carried along inside the edge.
+		await drag(page, f, { x: 40, y: 650 }, { x: 25, y: 0 }, 12);
+		await page.waitForTimeout(150);
+		await f.up();
+		expect(await off(page, { x: 390 - 24, y: cursor.y })).toBeLessThan(5);
+
+		// Let go while moving, it coasts on.
+		await drag(page, f, ground, { x: -30, y: 0 }, 6);
+		await f.up();
+		const flung = await camera(page);
+		await page.waitForTimeout(500);
+		expect((await camera(page)).x - flung.x, 'coasting').toBeGreaterThan(20);
+
+		// The joystick pulled to the rim steers the cursor right at 360 CSS px/s and the camera follows at the edge; let go,
+		// the camera stops.
+		const before = (await tip(page))!, pushed = await camera(page);
+		await f.down(hub);
+		await f.move({ x: hub.x + 60, y: hub.y });
+		await page.waitForTimeout(250);
+		const steered = (await tip(page))!;
+		expect(steered.x - before.x).toBeGreaterThan(40);
+		expect(Math.abs(steered.y - before.y)).toBeLessThan(2);
+		await page.waitForTimeout(1000);
+		await f.up();
+		const stopped = await camera(page);
+		expect(stopped.x).toBeGreaterThan(pushed.x);
+		await page.waitForTimeout(200);
+		expect(await camera(page)).toEqual(stopped);
+	});
+
+	test('a hidden tab pauses; the Resume tap goes back to touch without a lock', async ({ page }) => {
+		await page.goto('/');
+		await page.getByRole('button', { name: 'Join' }).tap();
+		await expect(page.locator('.joystick')).toBeVisible();
+		await page.evaluate(() => {
+			Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+			document.dispatchEvent(new Event('visibilitychange'));
+		});
+		const paused = page.getByRole('dialog', { name: 'Paused, click to resume' });
+		await expect(paused).toBeVisible();
+		await paused.getByRole('button', { name: 'Resume' }).tap();
+		await expect(paused).toBeHidden();
+		await expect(page.locator('.joystick')).toBeVisible();
+		expect(await lockHolder(page)).toBeNull();
+	});
 });
 
 test.describe('without JavaScript', () => {

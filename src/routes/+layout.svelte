@@ -7,7 +7,7 @@
 	import { OVERWORLD } from '$lib/scenes/overworld';
 
 	let { children } = $props();
-	let scene: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, join: HTMLDialogElement, paused: HTMLDialogElement;
+	let scene: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, join: HTMLDialogElement, paused: HTMLDialogElement;
 	let engine: Promise<Engine | undefined> | undefined;
 
 	// The engine loads once the page has mounted (afterNavigate's first call), out of the prerender and the first paint,
@@ -16,7 +16,7 @@
 	afterNavigate(({ to }) => {
 		if (!to) return;
 		engine ??= import('$lib/engine/engine')
-			.then(({ Engine }) => new Engine(scene, layer, cursors, { join, paused }))
+			.then(({ Engine }) => new Engine(scene, layer, cursors, joystick, { join, paused }))
 			.catch((err) => void console.error(err));
 		engine.then((e) => e?.show(SUB_SCENES[to.url.pathname.slice(1)] ?? OVERWORLD, to.url.hash));
 	});
@@ -33,6 +33,9 @@
 	<button type="button" aria-pressed="true">Sound</button>
 	<button type="button">Analytics settings</button>
 </div>
+<!-- The touch joystick (buildout ticket 10), shown after Join on a device with no mouse or trackpad. Hidden from assistive
+	tech: a keyboard steers with the keys. -->
+<div class="joystick" aria-hidden="true" bind:this={joystick}><div></div></div>
 <!--
 	The Join and Paused cards (buildout ticket 09): the engine opens them with showModal(), so a page without it, or without
 	JavaScript, never shows them. The cursor canvas is a manual popover, in the top layer with the cards: the engine raises
