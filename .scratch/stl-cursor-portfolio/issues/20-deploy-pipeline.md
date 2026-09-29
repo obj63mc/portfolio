@@ -155,3 +155,9 @@ Resolved 2026-09-24 by grilling with Joe. A research subagent checked the Cloudf
 ## Comments
 
 2026-09-24, rounds 1 to 4: Joe asked what Turnstile was for with no form to protect, and dropped it. He wants a crowd to use the site, not to be capped at 60, so rooms of 60 overflow into new rooms per scene. He ruled out per-IP limits because of shared offices. He wants scripts, not an automated kill switch, and manages the budgets himself. Joe answered every round; no decision here was assumed.
+
+2026-09-29, amended by buildout ticket 07.
+- Step 7's rule 2 also matches user agents containing `bot/`, `spider`, `crawl` or `headless`, so crawlers that run scripts get the page single-player.
+- "Block AI bots" is now AI bot policies under Security → Settings: Training is blocked on all pages, and Search and Agent are Joe's call.
+- Step 5 adds Always Use HTTPS, because the www template matches only `https://www.*`.
+- The walkthrough is `bash scripts/cloudflare-setup.sh`.

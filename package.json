@@ -18,7 +18,8 @@
     "smoke": "playwright test",
     "bench": "node scripts/bench.ts",
     "multiplayer:off": "echo off | wrangler secret put MULTIPLAYER",
-    "multiplayer:on": "wrangler secret delete MULTIPLAYER"
+    "multiplayer:on": "wrangler secret delete MULTIPLAYER",
+    "usage": "node scripts/usage.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
