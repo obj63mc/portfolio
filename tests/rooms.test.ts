@@ -171,10 +171,10 @@ test('presence is validated and fanned out when it happens, as its own message',
 	])
 		a.ws.send(JSON.stringify(bad));
 	a.ws.send('not json');
-	a.ws.send(JSON.stringify({ t: 'presence', cos: 3, gold: true, river: true }));
+	for (let i = 0; i < 2; i++) a.ws.send(JSON.stringify({ t: 'presence', cos: 3, gold: true, river: true }));
 	assert.deepEqual(await b.take('presence'), { t: 'presence', id: a.hello.id, cos: 3, gold: true, river: true });
 	await sleep(100);
-	assert.ok(!b.inbox.some((m) => m.t === 'presence'), 'the invalid updates were dropped');
+	assert.ok(!b.inbox.some((m) => m.t === 'presence'), 'the invalid updates and the unchanged repeat were dropped');
 	assert.ok(!a.inbox.some((m) => m.t === 'presence'), 'a visitor is not echoed its own presence');
 
 	const d = await enter('overworld');
@@ -183,6 +183,16 @@ test('presence is validated and fanned out when it happens, as its own message',
 		{ id: a.hello.id, cc: a.hello.cc, cos: 3, gold: true, river: true, x: 300, y: 400 }
 	);
 	await leave(d, a);
+});
+
+test('changing scene closes one socket and opens another: the old room sees it go, the new room come in', async () => {
+	const hop = await enter('overworld');
+	await b.take('in', (m) => m.id === hop.hello.id);
+	await leave(hop, a);
+	const there = await enter('foundry');
+	assert.equal(there.hello.room, 'foundry:1');
+	assert.equal(there.hello.peers.length, 1, 'with the bot already in the foundry');
+	assert.ok(!b.inbox.some((m) => m.t === 'in' && m.id === there.hello.id), 'the overworld never hears of it');
 });
 
 test('a socket past its token bucket (twice the rate, four seconds of burst) is closed with 4008', async () => {

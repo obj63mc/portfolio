@@ -19,7 +19,7 @@ export const SCENES: Record<string, { w: number; h: number }> = { overworld: OVE
 export const DIRECTORY = 'directory';
 
 // `_headers` never applies to Worker responses, so the socket path sets its own.
-const refuse = (status: number, body: string) =>
+export const refuse = (status: number, body: string) =>
 	new Response(body, { status, headers: { 'Content-Type': 'text/plain', 'X-Content-Type-Options': 'nosniff' } });
 
 export default {

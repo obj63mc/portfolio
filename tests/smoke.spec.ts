@@ -96,6 +96,11 @@ const centre = async (l: Locator) => {
 };
 /** The viewport's centre, CSS px. */
 const middle = (page: Page) => ({ x: page.viewportSize()!.width / 2, y: page.viewportSize()!.height / 2 });
+/** Just inside a sub-scene's exit door (ticket 11): a cursor's height, 40 world px at the render scale, below its middle. */
+const below = async (page: Page, l: Locator) => {
+	const b = (await l.boundingBox())!, s = await page.locator('main').evaluate((m) => new DOMMatrix(getComputedStyle(m).transform).a);
+	return { x: b.x + b.width / 2, y: b.y + b.height + 40 * s };
+};
 /** How far `l`'s centre is from the viewport's: 0 with the camera centred on it. */
 const offCentre = async (page: Page, l: Locator) => {
 	const c = await centre(l), m = middle(page);
@@ -269,10 +274,15 @@ test('a door hops to its sub-scene and back, the lock held: by the locked cursor
 	const at = await join(page);
 	const door = page.getByRole('link', { name: 'Enter Moosylvania' }), exit = page.getByRole('link', { name: 'Back to Maplewood' });
 	const h1 = page.getByRole('heading', { level: 1, name: 'Moosylvania' });
-	/** The camera centred on `link` and the cursor on it, focus on `focused` once the router's own focus reset has run. */
+	/**
+	 * The cursor on the door, or just inside the exit door off it, with the camera centred on it; focus on `focused` once
+	 * the router's own focus reset has run.
+	 */
 	const landed = async (link: Locator, focused: Locator) => {
-		await expect.poll(() => offCentre(page, link)).toBeLessThan(1);
+		const spot = link === exit ? () => below(page, exit) : () => centre(link);
+		await expect.poll(async () => off(page, await spot())).toBeLessThan(5);
 		await expect.poll(() => off(page, middle(page))).toBeLessThan(5);
+		if (link === exit) await expect(exit, 'a click there stays inside').not.toHaveClass(/hot/);
 		await page.waitForTimeout(100);
 		await expect(focused).toBeFocused();
 		expect(await lockHolder(page)).toBe('scene');
@@ -295,10 +305,12 @@ test('a door hops to its sub-scene and back, the lock held: by the locked cursor
 	expect(await fade).toContain(300); // the first fade may not have finished
 	await landed(door, door);
 
-	// Enter on the focused door hops the same way; the exit door, under the cursor where it landed, comes back.
+	// Enter on the focused door hops the same way; the exit door, a nudge up from where the cursor landed, comes back.
 	await page.keyboard.press('Enter');
 	await expect(page).toHaveURL('/moosylvania');
 	await landed(exit, h1);
+	await nudge(page, 0, -60);
+	await expect(exit).toHaveClass(/hot/);
 	await lockedClick(page);
 	await expect(page).toHaveURL('/#moosylvania');
 	await landed(door, door);
@@ -527,7 +539,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		await expect(page).toHaveURL('/moosylvania');
 		expect(await fade, 'a cut').toEqual([]);
 		await expect(page.getByRole('heading', { level: 1, name: 'Moosylvania' })).toBeFocused();
-		await expect.poll(async () => off(page, await centre(exit))).toBeLessThan(5);
+		await expect.poll(async () => off(page, await below(page, exit))).toBeLessThan(5);
 		await expect(stick).toBeVisible();
 		await page.goBack();
 		await expect(page).toHaveURL('/');

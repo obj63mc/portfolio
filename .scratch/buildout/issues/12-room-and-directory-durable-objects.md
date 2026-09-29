@@ -30,8 +30,8 @@ Carries over the pointer-lock prototype's Worker (Origin check, GeoIP, upgrade),
 **Directory.** One object, named `directory`, with counts in memory:
 
 - `place(scene)` returns the fullest room of that scene under 60, else the lowest free `scene:n`, and counts the placement. It returns null once the site total reaches `MAX_VISITORS`.
-- Rooms report their true count with `size(room, n)` after every leave, and when they refuse a joiner for being full. The report overwrites the directory's count, which corrects any placement that never arrived. An empty room is forgotten and its number reused.
-- **Restart:** an idle directory is evicted and starts empty. Rooms keep working throughout, and the directory relearns each room from that room's next leave or refusal. Until then it undercounts the ceiling, and it can place a joiner in a room that is really full. That room refuses them (single-player) and corrects the count, so their backoff retry lands elsewhere. This is marked `ponytail:` in the code; if it ever matters, rooms can report joins too.
+- Rooms report their true count with `size(room, n)` after every join and leave, and when they refuse a joiner for being full, each room through one directory stub so that its reports arrive in order. The report overwrites the directory's count, which corrects any placement that never arrived. An empty room is forgotten and its number reused. (Join reports came from the code review: with only leaves and refusals reporting, a placement whose upgrade never arrived stayed counted, and a restarted directory relearned a room only when someone left it.)
+- **Restart:** an idle directory is evicted and starts empty. Rooms keep working throughout, and the directory relearns each room from that room's next join, leave or refusal. Until then it undercounts the ceiling, and it can place a joiner in a room that is really full. That room refuses them (single-player) and corrects the count, so their backoff retry lands elsewhere. This is marked `ponytail:` in the code; if it ever matters, rooms can report joins too.
 
 **Room.**
 
@@ -39,7 +39,7 @@ Carries over the pointer-lock prototype's Worker (Origin check, GeoIP, upgrade),
 - The tick is a `setTimeout` chain at 20 Hz. It sends one frame of the moved cursors to everyone, the mover included, and stops after 40 still ticks (2 s). Moves are clamped to the scene's w and h.
 - Ids are the lowest free in the room, which is all a client needs: a reused id always follows the old one's `out`.
 - Token bucket, the prototype's values: 80 tokens (four seconds at the rate), refilled at 40 a second. Every message counts (keepalive pings never reach the handler). Past it, close 4008 (`RATE_LIMITED`).
-- Presence: `{"t":"presence","cos","gold","river"}` up, validated by `readControl` (at most 256 bytes, a known op, `cos` an integer 0 to 7, two booleans). It fans out to the others as `{"t":"presence","id",...}`. A joiner starts at cosmetic 0 and sends its presence after `hello`, so there is no presence in the URL.
+- Presence: `{"t":"presence","cos","gold","river"}` up, validated by `readControl` (at most 256 bytes, a known op, `cos` an integer 0 to 7, two booleans). A change fans out to the others as `{"t":"presence","id",...}`. A joiner starts at cosmetic 0 and sends its presence after `hello`, so there is no presence in the URL. An unchanged repeat is dropped (code review), so a client can't make the room fan out 40 JSON messages a second to 59 peers.
 - `hello` adds `room` (its `scene:n`) to the spec's fields; `screen: null` is the shared-prop slot that 17 fills.
 - A leave is reported to the directory before `out` goes to the room, so a peer that sees `out` knows the directory has counted it. The tests rely on this.
 - **Close handshake (found by hand):** under `wrangler dev` the runtime doesn't answer a client's close frame on a hibernatable socket, although `web_socket_auto_reply_to_close` has been the default since 2026-04-07. A Node client took 11 s to close. `webSocketClose` now calls `ws.close()`, and the close takes 5 ms.
@@ -58,6 +58,7 @@ Carries over the pointer-lock prototype's Worker (Origin check, GeoIP, upgrade),
   - The token bucket: 80 moves at once pass, 20 more close 4008.
   - Placement: 60 concurrent joins to `slu:1`, the 61st to `slu:2`, and a freed seat in `slu:1` filled first.
   - The ceiling: the 71st visitor is refused with 503 and admitted after a leave. This is the "1,001st" box, with the ceiling set low for the test.
+  - Changing scene: a bot leaves the overworld's room, whose peer sees its `out`, and joins the Foundry's (added in the code review).
   - A foreign Origin refused by the real Worker.
   - The file keeps a ledger of the visitors the directory counts; a bot leaves it once a peer has seen its `out`, so the ceiling test is exact.
 - **No storage, asserted three ways.** The type-check: the local `DurableObjectState` has no `storage`, so `this.ctx.storage` fails `npm run check`. A static check: the code in `rooms.ts`, comments stripped, never names storage, SQL or alarms. At run time, after every path above: each object's local SQLite file holds only wrangler's own `__miniflare_do_name` table, and `_cf_ALARM` is empty. Each was tried against a deliberate `this.ctx.storage.put`: the type-check errs, the static check fails, and the runtime check finds `_cf_KV`.

@@ -13,7 +13,7 @@ import {
 	type Peer,
 	type ServerMessage
 } from '../src/lib/net/protocol.ts';
-import { DIRECTORY, SCENES, type Env } from './index.ts';
+import { DIRECTORY, SCENES, refuse, type Env } from './index.ts';
 
 export { default } from './index.ts';
 
@@ -47,6 +47,8 @@ export class Room extends DurableObject<Env> {
 	private tick: ReturnType<typeof setTimeout> | undefined;
 	/** Ticks since anyone moved. */
 	private still = 0;
+	/** One stub for every report, so that they reach the directory in the order they were sent. */
+	private directory = this.ctx.exports.Directory.getByName(DIRECTORY);
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -65,10 +67,10 @@ export class Room extends DurableObject<Env> {
 		const q = new URL(req.url).searchParams;
 		this.name = q.get('room') ?? this.name;
 		if (this.visitors.size >= CAP) {
-			// The directory's count was behind (it restarted, or a leave report overtook a placement). Correcting it sends
+			// The directory's count was behind (it restarted, or a report overtook a placement). Correcting it sends
 			// this visitor, reconnecting with backoff, to a room with space.
 			await this.report();
-			return new Response('room full', { status: 503 });
+			return refuse(503, 'room full');
 		}
 		const peers = [...this.visitors.values()].map((v) => v.peer);
 		// Ids are unique among those present, which is all a client needs: a reused id always follows the old one's `out`.
@@ -92,6 +94,7 @@ export class Room extends DurableObject<Env> {
 		};
 		send(ws, JSON.stringify(hello));
 		this.broadcast({ t: 'in', ...peer }, ws);
+		await this.report();
 		return new Response(null, { status: 101, webSocket: client });
 	}
 
@@ -116,14 +119,14 @@ export class Room extends DurableObject<Env> {
 			this.tick ??= setTimeout(this.step, 1000 / RATE);
 			return;
 		}
-		// Dropped unless valid: too long, not JSON, an unknown op or a bad field.
-		const m = readControl(msg);
-		if (!m) return;
-		const { cos, gold, river } = m;
-		Object.assign(v.peer, { cos, gold, river });
-		this.save(ws, v.peer);
-		// Presence goes out when it changes, never in the tick's frame.
-		this.broadcast({ t: 'presence', id: v.peer.id, cos, gold, river }, ws);
+		// Dropped unless valid (too long, not JSON, an unknown op or a bad field) and a change: presence goes out when it
+		// changes, never in the tick's frame.
+		const m = readControl(msg), p = v.peer;
+		if (!m || (m.cos === p.cos && m.gold === p.gold && m.river === p.river)) return;
+		const { t, ...presence } = m;
+		Object.assign(p, presence);
+		this.save(ws, p);
+		this.broadcast({ t, id: p.id, ...presence }, ws);
 	}
 
 	async webSocketClose(ws: WebSocket) {
@@ -171,9 +174,12 @@ export class Room extends DurableObject<Env> {
 		this.broadcast({ t: 'out', id: v.peer.id });
 	}
 
-	/** Tells the directory this room's true count. A lost report is corrected by the room's next one. */
+	/**
+	 * Tells the directory this room's true count, after every join, leave and refusal: a placement that never arrived, or
+	 * a directory that restarted, is corrected by the room's next one, as is a lost report.
+	 */
 	private report() {
-		return this.ctx.exports.Directory.getByName(DIRECTORY).size(this.name, this.visitors.size).catch(console.error);
+		return this.directory.size(this.name, this.visitors.size).catch(console.error);
 	}
 
 	private save(ws: WebSocket, peer: Peer) {
@@ -188,9 +194,9 @@ export class Room extends DurableObject<Env> {
 
 export class Directory extends DurableObject<Env> {
 	// ponytail: counts live in memory only. After an eviction (a quiet spell with no join or leave anywhere) the directory
-	// starts empty and relearns each room from that room's next leave or refusal report; until then it undercounts the
-	// ceiling and may place a joiner in a full room, which refuses them to single-player until their backoff retry. Have
-	// rooms report joins too if that ever shows up in practice.
+	// starts empty and relearns each room from that room's next report; until then it undercounts the ceiling, which only
+	// binds on a site too busy for the directory to go quiet, and may place a joiner in a full room, which refuses them to
+	// single-player until their backoff retry. Have rooms report on a timer if that ever shows up in practice.
 	/** Visitors per room: placements, overwritten by each room's own report. */
 	private rooms = new Map<string, number>();
 
@@ -214,7 +220,7 @@ export class Directory extends DurableObject<Env> {
 		return best;
 	}
 
-	/** A room's own count after a leave or a refusal. An empty room is forgotten, and its number reused. */
+	/** A room's own count after a join, a leave or a refusal. An empty room is forgotten, and its number reused. */
 	size(room: string, n: number) {
 		if (n) this.rooms.set(room, n);
 		else this.rooms.delete(room);

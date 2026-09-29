@@ -173,9 +173,9 @@ export class Engine {
 	/**
 	 * Each navigation's scene and fragment. A page load opens centred on the fragment's target, else the overworld's
 	 * arrival point (the welcome sign) or a sub-scene's exit door. A hop from another scene (ticket 11) lands at a door
-	 * whatever the fragment: into a sub-scene at its exit door, focus on its h1; back on the overworld, by the exit door or
-	 * the browser's back button, at the door of the venue left, focus on that door. The camera is centred on the door, a
-	 * joined cursor is put on it and the new scene fades in over 300 ms, a cut under reduced motion.
+	 * whatever the fragment: into a sub-scene just inside its exit door, focus on its h1; back on the overworld, by the exit
+	 * door or the browser's back button, on the door of the venue left, focus on that door. The camera is centred on where
+	 * it lands, a joined cursor is put there and the new scene fades in over 300 ms, a cut under reduced motion.
 	 */
 	show(scene: Scene, hash: string) {
 		const target = placed(byHash(hash));
@@ -183,15 +183,18 @@ export class Engine {
 			if (target) this.panTo(target);
 			return;
 		}
-		const from = this.scene;
+		const from = this.scene, overworld = 'districts' in scene;
 		this.scene = scene;
-		this.targets = [...('districts' in scene ? [scene.signpost.rect] : []), ...propsOf(scene).map((p) => p.rect)];
+		this.targets = [...(overworld ? [scene.signpost.rect] : []), ...propsOf(scene).map((p) => p.rect)];
 		for (const t of this.held.values()) t.bmp?.close();
 		this.held.clear();
 		this.goal = null;
-		const door = from && this.layer.querySelector<HTMLElement>('districts' in scene ? `#${from.id} .door` : '.door');
+		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
 		const at = door ?? target;
-		const c = centre(at ? this.box(at) : 'districts' in scene ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit);
+		const box = at ? this.box(at) : overworld ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit;
+		// Just inside a sub-scene's door is the floor in front of it, a cursor's height below the door on its wall, where a
+		// click doesn't leave again. The overworld's doors are whole buildings.
+		const c = door && !overworld ? { x: box.x + box.w / 2, y: box.y + box.h + CARRY } : centre(box);
 		this.moveTo(centreOn(c, this.view, scene));
 		if (!door) return;
 		// Before Join there is no cursor. The unlocked mouse's cursor stays at the OS pointer, where its clicks land. Push
@@ -202,7 +205,7 @@ export class Engine {
 		// timeout queued before this one and clears focus, the venue's section being unfocusable. A back or forward hop
 		// behind the Join or Paused card, whose page is inert, hands focus back to the card's button, which that reset
 		// took it from.
-		const focus = document.querySelector<HTMLElement>('.gate[open] button') ?? ('districts' in scene ? door : this.layer.querySelector<HTMLElement>('h1'));
+		const focus = document.querySelector<HTMLElement>('.gate[open] button') ?? (overworld ? door : this.layer.querySelector<HTMLElement>('h1'));
 		setTimeout(() => focus?.focus());
 		if (!this.reducedMotion.matches) this.canvas.animate({ opacity: [0, 1] }, 300);
 	}
@@ -268,7 +271,8 @@ export class Engine {
 			'auxclick',
 			(e) => {
 				const a = e.button === 1 && this.under();
-				if (a instanceof HTMLAnchorElement) open(a.href);
+				// No opener, as a native middle click gives none: a card's external link can't reach back into this tab.
+				if (a instanceof HTMLAnchorElement) window.open(a.href, '_blank', 'noopener');
 			},
 			opts
 		);
