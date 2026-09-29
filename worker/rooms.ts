@@ -5,6 +5,7 @@
 import { DurableObject } from 'cloudflare:workers';
 import {
 	CAP,
+	KEEPALIVE,
 	RATE,
 	RATE_LIMITED,
 	decodeMove,
@@ -21,16 +22,21 @@ export { default } from './index.ts';
 interface Attachment {
 	room: string;
 	peer: Peer;
+	/** When they joined, epoch ms: a socket's keepalive clock until its first ping. */
+	at: number;
 }
 
 interface Visitor {
 	peer: Peer;
+	at: number;
 	tokens: number;
 	refill: number;
 }
 
 // The per-socket token bucket refills at twice the rate and holds four seconds' worth at the rate; past it, close 4008.
 const BURST = RATE * 4;
+/** A socket this long without a ping, ms, three keepalives, has gone without closing: a sleeping laptop, a lost signal. */
+const STALE = KEEPALIVE * 3;
 
 const send = (ws: WebSocket, data: string | ArrayBuffer) => {
 	try {
@@ -47,6 +53,8 @@ export class Room extends DurableObject<Env> {
 	private tick: ReturnType<typeof setTimeout> | undefined;
 	/** Ticks since anyone moved. */
 	private still = 0;
+	/** When the room last looked for stale sockets, epoch ms. */
+	private swept = 0;
 	/** One stub for every report, so that they reach the directory in the order they were sent. */
 	private directory = this.ctx.exports.Directory.getByName(DIRECTORY);
 
@@ -56,9 +64,9 @@ export class Room extends DurableObject<Env> {
 		ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
 		// Waking from hibernation runs the constructor again: rebuild the room from its sockets' attachments.
 		for (const ws of ctx.getWebSockets()) {
-			const { room, peer } = ws.deserializeAttachment() as Attachment;
+			const { room, peer, at } = ws.deserializeAttachment() as Attachment;
 			this.name = room;
-			this.visitors.set(ws, { peer, tokens: BURST, refill: Date.now() });
+			this.visitors.set(ws, { peer, at, tokens: BURST, refill: Date.now() });
 		}
 	}
 
@@ -66,6 +74,7 @@ export class Room extends DurableObject<Env> {
 	async fetch(req: Request): Promise<Response> {
 		const q = new URL(req.url).searchParams;
 		this.name = q.get('room') ?? this.name;
+		await this.sweep(Date.now());
 		if (this.visitors.size >= CAP) {
 			// The directory's count was behind (it restarted, or a report overtook a placement). Correcting it sends
 			// this visitor, reconnecting with backoff, to a room with space.
@@ -79,8 +88,9 @@ export class Room extends DurableObject<Env> {
 		const peer: Peer = { id, cc: q.get('cc') ?? 'XX', cos: 0, gold: false, river: false, x: -1, y: -1 };
 		const { 0: client, 1: ws } = new WebSocketPair();
 		this.ctx.acceptWebSocket(ws);
-		this.visitors.set(ws, { peer, tokens: BURST, refill: Date.now() });
-		this.save(ws, peer);
+		const v = { peer, at: Date.now(), tokens: BURST, refill: Date.now() };
+		this.visitors.set(ws, v);
+		this.save(ws, v);
 		const hello: ServerMessage = {
 			t: 'hello',
 			id,
@@ -99,9 +109,10 @@ export class Room extends DurableObject<Env> {
 	}
 
 	async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
+		const now = Date.now();
+		if (now - this.swept >= KEEPALIVE) await this.sweep(now);
 		const v = this.visitors.get(ws);
 		if (!v) return;
-		const now = Date.now();
 		v.tokens = Math.min(BURST, v.tokens + ((now - v.refill) / 1000) * RATE * 2);
 		v.refill = now;
 		if (--v.tokens < 0) {
@@ -125,7 +136,7 @@ export class Room extends DurableObject<Env> {
 		if (!m || (m.cos === p.cos && m.gold === p.gold && m.river === p.river)) return;
 		const { t, ...presence } = m;
 		Object.assign(p, presence);
-		this.save(ws, p);
+		this.save(ws, v);
 		this.broadcast({ t, id: p.id, ...presence }, ws);
 	}
 
@@ -154,11 +165,28 @@ export class Room extends DurableObject<Env> {
 		} else if (++this.still >= RATE * 2) {
 			this.tick = undefined;
 			// Positions go into the attachments, so the room wakes with everyone where they stopped.
-			for (const [ws, v] of this.visitors) this.save(ws, v.peer);
+			for (const [ws, v] of this.visitors) this.save(ws, v);
 			return;
 		}
 		this.tick = setTimeout(this.step, 1000 / RATE);
 	};
+
+	/**
+	 * Drops every socket gone STALE without a ping, whose cursor would otherwise hold a place and count toward the cap.
+	 * Only a join or a message calls it, at most once a keepalive for messages, so it never wakes a hibernating room.
+	 */
+	private async sweep(now: number) {
+		this.swept = now;
+		for (const [ws, v] of this.visitors) {
+			if (now - Math.max(v.at, this.ctx.getWebSocketAutoResponseTimestamp(ws)?.getTime() ?? 0) < STALE) continue;
+			try {
+				ws.close(1001, 'no keepalive');
+			} catch {
+				// Already closing: its close handler would have removed it too.
+			}
+			await this.leave(ws);
+		}
+	}
 
 	private async leave(ws: WebSocket) {
 		const v = this.visitors.get(ws);
@@ -182,8 +210,8 @@ export class Room extends DurableObject<Env> {
 		return this.directory.size(this.name, this.visitors.size).catch(console.error);
 	}
 
-	private save(ws: WebSocket, peer: Peer) {
-		ws.serializeAttachment({ room: this.name, peer } satisfies Attachment);
+	private save(ws: WebSocket, { peer, at }: Visitor) {
+		ws.serializeAttachment({ room: this.name, peer, at } satisfies Attachment);
 	}
 
 	private broadcast(m: ServerMessage, except?: WebSocket) {

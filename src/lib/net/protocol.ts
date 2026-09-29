@@ -4,13 +4,18 @@
 // client -> server
 //   binary  [1, x u16, y u16]                        a move in whole world px, at most RATE a second, only when it moved
 //   text    {"t":"presence","cos":0-7,"gold":bool,"river":bool}
-//   text    ping                                     keepalive, answered pong by the hibernation auto-response
+//   text    ping                                     keepalive every KEEPALIVE, answered pong by the hibernation auto-response
 // server -> client
 //   binary  [2, n u16, (id u16, x u16, y u16) * n]   every cursor that moved since the last tick
 //   text    ServerMessage below: hello, in, out, presence
 
 /** Moves up and frames down, per second. */
 export const RATE = 20;
+/**
+ * Keepalive, ms: the client's `ping`, which the room's auto-response answers without waking it. A visitor only watching
+ * (a video of a few minutes, no move) keeps their place by it; a room drops a socket that goes three of them without one.
+ */
+export const KEEPALIVE = 30_000;
 /** Visitors per room (ADR 0005). */
 export const CAP = 60;
 /** The longest control message a room reads; anything longer is dropped unparsed. */

@@ -2,7 +2,7 @@
 // room, `/ws/<scene id>` on the page's own origin, open from the first frame so that peers move behind the Join card.
 // When it is down the scene carries on single-player with no reconnecting UI; the next `hello` overwrites what this
 // client knew without animation. Rates, sizes and the wire format are protocol.ts's.
-import { RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, type Peer } from './protocol.ts';
+import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, type Peer } from './protocol.ts';
 import { record, type Snap } from './peers.ts';
 
 /** A peer as this client knows it: its presence, and the positions received for it (none until its first move). */
@@ -26,8 +26,6 @@ export interface Status {
 	solo(on: boolean): void;
 }
 
-/** Keepalive, ms: a `ping` text frame the room's auto-response answers without waking it, well inside idle timeouts. */
-const KEEPALIVE = 30_000;
 /** A hidden tab gives up its place after this long, ms, and reconnects when it shows again. */
 const HIDDEN = 60_000;
 /** A socket closed sooner than this after its `hello`, ms, is an ordinary drop: the backoff keeps growing. */

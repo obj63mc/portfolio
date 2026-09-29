@@ -30,6 +30,7 @@ interface DurableObjectState {
 	acceptWebSocket(ws: WebSocket): void;
 	getWebSockets(): WebSocket[];
 	setWebSocketAutoResponse(pair: WebSocketRequestResponsePair): void;
+	getWebSocketAutoResponseTimestamp(ws: WebSocket): Date | null;
 }
 
 declare class WebSocketRequestResponsePair {
