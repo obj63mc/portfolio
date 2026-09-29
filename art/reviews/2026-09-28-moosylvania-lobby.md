@@ -32,7 +32,12 @@ Each round pasted Codex tiles inside their masks, and the stitch proved 0 px cha
 - **Round three** (Joe, on round two):
   - **Monitor:** turned the desk's monitor to face the receptionist's chair.
   - **Statue:** set it wholly on the counter at the desk's right-hand end, where it had hung off.
-- `install-master.sh 3` upscaled the master 4× to 3548 × 7096 and re-derived the plate (4800 × 9600, 100 tiles) and the mattes.
+- **Round four** (Joe, after the workshop): the TV stood behind the meeting sofa, which faced away from it. In the real room the TV hangs on the wall nearest this camera, out of the picture. Here the TV stays on the moose wall, and the sofa moved to the bottom of the picture, turned round to face it, so every seat can watch. One Codex tile over the meeting area had two masks:
+  - one removed the sofa, continuing the TV unit's base and the floor
+  - the other drew the same mustard sofa at the bottom edge, seen from behind: its back, three cushion tops, rounded arms and small legs.
+
+  Attempt c of three was the cleanest. The chairs, the table with its plant, and the TV screen were outside the masks and are unchanged.
+- `install-master.sh 4` upscaled the master 4× to 3548 × 7096 and re-derived the plate (4800 × 9600, 100 tiles) and the mattes.
 
 ## Props, walk-behind furniture, foreground and scene data
 
@@ -79,7 +84,6 @@ Each round pasted Codex tiles inside their masks, and the stitch proved 0 px cha
 
 - The moose statue's text (what Moosylvania is) is Joe's to write; the card holds a placeholder.
 - The TV's video file is Joe's to provide. The spec's "Local prop, the Moosylvania meeting TV" says how it plays; the scene data has no video field until the file exists.
-- The two staircases are left in the plate, not walk-behind.
 
 ## After the code review, 2026-09-28
 
@@ -88,4 +92,44 @@ Each round pasted Codex tiles inside their masks, and the stitch proved 0 px cha
 - **Front lines:** the round sofas and the meeting armchairs had front lines trimmed flat at both ends. Stepping on from the coffee table or the meeting table therefore counted as behind, and the sofa or chairs hid the cursor. Each line now runs up the side facing its table, while a back still counts as behind.
 - **Tests:** a geometry test checks each case above, and that no walk-behind outline covers any part of another prop's hit area or of the exit.
 
-Validation: `art:validate` PASS (94 assets), `art:check`, `art:test` (3), `svelte-check` (0 errors), production build, `npm test` 23/23.
+## The staircases, after the workshop, 2026-09-28
+
+Joe checked the five rooms in the workshop and accepted them, except for one point in the lobby. A cursor passing under the curved stairs from the sides should be hidden, since the loft is above. Until then the stairs were in the plate, so the cursor was always drawn over them.
+
+- **Two walk-behind units:** `moosylvania-stairs-left` and `-right`, measured mattes 1:1 with the master.
+  - Each is traced from the stair's steel on the native master: the navy stringers, risers and railings, and the lit blue handrail.
+  - From the top tread down, each row is filled between its outermost steel, since the orange treads are the floor's colour. Above the top tread only the posts and rails are kept, not the loft floor between them.
+  - The inner edge follows the dark underside of each flight, clear of the loft railing, the office chairs and the office plants, which stay in front.
+  - The outline, where a cursor counts as on the stairs, is the flight's full width, its convex hull (after Joe's second look, below). The cut-out that covers a cursor underneath is still the traced stair, so the floor inside the curve never covers anyone.
+- **A landing, new in the scene data:** each stair's front line is the foot of its bottom step, and its `landing` is the top step's edge at the loft. Stepping on at the foot, or down from the loft, is on the stairs; stepping on from either side, between the two lines, is underneath.
+- **The rule, corrected:** a cursor's side is now read where it stepped from, its last position outside the outline. The first point inside is always above a front line that lies on the outline's lower edge, as the round sofas' do, so a cursor coming up from below would have counted as behind. Ticket 19 records the change, and the workshop's Walk preview (`art/review.js`) now follows it.
+- **Tests:** a test checks each stair: on the stairs from the foot and from the loft, underneath from either side, and no props.
+
+## The meeting area after round four, 2026-09-28
+
+- **The TV:** the matte is now its whole panel, and its rect is unchanged. It needs no clip-path, since nothing stands in front of it.
+- **The moose wall:** its matte is the whole wall, with no sofa cut out of the panel's foot.
+- **The meeting sofa:** its matte is traced from its saturated mustard (the cushion tops included) and its dark legs. Its outline is the convex hull and its front line the lower edge. It is listed last, the nearest furniture, so a cursor stepping on from the table's side goes behind its back.
+- **Tests:** a test checks the sofa below the table and drawn last, a cursor coming from the table hidden behind it, and the TV unclipped.
+
+## The stairs' full width, 2026-09-28
+
+On his second look Joe found the stairs too narrow to walk:
+- Coming down from the loft, the cursor kept ending up underneath.
+- Going up only worked from dead centre.
+
+The outline was the traced flight, which curves. A cursor moving straight down or up drifted off it at the curve, then stepped back on from the side, so it counted as underneath. Each stair's outline is now the flight's convex hull, its full width:
+- **Walking up or down:** stepping on anywhere across the top step or the bottom step puts the cursor on the stairs, and a straight walk between them stays on round the curve.
+- **From the sides:** stepping on at mid-height from either side still goes underneath.
+- **Tests:** a test checks entries 0 to 100 % across both steps, straight walks from 5 to 95 % across, and side entries halfway up. A walk through the workshop rule in 30 px steps stays on the stairs the whole way down and up at 10, 50 and 90 % across, and goes underneath from either side.
+
+## Coming off the loft, 2026-09-28
+
+On his third look Joe found that coming down from the loft still broke most of the time, on both stairs. From next to a loft desk, a move to the stairs put the cursor underneath. It left the loft at an angle and passed the loft's edge beside the stair, so it stepped onto the flight from the side. The rule now remembers the floor above: a cursor that was on the loft within 800 world px of travel steps onto the stairs, wherever it crosses the stair's edge.
+- **The rule's module:** `src/lib/scenes/walk.ts` holds the rule for the engine. The workshop's Walk preview mirrors it.
+- **Tests:** `tests/walk.test.ts` walks both stairs:
+  - from beside the loft desks, and straight up and down the full width, onto the stairs
+  - from the doors, the wall side and the long way round, underneath.
+- **Sweep:** 1,300 loft starting points per stair all reach the stairs, down to 90 % of the flight. 238 ground-floor approaches all go underneath.
+
+Validation: `art:validate` PASS (96 assets), `art:check`, `art:test` (3), `svelte-check` (0 errors), production build, `npm test` 28 of 28 with 1 todo.

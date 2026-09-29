@@ -69,15 +69,22 @@ export interface Cutout {
 
 /**
  * Walk-behind scenery: a keyed cut-out, such as a lab desk with its monitor and chair, that a cursor passes behind or in
- * front of. The side a cursor steps onto the outline from decides: from above the front line it is behind, drawn under
- * the cut-out, and cannot use the props standing on it; from on or below the line it is in front, drawn over it, and
- * can use them. It keeps that side until it steps off the outline.
+ * front of. The side a cursor steps onto the outline from decides, read at its last position outside the outline: from
+ * above the front line it is behind, drawn under the cut-out, and cannot use the props standing on it; from on or below
+ * the line it is in front, drawn over it, and can use them. It keeps that side until it steps off the outline.
  */
 export interface WalkBehind extends Cutout {
 	/** Where a cursor is on the scenery. */
 	outline: Point[];
 	/** The front feet, left to right. The line's y at the cursor's x (flat past either end) splits behind from in front. */
 	front: Point[];
+	/**
+	 * A staircase's top step, left to right, where it meets the floor above (the Moosylvania loft). Stepping on from on or
+	 * above this line is coming down the stairs, so it is in front too, as is stepping on within `LANDING_REACH` of travel
+	 * after leaving that floor (`walk.ts`: a cursor coming off the loft at an angle passes the loft's edge beside the stair
+	 * first). Only stepping on between the two lines from the floor below, from a stair's side, goes underneath.
+	 */
+	landing?: Point[];
 	/** Ids of the props standing on it. */
 	props: string[];
 }

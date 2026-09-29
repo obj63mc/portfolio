@@ -2,16 +2,28 @@ const $ = (id) => document.getElementById(id);
 const world = $('world'), phone = $('phone');
 const ctx = world.getContext('2d'), pc = phone.getContext('2d'), rc = $('rigview').getContext('2d');
 const cache = new Map();
-let data, scene, camera, walk = {}, reaction = -10000, last = 0, dirty = true, lastFrame = 0;
+let data, scene, camera, walk = {}, stepped = null, reaction = -10000, last = 0, dirty = true, lastFrame = 0;
 const enabled = (id) => $(id).checked;
 const overlap = (a,b) => a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
 // Walk-behind scenery (spec): the side the cursor steps onto an outline from, above or below its front line, holds
 // until it steps off: behind is drawn under the cut-out and cannot use its props, in front is drawn over it and can.
 const inside = (p,poly) => {let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)c=!c;}return c;};
 const frontY = (f,x) => {if(x<=f[0].x)return f[0].y;for(let i=1;i<f.length;i++)if(x<=f[i].x)return f[i-1].y+(f[i].y-f[i-1].y)*(x-f[i-1].x)/(f[i].x-f[i-1].x);return f[f.length-1].y;};
+// Mirrors src/lib/scenes/walk.ts (buildout ticket 19). The side is read where the cursor stepped from, its last position
+// outside the outline (or where it appeared, after a jump): a front line through the front feet lies on the outline's
+// lower edge, so the first point inside is always above it. A staircase's landing: stepping on from on or above it, or
+// within LANDING_REACH world px of travel after leaving that floor, is in front too.
+const LANDING_REACH = 800;
+let sinceLanding = {};
 function stepTo(p) {
-  for(const w of scene.walkBehind??[]){if(!inside(p,w.outline))delete walk[w.key];else walk[w.key]??=p.y>=frontY(w.front,p.x)?'front':'behind';}
-  camera=p;dirty=true;updateStatus();
+  const moved=stepped?Math.hypot(p.x-stepped.x,p.y-stepped.y):Infinity;
+  for(const w of scene.walkBehind??[]){
+    if(w.landing)sinceLanding[w.key]=p.y<=frontY(w.landing,p.x)?0:(sinceLanding[w.key]??Infinity)+moved;
+    if(!inside(p,w.outline)){delete walk[w.key];continue;}
+    const f=stepped&&!inside(stepped,w.outline)?stepped:p;
+    walk[w.key]??=f.y>=frontY(w.front,f.x)||(w.landing&&(f.y<=frontY(w.landing,f.x)||sinceLanding[w.key]<=LANDING_REACH))?'front':'behind';
+  }
+  stepped=p;camera=p;dirty=true;updateStatus();
 }
 function load(path) {
   if (!cache.has(path)) {
@@ -149,7 +161,7 @@ function edgeFacts(image){
   return `${magenta} magenta pixels at ≥50% alpha · ${alpha} partial-alpha pixels · ${white} white fringe candidates`;
 }
 function selectScene(){
-  scene=data.scenes.find(s=>s.id===$('scene').value);camera={...scene.arrival};walk={};world.width=scene.w;world.height=scene.h;dirty=true;
+  scene=data.scenes.find(s=>s.id===$('scene').value);camera={...scene.arrival};walk={};stepped=null;sinceLanding={};world.width=scene.w;world.height=scene.h;dirty=true;
   $('rig-section').hidden=scene.rigInstances.length===0;
   $('comparison').src=`generated/${scene.id}-master/image.webp`;
   $('assets').replaceChildren();
@@ -163,13 +175,13 @@ function selectScene(){
   updateStatus();
 }
 $('scene').addEventListener('change',selectScene);
-$('reset').onclick=()=>{walk={};stepTo({...scene.arrival});};
+$('reset').onclick=()=>{walk={};stepped=null;sinceLanding={};stepTo({...scene.arrival});};
 $('react').onclick=()=>{reaction=performance.now();dirty=true;};
 document.querySelectorAll('input,select').forEach(control=>control.addEventListener('change',()=>{dirty=true;}));
 const at=(event)=>{const r=world.getBoundingClientRect();return {x:(event.clientX-r.left)*scene.w/r.width,y:(event.clientY-r.top)*scene.h/r.height};};
 // A click places the cursor as if it arrived there; with Walk on, moving the mouse walks it, so stepping onto a desk from
 // behind or in front can be tried.
-world.onclick=(event)=>{walk={};stepTo(at(event));};
+world.onclick=(event)=>{walk={};stepped=null;sinceLanding={};stepTo(at(event));};
 world.onmousemove=(event)=>{if(enabled('walk'))stepTo(at(event));};
 $('save').onclick=()=>{
   const report={scene:scene.id,date:new Date().toISOString(),notes:$('notes').value,geometry:$('status').textContent,assetHashes:Object.fromEntries(data.assets.filter(a=>a.scene===scene.id).map(a=>[a.id,a.source.sha256]))};

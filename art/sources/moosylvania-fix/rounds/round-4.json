@@ -1,0 +1,60 @@
+{
+ "round": 4,
+ "base": "rounds/base-4.png",
+ "notes": {
+  "meeting": "Joe (2026-09-28, after the workshop): in the meeting area the TV is behind the sofa. In the real room the TV is on the wall nearest this camera, out of the picture; here the TV stays on the moose wall, and the sofa moves to the bottom of the picture, turned round to face it, so every seat can watch the TV."
+ },
+ "tiles": {
+  "meeting": {
+   "rect": [
+    150,
+    1380,
+    591,
+    394
+   ],
+   "polygons": [
+    [
+     [
+      302,
+      1396
+     ],
+     [
+      588,
+      1396
+     ],
+     [
+      588,
+      1529
+     ],
+     [
+      302,
+      1529
+     ]
+    ],
+    [
+     [
+      296,
+      1662
+     ],
+     [
+      592,
+      1662
+     ],
+     [
+      592,
+      1774
+     ],
+     [
+      296,
+      1774
+     ]
+    ]
+   ],
+   "keep": "the dark navy TV wall unit and its screen, the four teal armchairs with their wooden legs, the dark coffee table with its potted plant, the frosted glass partitions at the sides and the honey plank floor outside the outlines",
+   "fixes": [
+    "Inside the upper outline, remove the mustard-yellow three-seat sofa. Continue the dark navy TV wall unit straight down to its base, exactly as it looks either side of the outline, its lower edge meeting the floor in one straight horizontal line with a soft shadow under it, and continue the honey plank floor below it, the planks running on in the same direction. Nothing else changes: the TV screen, the armchairs, the table and its plant stay.",
+    "Inside the lower outline, along the bottom edge of the picture, draw the same mustard-yellow three-seat sofa turned round to face the TV: we see it from behind and above, its tall padded back towards the viewer and running off the bottom edge of the picture, the top of the backrest, its two rounded arms at the ends, and beyond the backrest a glimpse of its three seat cushions facing the coffee table and the TV. Centre it on the coffee table, the same width as the sofa that stood in front of the TV, square to the room like the table, with small dark legs where they show. The same flat colour style, mustard colours and soft shading as the old sofa."
+   ]
+  }
+ }
+}

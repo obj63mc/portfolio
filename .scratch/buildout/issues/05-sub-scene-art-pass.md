@@ -4,9 +4,9 @@
 
 **Blocked by:** 02 (pipeline and harness), 03 (the sub-scene modules exist)
 
-**Status:** ready-for-human
+**Status:** resolved
 
-- [ ] Tiles at both densities for all five sub-scenes, judged in the harness (tiles done; Joe's harness check remains, see "Ready to close" below)
+- [x] Tiles at both densities for all five sub-scenes, judged in the harness
 - [x] Every sub-scene prop has a trimmed cut-out and its rect in scene data; the build-output test passes
 - [x] Depth regions and foreground scenery cut-outs written to scene data, none overlapping a prop rect
 - [x] Exit door rect written to scene data for every sub-scene, and the venue door rect on the overworld matches its building
@@ -231,3 +231,37 @@ The opening cameras for SLU (604, 768) and Side Project (2069, 701) are Joe's. T
 - **The walk-behind engine rule:** ticket 19.
 - **The ATM that left Brennan's:** new ticket 25, waiting on Joe's placement.
 - **Optional:** lettering "stouts and barleywines" on the Side Project chalkboard, one tile round, if Joe wants it.
+
+### Workshop check, 2026-09-28
+
+Joe checked the five rooms in `art/review.html`: everything is good except depth.
+- **The lobby's staircases:** a cursor passing under the curved stairs from the sides should be hidden, since the loft is above. Both staircases are now walk-behind scenery, measured 1:1 on the master. Each has a front line at the foot and a new `landing` at the loft. Stepping on at the foot or down from the loft is on the stairs; from either side it is underneath.
+- **The walk-behind rule:** checking the stairs showed that a cursor's side must be read where it stepped from, its last position outside the outline. Otherwise a cursor coming up from below is already above any front line that lies on the outline's lower edge, and would go behind. Ticket 19 is amended, and the workshop's Walk preview corrected.
+- **The meeting area, round four:** Joe asked for the sofa to stop blocking the TV. The TV stays on the moose wall, and the sofa moved to the bottom of the picture, turned round to face it, so every seat can watch. The TV needs no clip-path now; the sofa is the nearest walk-behind unit.
+- **Overworld depth:** a new ticket, 26, because the overworld has none yet.
+
+The records are `art/reviews/2026-09-28-moosylvania-lobby.md` and `.json`. Joe's look at the stairs and the meeting area in the workshop is the last step: then tick the first item and resolve.
+
+### The stairs' full width, 2026-09-28
+
+Joe on the workshop: the meeting area is good; the stairs were too narrow. Coming down from the loft the cursor ended up underneath, and going up only worked from dead centre. Each stair's outline is now the flight's full width, its convex hull, instead of the traced curve. Stepping on across the whole top or bottom step, and walking straight up or down, stays on the stairs; from the sides it is still underneath. The cut-out that covers a cursor is unchanged.
+
+### Coming off the loft, 2026-09-28
+
+Joe: coming down from the loft still broke. From next to a loft desk, a move to the stairs put the cursor underneath, on both sides. The walk-behind rule now remembers the floor above a staircase for 800 world px of travel, so a cursor coming off the loft at any angle steps onto the stairs. From the ground floor it still goes underneath. The rule is a pure module, `src/lib/scenes/walk.ts`, tested by walking these paths (`tests/walk.test.ts`); ticket 19 records it.
+
+### Accepted in the harness, resolved, 2026-09-28
+
+Joe checked the five rooms in `art/review.html`: the assembled scenes, the walk-behind furniture and the opening cameras. His three follow-ups in the lobby are done:
+- walk-behind stairs, the flight's full width
+- the meeting sofa facing the TV
+- stepping onto the stairs from the loft at any angle.
+
+He asked to mark the ticket resolved. The first item is ticked and the ticket is resolved.
+
+Follow-ups owned elsewhere:
+- the engine's walk-behind rule, `pushBand` and the TV's video (tickets 19, 08 and 15)
+- the card copy and the TV's video file (content inventory)
+- the ATM on the overworld (ticket 25)
+- the overworld's depth pass (ticket 26).
+

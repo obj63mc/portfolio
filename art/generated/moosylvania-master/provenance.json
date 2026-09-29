@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "6f83d48d79ea868cdb089c7e9c08bf998df576737fb530782ead3cb09c7f9854",
-  "run": "art/runs/moosylvania-master/2026-09-28T22-40-54.000Z-upscale-4x",
+  "sourceSha256": "229f4c36f8acffb7a96f0041e73d609abe4942bb6e85c647e6a58b935ba9d2e2",
+  "run": "art/runs/moosylvania-master/2026-09-29T00-37-32.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/moosylvania-fix/stitched.png (native 887 x 1774, tile-map round 3)",
-    "baseSha256": "d54193442381046980c7bd87bab7334fea4617f7006b44d487e1b23df45fb7d3",
+    "base": "art/sources/moosylvania-fix/stitched.png (native 887 x 1774, tile-map round 4)",
+    "baseSha256": "f95d7f9138064cae2b5df6984861779d86cea8c258f53c2ef88962ecad3c348f",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
     "script": "scripts/art/overworld/install-master.sh"
   },

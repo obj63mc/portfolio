@@ -9,5 +9,5 @@ Extract the original object pixels from the approved composition using the measu
 Target aspect ratio and size: 860x480. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/moosylvania-meeting-table/2026-09-28T22-41-41.567Z/registration.png
+2. <repo>/art/runs/moosylvania-meeting-table/2026-09-29T00-38-25.555Z/registration.png
 REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.

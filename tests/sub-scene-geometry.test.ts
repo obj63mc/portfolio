@@ -72,6 +72,11 @@ test('walk-behind scenery: outline inside its cut-out, front line left to right,
 				{ x: grown.x, y: grown.y }, { x: grown.x + grown.w, y: grown.y }, { x: grown.x + grown.w, y: grown.y + grown.h }, { x: grown.x, y: grown.y + grown.h }
 			]), `${s.id}: ${w.key} outline point ${JSON.stringify(p)} outside its rect`);
 			assert.ok(w.front.length >= 2 && w.front.every((p, i) => i === 0 || p.x > w.front[i - 1].x), `${s.id}: ${w.key} front runs left to right`);
+			if (w.landing) {
+				assert.ok(w.landing.length >= 2 && w.landing.every((p, i) => i === 0 || p.x > w.landing![i - 1].x), `${s.id}: ${w.key} landing runs left to right`);
+				// The landing is the stair's top, the front line its foot: no x where the top is at or below the foot.
+				for (const p of [...w.landing, ...w.front]) assert.ok(frontY(w.landing, p.x) < frontY(w.front, p.x), `${s.id}: ${w.key} landing above its front`);
+			}
 			for (const id of w.props) {
 				const prop = s.props.find((p) => p.id === id);
 				assert.ok(prop, `${s.id}: ${w.key} lists unknown prop ${id}`);
@@ -196,6 +201,51 @@ test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers 
 	faces(unit('sofa-right'), 'left');
 	faces(unit('meeting-chairs-left'), 'right');
 	faces(unit('meeting-chairs-right'), 'left');
+	// The meeting sofa faces the TV from the bottom of the picture, across the table, so every seat can watch it: it is the
+	// nearest furniture, drawn last, a cursor stepping on from the table's side goes behind its back, and nothing stands
+	// in front of the TV.
+	const sofa = unit('meeting-sofa'), table = unit('meeting-table');
+	assert.ok(Math.min(...sofa.outline.map((p) => p.y)) > table.rect.y + table.rect.h, 'the sofa is below the table');
+	assert.equal(lobby.walkBehind.at(-1), sofa);
+	const top = sofa.outline.reduce((a, b) => (b.y < a.y ? b : a));
+	assert.ok(top.y < frontY(sofa.front, top.x), 'from the table, behind the sofa');
+	assert.equal(lobby.props.find((p) => p.id === 'meeting-tv')!.clip, undefined, 'nothing covers the TV');
+	// The twin staircases rise to the loft. Stepping on anywhere across the bottom step, or from the loft anywhere across the
+	// top step, is on the stairs; stepping on from either side, under the rising flight, is underneath them. The outline is
+	// the flight's full width, so a cursor walking straight up or down stays on the stairs round the curve (Joe, 2026-09-28:
+	// coming down from the loft the cursor kept ending up underneath, and going up only worked dead centre).
+	const across = (poly: Point[], y: number) => {
+		const xs: number[] = [];
+		for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+			const a = poly[i], b = poly[j];
+			if (a.y > y !== b.y > y) xs.push(a.x + ((b.x - a.x) * (y - a.y)) / (b.y - a.y));
+		}
+		return [Math.min(...xs), Math.max(...xs)];
+	};
+	for (const key of ['stairs-left', 'stairs-right']) {
+		const stairs = unit(key);
+		assert.ok(stairs?.landing, `${key}: a walk-behind staircase with a landing`);
+		const landing = stairs.landing!;
+		const on = (p: Point) => p.y >= frontY(stairs.front, p.x) || p.y <= frontY(landing, p.x);
+		const top = (t: number) => { const x = landing[0].x + t * (landing.at(-1)!.x - landing[0].x); return { x, y: frontY(landing, x) }; };
+		const foot = (t: number) => { const x = stairs.front[0].x + t * (stairs.front.at(-1)!.x - stairs.front[0].x); return { x, y: frontY(stairs.front, x) }; };
+		for (let t = 0; t <= 1.0001; t += 0.1) {
+			assert.ok(on({ ...top(t), y: top(t).y - 1 }), `${key}: from the loft, on the stairs (${Math.round(t * 100)} % across)`);
+			assert.ok(on({ ...foot(t), y: foot(t).y + 1 }), `${key}: from the foot, on the stairs (${Math.round(t * 100)} % across)`);
+			// A straight walk from any point across the top step to the same point across the bottom one stays on the stairs
+			// (short of the very edges, where the walk runs along the outline itself).
+			if (t < 0.05 || t > 0.95) continue;
+			for (let u = 0.02; u < 0.99; u += 0.04) {
+				const p = { x: top(t).x + u * (foot(t).x - top(t).x), y: top(t).y + u * (foot(t).y - top(t).y) };
+				assert.ok(inPolygon(p, stairs.outline), `${key}: a straight walk ${Math.round(t * 100)} % across leaves the stairs at ${Math.round(p.x)},${Math.round(p.y)}`);
+			}
+		}
+		// From either side, halfway up the flight, underneath.
+		const mid = (frontY(stairs.front, foot(0.5).x) + frontY(landing, top(0.5).x)) / 2;
+		const [x0, x1] = across(stairs.outline, mid);
+		assert.ok(!on({ x: x0 - 1, y: mid }) && !on({ x: x1 + 1, y: mid }), `${key}: from either side, underneath`);
+		assert.deepEqual(stairs.props, []);
+	}
 	// The lobby grants nothing: Moosylvania's antlers come from the moose outside.
 	assert.ok(!lobby.props.some((p) => p.cosmetic));
 });

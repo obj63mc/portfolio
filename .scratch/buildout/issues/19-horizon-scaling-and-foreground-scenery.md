@@ -30,3 +30,20 @@ Foreground scenery is unchanged: always over every cursor. The SLU lab has none 
 ### The Foundry's rows, 2026-09-28
 
 The Foundry theatre follows the same rule: its three seat rows (front row nearest the screen) and the projector ledge are walk-behind scenery, listed back to front in `src/lib/scenes/foundry.ts`. No prop stands on them, so they only decide drawing. A cursor in the walkway between two rows is covered by the row nearer the viewer and drawn over the row beyond it, as if walking between the seats. `tests/sub-scene-geometry.test.ts` now also checks, in every scene, that walk-behind scenery never covers a prop it does not carry.
+
+### Walk-behind: the side is read where the cursor stepped from; staircases, 2026-09-28
+
+- **Which point decides:** the rule above reads the tip once it is inside the outline. A front line through the front feet lies on the outline's lower edge, as on the lobby's round sofas and Brennan's lounge. A cursor coming up from below is then already above that line at its first point inside, so stepping on from in front would put it behind. The side is now read at the cursor's last position outside the outline, the point it stepped from: on or below the front line is in front, above it behind. A cursor that appears inside an outline, or jumps into one (a peer snap), still takes the side of that point. This matches the glossary and the `WalkBehind` comment ("the side a cursor steps onto it from"). The workshop's Walk preview (`art/review.js`) is corrected to match.
+- **Staircases:** a `WalkBehind` may carry a `landing`, a staircase's top step where it meets the floor above. Stepping on from on or above it, coming down from the floor above, is in front too; only stepping on between the two lines, from a stair's side, goes underneath. The Moosylvania lobby's twin staircases are the first (Joe, 2026-09-28: the cursor should be hidden going under the stairs from the sides, since the loft is above).
+
+### Walk-behind: coming off the floor above a staircase, 2026-09-28
+
+Joe, walking the lobby stairs in the workshop: coming down from the loft broke most of the time. A cursor next to a loft desk that moved to the stairs always went underneath, on both stairs. It left the loft at an angle and passed the loft's edge beside the stair, so it stepped onto the flight from its side, below the landing. The rule now remembers the floor above: a cursor that was on or above a staircase's landing within `LANDING_REACH` (800 world px) of travel steps onto the stairs from that floor, wherever it crosses the stair's edge. A jump (a scene entry, a reset or a peer snap) forgets it.
+
+The rule is now a pure module, `src/lib/scenes/walk.ts`, for the engine to use: `walker(units)` follows one cursor step by step and returns its side of each unit it is on. `tests/walk.test.ts` walks it through the lobby's stairs:
+- from beside the loft desks to anywhere down the flight
+- straight down and up across the full width of the steps
+- from the front doors, the wall side and the long way round.
+
+A sweep of 1,300 loft starting points per stair all reach the stairs, and 238 ground-floor approaches all go underneath. The workshop's Walk preview mirrors the module, and a test holds the two to the same reach.
+
