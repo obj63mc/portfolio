@@ -77,6 +77,8 @@ dialog {
  */
 html.engine {
 	overflow: hidden;
+	/* The engine's backdrop (BACKDROP in engine.ts), which a new scene fades in from (ticket 11). */
+	background: #1d2b3a;
 	/* Touch drags pan the scene (ticket 10), so the browser neither scrolls nor zooms it; a card, a scroll container, still scrolls. */
 	touch-action: none;
 

@@ -1,9 +1,9 @@
 // The scene loop (buildout ticket 08): background tiles on the scene canvas, the prerendered layer moved with one transform
 // per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. The input (ticket 09):
 // the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Touch (ticket 10):
-// the joystick, drag-to-pan with its fling, and tap-to-activate. Carried over from the rendering and pointer-lock
-// prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is
-// never re-rendered here.
+// the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the fade, landing at
+// the door and focus. Carried over from the rendering and pointer-lock prototypes' engines (prototype/rendering-camera,
+// prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { KEYS, TILE, centreOn, clamp, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Move, type View } from './camera.ts';
 
@@ -171,8 +171,11 @@ export class Engine {
 	}
 
 	/**
-	 * Each navigation's scene and fragment. A new scene opens centred on the fragment's target, else the overworld's
-	 * arrival point (the welcome sign) or a sub-scene's exit door (ticket 11 lands the cursor just inside it).
+	 * Each navigation's scene and fragment. A page load opens centred on the fragment's target, else the overworld's
+	 * arrival point (the welcome sign) or a sub-scene's exit door. A hop from another scene (ticket 11) lands at a door
+	 * whatever the fragment: into a sub-scene at its exit door, focus on its h1; back on the overworld, by the exit door or
+	 * the browser's back button, at the door of the venue left, focus on that door. The camera is centred on the door, a
+	 * joined cursor is put on it and the new scene fades in over 300 ms, a cut under reduced motion.
 	 */
 	show(scene: Scene, hash: string) {
 		const target = placed(byHash(hash));
@@ -180,13 +183,28 @@ export class Engine {
 			if (target) this.panTo(target);
 			return;
 		}
+		const from = this.scene;
 		this.scene = scene;
 		this.targets = [...('districts' in scene ? [scene.signpost.rect] : []), ...propsOf(scene).map((p) => p.rect)];
 		for (const t of this.held.values()) t.bmp?.close();
 		this.held.clear();
 		this.goal = null;
-		const opening = target ? this.box(target) : 'districts' in scene ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit;
-		this.moveTo(centreOn(centre(opening), this.view, scene));
+		const door = from && this.layer.querySelector<HTMLElement>('districts' in scene ? `#${from.id} .door` : '.door');
+		const at = door ?? target;
+		const c = centre(at ? this.box(at) : 'districts' in scene ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit);
+		this.moveTo(centreOn(c, this.view, scene));
+		if (!door) return;
+		// Before Join there is no cursor. The unlocked mouse's cursor stays at the OS pointer, where its clicks land. Push
+		// waits for the cursor to move, so a door near the scene's edge doesn't carry the camera off it.
+		if (this.cursor && this.input.is !== 'unlocked') this.cursor = { x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
+		this.armed = false;
+		// Focus moves after the router's own reset, which for a URL with a fragment (the exit door's `/#<venue>`) runs in a
+		// timeout queued before this one and clears focus, the venue's section being unfocusable. A back or forward hop
+		// behind the Join or Paused card, whose page is inert, hands focus back to the card's button, which that reset
+		// took it from.
+		const focus = document.querySelector<HTMLElement>('.gate[open] button') ?? ('districts' in scene ? door : this.layer.querySelector<HTMLElement>('h1'));
+		setTimeout(() => focus?.focus());
+		if (!this.reducedMotion.matches) this.canvas.animate({ opacity: [0, 1] }, 300);
 	}
 
 	private bind() {
@@ -244,6 +262,16 @@ export class Engine {
 		// Locked, the mouse's clicks come to the canvas holding the lock: each goes to the control the drawn cursor is over,
 		// a card's Close and the links inside it included. A tap on the canvas is on bare scenery and clicks nothing.
 		this.canvas.addEventListener('click', () => { if (this.input.is === 'locked') this.under()?.click(); }, opts);
+		// A middle click opens the link under the locked cursor in a new tab, as it would at the OS pointer (ticket 11). A
+		// page can only open the tab in front, which pauses this one.
+		this.canvas.addEventListener(
+			'auxclick',
+			(e) => {
+				const a = e.button === 1 && this.under();
+				if (a instanceof HTMLAnchorElement) open(a.href);
+			},
+			opts
+		);
 		// Touch: a finger on the scene or a prop drags the camera once it has gone 6 px, so a tap isn't eaten, and flings it
 		// when let go while moving. A tap on a prop, a door or a link moves the cursor there, and the tap's own click
 		// activates it. The joystick, the controls and the cards take their own touches.

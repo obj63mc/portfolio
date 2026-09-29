@@ -127,7 +127,7 @@ One camera model for every device and scene type. ([World layout](issues/06-worl
 - **Keyboard focus** (`:focus-visible`) centres the camera on the focused element, smoothly, or instantly under reduced motion. A mouse click never pans.
 - **Fragment links** from the signpost (`#belleville`) pan the camera to that district.
 - **Render scale** is fixed per session: 0.6 on a screen under 768 px on its shorter side, 1.0 on anything larger, whatever its pointer (Joe, 2026-09-29, buildout ticket 08). DPR is capped at 2.
-- **Sub-scene handoff**: entering is a short (300 ms) fade with the cursor placed just inside the door and the camera centred on it; leaving (exit door or browser back) returns the visitor to the overworld at the venue door, camera centred on it.
+- **Sub-scene handoff**: entering is a short (300 ms) fade with the cursor placed just inside the door and the camera centred on it; leaving (exit door or browser back) returns the visitor to the overworld at the venue door, camera centred on it. The new scene fades in from the backdrop, a cut under reduced motion, with the cursor on the door's centre; a hop lands at the door whatever fragment the URL carries (buildout ticket 11).
 
 ### Input: Join, pointer lock, keys and touch
 
@@ -139,7 +139,7 @@ One camera model for every device and scene type. ([World layout](issues/06-worl
 - **Pause**: Esc, blur, or hiding or switching away from the tab (touch included) releases the lock and shows a "Paused, click to resume" card. The cursor freezes where it was (peers see it idle there), the camera stops, the keys are ignored, the river drift does not continue, and the scene keeps animating. The hidden-tab socket rule still applies (stop sending, close after 60 s). Esc with a card open closes the card instead of pausing (Joe, 2026-09-29, buildout ticket 09). The lock is still released, because a page can't hold it through Esc. The drawn cursor holds still with the OS cursor showing, the keys still steer, and the next mouse click takes the lock back and does nothing else. The Join and Paused cards never close on Esc.
 - **Resume**: re-locks with the cursor exactly where it froze. If the browser refuses (Chrome's cooldown after Esc), the card stays up and says to try again in a moment. On touch the Resume tap also resumes audio.
 - **Drawing order and hit resolution**: the cursor canvas sits above every card and control. Hover and clicks resolve at the drawn cursor's position (`elementFromPoint`) for the locked pointer and the joystick, and by DOM pointer events for an unlocked mouse. The control under the cursor gets a hover mark, and a click activates it, including a card's Close and the links inside it.
-- **Navigation**: the element holding the lock lives in the shared layout, so it survives venue hops. External links blur the window and pause.
+- **Navigation**: the element holding the lock lives in the shared layout, so it survives venue hops. External links blur the window and pause. Under the lock a middle click opens the link under the drawn cursor in a new tab; a page can only open it in front, so the page left behind pauses (buildout ticket 11).
 
 ### Cursor identity, own cursor and depth
 

@@ -32,7 +32,7 @@
 					<PropCard {prop} level={4} />
 				{/each}
 				{#if v.door}
-					<!-- The whole building until the art pass measures each door (ticket 11); its props sit above it. -->
+					<!-- The whole building (ticket 05); its props sit above it. -->
 					<a class="door at" style={at(v.rect)} href={v.door}>Enter {v.name}</a>
 				{/if}
 			</section>
