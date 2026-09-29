@@ -3,7 +3,7 @@ import { FOUNDRY } from './foundry.ts';
 import { MOOSYLVANIA } from './moosylvania.ts';
 import { SIDE_PROJECT } from './side-project.ts';
 import { SLU } from './slu.ts';
-import type { Prop, SubScene } from './types';
+import type { Prop, Rect, SubScene } from './types';
 
 /** Every sub-scene by its flat URL slug, which is also the overworld venue id its exit link targets. */
 export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
@@ -19,3 +19,9 @@ export const leftToRight = (props: Prop[]): Prop[] => [...props].sort((a, b) => 
  */
 export const readingOrder = (s: SubScene): Prop[] =>
 	s.h > s.w ? [...s.props].sort((a, b) => a.rect.y - b.rect.y || a.rect.x - b.rect.x) : leftToRight(s.props);
+
+/**
+ * An element's world rect as custom properties, prerendered into its style attribute. Only the engine's stylesheet reads
+ * them (`html.engine main .at` in app.css), turning the plain document into hit targets placed over their art.
+ */
+export const at = (r: Rect) => `--x:${r.x}px;--y:${r.y}px;--w:${r.w}px;--h:${r.h}px`;

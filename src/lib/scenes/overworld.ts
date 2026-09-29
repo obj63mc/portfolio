@@ -174,6 +174,7 @@ export const OVERWORLD: Overworld = {
 		'An explorable St. Louis where Joe Madden, Chief Architect at Moosylvania, keeps his career, client work, resume and contact details. Move through it as a cursor alongside other visitors.',
 	w: 6750,
 	h: 2700,
+	pushBand: 0.25,
 	signpost: {
 		rect: { x: 1520, y: 1370, w: 60, h: 120 },
 		// TODO Joe: the email address and LinkedIn URL are not on record anywhere in the spec. Fill them in.

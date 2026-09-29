@@ -130,11 +130,39 @@ test('clearance: the Universal titles are told only on the Foundry screen and un
 	assert.match(foundry, /Universal Pictures Home Entertainment/);
 	// Each match is one prop's own block: it never runs across another prop's opening tag, so the order doesn't matter.
 	for (const id of ['screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
-		const card = new RegExp(`<div class="prop">(?:(?!<div class="prop">)[\\s\\S])*?<dialog[^>]*aria-labelledby="card-${id}-title"[\\s\\S]*?</dialog>`);
+		const card = new RegExp(`<div class="prop[^>]*>(?:(?!<div class="prop)[\\s\\S])*?<dialog[^>]*aria-labelledby="card-${id}-title"[\\s\\S]*?</dialog>`);
 		assert.match(foundry, card, id);
 		foundry = foundry.replace(card, '');
 	}
 	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the marquee and the head included, the titles are not told');
+});
+
+// The world rect an element carries for the engine's stylesheet to place it (buildout ticket 08), read back from its
+// opening tag's custom properties.
+const rectOf = (html: string, open: RegExp) => {
+	const style = html.match(open)?.[0].match(/style="([^"]*)"/)?.[1] ?? '';
+	const px = (k: string) => Number(style.match(new RegExp(`--${k}:\\s*(-?[\\d.]+)px`))?.[1]);
+	return { x: px('x'), y: px('y'), w: px('w'), h: px('h') };
+};
+// A prop's wrapper: the last `.prop` opening tag before its card's title.
+const propOpen = (id: string) => new RegExp(`<div class="prop[^>]*>(?=(?:(?!<div class="prop)[\\s\\S])*?card-${id}-title)`);
+
+test('the layer: every prop, heading, door, exit and the signpost carries its world rect, so its hit target sits on its art', () => {
+	const index = main(page('index.html'));
+	assert.deepEqual(rectOf(index, /<nav id="signpost"[^>]*>/), OVERWORLD.signpost.rect, 'signpost');
+	for (const d of OVERWORLD.districts) {
+		assert.deepEqual(rectOf(index, new RegExp(`<h2 id="${d.id}-heading"[^>]*>`)), d.sign, d.id);
+		for (const v of d.venues) {
+			assert.deepEqual(rectOf(index, new RegExp(`<h3 id="${v.id}-heading"[^>]*>`)), v.rect, v.id);
+			if (v.door) assert.deepEqual(rectOf(index, new RegExp(`<a[^>]*href="${v.door}"[^>]*>`)), v.rect, `${v.id} door`);
+			for (const p of v.props) assert.deepEqual(rectOf(index, propOpen(p.id)), p.rect, p.id);
+		}
+	}
+	for (const s of subScenes) {
+		const layer = main(page(`${s.id}.html`));
+		assert.deepEqual(rectOf(layer, new RegExp(`<a[^>]*href="/#${s.id}"[^>]*>`)), s.exit, `${s.id} exit`);
+		for (const p of s.props) assert.deepEqual(rectOf(layer, propOpen(p.id)), p.rect, p.id);
+	}
 });
 
 test('the shared screen: button name carries its state, prerendered idle', () => {

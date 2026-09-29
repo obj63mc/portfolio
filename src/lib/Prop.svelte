@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { at } from './scenes/index.ts';
 	import type { Prop } from './scenes/types';
 
 	// `level` keeps the card title inside the page's heading hierarchy when the cards read inline without JavaScript.
@@ -7,7 +8,7 @@
 	let dialog: HTMLDialogElement;
 </script>
 
-<div class="prop">
+<div class="prop at" style={at(prop.rect)}>
 	<button type="button" aria-haspopup="dialog" onclick={() => dialog.showModal()}>
 		{prop.name}: {state ?? prop.gist}
 	</button>

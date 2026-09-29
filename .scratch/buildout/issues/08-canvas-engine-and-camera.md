@@ -6,12 +6,41 @@ Carries over the rendering prototype's camera engine, tile loader and prop-layer
 
 **Blocked by:** 01 (layer and scene data)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Tiles draw for the overworld and the lobby from whatever art is in scene data (real once 04 and 05 land), at the session render scale, with ring preload and eviction
-- [ ] The button layer and the canvas agree: a prop's button sits over its drawn rect at every camera position
-- [ ] Edge-push, suppression, clamp and the 25/12 percent bands (25 in the Moosylvania lobby) behave as specified; push stops when the pointer leaves the window
-- [ ] Tab to a prop centres the camera on it; reduced motion makes it instant; clicking never pans
-- [ ] `#belleville` from the signpost pans to Belleville
-- [ ] Render scale and DPR cap follow the device rules above, including the tablet width rule
-- [ ] The camera (push band, suppression, clamp) is a pure module stepped with a fake clock and tested that way (seam 2)
+- [x] Tiles draw for the overworld and the lobby from whatever art is in scene data (real once 04 and 05 land), at the session render scale, with ring preload and eviction
+- [x] The button layer and the canvas agree: a prop's button sits over its drawn rect at every camera position
+- [x] Edge-push, suppression, clamp and the 25/12 percent bands (25 in the Moosylvania lobby) behave as specified; push stops when the pointer leaves the window
+- [x] Tab to a prop centres the camera on it; reduced motion makes it instant; clicking never pans
+- [x] `#belleville` from the signpost pans to Belleville
+- [x] Render scale and DPR cap follow the device rules above, including the tablet width rule
+- [x] The camera (push band, suppression, clamp) is a pure module stepped with a fake clock and tested that way (seam 2)
+
+## Comments
+
+2026-09-29, resolved in one commit on `main`. The camera is `src/lib/engine/camera.ts`: push band, suppression, clamp, the focus glide, the tile ring and the render scale as pure functions, stepped with a fake clock in `tests/camera.test.ts` (seam 2). The engine is `src/lib/engine/engine.ts`, loaded on mount with a dynamic import so it stays out of the prerender and the first paint. Every placed element in the layer (props, the district `<h2>` over its sign, the venue `<h3>`, the doors, the exits and the signpost) carries its world rect as custom properties from `at()` in `src/lib/scenes/index.ts`. `html.engine` in `app.css` reads those properties, and the build-output test checks them against scene data (seam 3). Tiles are the art pass's background plates, which already paint the props in. They are found by convention at `art/generated/<id>/<id>/<density>/`, through a Vite glob that emits hashed, never-inlined assets. `pushBand` moved to the shared scene shape, and the overworld states its 0.25.
+
+Checked by hand in headless Chrome against the production build:
+
+- Placement: all 27 overworld hit targets sit exactly on their rects.
+- Edge-push: about 900 px/s at the edge, easing inside the band, still in the middle. The camera holds 30 px from the marquee, stops when the pointer leaves the window and clamps at the corners. SLU does not push at 15 percent from the edge; the lobby does.
+- Focus: Tab centres the focused element. A mouse click opens a card without panning, and Escape's focus return doesn't pan either.
+- Fragments: `#belleville` glides there, and cuts there under reduced motion. Direct loads of `/#belleville` and `/#moosylvania` open on them, and a malformed fragment opens on the welcome sign.
+- Render scale: under touch emulation a 390 x 844 phone gets 0.6 with DPR 3 capped to 2 and the signpost in the first frame. An 820 px iPad gets 0.8 and a 1024 px iPad 1.0.
+
+Calls made here for Joe to confirm or veto:
+
+- **Tablet scale**: a coarse pointer scales by the screen's shorter side, clamped between 0.6 and 1 (`shortSide / 1024`), not by viewport width. A phone turned landscape would otherwise be 844 wide and drawn at tablet scale, and the scale is fixed per session. A tablet in Split View therefore keeps its full-screen scale.
+- **OS cursor**: in the unlocked model the OS cursor is hidden over the scene, where the drawn cursor stands in for it (as in the prototype). It shows over cards and the controls, where the drawn cursor hides.
+- **Doors**: until 11 measures door rects, each overworld door link covers its whole venue rect, beneath the props and the signpost. Clicking anywhere on a building enters it, the 1900 px Foundry block included.
+- **Signpost**: its nine links share the 60 x 120 board in equal slots, about 13 world px each, not over painted arrows.
+- **Held camera**: after a keyboard or fragment pan, push stays off until the mouse really moves, so a mouse resting in the band doesn't undo the pan.
+- **Skip link**: with the engine running, it sits on the signpost, where it leads.
+- **Density and DPR**: tile density follows scale x DPR, so a DPR-1 desktop loads the 1.25 tiles. DPR is read once per session with the scale.
+
+Left for later:
+
+- No `Cache-Control: immutable` rule for `/_app/immutable/*` in `static/_headers`, so tiles revalidate on each visit.
+- The drawn cursor is a plain 1.25x arrow until 13's atlas.
+- The skip-draw-when-still rule is only partly in place: the scene canvas redraws only when the camera moves or a tile lands, and the overlay only when the cursor moves.
+- For 11: focusing the sub-scene `<h1>` never pans, because only placed elements pan the camera.

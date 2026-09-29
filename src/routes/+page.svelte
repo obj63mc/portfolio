@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { OVERWORLD as overworld } from '$lib/scenes/overworld';
-	import { leftToRight } from '$lib/scenes/index';
+	import { at, leftToRight } from '$lib/scenes/index';
 	import PropCard from '$lib/Prop.svelte';
 </script>
 
@@ -9,9 +9,10 @@
 	<meta name="description" content={overworld.description} />
 </svelte:head>
 
-<a class="skip" href="#signpost-districts">Skip to districts</a>
+<!-- With the engine the skip link sits on the signpost, where it leads, so focusing it never pans the camera away. -->
+<a class="skip at" style={at(overworld.signpost.rect)} href="#signpost-districts">Skip to districts</a>
 <h1>{overworld.title}</h1>
-<nav id="signpost" aria-label="Signpost">
+<nav id="signpost" class="at" style={at(overworld.signpost.rect)} aria-label="Signpost">
 	{#each overworld.signpost.contacts as link}
 		<a href={link.href}>{link.label}</a>
 	{/each}
@@ -23,15 +24,16 @@
 </nav>
 {#each overworld.districts as d (d.id)}
 	<section id={d.id} aria-labelledby="{d.id}-heading">
-		<h2 id="{d.id}-heading">{d.name}</h2>
+		<h2 id="{d.id}-heading" class="at" style={at(d.sign)}>{d.name}</h2>
 		{#each d.venues as v (v.id)}
 			<section id={v.id} aria-labelledby="{v.id}-heading">
-				<h3 id="{v.id}-heading">{v.name}</h3>
+				<h3 id="{v.id}-heading" class="at" style={at(v.rect)}>{v.name}</h3>
 				{#each leftToRight(v.props) as prop (prop.id)}
 					<PropCard {prop} level={4} />
 				{/each}
 				{#if v.door}
-					<a class="door" href={v.door}>Enter {v.name}</a>
+					<!-- The whole building until the art pass measures each door (ticket 11); its props sit above it. -->
+					<a class="door at" style={at(v.rect)} href={v.door}>Enter {v.name}</a>
 				{/if}
 			</section>
 		{/each}

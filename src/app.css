@@ -18,7 +18,7 @@ body {
 	}
 }
 
-/* No engine yet: the canvases stay out of the document. The engine ticket shows them. */
+/* Before the engine starts, and without JavaScript, the canvases stay out of the document. */
 canvas {
 	display: none;
 }
@@ -37,4 +37,140 @@ dialog {
 	bottom: 1rem;
 	display: flex;
 	gap: 0.5rem;
+}
+
+/*
+ * The engine (buildout ticket 08) adds this class: the canvases fill the viewport and the layer becomes transparent hit
+ * targets over their art. `main` is the camera-moved layer; each placed element carries its world rect as custom
+ * properties (`at()` in src/lib/scenes/index.ts). Everything is fixed, so nothing scrolls, and the OS cursor is hidden
+ * over the scene, where the drawn cursor stands in for it.
+ */
+html.engine {
+	overflow: hidden;
+	cursor: none;
+
+	& canvas {
+		display: block;
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	& .cursors {
+		pointer-events: none;
+	}
+
+	& main {
+		position: fixed;
+		left: 0;
+		top: 0;
+		transform-origin: 0 0;
+		will-change: transform;
+
+		& h1 {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+
+		& .at {
+			position: absolute;
+			left: var(--x);
+			top: var(--y);
+			width: var(--w);
+			height: var(--h);
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			color: transparent;
+		}
+
+		/* Headings name what is painted under them without catching clicks meant for the props. */
+		& :is(h2, h3).at {
+			pointer-events: none;
+		}
+
+		/* Props and the signpost sit above a venue's door, which covers the whole building for now. */
+		& :is(.prop, nav) {
+			z-index: 1;
+		}
+
+		& .prop > button,
+		& nav a {
+			display: block;
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			border: 0;
+			background: none;
+			color: transparent;
+			font: inherit;
+			overflow: hidden;
+		}
+
+		/* The signpost's links share its board top to bottom: the four contacts, then the five districts. */
+		& nav {
+			display: flex;
+			flex-direction: column;
+
+			& > a {
+				flex: 1;
+			}
+
+			& ul {
+				flex: 5;
+				display: flex;
+				flex-direction: column;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+
+			& li {
+				flex: 1;
+			}
+		}
+
+		& :is(a, button):not(dialog *) {
+			cursor: none;
+		}
+
+		& :focus-visible:not(dialog *) {
+			outline: 3px solid #1f5fd1;
+			outline-offset: 2px;
+		}
+
+		& .skip:focus-visible {
+			width: max-content;
+			height: auto;
+			padding: 0.25rem 0.5rem;
+			background: #fff;
+			color: #1d2b3a;
+		}
+	}
+
+	/* Cards read in the top layer, clear of the layer's transform, but still inherit from it. */
+	& dialog {
+		color: CanvasText;
+		cursor: auto;
+	}
+
+	& .controls {
+		cursor: auto;
+	}
+
+	& .presence {
+		position: fixed;
+		top: 1rem;
+		right: 1rem;
+		margin: 0;
+		padding: 0.25rem 0.75rem;
+		border-radius: 1rem;
+		background: rgb(255 255 255 / 0.85);
+	}
 }

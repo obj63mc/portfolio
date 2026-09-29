@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { readingOrder } from './scenes/index.ts';
+	import { at, readingOrder } from './scenes/index.ts';
 	import type { SubScene } from './scenes/types';
 	import PropCard from './Prop.svelte';
 
@@ -15,4 +15,4 @@
 {#each readingOrder(scene) as prop (prop.id)}
 	<PropCard {prop} level={2} />
 {/each}
-<a class="door" href="/#{scene.id}">Back to {scene.district}</a>
+<a class="door at" style={at(scene.exit)} href="/#{scene.id}">Back to {scene.district}</a>
