@@ -1,3 +1,11 @@
+OVERWORLD MASTER DERIVATION, 2026-09-29 (round sixteen, upscaled 4x for the background)
+
+Round sixteen adds no tile-map change: the SLU logomark (supplied by Joe as SVG) is composited as a full-resolution decal on McDonnell Douglas Hall's central parapet, above the glass atrium, so the building reads as an SLU campus building (sources/overworld-fix/decals.json).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (a logo too fine for the native master) are composited onto the 4x source at full resolution.
+
 OVERWORLD MASTER DERIVATION, 2026-09-29 (round fifteen, upscaled 4x for the background)
 
 Round fifteen (2026-09-29, Joe's four screenshots of the 4x plate) redrew three building groups crisp on model tiles, each inside a polygon hugging the building with the trees in front of it whole: the Foundry's sawtooth warehouse (six even bays, straight roof lines, matching windows and gables; the marquee's crop and the MIDTOWN sign kept outside), McDonnell Douglas Hall (straight parapets and wall edges, regular window and glass grids) and the Central West End row (crisp cornices, even windows, clean awnings). The Maplewood parking lot was relaid by hand (scripts/art/overworld/lot-stripes.py): flat asphalt with straight, evenly spaced stall lines, one row on the storefront curb and a double row with a centre line (rounds/round-15.json).

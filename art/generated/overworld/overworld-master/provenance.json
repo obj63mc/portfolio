@@ -1,13 +1,20 @@
 {
-  "sourceSha256": "29e52126e36b966b0a7b9f6ec31d3d94ff73bd7f261ff3d76efe170b2d70b107",
-  "run": "art/runs/overworld-master/2026-09-29T15-29-24.000Z-upscale-4x",
+  "sourceSha256": "1608cb33e0d36151165c0330f8202e3eb122ad43d4a11ee79e2ff4b2ecc52ccc",
+  "run": "art/runs/overworld-master/2026-09-29T15-55-33.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/overworld-fix/stitched.png (native 1983 x 793, tile-map round fifteen)",
+    "base": "art/sources/overworld-fix/stitched.png (native 1983 x 793, tile-map round sixteen)",
     "baseSha256": "320baa21c06cbe28bd1ac0a98ea1149d8bcab45ed4a1c9c03b33c6868efc6508",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
-    "script": "scripts/art/overworld/install-master.sh"
+    "script": "scripts/art/overworld/install-master.sh",
+    "decals": [
+      {
+        "file": "art/sources/overworld-fix/slu-logomark.svg",
+        "sha256": "838bb21df14f66efe7be6e4931ec29a7447f66190c860aedde73f7b415b97045"
+      }
+    ],
+    "decalsSha256": "6fa76f0d6a1bda8f318dfbe1570fc72b75e41192f11b648ce136338598ec9c0b"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

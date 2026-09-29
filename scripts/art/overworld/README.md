@@ -13,7 +13,7 @@ is its `stitched.png` upscaled 4×; see [the art workflow](../../../art/README.m
 | `tiles.py` | The tile map: `prepare`, `stitch`, `check`, `detect`, `detect-master` (and the overworld's round-one `slice`) |
 | `tile-manifest.py` | Writes the Codex manifest for a round's tiles and prints the commands that run them |
 | `edit-api.sh` | Runs a round's tiles through `gpt-image-2.5-sunburst` on the Images API edit endpoint with the mask |
-| `install-master.sh` | Upscales `stitched.png` 4× and installs it as `<scene>-master`, then re-derives every asset the manifest derives from it (the plate with its tiles, and the measured mattes) and lists Codex extractions whose crop the round changed |
+| `install-master.sh` | Upscales `stitched.png` 4×, composites the fix folder's `decals.json` logos onto the upscale at full resolution, installs it as `<scene>-master`, then re-derives every asset the manifest derives from it (the plate with its tiles, and the measured mattes) and lists Codex extractions whose crop the round changed |
 | `lot-stripes.py` | Round fifteen's hand-drawn tile: relays the Maplewood parking lot as flat asphalt with straight, evenly spaced stall lines (`tiles/t-lot-model.png`) |
 | `sync-geometry.py` | Copies the re-derived extractions' world rects into `src/lib/scenes/overworld.ts` (install-master runs it for the overworld) |
 | `assembly/` | The earlier regional-edit scripts (`assemble.py`, `assemble2.py` with `regions.json`, `bridge-restore.py`, `paste-mc.py`) and `rivermask.py`, which traced the river polygon; kept as a record, their inputs are gone |

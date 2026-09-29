@@ -1,0 +1,12 @@
+[
+  {
+    "file": "slu-logomark.svg",
+    "center": [
+      872,
+      287.5
+    ],
+    "height": 18,
+    "shear": 0.12,
+    "note": "The SLU logomark (slu-logomark-blue-rgb.svg, supplied by Joe on 2026-09-29, with the TM path removed) on McDonnell Douglas Hall's central parapet, above the glass atrium. Its centre and height are in native px, and it is sheared to the parapet's slope (dy/dx)."
+  }
+]

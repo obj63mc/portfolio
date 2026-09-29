@@ -1,0 +1,31 @@
+{
+ "date": "2026-09-29",
+ "scenes": [
+  "overworld"
+ ],
+ "verdict": "Overworld round sixteen: the SLU logomark (Joe's SVG, TM removed) is composited as a full-resolution decal on McDonnell Douglas Hall's central parapet above the atrium (sources/overworld-fix/decals.json, applied by install-master.sh after the 4x upscale). stitched.png is unchanged. 4x master reinstalled with no stale extraction. Checks pass. Workshop acceptance is Joe's, in art/review.html.",
+ "nativeMasterHashes": {
+  "overworld": "320baa21c06cbe28bd1ac0a98ea1149d8bcab45ed4a1c9c03b33c6868efc6508"
+ },
+ "decalHashes": {
+  "decals.json": "6fa76f0d6a1bda8f318dfbe1570fc72b75e41192f11b648ce136338598ec9c0b",
+  "slu-logomark.svg": "838bb21df14f66efe7be6e4931ec29a7447f66190c860aedde73f7b415b97045"
+ },
+ "assetHashes": {
+  "overworld-master": "e337c4608624d0cfcbc9f28195d4af6b615f9e56b3c19b61cf14e1442bae3593",
+  "overworld": "879cdb27e1b10ed93f0f20370ae6e5b96353614df1c71b9bfc60dfad7e23a3ef",
+  "maplewood-tree": "17e56dbc60c79e91a72e7a4d570873763ad1bf9026277badf2e1607769617b55",
+  "park-tree": "faf71d3be0759cf60bf3a2c8c2e183479a027b6eb12cac88d2289a071c39fde3",
+  "marquee-bulbs": "a16c39f3bd275569790c728e6f8214f36d855ffc08a3e3d018e0f4904d216d61",
+  "mc-sign": "19cc5e65d23e870e175aa89e1c3b80f5a6304edfc6f8be089346480de8a31ade",
+  "eads-bridge": "f331a2964409b769a0f54e9d8eeda825ff50d9912cb161cbb91d898f488c575c"
+ },
+ "checks": {
+  "validate": "PASS: 96 assets, exact tile coverage at both densities, transparent cut-outs and registered rig frame sizes",
+  "suite": "art:check, art:test 3/3, svelte-check 0 errors 0 warnings, production build ok, npm test 42 pass 0 fail (1 todo, ticket 25)"
+ },
+ "limitations": [
+  "The decal is the one exception to editing only the native master: a model tile that later redraws McDonnell Douglas Hall's parapet must keep the face plain and flat, or move the decal in decals.json.",
+  "The crest is 61 world px tall, sized to the parapet face; at the 0.6 phone scale it is about 37 CSS px, legible as the SLU shield but not in fine detail."
+ ]
+}

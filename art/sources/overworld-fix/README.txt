@@ -2,6 +2,9 @@ Overworld fix data. The tools and the round workflow are in scripts/art/overworl
 
 stitched.png                the editable native overworld master (1983 x 793). Every fix is made here; the background
                             is this image upscaled 4x (scripts/art/overworld/install-master.sh).
+decals.json                 logos too fine for the native master, composited onto the 4x upscale by install-master.sh:
+                            the SLU logomark (slu-logomark.svg, supplied by Joe, TM removed) on McDonnell Douglas
+                            Hall's central parapet, placed in native px and sheared to the wall's slope
 rounds/round-N.json         every round's spec: tiles, masks, deterministic ops and the fix list sent to the model
 rounds/base-N.png           the master before round N, kept aside by prepare (only the last round's is kept)
 tilemap.json, tiles/        the last round's working set: t-<name>.png (crop), -marked.png (repaint areas in red),

@@ -1197,7 +1197,12 @@
     "page": "https://www.slu.edu/news/2020/february/argus2-launches.php",
     "image": "https://www.slu.edu/news/img/parks_crowd_960.jpg",
     "author": "Maggie Rotermund / Saint Louis University",
-    "description": "Verified McDonnell Douglas Hall lobby and Boileau computer classroom"
+    "description": "Verified McDonnell Douglas Hall lobby and Boileau computer classroom",
+    "logomark": {
+      "committedFile": "art/sources/overworld-fix/slu-logomark.svg",
+      "source": "slu-logomark-blue-rgb.svg, supplied by Joe Madden (2026-09-29); TM path removed",
+      "use": "Decal on McDonnell Douglas Hall's central parapet on the overworld (art/sources/overworld-fix/decals.json)"
+    }
   },
   "satellite": [
     "https://www.google.com/maps/@38.6247,-90.1866,1548m/data=!3m1!1e3",
