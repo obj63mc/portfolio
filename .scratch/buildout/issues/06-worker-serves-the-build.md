@@ -4,13 +4,13 @@
 
 **Blocked by:** 01 (something to serve)
 
-**Status:** ready-for-human
+**Status:** resolved
 
 - [x] `wrangler dev` serves every prerendered URL and a 404 page; `/ws` is refused cleanly
 - [x] Response headers on a page include the CSP, `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` and the `Permissions-Policy`; the policy exists in exactly one place
 - [x] A build with `WORKERS_CI_BRANCH` not `main` sets `X-Robots-Tag: noindex`; a `main` build does not
 - [x] One npm script runs type-check, tests and build, and is the Workers Builds build command
-- [ ] `npx wrangler deploy` from a local OAuth session publishes to `barmadden.workers.dev` once (the custom domain comes in 07)
+- [x] `npx wrangler deploy` from a local OAuth session publishes the Worker, which production serves on `barmadden.com` (07's Custom Domain); workers.dev serves Previews only
 
 ## Comments
 
@@ -23,3 +23,5 @@
 - `static/404.html` is a plain `noindex` page with a link back to the overworld. It's served with status 404 at any depth.
 - `npm run ci` (check, build, test) is the build command, set in the Workers Builds dashboard in 07. Run locally with `npm run build && npx wrangler dev`. Wrangler 4.143.0 is pinned exactly. `.wrangler/` is ignored. The Worker is type-checked via `kit.typescript.config`.
 - Tests: `tests/deploy.test.ts` covers the socket refusal and Origin rule through the Worker's `fetch`, and runs the noindex step for a Preview branch, for `main` and with no branch. `tests/build-output.test.ts` checks one CSP per page with the spec's sources, every inline script's hash, and `_headers`. Verified by hand under `wrangler dev`: every scene URL 200, the headers on pages and assets, 404 at `/nope` and `/a/b/c`, `/ws` and `/ws/overworld` refused, noindex on a `WORKERS_CI_BRANCH=feature/x` build. `wrangler deploy --dry-run` accepts the config. Not checked in a browser: Chrome couldn't reach the local server.
+
+2026-09-29, deployed (Joe). Production answers on `barmadden.com` only. `https://barmadden.barmadden.workers.dev/` returns 404 with Cloudflare's error 1042, because `workers_dev = false`. The workers.dev subdomain serves Previews only. The deploy box is reworded to match. It had said the deploy publishes to `barmadden.workers.dev`, which contradicts `workers_dev = false`.
