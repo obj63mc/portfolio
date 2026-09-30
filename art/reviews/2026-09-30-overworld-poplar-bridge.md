@@ -33,3 +33,15 @@ Joe (2026-09-30), from the site:
 - `art/generated/overworld/composite.webp`: `b46a29f8719dbcaae310e51fa43392a9104182e853820c98139e5af50cf34162`
 - `art/generated/contact-sheet.webp`: `5521de1eb2f6b805df6d0cd8312d9623a8c26c0e2634c7cf4ff8b909406197c7`
 - `art/generated/overworld/overworld-master/image.webp`: `f663e38a30426057fa205f9329b546cb103573490b3b356c34669d7cba920a5b` (unchanged)
+
+## Later the same day: the river's end at the bottom edge
+
+Joe (2026-09-30), from a screenshot:
+- A float sped up the further down it went: the camera's push, up to 900 world px a second, carried the cursor pressed at the screen's edge.
+- The river's end, on the Poplar Street deck, came and went before anyone could see it.
+
+Changes:
+- A float now moves the camera itself at the current's speed. The river's end is the bottom of the world less the arrow's height, `southEnd` at y 2660 right across the water, where the arrow is seen to reach the scene's bottom edge.
+- Floats now pass under the Poplar Street bridge. Its two piers joined the obstacles from its matte, x 4987 to 5100 down to 2001 and x 5535 to 5655 down to 2133.
+- No art changed.
+

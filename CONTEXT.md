@@ -82,7 +82,7 @@ Motion a prop plays in response to a visitor's hover or click, such as the Monst
 _Avoid_: interaction, effect, trigger, animation
 
 **River current**:
-The pull that carries a cursor downstream while it floats in the river. A cursor is in the river once it moves onto the water from a bank or off the bridge, and floats once it has been left still there for a second, drifting round the piers, boats and docks in its way; anything the visitor does stops the float. It passes under the bridges and leaves the river by reaching either bank. A visitor floated to the river's south end is put back at the Arch; one moving about there is not.
+The pull that carries a cursor downstream while it floats in the river. A cursor is in the river once it moves onto the water from a bank or off the bridge, and floats once it has been left still there for a second, drifting round the piers, boats and docks in its way; anything the visitor does stops the float. It passes under the bridges and leaves the river by reaching either bank. A float goes at the current's own speed, the camera following it, and a visitor floated to the bottom edge of the map is put back at the Arch; one moving about in the water is not.
 _Avoid_: water drag, drift zone, hazard
 
 ### Sound

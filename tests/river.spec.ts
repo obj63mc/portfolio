@@ -1,6 +1,7 @@
 // Seam 4 for the river current (buildout ticket 20), over the built site: the drawn cursor left still in the Mississippi
-// for a second floats south until the visitor moves it, reaches a bank or floats to the south end, which fades it back to
-// the Arch with its "you" tag; moving about near the south end never does (Joe, 2026-09-30). The Eads deck is crossed
+// for a second floats south at the current's speed, the camera following, until the visitor moves it, reaches a bank or
+// floats to the bottom edge of the scene, which fades it back to the Arch with its "you" tag; moving about in the water
+// never does (Joe, 2026-09-30). The Eads deck is crossed
 // without floating, and a float drifts round its pier; each bridge, Eads and Poplar Street, is drawn over a cursor under
 // it but not over one on it. The browser refuses the pointer lock here, so the drawn cursor follows the mouse until the
 // keys steer it.
@@ -117,33 +118,45 @@ test('the float stops while paused and carries on after Resume', async ({ page }
 	await expect.poll(() => travel(page, at, 300)).toBeGreaterThan(10);
 });
 
-test('moving about on the water past the south end sends nobody back; left still there, the visitor is', async ({ page }) => {
+/** The view has gone black at its top left corner: the wash-out's fade, drawn over everything on the cursor canvas. */
+const black = (page: Page) => page.evaluate(() => document.querySelector<HTMLCanvasElement>('canvas.cursors')!.getContext('2d')!.getImageData(0, 0, 1, 1).data[3] > 200);
+
+test('moving about on the water below the Poplar Street bridge sends nobody back; left still there, the visitor floats on', async ({ page }) => {
 	await page.goto('/#belleville');
 	await join(page);
-	const c = await camera(page), black = () => page.evaluate(() => document.querySelector<HTMLCanvasElement>('canvas.cursors')!.getContext('2d')!.getImageData(0, 0, 1, 1).data[3]);
-	// Three seconds wandering either side of the line, never still for a second.
+	const c = await camera(page);
+	// Three seconds wandering below the bridge, where the river used to end, never still for a second.
 	for (let i = 0; i < 30; i++) {
-		await point(page, { x: 5300 + 10 * i, y: 1860 + 60 * Math.abs(Math.sin(i / 3)) });
+		await point(page, { x: 5300 + 8 * i, y: 1940 + 40 * Math.abs(Math.sin(i / 3)) });
 		await page.waitForTimeout(100);
-		expect(await black()).toBe(0);
+		expect(await black(page)).toBe(false);
 	}
 	expect(await camera(page)).toEqual(c);
-	await point(page, { x: 5400, y: 1950 });
-	await page.waitForFunction(() => document.querySelector<HTMLCanvasElement>('canvas.cursors')!.getContext('2d')!.getImageData(0, 0, 1, 1).data[3] > 200, null, { timeout: 3000 });
-	await expect.poll(async () => ((c) => [Math.round(c.x + 640 / c.s), Math.round(c.y + 360 / c.s)])(await camera(page))).toEqual([arch.x, arch.y]);
+	// Left still, it floats down with the camera following: nobody is sent back yet.
+	await point(page, { x: 5400, y: 1960 });
+	await expect.poll(async () => (await camera(page)).y, { timeout: 5000 }).toBeGreaterThan(c.y + 50);
+	expect(await black(page)).toBe(false);
 });
 
-test('the south end fades the visitor back to the Arch: the camera centred on it and the "you" tag shown', async ({ page }) => {
+test('floating at the current’s speed, the camera following, to the bottom edge of the scene fades the visitor back to the Arch', async ({ page }) => {
+	test.setTimeout(40_000);
 	await wade(page);
+	// Sampled through the whole float, which the camera follows down: never faster than the current, 150 world px a
+	// second, and seen on screen to the end, its arrow at the bottom edge of the scene.
+	const seen: { t: number; p: Point; screen: number }[] = [];
+	while (!(await black(page))) {
+		const t = await page.evaluate(() => performance.now()), p = await tip(page), c = await camera(page);
+		if (p) seen.push({ t, p, screen: (p.y - c.y) * c.s });
+		expect(seen.length, 'still floating').toBeLessThan(400);
+		await page.waitForTimeout(50);
+	}
+	const moving = seen.filter((s, i) => i && s.p.y > seen[i - 1].p.y);
+	expect(moving.length).toBeGreaterThan(20);
+	for (let i = 10; i < seen.length; i += 10) expect((seen[i].p.y - seen[i - 10].p.y) / ((seen[i].t - seen[i - 10].t) / 1000)).toBeLessThan(165);
+	const last = seen.at(-1)!;
+	expect(last.p.y + 40, 'the arrow at the bottom edge').toBeGreaterThan(OVERWORLD.h - 12);
+	expect(last.screen, 'in view').toBeLessThan(720);
 	// The view cuts to black and opens out of it on the Arch, in the middle of the screen.
-	await page.waitForFunction(
-		() => {
-			const g = document.querySelector<HTMLCanvasElement>('canvas.cursors')!.getContext('2d')!;
-			return g.getImageData(0, 0, 1, 1).data[3] > 200;
-		},
-		null,
-		{ timeout: 10_000 }
-	);
 	await expect.poll(async () => ((c) => [Math.round(c.x + 640 / c.s), Math.round(c.y + 360 / c.s)])(await camera(page))).toEqual([arch.x, arch.y]);
 	const s = (await camera(page)).s * factor(OVERWORLD.depth, arch);
 	await expect.poll(async () => ((p) => p && Math.hypot(p.x - 640, p.y - 360))(await cursorAt(page, { x: 640, y: 360 }))).toBeLessThan(1.5);

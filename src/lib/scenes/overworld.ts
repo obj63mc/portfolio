@@ -246,16 +246,19 @@ export const OVERWORLD: Overworld = {
 			{ key: 'poplar-bridge', rect: { x: 4950, y: 1668, w: 900, h: 466 } }
 		],
 		// Read on gridded crops of the master (Joe, 2026-09-30): the Eads Bridge's middle pier from the deck's underside to
-		// its base, the riverboat at the Arch levee with its gangway to the bank, and the Belleville barge dock's crane and
-		// stilted pier. The Poplar Street piers stand south of the river's end, so nothing floats to them.
+		// its base, the riverboat at the Arch levee with its gangway to the bank, the Belleville barge dock's crane and
+		// stilted pier, and the Poplar Street bridge's two piers, from its deck's underside to their bases (its cut-out's
+		// matte).
 		obstacles: [
 			{ x: 5310, y: 455, w: 160, h: 195 },
 			{ x: 4960, y: 690, w: 225, h: 128 },
-			{ x: 5610, y: 1025, w: 195, h: 160 }
+			{ x: 5610, y: 1025, w: 195, h: 160 },
+			{ x: 4987, y: 1840, w: 113, h: 161 },
+			{ x: 5535, y: 1946, w: 120, h: 187 }
 		],
-		// Along the middle of the Poplar Street deck, which slopes down to the east: a cursor floating under the bridge is
-		// hidden by its cut-out when it reaches the river's end.
-		southEnd: [{ x: 4950, y: 1750 }, { x: 5850, y: 1925 }],
+		// The bottom of the world, less the arrow's height, right across the water: a floating cursor is put back at the Arch
+		// only once its arrow touches the scene's bottom edge, where the visitor sees it arrive (Joe, 2026-09-30).
+		southEnd: [{ x: 4400, y: 2660 }, { x: 6300, y: 2660 }],
 		// The lawn between the Arch's legs, south of the museum entrance.
 		arch: { x: 4780, y: 1330 },
 		// The Arch grounds and the water, top to bottom, between Midtown's east edge and Belleville's west, each 100 px or more

@@ -704,10 +704,12 @@ export class Engine {
 		if (!free && (this.joy || this.gesture.is !== 'none')) (this.gesture = { is: 'none' }), this.letGo();
 		const c = free ? this.cursor : null, k = steer(this.keys, this.view.s, dt);
 		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 };
-		// The current carries a free cursor left still like steering does, so the camera follows it through the push band,
-		// but it doesn't bring an unlocked mouse that has left the window back in. The keys and the joystick stop it.
-		const drift = c ? this.drift(scene, dt, now, !!(k.x || k.y || j.x || j.y)) : { x: 0, y: 0 };
-		const d = { x: k.x + j.x + drift.x, y: k.y + j.y + drift.y };
+		// The current carries a free cursor left still, the camera following it at the current's own speed; the keys and the
+		// joystick stop it, so a floating cursor is never steered in the same frame.
+		const drift = c ? this.drift(scene, dt, now, !!(k.x || k.y || j.x || j.y)) : null;
+		const floating = !!drift && (drift.x !== 0 || drift.y !== 0);
+		if (floating) this.float(scene, drift);
+		const d = { x: k.x + j.x, y: k.y + j.y };
 		if (c && (d.x || d.y) && !this.projector.seated) {
 			this.steerTo({ x: c.x + d.x, y: c.y + d.y }, now);
 			this.armed = true;
@@ -725,7 +727,8 @@ export class Engine {
 				if (cam === this.goal) this.goal = null;
 			} else {
 				// Layout is clean at the top of the frame, so reading the toggles' rects here costs nothing. On touch they don't count.
-				const cursor = free && this.armed && (this.input.is === 'locked' || this.inside) ? this.cursor : null;
+				// A float moves the camera itself, at the current's speed: the push would carry it faster the lower it got.
+				const cursor = free && !floating && this.armed && (this.input.is === 'locked' || this.inside) ? this.cursor : null;
 				const controls =
 					cursor && this.input.is !== 'touch'
 						? [...document.querySelectorAll(CONTROLS)].map((c) => c.getBoundingClientRect()).map((r) => ({ x: r.x, y: r.y, w: r.width, h: r.height }))
@@ -760,10 +763,10 @@ export class Engine {
 	};
 
 	/**
-	 * The river current on the free own cursor this frame (ticket 20), CSS px: left still in the water for a second it
+	 * The river current on the free own cursor this frame (ticket 20), world px: left still in the water for a second it
 	 * floats south, round the piers, boats and docks in its way, until the visitor moves it (`steered` by the keys or
-	 * joystick this frame, or `stirred` since the last); floating to the river's end, the visitor is washed out to the
-	 * Arch (Joe, 2026-09-30).
+	 * joystick this frame, or `stirred` since the last); floating to the bottom edge of the scene, the visitor is washed
+	 * out to the Arch (Joe, 2026-09-30).
 	 */
 	private drift(scene: Scene, dt: number, now: number, steered: boolean): Point {
 		const at = this.own, stirred = this.stirred || steered, none = { x: 0, y: 0 };
@@ -772,7 +775,23 @@ export class Engine {
 		const f = flow(scene.river, this.current, at, dt, stirred);
 		if (f.is.is === 'end') return this.toArch(scene, now), none;
 		this.current = f.is;
-		return { x: f.d.x * this.view.s, y: f.d.y * this.view.s };
+		return f.d;
+	}
+
+	/**
+	 * A float's step `d`, world px: the cursor moves on screen up to the push band's inner edge, and past it the camera
+	 * takes the step instead, so the float goes at the current's own speed, never the push's, with the cursor held in view.
+	 * Where the camera meets the scene's edge the cursor moves on to it, so the visitor sees it reach the river's end (Joe,
+	 * 2026-09-30).
+	 */
+	private float(scene: Scene, d: Point) {
+		const v = this.view, b = scene.pushBand ?? 0.12, c = this.cursor!, to = { x: c.x + d.x * v.s, y: c.y + d.y * v.s };
+		// How far a step from `was` to `p` goes out past the band's inner edge on an axis `size` CSS px long.
+		const past = (p: number, was: number, size: number) =>
+			p > size * (1 - b) && p > was ? p - Math.max(size * (1 - b), was) : p < size * b && p < was ? p - Math.min(size * b, was) : 0;
+		const cam = clamp({ x: this.cam.x + past(to.x, c.x, v.w) / v.s, y: this.cam.y + past(to.y, c.y, v.h) / v.s }, v, scene);
+		this.cursor = inView({ x: to.x - (cam.x - this.cam.x) * v.s, y: to.y - (cam.y - this.cam.y) * v.s }, v);
+		if (cam.x !== this.cam.x || cam.y !== this.cam.y) this.moveTo(cam);
 	}
 
 	/**
