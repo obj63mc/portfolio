@@ -32,7 +32,10 @@ export interface Prop {
 	 * Neither has a card (Joe, 2026-09-29, buildout ticket 17).
 	 */
 	kind?: 'action' | 'status';
-	/** Card paragraphs, the full content-inventory text; none for an `action` or a `status`. */
+	/**
+	 * Card paragraphs, the full content-inventory text; none for an `action` or a `status`. A video card's is one short line,
+	 * shown under its video.
+	 */
 	body: string[];
 	/** Links shown inside the card. An external link never leaves the card (spec: "Links, not buttons"). */
 	links?: Link[];
@@ -47,8 +50,11 @@ export interface Prop {
 	 * `<scene>-<id>` in a sub-scene (`artOf` in index.ts).
 	 */
 	art?: string[];
-	/** A video its card plays, drawn onto `screen` in the scene while it plays: a file in art/sources/videos. */
-	video?: { file: string; screen: Rect; captions?: string };
+	/**
+	 * A video its card plays, a file in art/sources/videos/universal, beer or liquor (`VIDEOS`), drawn onto `screen` in the scene while
+	 * it plays; with no screen it plays in the card alone.
+	 */
+	video?: { file: string; screen?: Rect; captions?: string };
 }
 
 export interface Venue {

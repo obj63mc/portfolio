@@ -1,9 +1,10 @@
 // Prop motion and reactions (buildout ticket 15) as pure functions of time and state, for the props module and for tests:
 // ambient motion (the moose breathing and blinking, the rider round the park's lake loop, the marquee's letters scrolling
-// and its bulbs chasing, a glint along the Side Project bottles), hover and click reactions, and what reduced motion leaves of them. Times are
+// and its bulbs chasing, a glint along the Side Project bottles, the river's ripples), hover and click reactions, and what reduced motion leaves of them. Times are
 // ms. Ambient motion runs on server time, so every visitor in a room sees the rider at the same point. Carried over from
 // the rendering prototype's props.ts and the art workshop's drawRig (art/review.js).
-import type { Point } from '../scenes/types';
+import type { Overworld, Point, Rect } from '../scenes/types';
+import { lineY } from '../scenes/walk.ts';
 import { LOOP, along } from './track.ts';
 
 /** A hover fades in and out over this long; under reduced motion it is a plain highlight, on and off at once. */
@@ -40,6 +41,23 @@ export const pop = (p: number) => 1 + 0.06 * arc(p);
 
 /** An eye's height through a blink: open, shut to a tenth halfway, open again. */
 export const blink = (p: number) => 1 - 0.9 * arc(p);
+
+/**
+ * How far the MonsterCommerce eye's iris turns, as fractions of the eye: across, and up or down, where the ball is
+ * shallower; all the way once the cursor is `reach` world px off.
+ */
+export const GAZE = { x: 0.16, y: 0.06, reach: 400 } as const;
+
+/**
+ * The MonsterCommerce eye's iris offset, world px, in an eye at `eye` looking at the visitor's own cursor `at`: straight
+ * ahead with no cursor, and under reduced motion.
+ */
+export function gaze(eye: Rect, at: Point | null, rm: boolean): Point {
+	const dx = at ? at.x - (eye.x + eye.w / 2) : 0, dy = at ? at.y - (eye.y + eye.h / 2) : 0, d = Math.hypot(dx, dy);
+	if (rm || !d) return { x: 0, y: 0 };
+	const k = Math.min(1, d / GAZE.reach) / d;
+	return { x: dx * k * GAZE.x * eye.w, y: dy * k * GAZE.y * eye.h };
+}
 
 /** A rig part's rotation (radians, about its pivot) and vertical scale (about its pivot). */
 export interface Pose {
@@ -146,3 +164,81 @@ export const glint = (t: number, rm: boolean) => {
 	const u = (t % 7000) / 1400;
 	return rm || u > 1 ? null : u;
 };
+
+/**
+ * The river's ripples (Joe, 2026-09-30, after Cursor Camp's water): pale streaks like the ones painted on it and soft
+ * darker patches, each seen for `life` s at a time somewhere new, drifting `drift` world px/s south as it fades in and
+ * out. They keep `lane` of the way in from either bank and fade out `clear` world px short of a bank, a deck, anything
+ * standing in the water, and the arches' steel over the water north of the Eads deck. They move `fps` times a second.
+ */
+export const WATER = {
+	foam: { n: 40, w: [40, 110], h: [4, 7], life: [3, 6] },
+	shade: { n: 20, w: [140, 300], h: [40, 80], life: [5, 9] },
+	drift: 30,
+	lane: 0.12,
+	clear: 40,
+	fps: 15
+} as const;
+
+/** A ripple, centred at x, y, w by h world px, seen at `a`, 0 to 1. */
+export interface Ripple {
+	kind: 'foam' | 'shade';
+	x: number;
+	y: number;
+	w: number;
+	h: number;
+	a: number;
+}
+
+/** A hash of `n` to [0, 1): the same for every visitor. */
+const rand = (n: number) => {
+	let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b);
+	x ^= x >>> 13;
+	x = Math.imul(x, 0xc2b2ae35);
+	return ((x ^ (x >>> 16)) >>> 0) / 4294967296;
+};
+
+/** Where row `y` crosses the river's outline first and last, world px: its west and east banks. */
+export function banks(mask: Point[], y: number): [number, number] | null {
+	let w = Infinity, e = -Infinity;
+	for (let i = 0, j = mask.length - 1; i < mask.length; j = i++) {
+		const a = mask[i], b = mask[j];
+		if (a.y > y === b.y > y) continue;
+		const x = a.x + ((b.x - a.x) * (y - a.y)) / (b.y - a.y);
+		(w = Math.min(w, x)), (e = Math.max(e, x));
+	}
+	return w < e ? [w, e] : null;
+}
+
+/** How far a ripple `half` world px across at `p` is from the nearest thing it keeps clear of, world px. */
+function clearance(river: Overworld['river'], p: Point, half: number, [west, east]: [number, number]) {
+	let d = Math.min(p.x - half - west, east - p.x - half);
+	for (const o of river.obstacles)
+		d = Math.min(d, Math.hypot(Math.max(o.x - p.x - half, 0, p.x - half - o.x - o.w), Math.max(o.y - p.y, 0, p.y - o.y - o.h)));
+	river.decks.forEach(([tl, tr, br, bl], i) => {
+		// North of the first deck, the Eads, the water shows through the arches' steel.
+		const top = i ? lineY([tl, tr], p.x) : -Infinity, bottom = lineY([bl, br], p.x);
+		d = Math.min(d, p.y < top ? top - p.y : p.y > bottom ? p.y - bottom : 0);
+	});
+	return d;
+}
+
+/** The river's ripples at server time `t` ms; under reduced motion they rest where they are at 0. */
+export function ripples(river: Overworld['river'], t: number, rm: boolean): Ripple[] {
+	const s = rm ? 0 : Math.floor((t / 1000) * WATER.fps) / WATER.fps, ys = river.mask.map((p) => p.y);
+	const north = Math.min(...ys), south = Math.max(...ys), out: Ripple[] = [];
+	(['foam', 'shade'] as const).forEach((kind, k) => {
+		const { n, w, h, life } = WATER[kind];
+		for (let i = 0; i < n; i++) {
+			const r = (j: number) => rand(k * 1e6 + i * 1e3 + j), span = life[0] + r(0) * (life[1] - life[0]);
+			const u = s / span + r(1), round = Math.floor(u), f = u - round, q = (j: number) => rand(k * 1e6 + i * 1e3 + round * 7919 + j);
+			const y = north + q(2) * (south - north) + f * span * WATER.drift, side = banks(river.mask, y);
+			if (!side) continue;
+			const across = WATER.lane + q(3) * (1 - 2 * WATER.lane), x = side[0] + across * (side[1] - side[0]);
+			const ww = w[0] + q(4) * (w[1] - w[0]), hh = h[0] + q(5) * (h[1] - h[0]);
+			const a = Math.sin(Math.PI * f) * Math.min(1, Math.max(0, clearance(river, { x, y }, ww / 2, side) / WATER.clear));
+			if (a > 0) out.push({ kind, x, y, w: ww * (0.7 + 0.3 * Math.sin(Math.PI * f)), h: hh, a });
+		}
+	});
+	return out;
+}

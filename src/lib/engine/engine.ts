@@ -45,6 +45,14 @@ export type Scene = Overworld | SubScene;
  */
 type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'touch' } | { is: 'released' } | { is: 'paused'; relock: boolean };
 
+/** A slider clicked by the locked cursor at `x`, CSS px: set to the value there, as a click on its track sets it. */
+const slide = (el: HTMLInputElement, x: number) => {
+	const r = el.getBoundingClientRect(), min = Number(el.min), max = Number(el.max);
+	el.value = String(min + Math.min(1, Math.max(0, (x - r.x) / r.width)) * (max - min));
+	el.dispatchEvent(new Event('input', { bubbles: true }));
+	el.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
 /** Joined and not paused: the keys steer. */
 const joined = (i: Input) => i.is === 'locked' || i.is === 'unlocked' || i.is === 'touch' || i.is === 'released';
 
@@ -118,6 +126,8 @@ export class Engine {
 	private stopped: HTMLVideoElement[] = [];
 	/** The control under the locked or touch-steered cursor, marked `.hot` since the page gets no hover there. */
 	private hot: Element | null = null;
+	/** The card video player under the locked cursor, marked `.hot` too, which shows its controls (VideoPlayer.svelte). */
+	private hotPlayer: Element | null = null;
 	/** False after a keyboard or fragment pan, or a drag, until the cursor moves, so a cursor resting in the band doesn't undo it. */
 	private armed = true;
 	/** When steering last pressed the cursor against the viewport's edge (camera.ts `Frame.pressed`). */
@@ -237,6 +247,10 @@ export class Engine {
 		// The cursor canvas enters the top layer before the Join card, so the card dims it with the scene.
 		cursors.showPopover();
 		this.raise.observe(document.body, { subtree: true, attributeFilter: ['open'] });
+		// And over a card's video gone full screen, which enters the top layer over it.
+		document.addEventListener('fullscreenchange', () => document.fullscreenElement && (this.cursors.hidePopover(), this.cursors.showPopover()), {
+			signal: this.listeners.signal
+		});
 		this.enter(this.input);
 		this.raf = requestAnimationFrame(this.tick);
 	}
@@ -255,6 +269,7 @@ export class Engine {
 		for (const card of Object.values(this.cards)) card.close();
 		this.cursors.hidePopover();
 		this.hot?.classList.remove('hot');
+		this.hotPlayer?.classList.remove('hot');
 		document.documentElement.classList.remove('engine');
 		delete document.documentElement.dataset.input;
 		delete document.documentElement.dataset.iris;
@@ -397,8 +412,20 @@ export class Engine {
 			opts
 		);
 		// Locked, the mouse's clicks come to the canvas holding the lock: each goes to the control the drawn cursor is over,
-		// a card's Close and the links inside it included. A tap on the canvas is on bare scenery and clicks nothing.
-		this.canvas.addEventListener('click', () => { if (this.input.is === 'locked') this.under()?.click(); }, opts);
+		// a card's Close and the links inside it included, sets a slider (a card video's seek bar) where it is clicked, or
+		// plays or pauses a card's video. A tap on the canvas is on bare scenery and clicks nothing.
+		this.canvas.addEventListener(
+			'click',
+			() => {
+				if (this.input.is !== 'locked' || !this.cursor) return;
+				const hit = this.under();
+				if (hit instanceof HTMLInputElement) return slide(hit, this.cursor.x);
+				if (hit) return hit.click();
+				const video = document.elementFromPoint(this.cursor.x, this.cursor.y)?.closest<HTMLVideoElement>('dialog video');
+				if (video) void (video.paused ? video.play().catch(() => {}) : video.pause());
+			},
+			opts
+		);
 		// A middle click opens the link under the locked cursor in a new tab, as it would at the OS pointer (ticket 11). A
 		// page can only open the tab in front, which pauses this one.
 		this.canvas.addEventListener(
@@ -495,6 +522,9 @@ export class Engine {
 			},
 			opts
 		);
+		// A card's external link opens a new tab, which leaves this one: it pauses now, whatever order the browser's blur, hidden
+		// tab and lock let go come in (Joe, 2026-09-30).
+		this.layer.addEventListener('click', (e) => { if ((e.target as Element).closest('a[target="_blank"]')) this.pause(); }, opts);
 		// Fragment links (the signpost's districts, the skip link) pan to their target, the same fragment again included,
 		// which the router and hashchange both skip.
 		this.layer.addEventListener(
@@ -545,7 +575,7 @@ export class Engine {
 	 */
 	private under() {
 		const touch = this.input.is === 'touch', c = (this.input.is === 'locked' || (touch && !document.querySelector('dialog[open]'))) && this.cursor;
-		const hit = c ? document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button') : null;
+		const hit = c ? document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button, input[type="range"]') : null;
 		return hit && !(touch && hit.closest(CONTROLS)) && !hit.matches('.prop.behind > button') ? hit : null;
 	}
 
@@ -556,7 +586,7 @@ export class Engine {
 	private get pointing() {
 		const c = this.cursor;
 		if (this.input.is !== 'unlocked') return !!this.hot;
-		return !!c && !!document.elementFromPoint(c.x, c.y)?.closest('a, button');
+		return !!c && !!document.elementFromPoint(c.x, c.y)?.closest('a, button, input[type="range"]');
 	}
 
 	/** Every change of input goes through here: the card it calls for is open and any other is closed. */
@@ -742,7 +772,7 @@ export class Engine {
 		this.walk(scene, now);
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
-		const t = this.net.serverNow(), view = this.seen(), moved = this.props.step(dt * 1000, t, view, this.reducedMotion.matches), lit = this.projector.step(t);
+		const t = this.net.serverNow(), view = this.seen(), moved = this.props.step(dt * 1000, t, view, this.reducedMotion.matches, this.own), lit = this.projector.step(t);
 		this.shots.step(t);
 		// The beds follow the camera's centre, the theme and the music the scene, its screen and a prop's video (ticket 21).
 		sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t) });
@@ -831,8 +861,13 @@ export class Engine {
 		for (const el of this.layer.querySelectorAll<HTMLElement>('.prop[data-prop]')) el.classList.toggle('behind', ids.includes(el.dataset.prop!));
 	}
 
-	/** Locked or on touch, the page has no hover at the drawn cursor, so the link or button under it is marked `.hot` instead. */
+	/**
+	 * Locked or on touch, the page has no hover at the drawn cursor, so the link or button under it is marked `.hot` instead,
+	 * and locked, the card video player it is over.
+	 */
 	private mark() {
+		const c = this.input.is === 'locked' && this.cursor, player = (c && document.elementFromPoint(c.x, c.y)?.closest('.player')) || null;
+		if (player !== this.hotPlayer) this.hotPlayer?.classList.remove('hot'), player?.classList.add('hot'), (this.hotPlayer = player);
 		const hit = this.under();
 		if (hit === this.hot) return;
 		this.hot?.classList.remove('hot');

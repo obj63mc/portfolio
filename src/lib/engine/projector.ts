@@ -213,7 +213,7 @@ export class Projector {
 		v.pause();
 		if (title) {
 			v.muted = sound.muted;
-			v.src = VIDEOS[`/art/sources/videos/${SCREEN_VIDEOS[title].file}`];
+			v.src = VIDEOS[SCREEN_VIDEOS[title].file];
 		} else if (v.hasAttribute('src')) {
 			v.removeAttribute('src');
 			v.load();

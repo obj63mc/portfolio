@@ -1,48 +1,70 @@
 import type { Prop, Rect, SubScene } from './types';
 
 // TODO Joe: the content inventory promises a one-line "what we did" per brand; none is on record.
-// Bacardi, Grey Goose and Barefoot Wine are confirmed website builds; the rest are on Moosylvania's work page.
+// Bacardi and Grey Goose are confirmed website builds; the rest are on Moosylvania's work page. The beers come first, left of
+// the spirits (Joe, 2026-09-30).
 const brands = [
+	['bud-light', 'Bud Light'],
+	['sapporo', 'Sapporo'],
+	['anchor', 'Anchor Brewing'],
+	['soonhari', 'Soonhari'],
 	['bacardi', 'Bacardi'],
 	['grey-goose', 'Grey Goose'],
-	['new-amsterdam', 'New Amsterdam Vodka'],
-	['camarena', 'Camarena Tequila'],
-	['barefoot', 'Barefoot Wine'],
-	['bud-light', 'Bud Light'],
 	['ej', 'E&J Brandy'],
-	['pink-whitney', 'Pink Whitney'],
+	['camarena', 'Camarena Tequila'],
 	['rumchata', 'RumChata'],
-	['soonhari', 'Soonhari']
+	['pink-whitney', 'Pink Whitney'],
+	['new-amsterdam', 'New Amsterdam Vodka']
 ] as const;
 type Brand = (typeof brands)[number][0];
-const builtSite = new Set(['bacardi', 'grey-goose', 'barefoot']);
+const builtSite = new Set(['bacardi', 'grey-goose']);
+// A bottle plays its brand's homepage (art/sources/videos/beer and liquor), and its card's only copy is its line, under
+// the video. `link`, where the site is still up, adds a See More link to it under the line.
+// TODO Joe: the spirits' lines (placeholders), and Bacardi's and Grey Goose's photos or videos.
+const homepage: Partial<Record<Brand, { file: string; line: string; link?: string }>> = {
+	'bud-light': { file: 'bud-light-homepage-2026-09-30.mp4', line: 'We built Bud Light\'s "Big Game" Website' },
+	sapporo: { file: 'sapporo-homepage-2026-09-30.mp4', line: 'SapporoBeer.com was a standard brochure site with tons of promotions and minigames - can you find the easter egg on this site to play one?' },
+	anchor: { file: 'anchor-brewing-homepage-2026-09-30.mp4', line: 'When Anchor Rebranded, We Relaunched the brand with a new website.' },
+	soonhari: { file: 'soonhari-homepage-2026-09-30-4k.mp4', line: 'Soonhari, the original flavored Soju just got a brand new website.', link:'https://soonhariusa.com' },
+	ej: { file: 'ej-brandy-home-collection-vsop-2026-09-30.mp4', line: 'The E&J Brandy homepage.' },
+	camarena: { file: 'camarena-home-margarita-2026-09-30.mp4', line: 'The Camarena Tequila homepage.' },
+	rumchata: { file: 'rumchata-home-peppermint-bark-2026-09-30.mp4', line: 'The RumChata homepage.' },
+	'pink-whitney': { file: 'pink-whitney-home-products-750ml-2026-09-30.mp4', line: 'The Pink Whitney homepage.' },
+	'new-amsterdam': { file: 'new-amsterdam-home-find-your-wins-2026-09-30.mp4', line: 'The New Amsterdam Vodka homepage.' }
+};
 
 // Measured on the accepted master (art/sources/side-project-fix/stitched.png, 1672 x 941, installed 4x as
-// side-project-master; buildout ticket 05, 2026-09-28): the front bar seen nearly face-on, its navy wall behind. The ten
-// brand bottles stand in one lit row on the wall's lower shelf, left to right in brand order, each rect its matte's trim;
-// the back bar's cooler at the right carries the Side Project sign on its door and the chalkboard. The two counters are
-// walk-behind scenery; no prop stands on them.
+// side-project-master; buildout ticket 05, 2026-09-28): the front bar seen nearly face-on, its navy wall behind. The eleven
+// brand bottles stand in one lit row on the wall's lower shelf, left to right in brand order (round two, 2026-09-30), each
+// rect its matte's trim; the back bar's cooler at the right carries the Side Project sign on its door and the chalkboard.
+// The two counters are walk-behind scenery; no prop stands on them.
 const shelf: Record<Brand, Rect> = {
-	bacardi: { x: 422, y: 593, w: 83, h: 260 },
-	'grey-goose': { x: 557, y: 582, w: 76, h: 272 },
-	'new-amsterdam': { x: 679, y: 602, w: 80, h: 252 },
-	camarena: { x: 798, y: 634, w: 95, h: 219 },
-	barefoot: { x: 934, y: 602, w: 73, h: 250 },
-	'bud-light': { x: 1050, y: 639, w: 66, h: 211 },
-	ej: { x: 1157, y: 648, w: 95, h: 202 },
-	'pink-whitney': { x: 1290, y: 624, w: 77, h: 221 },
-	rumchata: { x: 1407, y: 648, w: 97, h: 201 },
-	soonhari: { x: 1536, y: 675, w: 53, h: 168 }
+	'bud-light': { x: 398, y: 644, w: 66, h: 211 },
+	sapporo: { x: 500, y: 644, w: 66, h: 211 },
+	anchor: { x: 602, y: 643, w: 66, h: 211 },
+	soonhari: { x: 706, y: 682, w: 53, h: 168 },
+	bacardi: { x: 795, y: 590, w: 83, h: 260 },
+	'grey-goose': { x: 914, y: 578, w: 76, h: 272 },
+	ej: { x: 1026, y: 650, w: 95, h: 202 },
+	camarena: { x: 1157, y: 631, w: 95, h: 219 },
+	rumchata: { x: 1290, y: 650, w: 97, h: 201 },
+	'pink-whitney': { x: 1423, y: 622, w: 77, h: 221 },
+	'new-amsterdam': { x: 1535, y: 595, w: 80, h: 252 }
 };
 
 // One bottle per brand, its logo on the label (Joe, 2026-09-28).
-const bottles: Prop[] = brands.map(([id, name]) => ({
-	id: `bottle-${id}`,
-	name: `${name} bottle`,
-	gist: builtSite.has(id) ? 'built the website' : 'Moosylvania client work',
-	body: [builtSite.has(id) ? `${name}: Joe built the website at Moosylvania.` : `${name}: client work at Moosylvania.`],
-	rect: shelf[id]
-}));
+const bottles: Prop[] = brands.map(([id, name]) => {
+	const video = homepage[id];
+	return {
+		id: `bottle-${id}`,
+		name: `${name} bottle`,
+		gist: builtSite.has(id) ? 'built the website' : 'Moosylvania client work',
+		body: [video?.line ?? (builtSite.has(id) ? `${name}: Joe built the website at Moosylvania.` : `${name}: client work at Moosylvania.`)],
+		rect: shelf[id],
+		...(video && { video: { file: video.file } }),
+		...(video?.link && { links: [{ label: 'See More', href: video.link }] })
+	};
+});
 
 export const SIDE_PROJECT: SubScene = {
 	id: 'side-project',

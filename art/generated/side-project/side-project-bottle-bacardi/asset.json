@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-bacardi/image.webp",
   "world": {
-    "x": 421.99,
-    "y": 593.41,
+    "x": 794.63,
+    "y": 590.01,
     "w": 83.3784,
     "h": 260.14967532467534
   },
   "source": {
     "w": 200,
     "h": 616,
-    "sha256": "28a2068063a0eab96b8f7bec7429a37761c91eb9c92b55b226c9872215aabbc0"
+    "sha256": "66c2e4ae6eb778071f0873570201ef25a81e3c713470d35fc0c48800810afa2e"
   },
   "trim": {
     "x": 0,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 421.99,
-      "y": 593.41,
+      "x": 794.63,
+      "y": 590.01,
       "w": 85.08,
       "h": 261.85
     },

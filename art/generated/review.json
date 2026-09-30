@@ -5546,6 +5546,74 @@
       "h": 1600,
       "props": [
         {
+          "id": "bottle-bud-light",
+          "name": "Bud Light bottle",
+          "gist": "Moosylvania client work",
+          "body": [
+            "Bud Light: client work at Moosylvania."
+          ],
+          "rect": {
+            "x": 398,
+            "y": 644,
+            "w": 66,
+            "h": 211
+          },
+          "video": {
+            "file": "bud-light-homepage-2026-09-30.mp4"
+          }
+        },
+        {
+          "id": "bottle-sapporo",
+          "name": "Sapporo bottle",
+          "gist": "Moosylvania client work",
+          "body": [
+            "Sapporo: client work at Moosylvania."
+          ],
+          "rect": {
+            "x": 500,
+            "y": 644,
+            "w": 66,
+            "h": 211
+          },
+          "video": {
+            "file": "sapporo-homepage-2026-09-30.mp4"
+          }
+        },
+        {
+          "id": "bottle-anchor",
+          "name": "Anchor Brewing bottle",
+          "gist": "Moosylvania client work",
+          "body": [
+            "Anchor Brewing: client work at Moosylvania."
+          ],
+          "rect": {
+            "x": 602,
+            "y": 643,
+            "w": 66,
+            "h": 211
+          },
+          "video": {
+            "file": "anchor-brewing-homepage-2026-09-30.mp4"
+          }
+        },
+        {
+          "id": "bottle-soonhari",
+          "name": "Soonhari bottle",
+          "gist": "Moosylvania client work",
+          "body": [
+            "Soonhari: client work at Moosylvania."
+          ],
+          "rect": {
+            "x": 706,
+            "y": 682,
+            "w": 53,
+            "h": 168
+          },
+          "video": {
+            "file": "soonhari-homepage-2026-09-30-4k.mp4"
+          }
+        },
+        {
           "id": "bottle-bacardi",
           "name": "Bacardi bottle",
           "gist": "built the website",
@@ -5553,8 +5621,8 @@
             "Bacardi: Joe built the website at Moosylvania."
           ],
           "rect": {
-            "x": 422,
-            "y": 593,
+            "x": 795,
+            "y": 590,
             "w": 83,
             "h": 260
           }
@@ -5567,66 +5635,10 @@
             "Grey Goose: Joe built the website at Moosylvania."
           ],
           "rect": {
-            "x": 557,
-            "y": 582,
+            "x": 914,
+            "y": 578,
             "w": 76,
             "h": 272
-          }
-        },
-        {
-          "id": "bottle-new-amsterdam",
-          "name": "New Amsterdam Vodka bottle",
-          "gist": "Moosylvania client work",
-          "body": [
-            "New Amsterdam Vodka: client work at Moosylvania."
-          ],
-          "rect": {
-            "x": 679,
-            "y": 602,
-            "w": 80,
-            "h": 252
-          }
-        },
-        {
-          "id": "bottle-camarena",
-          "name": "Camarena Tequila bottle",
-          "gist": "Moosylvania client work",
-          "body": [
-            "Camarena Tequila: client work at Moosylvania."
-          ],
-          "rect": {
-            "x": 798,
-            "y": 634,
-            "w": 95,
-            "h": 219
-          }
-        },
-        {
-          "id": "bottle-barefoot",
-          "name": "Barefoot Wine bottle",
-          "gist": "built the website",
-          "body": [
-            "Barefoot Wine: Joe built the website at Moosylvania."
-          ],
-          "rect": {
-            "x": 934,
-            "y": 602,
-            "w": 73,
-            "h": 250
-          }
-        },
-        {
-          "id": "bottle-bud-light",
-          "name": "Bud Light bottle",
-          "gist": "Moosylvania client work",
-          "body": [
-            "Bud Light: client work at Moosylvania."
-          ],
-          "rect": {
-            "x": 1050,
-            "y": 639,
-            "w": 66,
-            "h": 211
           }
         },
         {
@@ -5637,24 +5649,24 @@
             "E&J Brandy: client work at Moosylvania."
           ],
           "rect": {
-            "x": 1157,
-            "y": 648,
+            "x": 1026,
+            "y": 650,
             "w": 95,
             "h": 202
           }
         },
         {
-          "id": "bottle-pink-whitney",
-          "name": "Pink Whitney bottle",
+          "id": "bottle-camarena",
+          "name": "Camarena Tequila bottle",
           "gist": "Moosylvania client work",
           "body": [
-            "Pink Whitney: client work at Moosylvania."
+            "Camarena Tequila: client work at Moosylvania."
           ],
           "rect": {
-            "x": 1290,
-            "y": 624,
-            "w": 77,
-            "h": 221
+            "x": 1157,
+            "y": 631,
+            "w": 95,
+            "h": 219
           }
         },
         {
@@ -5665,24 +5677,38 @@
             "RumChata: client work at Moosylvania."
           ],
           "rect": {
-            "x": 1407,
-            "y": 648,
+            "x": 1290,
+            "y": 650,
             "w": 97,
             "h": 201
           }
         },
         {
-          "id": "bottle-soonhari",
-          "name": "Soonhari bottle",
+          "id": "bottle-pink-whitney",
+          "name": "Pink Whitney bottle",
           "gist": "Moosylvania client work",
           "body": [
-            "Soonhari: client work at Moosylvania."
+            "Pink Whitney: client work at Moosylvania."
           ],
           "rect": {
-            "x": 1536,
-            "y": 675,
-            "w": 53,
-            "h": 168
+            "x": 1423,
+            "y": 622,
+            "w": 77,
+            "h": 221
+          }
+        },
+        {
+          "id": "bottle-new-amsterdam",
+          "name": "New Amsterdam Vodka bottle",
+          "gist": "Moosylvania client work",
+          "body": [
+            "New Amsterdam Vodka: client work at Moosylvania."
+          ],
+          "rect": {
+            "x": 1535,
+            "y": 595,
+            "w": 80,
+            "h": 252
           }
         },
         {
@@ -5877,8 +5903,8 @@
           "asset": "side-project-bottle-bacardi",
           "kind": "prop",
           "rect": {
-            "x": 421.99,
-            "y": 593.41,
+            "x": 794.63,
+            "y": 590.01,
             "w": 83.3784,
             "h": 260.14967532467534
           }
@@ -5888,8 +5914,8 @@
           "asset": "side-project-bottle-grey-goose",
           "kind": "prop",
           "rect": {
-            "x": 556.8353804347826,
-            "y": 581.51,
+            "x": 914.1653804347826,
+            "y": 578.11,
             "w": 76.14309782608696,
             "h": 272.0496894409938
           }
@@ -5899,8 +5925,8 @@
           "asset": "side-project-bottle-new-amsterdam",
           "kind": "prop",
           "rect": {
-            "x": 679.3453645833333,
-            "y": 601.91,
+            "x": 1535.2253645833332,
+            "y": 595.1,
             "w": 79.54317708333333,
             "h": 251.6496644295302
           }
@@ -5910,21 +5936,32 @@
           "asset": "side-project-bottle-camarena",
           "kind": "prop",
           "rect": {
-            "x": 798.03,
-            "y": 634.22,
+            "x": 1157.06,
+            "y": 630.82,
             "w": 95.28842105263156,
             "h": 219.3396923076923
           }
         },
         {
-          "id": "side-project-bottle-barefoot",
-          "asset": "side-project-bottle-barefoot",
+          "id": "side-project-bottle-sapporo",
+          "asset": "side-project-bottle-sapporo",
           "kind": "prop",
           "rect": {
-            "x": 934.15,
-            "y": 601.91,
-            "w": 73.1684090909091,
-            "h": 249.94966216216216
+            "x": 500.26,
+            "y": 644.42,
+            "w": 66.3585,
+            "h": 210.83968
+          }
+        },
+        {
+          "id": "side-project-bottle-anchor",
+          "asset": "side-project-bottle-anchor",
+          "kind": "prop",
+          "rect": {
+            "x": 602.35,
+            "y": 642.72,
+            "w": 66.3585,
+            "h": 210.83968
           }
         },
         {
@@ -5932,8 +5969,8 @@
           "asset": "side-project-bottle-bud-light",
           "kind": "prop",
           "rect": {
-            "x": 1049.86,
-            "y": 639.32,
+            "x": 398.16,
+            "y": 644.42,
             "w": 66.3585,
             "h": 210.83968
           }
@@ -5943,8 +5980,8 @@
           "asset": "side-project-bottle-ej",
           "kind": "prop",
           "rect": {
-            "x": 1157.06,
-            "y": 647.82,
+            "x": 1026.04,
+            "y": 649.52,
             "w": 95.28842105263156,
             "h": 202.33966666666666
           }
@@ -5954,8 +5991,8 @@
           "asset": "side-project-bottle-pink-whitney",
           "kind": "prop",
           "rect": {
-            "x": 1289.78,
-            "y": 624.02,
+            "x": 1422.5,
+            "y": 622.32,
             "w": 76.56847826086957,
             "h": 221.03969465648856
           }
@@ -5965,8 +6002,8 @@
           "asset": "side-project-bottle-rumchata",
           "kind": "prop",
           "rect": {
-            "x": 1407.19,
-            "y": 647.82,
+            "x": 1289.78,
+            "y": 649.52,
             "w": 96.98844827586207,
             "h": 200.63966386554623
           }
@@ -5976,8 +6013,8 @@
           "asset": "side-project-bottle-soonhari",
           "kind": "prop",
           "rect": {
-            "x": 1536.5,
-            "y": 675.03,
+            "x": 706.14,
+            "y": 681.84,
             "w": 52.7484375,
             "h": 168.3297
           }
@@ -6032,8 +6069,8 @@
         {
           "id": "side-project-bottle-bacardi",
           "rect": {
-            "x": 421.99,
-            "y": 593.41,
+            "x": 794.63,
+            "y": 590.01,
             "w": 83.3784,
             "h": 260.14967532467534
           }
@@ -6041,8 +6078,8 @@
         {
           "id": "side-project-bottle-grey-goose",
           "rect": {
-            "x": 556.8353804347826,
-            "y": 581.51,
+            "x": 914.1653804347826,
+            "y": 578.11,
             "w": 76.14309782608696,
             "h": 272.0496894409938
           }
@@ -6050,8 +6087,8 @@
         {
           "id": "side-project-bottle-new-amsterdam",
           "rect": {
-            "x": 679.3453645833333,
-            "y": 601.91,
+            "x": 1535.2253645833332,
+            "y": 595.1,
             "w": 79.54317708333333,
             "h": 251.6496644295302
           }
@@ -6059,26 +6096,35 @@
         {
           "id": "side-project-bottle-camarena",
           "rect": {
-            "x": 798.03,
-            "y": 634.22,
+            "x": 1157.06,
+            "y": 630.82,
             "w": 95.28842105263156,
             "h": 219.3396923076923
           }
         },
         {
-          "id": "side-project-bottle-barefoot",
+          "id": "side-project-bottle-sapporo",
           "rect": {
-            "x": 934.15,
-            "y": 601.91,
-            "w": 73.1684090909091,
-            "h": 249.94966216216216
+            "x": 500.26,
+            "y": 644.42,
+            "w": 66.3585,
+            "h": 210.83968
+          }
+        },
+        {
+          "id": "side-project-bottle-anchor",
+          "rect": {
+            "x": 602.35,
+            "y": 642.72,
+            "w": 66.3585,
+            "h": 210.83968
           }
         },
         {
           "id": "side-project-bottle-bud-light",
           "rect": {
-            "x": 1049.86,
-            "y": 639.32,
+            "x": 398.16,
+            "y": 644.42,
             "w": 66.3585,
             "h": 210.83968
           }
@@ -6086,8 +6132,8 @@
         {
           "id": "side-project-bottle-ej",
           "rect": {
-            "x": 1157.06,
-            "y": 647.82,
+            "x": 1026.04,
+            "y": 649.52,
             "w": 95.28842105263156,
             "h": 202.33966666666666
           }
@@ -6095,8 +6141,8 @@
         {
           "id": "side-project-bottle-pink-whitney",
           "rect": {
-            "x": 1289.78,
-            "y": 624.02,
+            "x": 1422.5,
+            "y": 622.32,
             "w": 76.56847826086957,
             "h": 221.03969465648856
           }
@@ -6104,8 +6150,8 @@
         {
           "id": "side-project-bottle-rumchata",
           "rect": {
-            "x": 1407.19,
-            "y": 647.82,
+            "x": 1289.78,
+            "y": 649.52,
             "w": 96.98844827586207,
             "h": 200.63966386554623
           }
@@ -6113,8 +6159,8 @@
         {
           "id": "side-project-bottle-soonhari",
           "rect": {
-            "x": 1536.5,
-            "y": 675.03,
+            "x": 706.14,
+            "y": 681.84,
             "w": 52.7484375,
             "h": 168.3297
           }
@@ -17398,7 +17444,7 @@
       "source": {
         "w": 6688,
         "h": 3764,
-        "sha256": "460e91e0b361af5a6bd4cfb1d265694190fe525e19fca683f6c3fb1fcdc5f6a7"
+        "sha256": "a6b8c02d9a917b380f4c8754b6f79c7412204e0cd304faf13075ce8473c83878"
       },
       "trim": {
         "x": 0,
@@ -23099,15 +23145,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-bacardi/image.webp",
       "world": {
-        "x": 421.99,
-        "y": 593.41,
+        "x": 794.63,
+        "y": 590.01,
         "w": 83.3784,
         "h": 260.14967532467534
       },
       "source": {
         "w": 200,
         "h": 616,
-        "sha256": "28a2068063a0eab96b8f7bec7429a37761c91eb9c92b55b226c9872215aabbc0"
+        "sha256": "66c2e4ae6eb778071f0873570201ef25a81e3c713470d35fc0c48800810afa2e"
       },
       "trim": {
         "x": 0,
@@ -23120,8 +23166,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 421.99,
-          "y": 593.41,
+          "x": 794.63,
+          "y": 590.01,
           "w": 85.08,
           "h": 261.85
         },
@@ -23215,15 +23261,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-grey-goose/image.webp",
       "world": {
-        "x": 556.8353804347826,
-        "y": 581.51,
+        "x": 914.1653804347826,
+        "y": 578.11,
         "w": 76.14309782608696,
         "h": 272.0496894409938
       },
       "source": {
         "w": 184,
         "h": 644,
-        "sha256": "cb15abe397c830c44796a1f96626fb350865e745fd51cea4fccff38221a5528c"
+        "sha256": "305353a8f720cfcac76e3735ae581556b85188b6152caac02348edebe13405ee"
       },
       "trim": {
         "x": 1,
@@ -23236,8 +23282,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 556.41,
-          "y": 581.51,
+          "x": 913.74,
+          "y": 578.11,
           "w": 78.27,
           "h": 273.75
         },
@@ -23375,15 +23421,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-new-amsterdam/image.webp",
       "world": {
-        "x": 679.3453645833333,
-        "y": 601.91,
+        "x": 1535.2253645833332,
+        "y": 595.1,
         "w": 79.54317708333333,
         "h": 251.6496644295302
       },
       "source": {
         "w": 192,
         "h": 596,
-        "sha256": "db17364c586cda87bc07942386ffbe0ec1a7ccfd5bfb5ff2eae94558c6f446ec"
+        "sha256": "9dc76a79ab0def3fbc4f21323e2279bfa9293945d158d47d2eec108b0188f107"
       },
       "trim": {
         "x": 1,
@@ -23396,8 +23442,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 678.92,
-          "y": 601.91,
+          "x": 1534.8,
+          "y": 595.1,
           "w": 81.67,
           "h": 253.35
         },
@@ -23515,15 +23561,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-camarena/image.webp",
       "world": {
-        "x": 798.03,
-        "y": 634.22,
+        "x": 1157.06,
+        "y": 630.82,
         "w": 95.28842105263156,
         "h": 219.3396923076923
       },
       "source": {
         "w": 228,
         "h": 520,
-        "sha256": "04c1083a3c3960338f11a513c64cfd2552fe430bd56e73b83857dd7a28d699c3"
+        "sha256": "488453664b0c561daac0a4f5cad0858d176d72e3f0593842e8b720e6382633ce"
       },
       "trim": {
         "x": 0,
@@ -23536,8 +23582,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 798.03,
-          "y": 634.22,
+          "x": 1157.06,
+          "y": 630.82,
           "w": 96.99,
           "h": 221.04
         },
@@ -23730,208 +23776,20 @@
       }
     },
     {
-      "id": "side-project-bottle-barefoot",
+      "id": "side-project-bottle-sapporo",
       "scene": "side-project",
       "kind": "prop",
-      "file": "side-project/side-project-bottle-barefoot/image.webp",
+      "file": "side-project/side-project-bottle-sapporo/image.webp",
       "world": {
-        "x": 934.15,
-        "y": 601.91,
-        "w": 73.1684090909091,
-        "h": 249.94966216216216
-      },
-      "source": {
-        "w": 176,
-        "h": 592,
-        "sha256": "65d78e956cb82a8ede6af62db169435231690665d50c9481ca2ae38c5a6d2580"
-      },
-      "trim": {
-        "x": 0,
-        "y": 0,
-        "w": 172,
-        "h": 588
-      },
-      "width": 172,
-      "height": 588,
-      "registration": {
-        "asset": "side-project-master",
-        "rect": {
-          "x": 934.15,
-          "y": 601.91,
-          "w": 74.87,
-          "h": 251.65
-        },
-        "mask": [
-          [
-            0.3636,
-            0
-          ],
-          [
-            0.3182,
-            0.0203
-          ],
-          [
-            0.3409,
-            0.0405
-          ],
-          [
-            0.3182,
-            0.0473
-          ],
-          [
-            0.3182,
-            0.0676
-          ],
-          [
-            0.3409,
-            0.0743
-          ],
-          [
-            0.3409,
-            0.2297
-          ],
-          [
-            0.3182,
-            0.2365
-          ],
-          [
-            0.3182,
-            0.2635
-          ],
-          [
-            0.1591,
-            0.3041
-          ],
-          [
-            0.0682,
-            0.3581
-          ],
-          [
-            0.0682,
-            0.4459
-          ],
-          [
-            0.0455,
-            0.4527
-          ],
-          [
-            0.0682,
-            0.4932
-          ],
-          [
-            0.0455,
-            0.5
-          ],
-          [
-            0.0455,
-            0.8784
-          ],
-          [
-            0.0682,
-            0.8851
-          ],
-          [
-            0.0682,
-            0.9595
-          ],
-          [
-            0,
-            0.9662
-          ],
-          [
-            0,
-            0.9797
-          ],
-          [
-            0.0455,
-            0.9932
-          ],
-          [
-            0.75,
-            0.9932
-          ],
-          [
-            0.7727,
-            0.9865
-          ],
-          [
-            0.9318,
-            0.9865
-          ],
-          [
-            0.9545,
-            0.9324
-          ],
-          [
-            0.9773,
-            0.9257
-          ],
-          [
-            0.9773,
-            0.4459
-          ],
-          [
-            0.9545,
-            0.4392
-          ],
-          [
-            0.9545,
-            0.3514
-          ],
-          [
-            0.8636,
-            0.3041
-          ],
-          [
-            0.7045,
-            0.2635
-          ],
-          [
-            0.7045,
-            0.2432
-          ],
-          [
-            0.6818,
-            0.2365
-          ],
-          [
-            0.6818,
-            0.0068
-          ],
-          [
-            0.6591,
-            0
-          ],
-          [
-            0.4773,
-            0
-          ],
-          [
-            0.4545,
-            0.0068
-          ],
-          [
-            0.4318,
-            0
-          ]
-        ]
-      }
-    },
-    {
-      "id": "side-project-bottle-bud-light",
-      "scene": "side-project",
-      "kind": "prop",
-      "file": "side-project/side-project-bottle-bud-light/image.webp",
-      "world": {
-        "x": 1049.86,
-        "y": 639.32,
+        "x": 500.26,
+        "y": 644.42,
         "w": 66.3585,
         "h": 210.83968
       },
       "source": {
         "w": 160,
         "h": 500,
-        "sha256": "6b0c4f2f0efb5f50953db354765bd29f35ce692be238ced09a5cc6226d78aea6"
+        "sha256": "d312d99b783db3b7f596f873673b7260e9eb7692531043beda77fd2c05027907"
       },
       "trim": {
         "x": 0,
@@ -23944,8 +23802,400 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 1049.86,
-          "y": 639.32,
+          "x": 500.26,
+          "y": 644.42,
+          "w": 68.06,
+          "h": 212.54
+        },
+        "mask": [
+          [
+            0.4,
+            0
+          ],
+          [
+            0.325,
+            0.008
+          ],
+          [
+            0.325,
+            0.056
+          ],
+          [
+            0.3,
+            0.064
+          ],
+          [
+            0.325,
+            0.136
+          ],
+          [
+            0.3,
+            0.144
+          ],
+          [
+            0.275,
+            0.24
+          ],
+          [
+            0.25,
+            0.248
+          ],
+          [
+            0.25,
+            0.32
+          ],
+          [
+            0.125,
+            0.368
+          ],
+          [
+            0.05,
+            0.416
+          ],
+          [
+            0.05,
+            0.944
+          ],
+          [
+            0.075,
+            0.952
+          ],
+          [
+            0,
+            0.96
+          ],
+          [
+            0,
+            0.976
+          ],
+          [
+            0.1,
+            0.992
+          ],
+          [
+            0.175,
+            0.984
+          ],
+          [
+            0.25,
+            0.992
+          ],
+          [
+            0.375,
+            0.992
+          ],
+          [
+            0.4,
+            0.984
+          ],
+          [
+            0.95,
+            0.984
+          ],
+          [
+            0.925,
+            0.96
+          ],
+          [
+            0.95,
+            0.952
+          ],
+          [
+            0.95,
+            0.856
+          ],
+          [
+            0.975,
+            0.848
+          ],
+          [
+            0.975,
+            0.52
+          ],
+          [
+            0.95,
+            0.512
+          ],
+          [
+            0.95,
+            0.416
+          ],
+          [
+            0.9,
+            0.376
+          ],
+          [
+            0.8,
+            0.344
+          ],
+          [
+            0.75,
+            0.312
+          ],
+          [
+            0.75,
+            0.232
+          ],
+          [
+            0.725,
+            0.224
+          ],
+          [
+            0.725,
+            0.168
+          ],
+          [
+            0.675,
+            0.112
+          ],
+          [
+            0.7,
+            0.088
+          ],
+          [
+            0.7,
+            0.048
+          ],
+          [
+            0.675,
+            0.04
+          ],
+          [
+            0.7,
+            0.032
+          ],
+          [
+            0.7,
+            0.008
+          ]
+        ]
+      }
+    },
+    {
+      "id": "side-project-bottle-anchor",
+      "scene": "side-project",
+      "kind": "prop",
+      "file": "side-project/side-project-bottle-anchor/image.webp",
+      "world": {
+        "x": 602.35,
+        "y": 642.72,
+        "w": 66.3585,
+        "h": 210.83968
+      },
+      "source": {
+        "w": 160,
+        "h": 500,
+        "sha256": "c5606a1cecc86a27ccdcb92aefb3ab1530acbf7f84046d42f4a12a16187c586c"
+      },
+      "trim": {
+        "x": 0,
+        "y": 0,
+        "w": 156,
+        "h": 496
+      },
+      "width": 156,
+      "height": 496,
+      "registration": {
+        "asset": "side-project-master",
+        "rect": {
+          "x": 602.35,
+          "y": 642.72,
+          "w": 68.06,
+          "h": 212.54
+        },
+        "mask": [
+          [
+            0.4,
+            0
+          ],
+          [
+            0.325,
+            0.008
+          ],
+          [
+            0.325,
+            0.056
+          ],
+          [
+            0.3,
+            0.064
+          ],
+          [
+            0.325,
+            0.136
+          ],
+          [
+            0.3,
+            0.144
+          ],
+          [
+            0.275,
+            0.24
+          ],
+          [
+            0.25,
+            0.248
+          ],
+          [
+            0.25,
+            0.32
+          ],
+          [
+            0.125,
+            0.368
+          ],
+          [
+            0.05,
+            0.416
+          ],
+          [
+            0.05,
+            0.944
+          ],
+          [
+            0.075,
+            0.952
+          ],
+          [
+            0,
+            0.96
+          ],
+          [
+            0,
+            0.976
+          ],
+          [
+            0.1,
+            0.992
+          ],
+          [
+            0.175,
+            0.984
+          ],
+          [
+            0.25,
+            0.992
+          ],
+          [
+            0.375,
+            0.992
+          ],
+          [
+            0.4,
+            0.984
+          ],
+          [
+            0.95,
+            0.984
+          ],
+          [
+            0.925,
+            0.96
+          ],
+          [
+            0.95,
+            0.952
+          ],
+          [
+            0.95,
+            0.856
+          ],
+          [
+            0.975,
+            0.848
+          ],
+          [
+            0.975,
+            0.52
+          ],
+          [
+            0.95,
+            0.512
+          ],
+          [
+            0.95,
+            0.416
+          ],
+          [
+            0.9,
+            0.376
+          ],
+          [
+            0.8,
+            0.344
+          ],
+          [
+            0.75,
+            0.312
+          ],
+          [
+            0.75,
+            0.232
+          ],
+          [
+            0.725,
+            0.224
+          ],
+          [
+            0.725,
+            0.168
+          ],
+          [
+            0.675,
+            0.112
+          ],
+          [
+            0.7,
+            0.088
+          ],
+          [
+            0.7,
+            0.048
+          ],
+          [
+            0.675,
+            0.04
+          ],
+          [
+            0.7,
+            0.032
+          ],
+          [
+            0.7,
+            0.008
+          ]
+        ]
+      }
+    },
+    {
+      "id": "side-project-bottle-bud-light",
+      "scene": "side-project",
+      "kind": "prop",
+      "file": "side-project/side-project-bottle-bud-light/image.webp",
+      "world": {
+        "x": 398.16,
+        "y": 644.42,
+        "w": 66.3585,
+        "h": 210.83968
+      },
+      "source": {
+        "w": 160,
+        "h": 500,
+        "sha256": "722c16360a1dd1e5b9bd722b95e64351b04820d835c20b74fe7f271c34935588"
+      },
+      "trim": {
+        "x": 0,
+        "y": 0,
+        "w": 156,
+        "h": 496
+      },
+      "width": 156,
+      "height": 496,
+      "registration": {
+        "asset": "side-project-master",
+        "rect": {
+          "x": 398.16,
+          "y": 644.42,
           "w": 68.06,
           "h": 212.54
         },
@@ -24119,15 +24369,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-ej/image.webp",
       "world": {
-        "x": 1157.06,
-        "y": 647.82,
+        "x": 1026.04,
+        "y": 649.52,
         "w": 95.28842105263156,
         "h": 202.33966666666666
       },
       "source": {
         "w": 228,
         "h": 480,
-        "sha256": "22667a9e3aee9fac6bbe34d2da998665af63511c24a6b75a3bc2bef446a2b50a"
+        "sha256": "eed75726b7122313681f9cde4ae58e7fb8608dae13975604fefe9378f182f802"
       },
       "trim": {
         "x": 0,
@@ -24140,8 +24390,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 1157.06,
-          "y": 647.82,
+          "x": 1026.04,
+          "y": 649.52,
           "w": 96.99,
           "h": 204.04
         },
@@ -24307,15 +24557,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-pink-whitney/image.webp",
       "world": {
-        "x": 1289.78,
-        "y": 624.02,
+        "x": 1422.5,
+        "y": 622.32,
         "w": 76.56847826086957,
         "h": 221.03969465648856
       },
       "source": {
         "w": 184,
         "h": 524,
-        "sha256": "1eb37871d76bc7e294acfb1bc8b56e574f5861af09078f51b2b1040c50165326"
+        "sha256": "cc39dbbb471f335657e8db24c62e58ccd17b914ac4e37990550f70b44d4b128b"
       },
       "trim": {
         "x": 0,
@@ -24328,8 +24578,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 1289.78,
-          "y": 624.02,
+          "x": 1422.5,
+          "y": 622.32,
           "w": 78.27,
           "h": 222.74
         },
@@ -24415,15 +24665,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-rumchata/image.webp",
       "world": {
-        "x": 1407.19,
-        "y": 647.82,
+        "x": 1289.78,
+        "y": 649.52,
         "w": 96.98844827586207,
         "h": 200.63966386554623
       },
       "source": {
         "w": 232,
         "h": 476,
-        "sha256": "a9ce714bb267d78eabd7a3f6cc8a9ea8fddb4b7869a1814bfee3d845a78cf391"
+        "sha256": "2f344e5879e1e3bb668d27437fa067e837ec5b81bdfc7f3451422395bfd37e31"
       },
       "trim": {
         "x": 0,
@@ -24436,8 +24686,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 1407.19,
-          "y": 647.82,
+          "x": 1289.78,
+          "y": 649.52,
           "w": 98.69,
           "h": 202.34
         },
@@ -24619,15 +24869,15 @@
       "kind": "prop",
       "file": "side-project/side-project-bottle-soonhari/image.webp",
       "world": {
-        "x": 1536.5,
-        "y": 675.03,
+        "x": 706.14,
+        "y": 681.84,
         "w": 52.7484375,
         "h": 168.3297
       },
       "source": {
         "w": 128,
         "h": 400,
-        "sha256": "f00a9234ec2217bde848cb47c94a745341ed32248b08e6ce425a461100cd279f"
+        "sha256": "c6dfa90b26edec2f58cb94dc872a9c7ce1973653b6ffefee5ccd8c13a3ab8fbf"
       },
       "trim": {
         "x": 0,
@@ -24640,8 +24890,8 @@
       "registration": {
         "asset": "side-project-master",
         "rect": {
-          "x": 1536.5,
-          "y": 675.03,
+          "x": 706.14,
+          "y": 681.84,
           "w": 54.45,
           "h": 170.03
         },
@@ -24807,7 +25057,7 @@
       "source": {
         "w": 684,
         "h": 620,
-        "sha256": "f920408201e39504d6cad3133dedbab54ff14d53ea89a26c8626aaf80a760a66"
+        "sha256": "f38cc1ac44d1e9a002923f7edfe859f2daec3bba3a1febf084f543376c3ca703"
       },
       "trim": {
         "x": 0,
@@ -24859,7 +25109,7 @@
       "source": {
         "w": 300,
         "h": 300,
-        "sha256": "b7594c32e0352dde68fbcd69dbf627041409cc9fd5fe46553eda752eebe6dd49"
+        "sha256": "28ed68c508117f704cb95c37d08ccf17452ffd7fe9e26ff52ad8540b2514c5cf"
       },
       "trim": {
         "x": 3,
@@ -25055,7 +25305,7 @@
       "source": {
         "w": 4912,
         "h": 1528,
-        "sha256": "9e7dfa125f4e18106d99d615f3ea5b2ac75fdb0814b0c5db53b47515c0cc0702"
+        "sha256": "78c496c1a7951419fc0e159cd5a8607f24d519ce53cc131a1f07051b7db2abb2"
       },
       "trim": {
         "x": 0,
@@ -25135,7 +25385,7 @@
       "source": {
         "w": 1384,
         "h": 916,
-        "sha256": "14980972f096b279df91fff0ff330beb9e826b4200f063cd7f02d3f293de6bef"
+        "sha256": "c85b5875d0709627b54985d133d42489e4e8b5057ff4db9badba7491f49c07da"
       },
       "trim": {
         "x": 0,
@@ -29558,7 +29808,7 @@
       "source": {
         "w": 6688,
         "h": 3764,
-        "sha256": "a99fc9300948b215915053d94a59dc288c8c4bcdfc4e1d936af603ba153bfce3"
+        "sha256": "b99bf5cc0c7ab3d22e271bc05f6514a1a10835c5ed31d5f4709e00af1b2cd780"
       },
       "trim": {
         "x": 0,

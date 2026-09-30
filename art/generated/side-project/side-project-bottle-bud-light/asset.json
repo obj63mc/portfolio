@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-bud-light/image.webp",
   "world": {
-    "x": 1049.86,
-    "y": 639.32,
+    "x": 398.16,
+    "y": 644.42,
     "w": 66.3585,
     "h": 210.83968
   },
   "source": {
     "w": 160,
     "h": 500,
-    "sha256": "6b0c4f2f0efb5f50953db354765bd29f35ce692be238ced09a5cc6226d78aea6"
+    "sha256": "722c16360a1dd1e5b9bd722b95e64351b04820d835c20b74fe7f271c34935588"
   },
   "trim": {
     "x": 0,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 1049.86,
-      "y": 639.32,
+      "x": 398.16,
+      "y": 644.42,
       "w": 68.06,
       "h": 212.54
     },

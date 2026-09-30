@@ -74,11 +74,11 @@ _Avoid_: spawn, spawn point, home, start
 ### Motion
 
 **Ambient motion**:
-Motion a prop plays with no visitor input, such as the rider looping the track or the marquee lights chasing. Under reduced motion it freezes on a resting frame.
+Motion a prop plays with no visitor input, such as the rider looping the track, the marquee lights chasing or the ripples drifting down the river. Under reduced motion it freezes on a resting frame.
 _Avoid_: idle animation, loop, background animation
 
 **Reaction**:
-Motion a prop plays in response to a visitor's hover or click, such as the MonsterCommerce eye blinking or the moose's antlers wobbling. Click reactions still play under reduced motion; hover reactions become a plain highlight.
+Motion a prop plays in response to a visitor's hover or click, such as the MonsterCommerce eye blinking or the moose's antlers wobbling; the MonsterCommerce eye also follows the visitor's own cursor while it is in view, never a peer's. Click reactions still play under reduced motion; hover reactions become a plain highlight, and the eye looks straight ahead.
 _Avoid_: interaction, effect, trigger, animation
 
 **River current**:

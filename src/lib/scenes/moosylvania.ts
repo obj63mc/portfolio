@@ -69,7 +69,7 @@ export const MOOSYLVANIA: SubScene = {
 			name: 'Meeting TV',
 			gist: 'a video from Joe',
 			// Clicking plays it on this TV for that visitor only, and its card holds the same video with controls (spec:
-			// "Local prop, the Moosylvania meeting TV").
+			// "Local prop, the Moosylvania meeting TV"). TODO Joe: its line, the card's only copy, under the video.
 			body: ['A video from Joe Madden.'],
 			rect: { x: 787, y: 3434, w: 828, h: 392 },
 			art: ['moosylvania-tv'],

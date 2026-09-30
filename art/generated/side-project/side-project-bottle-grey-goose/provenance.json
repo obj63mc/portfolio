@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "cb15abe397c830c44796a1f96626fb350865e745fd51cea4fccff38221a5528c",
-  "run": "art/runs/side-project-bottle-grey-goose/2026-09-28T19-03-08.025Z",
+  "sourceSha256": "305353a8f720cfcac76e3735ae581556b85188b6152caac02348edebe13405ee",
+  "run": "art/runs/side-project-bottle-grey-goose/2026-09-30T19-38-06.500Z",
   "provider": "derived",
   "derivation": {
     "asset": "side-project-master",
-    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "referenceSha256": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

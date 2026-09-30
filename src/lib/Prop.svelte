@@ -3,6 +3,7 @@
 	import { sound } from './sound.svelte.ts';
 	import { at } from './scenes/index.ts';
 	import { VIDEOS } from './videos.ts';
+	import VideoPlayer from './VideoPlayer.svelte';
 	import type { Prop } from './scenes/types';
 
 	// `level` keeps the card title inside the page's heading hierarchy when the cards read inline without JavaScript, and
@@ -25,6 +26,11 @@
 		}
 		cardOpen(prop.id);
 	}
+
+	// A video with no screen in the scene (a Side Project bottle's) plays in its card alone, so it stops when the card closes.
+	function close() {
+		if (!prop.video?.screen) dialog?.querySelector('video')?.pause();
+	}
 </script>
 
 <!-- The engine reads `data-prop` for the prop's hover and click reactions; its stylesheet clips the button to `--clip`. -->
@@ -38,35 +44,45 @@
 			{prop.name}: {prop.gist}
 		</button>
 		{#if !prop.kind}
-			<dialog bind:this={dialog} aria-labelledby="card-{prop.id}-title">
-				<p class="where">{where}</p>
-				<svelte:element this={`h${level}`} id="card-{prop.id}-title">{prop.name}</svelte:element>
-				{#each prop.body as paragraph}
-					<p>{paragraph}</p>
-				{/each}
+			<!-- A video card is the video with its body, one short line, below it, a See More button for a live site and a round X
+				on the card's corner to close (Joe, 2026-09-30); its venue and title stay for assistive tech and the plain document.
+				The contents scroll inside the card, so the X can overhang it. -->
+			<dialog bind:this={dialog} class:video={prop.video} aria-labelledby="card-{prop.id}-title" onclose={close}>
 				{#if prop.video}
-					<!-- The same element plays on the prop's screen in the scene (props.ts), and keeps playing there after the card
-						closes. TODO Joe: captions for the real video; the fill-in has none. -->
-					<!-- svelte-ignore a11y_media_has_caption -->
-					<video src={VIDEOS[`/art/sources/videos/${prop.video.file}`]} controls preload="none" playsinline>
-						{#if prop.video.captions}
-							<track kind="captions" src={prop.video.captions} srclang="en" label="English" default />
-						{/if}
-					</video>
+					<form method="dialog" class="x">
+						<button class="secondary" aria-label="Close">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+						</button>
+					</form>
 				{/if}
-				{#if prop.links}
-					<ul>
-						{#each prop.links as link}
-							<li>
-								<a href={link.href}>
-									{link.label}
-									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16L16 8M9 8h7v7" /></svg>
-								</a>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-				<form method="dialog"><button class="secondary">Close</button></form>
+				<div class="scroll">
+					<p class="where">{where}</p>
+					<svelte:element this={`h${level}`} id="card-{prop.id}-title">{prop.name}</svelte:element>
+					{#if prop.video}
+						<!-- The same video plays on the prop's screen in the scene (props.ts), if it has one, and keeps playing there after the card
+							closes. TODO Joe: captions for the real video; the fill-in has none. -->
+						<VideoPlayer src={VIDEOS[prop.video.file]} captions={prop.video.captions} />
+					{/if}
+					{#each prop.body as paragraph}
+						<p>{paragraph}</p>
+					{/each}
+					{#if prop.links}
+						<ul>
+							{#each prop.links as link}
+								<li>
+									<!-- An external link opens in a new tab (Joe, 2026-09-30); the browser gives it no opener. -->
+									<a href={link.href} class={prop.video ? 'primary' : undefined} target={/^https?:/.test(link.href) ? '_blank' : undefined}>
+										{link.label}
+										<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16L16 8M9 8h7v7" /></svg>
+									</a>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+					{#if !prop.video}
+						<form method="dialog"><button class="secondary">Close</button></form>
+					{/if}
+				</div>
 			</dialog>
 		{/if}
 	</div>
@@ -75,9 +91,28 @@
 <style>
 	/*
 	 * A card's contents on its night board (src/app.css; Joe, 2026-09-30): the venue over a gold headline, the text, gold
-	 * links with an arrow, and Close at the foot. Without the engine the cards read inline as plain document.
+	 * links with an arrow, and Close at the foot. Without the engine the cards read inline as plain document. Every card is
+	 * 90 % of the viewport wide up to 860 px and at most 85 % tall, scrolling inside.
 	 */
 	:global(html.engine) dialog {
+		inline-size: min(90vw, 860px);
+		max-inline-size: none;
+		max-block-size: 85svh;
+		overflow: visible;
+
+		&[open] {
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* Room inside the scrolling box for focus rings and a button's lip, which it would clip. */
+		& .scroll {
+			min-block-size: 0;
+			margin: -0.5rem;
+			padding: 0.5rem;
+			overflow-y: auto;
+		}
+
 		& .where {
 			margin-block: 0 0.375rem;
 			color: var(--sky);
@@ -110,7 +145,7 @@
 			list-style: none;
 		}
 
-		& a {
+		& a:not(.primary) {
 			display: inline-flex;
 			align-items: center;
 			gap: 0.25rem;
@@ -143,16 +178,63 @@
 			justify-content: flex-end;
 			margin-block-start: 1.5rem;
 		}
+
+		/* A live site's See More: the gold button at a card's size, its arrow beside the label. */
+		& a.primary {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.375rem;
+			padding-block: 0.5rem 0.55rem;
+			padding-inline: 1.375rem;
+			font-size: 1.1875rem;
+		}
+
+		/* A video card: the video the card's full width and a small line under it. */
+		&.video {
+			& :is(.where, h2, h4) {
+				position: absolute;
+				inline-size: 1px;
+				block-size: 1px;
+				overflow: hidden;
+				clip-path: inset(50%);
+				white-space: nowrap;
+			}
+
+			& p {
+				margin-block: 0.75rem 0;
+				font-size: 0.9375rem;
+			}
+		}
+
+		/* The X, centred on the card's top right corner (the outer corner of its border): the card's ivory-ringed Close, round
+		   and filled with the night so it reads over the scene too. */
+		& .x {
+			position: absolute;
+			inset-block-start: -2px;
+			inset-inline-end: -2px;
+			margin: 0;
+			translate: 50% -50%;
+
+			& button {
+				--fill: var(--night);
+				display: grid;
+				place-items: center;
+				inline-size: 2.5rem;
+				block-size: 2.5rem;
+				padding: 0;
+				border-radius: 50%;
+			}
+
+			& svg {
+				inline-size: 1.125rem;
+				block-size: 1.125rem;
+			}
+		}
 	}
 
 	h2,
 	h4 {
 		margin-block: 0 0.75rem;
 		font-size: 1.75rem;
-	}
-
-	video {
-		display: block;
-		inline-size: 100%;
 	}
 </style>

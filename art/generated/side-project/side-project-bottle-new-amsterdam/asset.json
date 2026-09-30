@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-new-amsterdam/image.webp",
   "world": {
-    "x": 679.3453645833333,
-    "y": 601.91,
+    "x": 1535.2253645833332,
+    "y": 595.1,
     "w": 79.54317708333333,
     "h": 251.6496644295302
   },
   "source": {
     "w": 192,
     "h": 596,
-    "sha256": "db17364c586cda87bc07942386ffbe0ec1a7ccfd5bfb5ff2eae94558c6f446ec"
+    "sha256": "9dc76a79ab0def3fbc4f21323e2279bfa9293945d158d47d2eec108b0188f107"
   },
   "trim": {
     "x": 1,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 678.92,
-      "y": 601.91,
+      "x": 1534.8,
+      "y": 595.1,
       "w": 81.67,
       "h": 253.35
     },

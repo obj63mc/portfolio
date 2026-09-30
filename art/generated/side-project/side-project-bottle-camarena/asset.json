@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-camarena/image.webp",
   "world": {
-    "x": 798.03,
-    "y": 634.22,
+    "x": 1157.06,
+    "y": 630.82,
     "w": 95.28842105263156,
     "h": 219.3396923076923
   },
   "source": {
     "w": 228,
     "h": 520,
-    "sha256": "04c1083a3c3960338f11a513c64cfd2552fe430bd56e73b83857dd7a28d699c3"
+    "sha256": "488453664b0c561daac0a4f5cad0858d176d72e3f0593842e8b720e6382633ce"
   },
   "trim": {
     "x": 0,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 798.03,
-      "y": 634.22,
+      "x": 1157.06,
+      "y": 630.82,
       "w": 96.99,
       "h": 221.04
     },

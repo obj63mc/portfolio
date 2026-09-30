@@ -787,6 +787,24 @@
           ]
         },
         {
+          "localFile": "art/references/local/brands/sapporo.png",
+          "authors": [
+            {
+              "displayName": "Sapporo logo (public domain)",
+              "uri": "https://commons.wikimedia.org/wiki/File:Sapporo_logo.svg"
+            }
+          ]
+        },
+        {
+          "localFile": "art/references/local/brands/anchor-brewing.png",
+          "authors": [
+            {
+              "displayName": "Anchor Brewing logo",
+              "uri": "https://www.anchorbrewing.com/wp-content/uploads/2023/02/anchor-logo-dark-blue.png"
+            }
+          ]
+        },
+        {
           "localFile": "art/references/local/brands/ej-brandy.png",
           "authors": [
             {

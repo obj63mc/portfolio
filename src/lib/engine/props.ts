@@ -10,7 +10,7 @@ import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { drawCourse } from './course-overlay.ts';
 import { MARQUEE, loadFaces, settled } from './fonts.ts';
-import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, scrolled, turned, type Pose } from './motion.ts';
+import { CLICK_MS, WATER, blink, chase, gaze, glint, hover, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
@@ -49,6 +49,11 @@ const GLOW = '255 236 170';
 const GLOW_PX = 18;
 /** How far past its box a layer may draw: its glow, a pop, the moose's antlers wobbling. */
 const REACH = 2 * GLOW_PX;
+/** The river's ripples: its pale streaks, and its darker patches' colour, each at its most seen. */
+const FOAM = '235 252 255';
+const FOAM_A = 0.5;
+const SHADE = '0 95 140';
+const SHADE_A = 0.28;
 /** The Side Project bottles' glint: a slanted band this wide, world px. */
 const GLINT_W = 36;
 /** The Carondelet start line's checks: ivory and dark teal from the style contract (art/style.txt). */
@@ -66,6 +71,9 @@ interface Cut {
 	bmp?: ImageBitmap;
 	/** The MonsterCommerce eye's silhouette in the monster's purple. */
 	lid?: ImageBitmap;
+	/** The MonsterCommerce eye split so it can look at the visitor's cursor: its bare ball, and its iris and pupil. */
+	ball?: ImageBitmap;
+	iris?: ImageBitmap;
 	/** The marquee's bulbs alone, without the facade behind the string. */
 	lit?: ImageBitmap;
 }
@@ -146,8 +154,12 @@ export class Props {
 	private row: Rect | null = null;
 	/** The overworld's lap start line: where it crosses the path's centreline, the way the path runs, the path's half-width. */
 	private line: { x: number; y: number; dx: number; dy: number; half: number } | null = null;
+	/** The overworld's river, its outline's box, and the ripples' frame it last drew; none in a sub-scene. */
+	private river: { is: Overworld['river']; box: Rect; drawn: number } | null = null;
 	private t = 0;
 	private rm = false;
+	/** The visitor's own cursor, world px, which the MonsterCommerce eye looks at; none before Join. */
+	private own: Point | null = null;
 	/** Where a poster's light or a bottle's glint is masked to its pixels (`shine`). */
 	private scratch: OffscreenCanvas | undefined;
 	private listeners = new AbortController();
@@ -192,6 +204,7 @@ export class Props {
 		};
 		this.layers = propsOf(scene).map((p) => layer(p, artOf(scene, p), p.rect)).filter((l) => l.cuts.length || l.rig);
 		this.line = null;
+		this.river = null;
 		// The plate paints none of these: the signpost, the church door, the rider riding the park's lake loop, the loop's
 		// start line and its START FINISH sign, scenery that nothing clicks. The loop runs behind the park sign and three
 		// trees, whose cut-outs, the plate's own pixels, cover the rider there: each layer's base y orders it against the
@@ -201,11 +214,13 @@ export class Props {
 			this.layers.push(...[...scene.track.cover, scene.track.sign].map((id) => layer(undefined, [id])));
 			this.layers.push({ ...layer(undefined, scene.marquee.art), board: { face: scene.marquee.face, text: scene.marquee.text } });
 			this.line = { ...along(LOOP, 0), half: LOOP.half };
+			const m = scene.river.mask, x = Math.min(...m.map((p) => p.x)), y = Math.min(...m.map((p) => p.y));
+			this.river = { is: scene.river, box: { x, y, w: Math.max(...m.map((p) => p.x)) - x, h: Math.max(...m.map((p) => p.y)) - y }, drawn: -1 };
 		}
 		for (const l of this.layers) {
-			const v = l.prop?.video;
-			const el = v && this.layer.querySelector<HTMLVideoElement>(`[data-prop="${l.prop!.id}"] video`);
-			if (el) l.video = { el, screen: v.screen };
+			const s = l.prop?.video?.screen;
+			const el = s && this.layer.querySelector<HTMLVideoElement>(`[data-prop="${l.prop!.id}"] video`);
+			if (el) l.video = { el, screen: s };
 		}
 		this.layers.sort(byBase);
 		const bottles = this.layers.filter((l) => isBottle(l.prop));
@@ -222,7 +237,12 @@ export class Props {
 				load(url, c.rect.w * density, c.rect.h * density)
 					.then((bmp) => arrive(bmp, (b) => (c.bmp = b)))
 					.then(() => {
-						if (c.id === 'mc-eye' && c.bmp) return lid(c.bmp).then((b) => arrive(b, (b) => (c.lid = b)));
+						if (c.id === 'mc-eye' && c.bmp) {
+							const [ball, iris] = split(c.bmp);
+							ball.then((b) => arrive(b, (b) => (c.ball = b))).catch(() => {});
+							iris.then((b) => arrive(b, (b) => (c.iris = b))).catch(() => {});
+							return lid(c.bmp).then((b) => arrive(b, (b) => (c.lid = b)));
+						}
 						if (c.id === 'marquee-bulbs' && c.bmp) return lit(c.bmp).then((b) => arrive(b, (b) => (c.lit = b)));
 					})
 					.catch(() => {}); // a failed cut-out leaves its painted original, or nothing
@@ -236,13 +256,15 @@ export class Props {
 	}
 
 	/**
-	 * One frame's state at server time `t` (ms), `dt` ms after the last: hover levels eased toward what is hovered now.
+	 * One frame's state at server time `t` (ms), `dt` ms after the last, with the visitor's own cursor at `own`: hover
+	 * levels eased toward what is hovered now.
 	 * Returns the world rect to draw again, or null when nothing in `view` looks different from its last drawing: a
 	 * cut-out arrived (all of it), a hover is fading, a reaction is running, ambient motion moved, the TV's video played.
 	 */
-	step(dt: number, t: number, view: Rect, rm: boolean): Rect | null {
+	step(dt: number, t: number, view: Rect, rm: boolean, own: Point | null): Rect | null {
 		this.t = t;
 		this.rm = rm;
+		this.own = own;
 		const hovered = new Set([...this.layer.querySelectorAll(HOVERED)].map((b) => b.parentElement?.dataset.prop));
 		const changed: Rect[] = this.arrived ? [view] : [];
 		this.arrived = false;
@@ -261,16 +283,54 @@ export class Props {
 			if (look !== l.drawn) (l.drawn = look), changed.push(grow(l.box, REACH));
 		}
 		if (rode) this.layers.sort(byBase);
+		// The river's ripples move WATER.fps times a second while it is in view.
+		const r = this.river, frame = rm ? 0 : Math.floor((t / 1000) * WATER.fps);
+		if (r && overlaps(r.box, view) && frame !== r.drawn) {
+			r.drawn = frame;
+			const x = Math.max(r.box.x, view.x), y = Math.max(r.box.y, view.y);
+			changed.push({ x, y, w: Math.min(r.box.x + r.box.w, view.x + view.w) - x, h: Math.min(r.box.y + r.box.h, view.y + view.h) - y });
+		}
 		return changed.length ? union(changed) : null;
 	}
 
 	/** Every layer in `view`, bottom first, on a canvas scaled `k` device px per world px with the camera at `cam`. */
 	draw(g: CanvasRenderingContext2D, cam: Point, k: number, view: Rect) {
 		g.setTransform(k, 0, 0, k, -cam.x * k, -cam.y * k);
+		if (this.river && overlaps(this.river.box, view)) this.water(g, this.river.is);
 		if (this.line) this.startLine(g, this.line);
 		for (const l of this.layers) if (overlaps(grow(l.box, REACH), view)) this.drawLayer(g, l, k);
 		if (import.meta.env.DEV && this.course && this.line) drawCourse(g);
 		g.setTransform(1, 0, 0, 1, 0, 0);
+	}
+
+	/** The river's ripples on its water, under everything. */
+	private water(g: CanvasRenderingContext2D, river: Overworld['river']) {
+		g.save();
+		g.beginPath();
+		for (const p of river.mask) g.lineTo(p.x, p.y);
+		g.clip();
+		for (const r of ripples(river, this.t, this.rm)) {
+			g.beginPath();
+			if (r.kind === 'foam') {
+				g.ellipse(r.x, r.y, r.w / 2, r.h / 2, 0, 0, 2 * Math.PI);
+				g.fillStyle = `rgb(${FOAM} / ${FOAM_A * r.a})`;
+			} else {
+				// A soft patch: a round gradient squashed to the patch.
+				g.save();
+				g.translate(r.x, r.y);
+				g.scale(r.w / r.h, 1);
+				const shade = g.createRadialGradient(0, 0, 0, 0, 0, r.h / 2);
+				shade.addColorStop(0, `rgb(${SHADE} / ${SHADE_A * r.a})`);
+				shade.addColorStop(1, `rgb(${SHADE} / 0)`);
+				g.arc(0, 0, r.h / 2, 0, 2 * Math.PI);
+				g.fillStyle = shade;
+				g.fill();
+				g.restore();
+				continue;
+			}
+			g.fill();
+		}
+		g.restore();
 	}
 
 	/**
@@ -299,9 +359,16 @@ export class Props {
 	private look(l: Layer) {
 		const { t, rm } = this, since = t - l.clicked;
 		const reaction = progress(since, l.rig?.name === 'moose' ? CLICK_MS.wobble : l.cuts.some((c) => c.id === 'mc-eye') ? CLICK_MS.blink : CLICK_MS.pop);
-		const v = l.video?.el;
+		const v = l.video?.el, eye = l.cuts.find((c) => c.iris);
+		// The eye looks only while it is in view, since `step` reads no layer out of it: to a tenth of a world px.
+		const looking = eye && gaze(eye.rect, this.own, rm);
 		const ambient =
-			l.rig && !rm ? t : l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}` : isBottle(l.prop) ? glint(t, rm) : v ? `${v.currentTime},${v.ended}` : '';
+			l.rig && !rm ? t
+			: l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}`
+			: isBottle(l.prop) ? glint(t, rm)
+			: v ? `${v.currentTime},${v.ended}`
+			: looking ? `${looking.x.toFixed(1)},${looking.y.toFixed(1)}`
+			: '';
 		return `${l.hover}|${reaction}|${ambient}`;
 	}
 
@@ -328,9 +395,9 @@ export class Props {
 					g.translate(m.x, m.y);
 					g.scale(1, blink(p));
 					g.translate(-m.x, -m.y);
-					g.drawImage(c.bmp, r.x, r.y, r.w, r.h);
+					this.drawCut(g, c);
 					g.restore();
-				} else g.drawImage(c.bmp, r.x, r.y, r.w, r.h);
+				} else this.drawCut(g, c);
 			}
 			if (l.rig) this.drawRig(g, l);
 		};
@@ -349,6 +416,20 @@ export class Props {
 		if (isBottle(l.prop)) this.glint(g, l);
 		if (poster && h && !rm) this.lamp(g, l.cuts[0], POSTER_LAMPS[poster], h);
 		if (l.video) this.screen(g, l.video.el, l.video.screen);
+		g.restore();
+	}
+
+	/** A cut-out at its rect; the MonsterCommerce eye's iris turned toward the visitor's cursor inside its ball. */
+	private drawCut(g: CanvasRenderingContext2D, c: Cut) {
+		const r = c.rect;
+		if (!c.ball || !c.iris) return g.drawImage(c.bmp!, r.x, r.y, r.w, r.h);
+		const d = gaze(r, this.own, this.rm), m = centre(r);
+		g.drawImage(c.ball, r.x, r.y, r.w, r.h);
+		g.save();
+		g.beginPath();
+		g.ellipse(m.x, m.y, r.w / 2, r.h / 2, 0, 0, 2 * Math.PI);
+		g.clip();
+		g.drawImage(c.iris, r.x + d.x, r.y + d.y, r.w, r.h);
 		g.restore();
 	}
 
@@ -512,7 +593,7 @@ export class Props {
 
 	private clear() {
 		this.generation++;
-		for (const l of this.layers) for (const b of [...l.cuts.flatMap((c) => [c.bmp, c.lid, c.lit]), ...(l.rig?.parts.map((p) => p.bmp) ?? [])]) b?.close();
+		for (const l of this.layers) for (const b of [...l.cuts.flatMap((c) => [c.bmp, c.lid, c.ball, c.iris, c.lit]), ...(l.rig?.parts.map((p) => p.bmp) ?? [])]) b?.close();
 		this.layers = [];
 	}
 }
@@ -525,6 +606,35 @@ function lid(eye: ImageBitmap) {
 	g.fillStyle = LID;
 	g.fillRect(0, 0, c.width, c.height);
 	return createImageBitmap(c);
+}
+
+/**
+ * The MonsterCommerce eye as its bare ball and its iris: each row's iris is its span from the first yellow or black pixel
+ * to the last, a pixel wider for the soft edge and taking in the pupil's highlight, and the ball fills it with the cream
+ * either side, blended across.
+ */
+function split(eye: ImageBitmap) {
+	const w = eye.width, h = eye.height, c = new OffscreenCanvas(w, h), g = c.getContext('2d', { willReadFrequently: true })!;
+	g.drawImage(eye, 0, 0);
+	const ball = g.getImageData(0, 0, w, h), iris = new ImageData(w, h), b = ball.data, d = iris.data;
+	const at = (x: number, y: number) => (y * w + x) * 4, CREAM = [252, 236, 190];
+	// Yellow and black have little blue; the cream round them plenty.
+	const inIris = (i: number) => b[i + 3] > 128 && b[i + 2] < 175;
+	// The cream at `x`, else the eye's cream where the iris meets the ball's edge.
+	const cream = (x: number, y: number) => (x >= 0 && x < w && b[at(x, y) + 3] > 250 ? [...b.subarray(at(x, y), at(x, y) + 3)] : CREAM);
+	for (let y = 0; y < h; y++) {
+		let l = -1, r = -1;
+		for (let x = 0; x < w; x++) if (inIris(at(x, y))) (l = l < 0 ? x : l), (r = x);
+		if (l < 0) continue;
+		(l = Math.max(0, l - 1)), (r = Math.min(w - 1, r + 1));
+		const west = cream(l - 1, y), east = cream(r + 1, y);
+		for (let x = l; x <= r; x++) {
+			const i = at(x, y), u = (x - l) / (r - l || 1);
+			d.set(b.subarray(i, i + 4), i);
+			for (let k = 0; k < 3; k++) b[i + k] = west[k] + (east[k] - west[k]) * u;
+		}
+	}
+	return [createImageBitmap(ball), createImageBitmap(iris)];
 }
 
 /** The marquee's bulbs alone: its bright warm pixels, without the white canopy edge or the facade behind the string. */

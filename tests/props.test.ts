@@ -5,8 +5,9 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES, artOf, propsOf } from '../src/lib/scenes/index.ts';
-import { CLICK_MS, HOVER_MS, RIDER, SCROLL_SPEED, TURNS, blink, chase, glint, hover, moose, pop, progress, rider, scrolled, turned } from '../src/lib/engine/motion.ts';
+import { CLICK_MS, GAZE, HOVER_MS, RIDER, SCROLL_SPEED, TURNS, blink, chase, gaze, glint, hover, moose, pop, progress, rider, ripples, scrolled, turned } from '../src/lib/engine/motion.ts';
 import { along, course, locate } from '../src/lib/engine/track.ts';
+import { inOutline, lineY } from '../src/lib/scenes/walk.ts';
 
 const generated = (path: string) => new URL(`../art/generated/${path}`, import.meta.url);
 const scenes = [OVERWORLD, ...Object.values(SUB_SCENES)];
@@ -112,6 +113,31 @@ test('click reactions run their length and still play under reduced motion', () 
 	assert.notEqual(wobbling.antlers.r, 0, 'the antlers wobble under reduced motion');
 	assert.equal(moose(0, 0, CLICK_MS.wobble, true).antlers.r, 0, 'and settle');
 	assert.ok(moose(0, 0, CLICK_MS.blink / 2, true).eye.sy < 0.2, 'the moose blinks at a click under reduced motion');
+});
+
+test('the MonsterCommerce eye looks at the visitor’s cursor, no further than its ball allows', () => {
+	const eye = { x: 0, y: 0, w: 60, h: 80 };
+	assert.deepEqual(gaze(eye, null, false), { x: 0, y: 0 }, 'straight ahead before Join');
+	assert.deepEqual(gaze(eye, { x: 1000, y: 40 }, true), { x: 0, y: 0 }, 'and under reduced motion');
+	assert.deepEqual(gaze(eye, { x: 1000, y: 40 }, false), { x: GAZE.x * 60, y: 0 }, 'all the way right');
+	assert.ok(gaze(eye, { x: 30, y: -1000 }, false).y === -GAZE.y * 80, 'all the way up');
+	const near = gaze(eye, { x: 30 + GAZE.reach / 2, y: 40 }, false);
+	assert.equal(near.x, (GAZE.x * 60) / 2, 'half way for a cursor half its reach off');
+});
+
+test('the river’s ripples drift on its water, clear of its banks, decks and what stands in it; under reduced motion they rest', () => {
+	const river = OVERWORLD.river, [eads, poplar] = river.decks;
+	for (let t = 0; t < 60_000; t += 1_700)
+		for (const r of ripples(river, t, false)) {
+			const at = `${r.kind} at ${Math.round(r.x)}, ${Math.round(r.y)}, t ${t}`;
+			assert.ok(inOutline({ x: r.x - r.w / 2, y: r.y }, river.mask) && inOutline({ x: r.x + r.w / 2, y: r.y }, river.mask), `${at} is on the water`);
+			assert.ok(r.y > lineY([eads[3], eads[2]], r.x), `${at} is south of the Eads deck`);
+			assert.ok(r.y < lineY([poplar[0], poplar[1]], r.x) || r.y > lineY([poplar[3], poplar[2]], r.x), `${at} is off the Poplar Street deck`);
+			for (const o of river.obstacles) assert.ok(!(r.x + r.w / 2 > o.x && r.x - r.w / 2 < o.x + o.w && r.y > o.y && r.y < o.y + o.h), `${at} is clear of ${o.x}, ${o.y}`);
+		}
+	assert.ok(ripples(river, 0, false).length > 10, 'plenty of them');
+	assert.notDeepEqual(ripples(river, 1000, false), ripples(river, 3000, false), 'they move');
+	assert.deepEqual(ripples(river, 1000, true), ripples(river, 3000, true), 'but not under reduced motion');
 });
 
 test('the moose breathes and blinks on its own and lifts its head on hover; under reduced motion it rests', () => {

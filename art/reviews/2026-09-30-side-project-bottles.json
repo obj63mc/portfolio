@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-30",
+  "scenes": [
+    "side-project"
+  ],
+  "verdict": "Round two of the Side Project master, painted by construction: the brand bottles rearranged in Joe's order, beers first (Bud Light, Sapporo, Anchor, Soonhari, then Bacardi, Grey Goose, E&J, Camarena, RumChata, Pink Whitney, New Amsterdam), Sapporo and Anchor added as the Bud Light longneck relabelled from their logos, Barefoot removed. The bottle mattes moved with their bottles and the scene data follows them; the four beers' cards play their homepage videos. Checks pass. Workshop acceptance is Joe's, in art/review.html.",
+  "nativeMasterHashes": {
+    "side-project": "31f54bed15f9bdddb369c333e3f1ef1b741788db0518cf3f01f9f478cb579b6a"
+  },
+  "assetHashes": {
+    "side-project-master": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
+    "side-project": "79ca7af46051aec41bf7d39c7a683dee6c9854848924f26239da2fe4c2646f1f",
+    "side-project-bottle-bud-light": "41bbd66f591bff1c8a1e6a461903a628573d4bf965ce4f6e83cc3af78175a91d",
+    "side-project-bottle-sapporo": "30a97aa19e8a974c86eff2f9f30cc035c95efd79ecb16df7632e7ff5ee0f8ae6",
+    "side-project-bottle-anchor": "02d46384fdcf49e686445cd8e928912d2b8130db3af2f60ef08142786651a27f",
+    "side-project-bottle-soonhari": "5c6c70662dc82e8975d856eade604ac26c6fd3fe0db47f9d8504d211000943d3",
+    "side-project-bottle-bacardi": "7e15133a40878546571b4b168b33f5b5f1ac3a4b45e4c80415aa2c16e557b33e",
+    "side-project-bottle-grey-goose": "a7df6233a07bb5a052d301a566e09f54e8a6caddfbd9d689a474908d8bce2fdb",
+    "side-project-bottle-ej": "8774bd7af716b63d5733e6a293770e7d07662f19c6a61564cf55411723422aa1",
+    "side-project-bottle-camarena": "57e2b121602bba53bbd372e85e88b8fb701395e09dad9f4e24c9d53ee75632e6",
+    "side-project-bottle-rumchata": "2e4c423cf10687bdb706844422034eece84e8013aec59c2eae8aa7339a176caa",
+    "side-project-bottle-pink-whitney": "866af08a0d0a5409afb38829eb15a98768dbfe5b4b95333a1ff903999c5a2c2d",
+    "side-project-bottle-new-amsterdam": "7293687d74c50891542d89dc92a2851e6ad6b0f81084c1f39fba155f4701fad3",
+    "side-project-sign": "7d617eed630c209e9c38a750b11e9ac9d15a574a23ea7c651fbbd4632057f09b",
+    "side-project-chalkboard": "d0202fd54226dbd7165c7c050fbbe6f6ce748fef35c3da01fbc6ce2de1bbdf85",
+    "side-project-front-bar": "e1d994f3a82638eb94aa40bc0d83cd346823ecfc8d21712fb67b17bd5ebd5ee1",
+    "side-project-back-bar": "525febbff7faa73d59414ef9e390f7306d8ae221aca828aac65597df7467de63"
+  },
+  "checks": [
+    "tiles.py stitch: 0 px changed outside the masks",
+    "art:validate PASS (110 assets)",
+    "art:check",
+    "art:test (4)",
+    "npm run ci (211 pass, 1 todo)",
+    "Playwright (55 of 56 in the full run; river.spec.ts:141, a float's speed, passes alone)"
+  ]
+}

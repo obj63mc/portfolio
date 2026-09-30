@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "1eb37871d76bc7e294acfb1bc8b56e574f5861af09078f51b2b1040c50165326",
-  "run": "art/runs/side-project-bottle-pink-whitney/2026-09-28T19-03-12.361Z",
+  "sourceSha256": "cc39dbbb471f335657e8db24c62e58ccd17b914ac4e37990550f70b44d4b128b",
+  "run": "art/runs/side-project-bottle-pink-whitney/2026-09-30T19-38-13.687Z",
   "provider": "derived",
   "derivation": {
     "asset": "side-project-master",
-    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "referenceSha256": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

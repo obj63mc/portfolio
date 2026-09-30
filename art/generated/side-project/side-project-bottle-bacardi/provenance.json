@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "28a2068063a0eab96b8f7bec7429a37761c91eb9c92b55b226c9872215aabbc0",
-  "run": "art/runs/side-project-bottle-bacardi/2026-09-28T19-03-07.210Z",
+  "sourceSha256": "66c2e4ae6eb778071f0873570201ef25a81e3c713470d35fc0c48800810afa2e",
+  "run": "art/runs/side-project-bottle-bacardi/2026-09-30T19-38-05.402Z",
   "provider": "derived",
   "derivation": {
     "asset": "side-project-master",
-    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "referenceSha256": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

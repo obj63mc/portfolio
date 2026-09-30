@@ -227,10 +227,13 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 		await toMonitor(); // the card's Close is over the scene beyond the desk, so the cursor had stepped off it
 		await lockedClick(page);
 		await expect(card).toBeVisible();
-		await page.route('https://github.com/**', (r) => r.fulfill({ contentType: 'text/html', body: 'GitHub' }));
+		// An external link opens in a new tab (Joe, 2026-09-30).
+		await page.context().route('https://github.com/**', (r) => r.fulfill({ contentType: 'text/html', body: 'GitHub' }));
 		await moveTo(await centre(card.locator('a[href*="github.com"]')));
+		const tab = page.context().waitForEvent('page');
 		await lockedClick(page);
-		await expect(page).toHaveURL('https://github.com/obj63mc');
+		await expect(await tab).toHaveURL('https://github.com/obj63mc');
+		await expect(page.locator('dialog.paused'), 'this tab pauses').toBeVisible();
 	});
 });
 
@@ -291,6 +294,29 @@ test('a refused lock at Join leaves the unlocked mouse: the drawn cursor follows
 	await page.mouse.click(door.x, door.y, { button: 'middle' });
 	await expect(await tab).toHaveURL('/moosylvania');
 	await expect(page).toHaveURL('/');
+});
+
+test("a card's video: the locked cursor over it shows the site's controls, marks the one it is on and clicks it", async ({ page }) => {
+	await page.goto('/side-project');
+	let at = await join(page);
+	const moveTo = async (p: Point) => {
+		await nudge(page, p.x - at.x, p.y - at.y);
+		await expect.poll(() => off(page, p)).toBeLessThan(5);
+		at = p;
+	};
+	// Opened by a click, which unlike keyboard focus doesn't glide the camera, carrying the locked cursor with it.
+	await page.locator('[data-prop="bottle-anchor"] > button').evaluate((b: HTMLElement) => b.click());
+	const card = page.locator('[data-prop="bottle-anchor"] dialog'), player = card.locator('.player');
+	await expect(card).toBeVisible();
+	const mute = player.getByRole('button', { name: 'Mute' });
+	await moveTo(await centre(mute));
+	await expect(player).toHaveClass(/(^|\s)hot(\s|$)/);
+	await expect(mute).toHaveClass(/(^|\s)hot(\s|$)/);
+	await lockedClick(page);
+	await expect(player.getByRole('button', { name: 'Unmute' })).toBeVisible();
+	const box = (await player.boundingBox())!;
+	await moveTo({ x: box.x + box.width / 2, y: box.y - 40 });
+	await expect(player).not.toHaveClass(/(^|\s)hot(\s|$)/);
 });
 
 test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {

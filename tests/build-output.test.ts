@@ -115,8 +115,8 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 		// The marquee is scenery, its letters scrolling what's showing (Joe, 2026-09-30).
 		'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
 		'mc-sign', 'mc-eye', 'server-rack',
-		'chalkboard', 'bottle-bacardi', 'bottle-grey-goose', 'bottle-new-amsterdam', 'bottle-camarena', 'bottle-barefoot',
-		'bottle-bud-light', 'bottle-ej', 'bottle-pink-whitney', 'bottle-rumchata', 'bottle-soonhari', 'brewery-sign',
+		'chalkboard', 'bottle-bud-light', 'bottle-sapporo', 'bottle-anchor', 'bottle-soonhari', 'bottle-bacardi', 'bottle-grey-goose',
+		'bottle-ej', 'bottle-camarena', 'bottle-rumchata', 'bottle-pink-whitney', 'bottle-new-amsterdam', 'brewery-sign',
 		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it.
 		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo',
 		// The cycling course's line joined the ride sign's card, and the START FINISH sign is scenery: the lap timer is an
@@ -240,11 +240,37 @@ test('props (ticket 15): each wrapper names its prop for the engine, and an irre
 	}
 });
 
-test('the meeting TV: its card holds the video with controls, loaded only when played', () => {
+/**
+ * A card's video with the site's own controls, which the locked cursor can reach, not the browser's: Play and the seek
+ * slider prerendered, loaded only when played.
+ */
+const player = (card: string) => {
+	const video = opens(card, 'video')[0];
+	assert.ok(!/\scontrols[\s=>]/.test(video) && video.includes('preload="none"'), video);
+	assert.ok(card.includes('aria-label="Play"') && /<input[^>]*type="range"[^>]*aria-label="Seek"/.test(card), 'its controls');
+	return video;
+};
+
+test("the meeting TV: its card holds the video with the site's controls, loaded only when played", () => {
 	const tv = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-meeting-tv-title"[\s\S]*?<\/dialog>/)![0];
-	const video = opens(tv, 'video')[0];
-	assert.ok(video.includes('controls') && video.includes('preload="none"'), video);
+	const video = player(tv);
 	assert.match(video, /src="[^"]*\/_app\/immutable\/assets\/fastfive-demo-full-1024x768\.[^"]*\.mp4"/);
+});
+
+test("the bottles: each card holds its brand's homepage video with the site's controls, loaded only when played", () => {
+	const bar = main(page('side-project.html'));
+	for (const [id, file] of [
+		['bud-light', 'bud-light-homepage-2026-09-30'], ['sapporo', 'sapporo-homepage-2026-09-30'], ['anchor', 'anchor-brewing-homepage-2026-09-30'],
+		['soonhari', 'soonhari-homepage-2026-09-30-4k'], ['ej', 'ej-brandy-home-collection-vsop-2026-09-30'], ['camarena', 'camarena-home-margarita-2026-09-30'],
+		['rumchata', 'rumchata-home-peppermint-bark-2026-09-30'], ['pink-whitney', 'pink-whitney-home-products-750ml-2026-09-30'],
+		['new-amsterdam', 'new-amsterdam-home-find-your-wins-2026-09-30']
+	]) {
+		const card = bar.match(new RegExp(`<dialog[^>]*aria-labelledby="card-bottle-${id}-title"[\\s\\S]*?</dialog>`))![0];
+		const video = player(card);
+		assert.match(video, new RegExp(`src="[^"]*/_app/immutable/assets/${file}\\.[^"]*\\.mp4"`), id);
+		// A video card closes by its round X, not a Close at the foot.
+		assert.ok(/<form method="dialog" class="x[\s"]/.test(card) && !card.includes('>Close</button>'), id);
+	}
 });
 
 test('the shared screen: its line carries its state, prerendered idle', () => {

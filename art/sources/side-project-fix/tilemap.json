@@ -1,29 +1,17 @@
 {
- "round": 1,
- "base": "rounds/base-1.png",
+ "round": 2,
+ "base": "rounds/base-2.png",
  "tiles": [
   {
-   "name": "labels",
+   "name": "shelf",
    "rect": [
-    244,
-    404,
-    696,
-    84
+    224,
+    330,
+    760,
+    182
    ],
    "loops": [],
-   "repaintPx": 19359,
-   "edit": true
-  },
-  {
-   "name": "sign",
-   "rect": [
-    1170,
-    366,
-    96,
-    96
-   ],
-   "loops": [],
-   "repaintPx": 5091,
+   "repaintPx": 100518,
    "edit": true
   }
  ],

@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "a99fc9300948b215915053d94a59dc288c8c4bcdfc4e1d936af603ba153bfce3",
-  "run": "art/runs/side-project-master/2026-09-28T18-58-01.000Z-upscale-4x",
+  "sourceSha256": "b99bf5cc0c7ab3d22e271bc05f6514a1a10835c5ed31d5f4709e00af1b2cd780",
+  "run": "art/runs/side-project-master/2026-09-30T19-37-42.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/side-project-fix/stitched.png (native 1672 x 941, tile-map round 1)",
-    "baseSha256": "1c2ca2adfba9e10f4ab5b8e318395fb6c5894a400d64093479de713baff8af34",
+    "base": "art/sources/side-project-fix/stitched.png (native 1672 x 941, tile-map round 2)",
+    "baseSha256": "31f54bed15f9bdddb369c333e3f1ef1b741788db0518cf3f01f9f478cb579b6a",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
     "script": "scripts/art/overworld/install-master.sh"
   },

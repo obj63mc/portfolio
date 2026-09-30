@@ -154,10 +154,14 @@ test('Foundry: posters left to right beside the screen, the beam from the ledge 
 		assert.ok(!inSeats(p), `${JSON.stringify(p)} not in the seats`);
 });
 
-test('Side Project: ten bottles in a row on one shelf, the sign on the cooler door grants the beer mug', () => {
+test('Side Project: eleven bottles in a row on one shelf, the beers first, the sign on the cooler door grants the beer mug', () => {
 	const bar = SUB_SCENES['side-project'];
 	const bottles = bar.props.filter((p) => p.id.startsWith('bottle-'));
-	assert.equal(bottles.length, 10);
+	// Joe's order (2026-09-30): the four beers, then the spirits; each plays its homepage in its card alone, but Bacardi's
+	// and Grey Goose's, which have none yet.
+	assert.deepEqual(bottles.map((b) => b.id.slice('bottle-'.length)), ['bud-light', 'sapporo', 'anchor', 'soonhari', 'bacardi', 'grey-goose', 'ej', 'camarena', 'rumchata', 'pink-whitney', 'new-amsterdam']);
+	const none = ['bottle-bacardi', 'bottle-grey-goose'];
+	assert.ok(bottles.every((b) => (none.includes(b.id) ? !b.video : b.video && !b.video.screen)));
 	// One row, left to right, none overlapping: every bottle stands on the same shelf (bases within a few px).
 	bottles.forEach((b, i) => assert.ok(i === 0 || b.rect.x >= bottles[i - 1].rect.x + bottles[i - 1].rect.w, `${b.id} overlaps the one before`));
 	const bases = bottles.map((b) => b.rect.y + b.rect.h);
@@ -168,7 +172,7 @@ test('Side Project: ten bottles in a row on one shelf, the sign on the cooler do
 	const sign = bar.props.find((p) => p.id === 'brewery-sign')!;
 	assert.deepEqual(bar.props.filter((p) => p.cosmetic === 5).map((p) => p.id), ['brewery-sign']);
 	const chalkboard = bar.props.find((p) => p.id === 'chalkboard')!;
-	assert.ok(sign.rect.x > bottles[9].rect.x + bottles[9].rect.w && sign.rect.x + sign.rect.w < chalkboard.rect.x);
+	assert.ok(sign.rect.x > bottles[10].rect.x + bottles[10].rect.w && sign.rect.x + sign.rect.w < chalkboard.rect.x);
 });
 
 test("Brennan's: five brand boxes in a row on one humidor shelf, each grants the cigar, the STG plaque above them", () => {

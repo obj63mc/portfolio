@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-ej/image.webp",
   "world": {
-    "x": 1157.06,
-    "y": 647.82,
+    "x": 1026.04,
+    "y": 649.52,
     "w": 95.28842105263156,
     "h": 202.33966666666666
   },
   "source": {
     "w": 228,
     "h": 480,
-    "sha256": "22667a9e3aee9fac6bbe34d2da998665af63511c24a6b75a3bc2bef446a2b50a"
+    "sha256": "eed75726b7122313681f9cde4ae58e7fb8608dae13975604fefe9378f182f802"
   },
   "trim": {
     "x": 0,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 1157.06,
-      "y": 647.82,
+      "x": 1026.04,
+      "y": 649.52,
       "w": 96.99,
       "h": 204.04
     },

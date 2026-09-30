@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-pink-whitney/image.webp",
   "world": {
-    "x": 1289.78,
-    "y": 624.02,
+    "x": 1422.5,
+    "y": 622.32,
     "w": 76.56847826086957,
     "h": 221.03969465648856
   },
   "source": {
     "w": 184,
     "h": 524,
-    "sha256": "1eb37871d76bc7e294acfb1bc8b56e574f5861af09078f51b2b1040c50165326"
+    "sha256": "cc39dbbb471f335657e8db24c62e58ccd17b914ac4e37990550f70b44d4b128b"
   },
   "trim": {
     "x": 0,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 1289.78,
-      "y": 624.02,
+      "x": 1422.5,
+      "y": 622.32,
       "w": 78.27,
       "h": 222.74
     },

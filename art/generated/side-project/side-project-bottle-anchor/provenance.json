@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "c5606a1cecc86a27ccdcb92aefb3ab1530acbf7f84046d42f4a12a16187c586c",
+  "run": "art/runs/side-project-bottle-anchor/2026-09-30T19-38-10.665Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "side-project-master",
+    "referenceSha256": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

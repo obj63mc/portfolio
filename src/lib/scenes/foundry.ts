@@ -17,7 +17,7 @@ export const screenGist = (playing?: ScreenTitle) =>
 	playing ? `now playing ${SCREEN_TITLES[playing]}` : 'idle, pick a poster to start a reel';
 
 /**
- * The demo of the game each title's reel shows on the screen, a file in art/sources/videos (Joe, 2026-09-29), and its
+ * The demo of the game each title's reel shows on the screen, a file in art/sources/videos/universal (Joe, 2026-09-29), and its
  * length in ms (ffprobe), which sets the reel's (net/screen.ts).
  */
 export const SCREEN_VIDEOS: Record<ScreenTitle, { file: string; ms: number }> = {

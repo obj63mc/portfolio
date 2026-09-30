@@ -77,9 +77,10 @@ dialog {
 /*
  * The buttons (Joe, 2026-09-30): uppercase headline type on a flat fill with a lip under it that a press pushes down.
  * `primary` is gold (Join, Resume), `alternate` sky (the consent bar's equal Allow and No thanks, the choice in force
- * ivory), `secondary` an ivory outline (a card's Close). The hover mark (under html.engine) lifts each to its lighter fill.
+ * ivory), `secondary` an ivory outline (a card's Close). A link may wear one too (a video card's See More). The hover mark
+ * (under html.engine) lifts each to its lighter fill.
  */
-button:is(.primary, .alternate, .secondary) {
+:is(button, a):is(.primary, .alternate, .secondary) {
 	--fill: var(--gold);
 	--fill-hot: var(--gold-hot);
 	--ink: var(--night);
@@ -97,6 +98,7 @@ button:is(.primary, .alternate, .secondary) {
 	font-weight: 800;
 	letter-spacing: 0.06em;
 	line-height: 1.1;
+	text-decoration: none;
 	text-transform: uppercase;
 	cursor: pointer;
 
@@ -270,12 +272,12 @@ html.engine {
 	 */
 	&:not([data-input='locked'], [data-input='touch']) :is(dialog, .controls, .consent) :is(a, button):not(:disabled):hover,
 	& :is(dialog, .controls, .consent) :is(a, button).hot:not(:disabled) {
-		&:is(button) {
+		&:is(button, .primary, .alternate, .secondary) {
 			background: var(--fill-hot, var(--night-hot));
 			color: var(--ink-hot, var(--ink, var(--ivory)));
 		}
 
-		&:is(a) {
+		&:is(a):not(.primary, .alternate, .secondary) {
 			background: var(--gold);
 			color: var(--night);
 		}
@@ -438,8 +440,10 @@ html.engine {
 		margin: 0;
 		padding: 0.25rem 0.75rem;
 		border-radius: 1rem;
+		font-weight:700;
+		text-transform:capitalize;
 		background: var(--night);
-		color: var(--ivory);
+		color: var(--gold);
 	}
 
 	/* The lap clock, top left, clear of the count; it dims while the cursor is off the course and the lap can still be saved. */

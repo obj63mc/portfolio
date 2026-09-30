@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "d312d99b783db3b7f596f873673b7260e9eb7692531043beda77fd2c05027907",
+  "run": "art/runs/side-project-bottle-sapporo/2026-09-30T19-38-09.677Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "side-project-master",
+    "referenceSha256": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

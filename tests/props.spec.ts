@@ -139,6 +139,7 @@ test('the meeting TV loads its video only on the click that opens its card', asy
 	expect(videos).toEqual([]);
 	await page.keyboard.press('Enter');
 	const card = page.locator('[data-prop="meeting-tv"] dialog');
-	await expect(card.locator('video[controls]')).toBeVisible();
+	await expect(card.locator('.player video')).toBeVisible();
+	await expect(card.getByRole('button', { name: /^(Play|Pause)$/ })).toBeAttached();
 	await expect.poll(() => videos.length).toBeGreaterThan(0);
 });

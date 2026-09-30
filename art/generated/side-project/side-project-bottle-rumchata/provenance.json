@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "a9ce714bb267d78eabd7a3f6cc8a9ea8fddb4b7869a1814bfee3d845a78cf391",
-  "run": "art/runs/side-project-bottle-rumchata/2026-09-28T19-03-13.069Z",
+  "sourceSha256": "2f344e5879e1e3bb668d27437fa067e837ec5b81bdfc7f3451422395bfd37e31",
+  "run": "art/runs/side-project-bottle-rumchata/2026-09-30T19-38-14.714Z",
   "provider": "derived",
   "derivation": {
     "asset": "side-project-master",
-    "referenceSha256": "d62587795b02c48248b79e6dd4ca400ebf8dc8ea2864493e14ba62c96586ec73",
+    "referenceSha256": "c02a4dc8f0294ca908587bd572c9efa5e2ad032e3c51151851642c63adcc1470",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

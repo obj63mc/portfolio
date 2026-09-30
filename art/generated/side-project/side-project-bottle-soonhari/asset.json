@@ -4,15 +4,15 @@
   "kind": "prop",
   "file": "side-project/side-project-bottle-soonhari/image.webp",
   "world": {
-    "x": 1536.5,
-    "y": 675.03,
+    "x": 706.14,
+    "y": 681.84,
     "w": 52.7484375,
     "h": 168.3297
   },
   "source": {
     "w": 128,
     "h": 400,
-    "sha256": "f00a9234ec2217bde848cb47c94a745341ed32248b08e6ce425a461100cd279f"
+    "sha256": "c6dfa90b26edec2f58cb94dc872a9c7ce1973653b6ffefee5ccd8c13a3ab8fbf"
   },
   "trim": {
     "x": 0,
@@ -25,8 +25,8 @@
   "registration": {
     "asset": "side-project-master",
     "rect": {
-      "x": 1536.5,
-      "y": 675.03,
+      "x": 706.14,
+      "y": 681.84,
       "w": 54.45,
       "h": 170.03
     },

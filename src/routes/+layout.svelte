@@ -4,6 +4,7 @@
 	import '@fontsource/barlow-condensed/800.css';
 	import '@fontsource/montserrat/400.css';
 	import '@fontsource/montserrat/500.css';
+	import '@fontsource/montserrat/700.css';
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
