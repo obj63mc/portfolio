@@ -45,3 +45,11 @@ Joe chose these in the sound picker while reviewing ticket 22's one-shots; they 
 - `music-moosylvania` (Moosylvania lobby playlist): Seth_Makes_Sounds, "Lofi Beat Loop Schmoop", https://freesound.org/people/Seth_Makes_Sounds/sounds/722425/, CC0, loop 0 to 135 s.
 
 Still open, with a third round of candidates being sourced: Carondelet Park ("something with like a lakefront sound"), Midtown (like kvgarlic's campus, 391480, "but less people talking"), the theme ("a bit more up beat... fun and campy like Cursor Camp"), Brennan's jazz (like Pixabay's traditional "Jazz Bar", 592657) and Side Project's music ("more poppy", like Pixabay's "In The Bar", 134219, "but subtler").
+
+Joe settled three more, 2026-09-30:
+
+- `bed-carondelet` (Carondelet Park): Marissrar, "Park ambience.wav", https://freesound.org/people/Marissrar/sounds/366913/, CC0; quiet as recorded (about -45 LUFS), with the bike freewheel (freesound.org/s/156996, CC0) to layer once a loop.
+- `bed-midtown` (Midtown): kvgarlic, "CollegeAtmosphereOnABreezyDayApril2017.wav", https://freesound.org/people/kvgarlic/sounds/391480/, CC0.
+- `music-brennans` (Brennan's jazz): AurecTheme, "Jazz Bar", https://pixabay.com/music/traditional-jazz-jazz-bar-592657/, Pixabay Content License: served only as an edited loop, never whole. Joe downloads Pixabay picks himself (the site refuses scripts) and saves each as `audio/sources/<id>-pixabay-<track id>.mp3`; the picker's Pixabay downloads list names them.
+
+The theme and Side Project's music have a third round of candidates in the picker, mostly Pixabay: ragtime and Dixieland for a jazzy, campy, St. Louis theme (Joplin wrote The Entertainer in St. Louis), and understated pop for the taproom.
