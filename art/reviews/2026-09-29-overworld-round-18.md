@@ -11,11 +11,13 @@ Joe (2026-09-29): "To the right of the gazebo there is a house where a tree is c
 
 ## Hashes (SHA-256)
 
-- `art/manifest.json`: `7cf16557dc21133d3e8e75f33ed1ca67c185213ae0b41d89647fc50995cca9c0`
-- `art/generated/review.json`: `c74baa8d7bb8d47c2b3b9f2d7503bedb0215e9388f88e14b1381ef6672d051ec`
-- `art/generated/overworld/composite.webp`: `ef701923d8c51a86bd6625c1617784ba076ab9bea3682194ebc08eeeacca172a`
-- `art/generated/contact-sheet.webp`: `b9e2c803095762d603d359dbe30b498c015f8366c2a7da90b339e0936a8e7f91`
+- `art/manifest.json`: `73d2af8c6fd484b31c4668b5a471c9b8b1c5751539642a737e8fc7b5a2d6a706`
+- `art/generated/review.json`: `c701550d5520f8eb8d7de7c246a560f4fbccf2c2be2f369cbd08a1d9403fb30f`
+- `art/generated/overworld/composite.webp`: `810e041403512890cca1490a8a3e7c1316531a59367734b2bba87679f7e3922d`
+- `art/generated/contact-sheet.webp`: `8bdb716b943d8cbb6c98a5648e3a451ffa6956db97675f082ef251aa87a49641`
 - `art/generated/overworld/overworld-master/image.webp`: `d60a9f9bfe771c802cf03570d2a55c57c87e1685c1d24c854ef1aba39b139f9d`
 - `art/sources/overworld-fix/stitched.png`: `37fa2f4188095bc54b09959558c22aa11b30ce4e7bba04f90eef627becc831c3`
 - `art/sources/overworld-fix/rounds/round-18.json`: `2017459a77e21a321d10b770af1e061e064ba3012678464a9615d8c9a303a8d7`
 - `art/sources/overworld-fix/tiles/t-house-model.png`: `a6a991571f6d59f828c135ac8a48d190182b27354d937ffad1417fe266e9ce9c`
+
+The composite, the contact sheet and review.json were rebuilt once round eighteen was merged with the park props' move (`2026-09-29-overworld-park-props.md`); their hashes above are the merged ones.
