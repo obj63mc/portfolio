@@ -4,11 +4,11 @@
 // prerendered layer stays the hit target: this reads which props are hovered (the free mouse, the engine's `.hot` mark
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
 // their timing is in motion.ts. Carried over from the rendering prototype's canvas props (prototype/rendering-camera).
-import { POSTER_LAMPS, type ScreenTitle } from '../scenes/foundry.ts';
+import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
 import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, type Pose } from './motion.ts';
-import { along, course } from './track.ts';
+import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
 interface Part {
@@ -95,10 +95,12 @@ const union = (rs: Rect[]): Rect => {
 	return { x, y, w: Math.max(...rs.map((r) => r.x + r.w)) - x, h: Math.max(...rs.map((r) => r.y + r.h)) - y };
 };
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
-const posterOf = (p?: Prop) => (p?.id.startsWith('poster-') ? (p.id.slice('poster-'.length) as ScreenTitle) : null);
 const isBottle = (p?: Prop) => !!p?.id.startsWith('bottle-');
 /** Drawing order: by base y, nearest the camera last. */
 const byBase = (a: Layer, b: Layer) => a.box.y + a.box.h - (b.box.y + b.box.h);
+
+/** The id of the prop whose button a click in the prerendered layer landed on, if any. */
+export const clickedProp = (e: Event) => (e.target as Element).closest<HTMLElement>('.prop > button')?.parentElement?.dataset.prop;
 
 /** A cut-out at its world size in the session's density, so a frame never scales down 2000 px art. */
 function load(url: string, w: number, h: number) {
@@ -130,7 +132,7 @@ export class Props {
 		layer.addEventListener(
 			'click',
 			(e) => {
-				const id = (e.target as Element).closest<HTMLElement>('.prop > button')?.parentElement?.dataset.prop;
+				const id = clickedProp(e);
 				const l = id && this.layers.find((l) => l.prop?.id === id);
 				if (l) l.clicked = this.t;
 			},
@@ -164,7 +166,7 @@ export class Props {
 		if (overworld) {
 			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect), layer(undefined, ['rider'], rider(this.t, this.rm).at));
 			this.layers.push(...scene.track.cover.map((id) => layer(undefined, [id])));
-			this.line = { ...along(course(scene.track), 0), half: scene.track.half };
+			this.line = { ...along(LOOP, 0), half: LOOP.half };
 		}
 		for (const l of this.layers) {
 			const v = l.prop?.video;
@@ -269,7 +271,7 @@ export class Props {
 	}
 
 	private drawLayer(g: CanvasRenderingContext2D, l: Layer, k: number) {
-		const { t, rm } = this, since = t - l.clicked, h = l.hover, poster = posterOf(l.prop);
+		const { t, rm } = this, since = t - l.clicked, h = l.hover, poster = posterOf(l.prop?.id);
 		g.save();
 		// A click pops a prop about its centre, but the moose wobbles its antlers and the MonsterCommerce eye blinks instead.
 		const s = l.rig || l.cuts.some((c) => c.id === 'mc-eye') ? 1 : pop(progress(since, CLICK_MS.pop));

@@ -14,7 +14,7 @@ import { propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { Net } from '../net/net.ts';
 import { sample, visible } from '../net/peers.ts';
-import { Props } from './props.ts';
+import { Props, clickedProp } from './props.ts';
 import { Projector } from './projector.ts';
 import {
 	KEYS, TILE, centreOn, clamp, coast, fling, framing, glide, pan, rendering, steer, step, stick, tileRange, zoom, type Move, type View
@@ -425,12 +425,15 @@ export class Engine {
 			},
 			opts
 		);
+		// A cosmetic earned in another tab reaches this tab's room at once, though a hidden tab draws no frames (spec:
+		// "Persistence"). The saved state heard the event first: it listened from its module's load.
+		addEventListener('storage', () => this.tellRoom(), opts);
 		// Opening a granting prop's card is the click that grants its cosmetic (spec: "Cosmetics"): earned and announced the
 		// first time, worn again every time. Ticket 22 plays the chime here, and the fanfare on the grant that turns it gold.
 		this.layer.addEventListener(
 			'click',
 			(e) => {
-				const id = (e.target as Element).closest<HTMLElement>('.prop > button')?.parentElement?.dataset.prop;
+				const id = clickedProp(e);
 				const cos = id && this.scene && propsOf(this.scene).find((p) => p.id === id)?.cosmetic;
 				if (!cos) return;
 				const gold = saved.gold;
@@ -753,7 +756,7 @@ export class Engine {
 		if (saved.worn !== this.worn) (this.worn = saved.worn), (this.wornAt = now);
 		if (c) {
 			this.net.move(cam.x + c.x / s, cam.y + c.y / s);
-			this.net.presence({ cos: this.worn, gold, river: false });
+			this.tellRoom();
 		}
 		const view = this.seen(), peers: Drawn[] = [];
 		for (const p of this.net.peers.values()) {
@@ -762,6 +765,11 @@ export class Engine {
 		}
 		const own = c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt };
 		this.art.draw(own, peers, now);
+	}
+
+	/** What the cursor wears, to the room from Join on; the net client sends only a change. */
+	private tellRoom() {
+		if (this.cursor) this.net.presence({ cos: saved.worn, gold: saved.gold, river: false });
 	}
 
 	/** Shows the "you" tag on the own cursor again: the Arch reset (ticket 20) calls this. */

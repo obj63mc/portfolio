@@ -44,6 +44,9 @@ export interface Peer extends Presence {
 	y: number;
 }
 
+/** Whether two presences wear, shine and drift alike: a room and a client pass on only a change. */
+export const samePresence = (a: Presence, b: Presence) => a.cos === b.cos && a.gold === b.gold && a.river === b.river;
+
 export type ServerMessage =
 	| {
 			t: 'hello';

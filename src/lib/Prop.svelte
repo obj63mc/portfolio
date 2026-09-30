@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { at } from './scenes/index.ts';
+	import { VIDEOS } from './videos.ts';
 	import type { Prop } from './scenes/types';
 
 	// `level` keeps the card title inside the page's heading hierarchy when the cards read inline without JavaScript.
 	// `state` replaces the gist for a prop whose name follows live state (the Foundry screen: "Screen: now playing Fast Five").
 	let { prop, level, state }: { prop: Prop; level: 2 | 4; state?: string } = $props();
 	let dialog: HTMLDialogElement;
-
-	// The videos a card can play, served from where Joe keeps them and hashed into the build.
-	const VIDEOS = import.meta.glob<string>('/art/sources/videos/*.mp4', { eager: true, query: '?no-inline', import: 'default' });
 
 	// Opening the card is the click (ticket 15), which plays its video: loaded only now, with sound, inside the gesture.
 	function open() {

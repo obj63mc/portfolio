@@ -8,6 +8,9 @@ export const SCREEN_TITLES = {
 } as const;
 export type ScreenTitle = keyof typeof SCREEN_TITLES;
 
+/** The title a poster prop's id names, null for any other prop. */
+export const posterOf = (id?: string) => (id?.startsWith('poster-') ? (id.slice('poster-'.length) as ScreenTitle) : null);
+
 /** The screen button's gist for a state: "Screen: now playing Fast Five", or the idle wording. */
 export const screenGist = (playing?: ScreenTitle) =>
 	playing ? `now playing ${SCREEN_TITLES[playing]}` : 'idle, pick a poster to start a reel';
@@ -95,8 +98,8 @@ export const FOUNDRY: SubScene = {
 			],
 			rect: { x: 1656, y: 85, w: 1016, h: 833 },
 			// Clipped where its lower-left corner reaches behind the front row's seat backs (spec: an irregular prop gets a clip-path).
-			clip: 'polygon(100% 0%, 0% 0%, 0% 91.16%, 0.31% 91.32%, 0.35% 93.27%, 0% 93.51%, 0% 95.55%, 1.24% 95.2%, 10.43% 100%, 15.47% 100%, 15.72% 99.87%, 16.1% 100%, 100% 100%)',
-			cosmetic: 2
+			clip: 'polygon(100% 0%, 0% 0%, 0% 91.16%, 0.31% 91.32%, 0.35% 93.27%, 0% 93.51%, 0% 95.55%, 1.24% 95.2%, 10.43% 100%, 15.47% 100%, 15.72% 99.87%, 16.1% 100%, 100% 100%)'
+			// No cosmetic: the 3D glasses are the posters' (spec: "Cosmetics"), the click that starts a reel.
 		}
 	],
 	// The exit door on the left wall, beside the screen, under its green sign.

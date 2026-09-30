@@ -2,13 +2,12 @@
 // the props and under the cursors. The projector's beam fans from its lens to the screen's four corners; the title card,
 // the title's demo video and its case study are drawn on a flat film, which is mapped onto the screen's painted quad (the
 // camera sees the right wall at an angle) through a mesh of triangles. The video plays in step with the room, with sound.
-import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, screenGist, type ScreenTitle } from '../scenes/foundry.ts';
+import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, posterOf, screenGist, type ScreenTitle } from '../scenes/foundry.ts';
 import type { Net } from '../net/net.ts';
 import { onQuad, reel } from '../net/screen.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
-
-// Served from where Joe keeps them and hashed into the build, as the cards' videos are (Prop.svelte).
-const VIDEOS = import.meta.glob<string>('/art/sources/videos/*.mp4', { eager: true, query: '?no-inline', import: 'default' });
+import { VIDEOS } from '../videos.ts';
+import { clickedProp } from './props.ts';
 
 /** The film the reel is drawn on before it is mapped onto the screen, px: 16:9, sharp at the screen's largest. */
 const FILM = { w: 1280, h: 720 };
@@ -77,8 +76,8 @@ export class Projector {
 		layer.addEventListener(
 			'click',
 			(e) => {
-				const id = (e.target as Element).closest<HTMLElement>('.prop > button')?.parentElement?.dataset.prop;
-				if (this.foundry && id?.startsWith('poster-')) net.play(id.slice('poster-'.length) as ScreenTitle);
+				const title = posterOf(clickedProp(e));
+				if (this.foundry && title) net.play(title);
 			},
 			{ signal: this.listeners.signal }
 		);

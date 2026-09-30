@@ -11,6 +11,7 @@ import {
 	decodeMove,
 	encodeFrame,
 	readControl,
+	samePresence,
 	type Peer,
 	type ServerMessage
 } from '../src/lib/net/protocol.ts';
@@ -150,7 +151,7 @@ export class Room extends DurableObject<Env> {
 			return this.broadcast({ t: 'screen', ...this.screen });
 		}
 		// Presence goes out when it changes, never in the tick's frame.
-		if (m.cos === p.cos && m.gold === p.gold && m.river === p.river) return;
+		if (samePresence(m, p)) return;
 		const { t, ...presence } = m;
 		Object.assign(p, presence);
 		this.save(ws, v);

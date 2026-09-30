@@ -14,5 +14,8 @@ export const COSMETICS = {
 	7: { name: 'bike helmet', anchor: 'head' }
 } as const satisfies Record<CosmeticId, { name: string; anchor: 'head' | 'face' | 'side' }>;
 
+/** A cosmetic this build knows, narrowed from anything read: storage, the wire. */
+export const isCosmetic = (id: unknown): id is CosmeticId => typeof id === 'number' && Object.hasOwn(COSMETICS, id);
+
 /** Every cosmetic this build knows: earning them all turns the cursor gold. */
 export const KNOWN = Object.keys(COSMETICS).map(Number) as CosmeticId[];

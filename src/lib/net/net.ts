@@ -3,7 +3,7 @@
 // When it is down the scene carries on single-player with no reconnecting UI; the next `hello` overwrites what this
 // client knew without animation. Rates, sizes and the wire format are protocol.ts's.
 import type { ScreenTitle } from '../scenes/foundry.ts';
-import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, type ClientMessage, type Peer, type Presence } from './protocol.ts';
+import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, samePresence, type ClientMessage, type Peer, type Presence } from './protocol.ts';
 import { record, type Snap } from './peers.ts';
 import { playing, type Screen } from './screen.ts';
 
@@ -66,8 +66,8 @@ export class Net {
 	private sent = -1;
 	private nextSend = 0;
 	private solo = false;
-	/** What this visitor wears, as the room last heard it or will on the next `hello`. */
-	private mine: Presence = { cos: 0, gold: false, river: false };
+	/** What this visitor wears, as the room last heard it or will on the next `hello`; none before Join, when nothing is sent. */
+	private mine: Presence | null = null;
 	private hiddenClose: ReturnType<typeof setTimeout> | undefined;
 	private keepalive = setInterval(() => this.link.is === 'live' && this.link.ws.send('ping'), KEEPALIVE);
 	private status: Status;
@@ -118,14 +118,13 @@ export class Net {
 	 * another tab), and to every room after its `hello`.
 	 */
 	presence(p: Presence) {
-		const m = this.mine;
-		if (p.cos === m.cos && p.gold === m.gold && p.river === m.river) return;
+		if (this.mine && samePresence(p, this.mine)) return;
 		this.mine = { ...p };
 		this.tell();
 	}
 
 	private tell() {
-		if (this.link.is === 'live') this.link.ws.send(JSON.stringify({ t: 'presence', ...this.mine } satisfies ClientMessage));
+		if (this.mine && this.link.is === 'live') this.link.ws.send(JSON.stringify({ t: 'presence', ...this.mine } satisfies ClientMessage));
 	}
 
 	destroy() {
@@ -212,7 +211,7 @@ export class Net {
 				this.screen = m.screen;
 				this.link = { is: 'live', ws, at: t };
 				this.sent = -1; // the new room hears where this cursor is at once
-				this.tell(); // and what it wears; the room drops it if that's nothing
+				this.tell(); // and, once joined, what it wears; the room drops it if that's nothing
 				this.setSolo(false);
 				break;
 			case 'in':
@@ -224,7 +223,9 @@ export class Net {
 			case 'presence': {
 				const p = this.peers.get(m.id);
 				if (!p) return;
-				if (m.cos !== p.cos) p.wornAt = t;
+				// A grant pops; a peer not yet seen moving takes what it wears at once, as one arriving from another room
+				// does, since it joins wearing nothing and says what it wears right after.
+				if (m.cos !== p.cos && p.snaps.length) p.wornAt = t;
 				Object.assign(p, { cos: m.cos, gold: m.gold, river: m.river });
 				return;
 			}

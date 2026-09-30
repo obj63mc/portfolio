@@ -2,6 +2,7 @@
 // which the rider rides too (motion.ts). Pure functions of positions and a clock, for the engine and for tests. The
 // timer is forgiving, for a thumb on a phone's joystick (Joe, 2026-09-29): a corridor wider than the painted path, and
 // a moment off it before a lap is lost.
+import { OVERWORLD } from '../scenes/overworld.ts';
 import type { Point } from '../scenes/types';
 
 /** A closed loop: its points, the distance along it to each (world px from the start line) and its length. */
@@ -18,6 +19,9 @@ export function course({ path, half }: { path: Point[]; half: number }): Course 
 	for (let i = 1; i <= path.length; i++) at.push(at[i - 1] + Math.hypot(path[i % path.length].x - path[i - 1].x, path[i % path.length].y - path[i - 1].y));
 	return { path, at, length: at[path.length], half };
 }
+
+/** The lake loop in Carondelet Park: the course the timer times and the rider rides. */
+export const LOOP = course(OVERWORLD.track);
 
 /** The point `s` world px along the loop from the start line, and the way the path runs there, a unit vector. */
 export function along(c: Course, s: number) {

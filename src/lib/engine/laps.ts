@@ -2,11 +2,9 @@
 // running time and, at the finish, the lap and the personal best, kept through the persistence module. Only the
 // finish is announced, never the ticking clock.
 import { saved } from '../saved.svelte.ts';
-import { OVERWORLD } from '../scenes/overworld.ts';
 import type { Point } from '../scenes/types';
-import { course, ride, type Lap, type LapEvent } from './track.ts';
+import { LOOP, ride, type Lap, type LapEvent } from './track.ts';
 
-const LOOP = course(OVERWORLD.track);
 /** How long a finished lap's time stays up, and a lost lap's notice, ms. */
 const NOTE = { lap: 4000, lost: 1500 };
 
@@ -36,10 +34,10 @@ export class Laps {
 		let e: LapEvent;
 		[this.lap, e] = ride(LOOP, this.lap, p, now);
 		if (e?.is === 'lap') {
-			const first = saved.lap(e.ms, Date.now()), best = saved.laps[0]?.ms ?? e.ms;
+			const record = saved.lap(e.ms, Date.now()), best = saved.laps[0]?.ms ?? e.ms;
 			// Ticket 22's finish-line beep plays here, on a new personal best.
-			this.note = { text: first ? `New best ${clock(e.ms)}` : `Lap ${clock(e.ms)}, best ${clock(best)}`, until: now + NOTE.lap };
-			this.live.textContent = first ? `Lap ${said(e.ms)}, a new best` : `Lap ${said(e.ms)}. Best ${said(best)}`;
+			this.note = { text: record ? `New best ${clock(e.ms)}` : `Lap ${clock(e.ms)}, best ${clock(best)}`, until: now + NOTE.lap };
+			this.live.textContent = record ? `Lap ${said(e.ms)}, a new best` : `Lap ${said(e.ms)}. Best ${said(best)}`;
 		} else if (e?.is === 'cancel') this.note = { text: 'Lap lost', until: now + NOTE.lost };
 		if (this.note && now >= this.note.until) this.note = null;
 		const lap = this.lap, text = this.note?.text ?? (lap.is === 'riding' ? `Lap ${clock(now - lap.from)}` : '');

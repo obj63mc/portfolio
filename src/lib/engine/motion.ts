@@ -3,8 +3,7 @@
 // a glint along the Side Project bottles), hover and click reactions, and what reduced motion leaves of them. Times are
 // ms. Ambient motion runs on server time, so every visitor in a room sees the rider at the same point. Carried over from
 // the rendering prototype's props.ts and the art workshop's drawRig (art/review.js).
-import { OVERWORLD } from '../scenes/overworld.ts';
-import { along, course } from './track.ts';
+import { LOOP, along } from './track.ts';
 
 /** A hover fades in and out over this long; under reduced motion it is a plain highlight, on and off at once. */
 export const HOVER_MS = 150;
@@ -18,7 +17,6 @@ export const CLICK_MS = { pop: 300, wobble: 1200, blink: 250 } as const;
  * reduced motion, world px along the loop past the start line (art/manifest.json sceneLayouts places it there).
  */
 export const RIDER = { w: 120, h: 85, drop: 12, speed: 200, rest: 100 };
-const LOOP = course(OVERWORLD.track);
 
 export const ease = (u: number) => u * u * (3 - 2 * u);
 

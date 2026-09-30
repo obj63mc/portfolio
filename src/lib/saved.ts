@@ -1,7 +1,7 @@
 // What a visitor keeps between visits (spec: "Persistence"), as pure functions: the one localStorage value's shape, its
 // read rules and the merge every write makes with what another tab may have written since. Only saved.svelte.ts touches
 // the storage itself.
-import { KNOWN } from './cosmetics.ts';
+import { KNOWN, isCosmetic } from './cosmetics.ts';
 import type { CosmeticId } from './scenes/types';
 
 /** The one localStorage key. */
@@ -43,7 +43,7 @@ const fastest = (laps: Lap[]) =>
 		.slice(0, 10)
 		.map(({ ms, at }) => ({ ms, at }));
 /** The worn cosmetic if it is one this build knows and it was earned, else none. */
-const wearable = (worn: unknown, earned: number[]) => (KNOWN.includes(worn as CosmeticId) && earned.includes(worn as number) ? (worn as number) : 0);
+const wearable = (worn: unknown, earned: number[]) => (isCosmetic(worn) && earned.includes(worn) ? worn : 0);
 
 export const fresh = (): Saved => ({ v: VERSION, worn: 0, earned: [], laps: { track: TRACK, best: [] }, sound: true });
 
@@ -59,7 +59,7 @@ export function read(text: string | null): Saved {
 		return fresh();
 	}
 	if (!isObject(m) || (typeof m.v === 'number' && m.v > VERSION)) return fresh();
-	const earned = ids(Array.isArray(m.earned) ? m.earned.filter((id) => Number.isInteger(id) && id > 0) : []);
+	const earned = ids(Array.isArray(m.earned) ? m.earned.filter((id: unknown): id is number => typeof id === 'number' && Number.isInteger(id) && id > 0) : []);
 	const laps = m.laps, best = isObject(laps) && laps.track === TRACK && Array.isArray(laps.best) ? laps.best.filter(isLap) : [];
 	return {
 		v: VERSION,
