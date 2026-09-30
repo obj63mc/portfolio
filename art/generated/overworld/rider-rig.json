@@ -1,22 +1,94 @@
 {
   "body": {
     "parent": null,
-    "x": 523,
-    "y": 128,
-    "w": 481,
-    "h": 661,
+    "x": -12.5,
+    "y": -298.5,
+    "w": 266,
+    "h": 357,
     "pivot": [
       0.5,
-      0.7
+      0.5
     ],
-    "file": "overworld/rider-body/image.webp"
+    "file": "overworld/rider-pedal-0/image.webp"
+  },
+  "pedal-1": {
+    "parent": null,
+    "x": -12.5,
+    "y": -298.5,
+    "w": 265,
+    "h": 352,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/rider-pedal-1/image.webp"
+  },
+  "pedal-2": {
+    "parent": null,
+    "x": -12.5,
+    "y": -298,
+    "w": 265,
+    "h": 333,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/rider-pedal-2/image.webp"
+  },
+  "pedal-3": {
+    "parent": null,
+    "x": -12.5,
+    "y": -298,
+    "w": 265,
+    "h": 356,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/rider-pedal-3/image.webp"
+  },
+  "pedal-4": {
+    "parent": null,
+    "x": -12.5,
+    "y": -298,
+    "w": 266,
+    "h": 352,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/rider-pedal-4/image.webp"
+  },
+  "pedal-5": {
+    "parent": null,
+    "x": -12.5,
+    "y": -298,
+    "w": 265,
+    "h": 350,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/rider-pedal-5/image.webp"
+  },
+  "pedal-6": {
+    "parent": null,
+    "x": -12.5,
+    "y": -298.5,
+    "w": 265,
+    "h": 352,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "file": "overworld/rider-pedal-6/image.webp"
   },
   "rear-wheel": {
-    "parent": "body",
-    "x": 394,
-    "y": 554,
-    "w": 293,
-    "h": 297,
+    "parent": null,
+    "x": -79.6,
+    "y": -79.8,
+    "w": 159,
+    "h": 160,
     "pivot": [
       0.5,
       0.5
@@ -24,11 +96,11 @@
     "file": "overworld/rider-rear-wheel/image.webp"
   },
   "front-wheel": {
-    "parent": "body",
-    "x": 833,
-    "y": 545,
-    "w": 306,
-    "h": 307,
+    "parent": null,
+    "x": 160.4,
+    "y": -79.8,
+    "w": 159,
+    "h": 160,
     "pivot": [
       0.5,
       0.5

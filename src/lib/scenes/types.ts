@@ -137,6 +137,8 @@ export interface Overworld extends SceneBase {
 		path: Point[];
 		/** The painted path's half-width. */
 		half: number;
+		/** Where the turns at the loop's ends begin, world x: the lap timer's corridor widens west of `west` and east of `east`. */
+		ends: { west: number; east: number };
 		/** Cut-outs of the scenery the loop runs behind, drawn over the rider as it passes behind them. */
 		cover: string[];
 		/** The start/finish sign's cut-out, scenery beside the line that nothing clicks: the lap timer is an Easter egg. */

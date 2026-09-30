@@ -1,0 +1,13 @@
+STYLE: Flat vector illustration matching the supplied original daytime artwork. Broad layered solid-color shapes, clean edges, no outlines, no grain or painted texture, no gradients. Bright and clear palette: light cyan #87CDD5, turquoise #2FB8B0, yellow-green #AFC652, ivory #FFF4D4, sunny golden yellow #FFD34F, fresh leaf green #719B50, small coral accents #DF7554, dark teal #244F55. Use cream for walls and pale surfaces, not as an all-over tint. Brown only where the actual reference contains wood or brick; keep it a minority color. Slightly elevated perspective with consistent scale, one light source upper left. No sepia wash, no muddy olive/brown shadows. No people, animals, text or lettering unless explicitly requested. Nothing photographic.
+
+REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.
+
+
+ASSET: rider-wheel
+One single bicycle wheel alone, for a game sprite, seen perfectly side on and perfectly round, centred on the square canvas and filling about two thirds of it. Reference 3 is this exact wheel: keep its flat vector style, its thick dark tyre, its round coral hub, its five straight spokes evenly spaced from the hub to the tyre, and its proportions (tyre thickness, spoke thickness, hub size). ONE change: the five spokes are solid near-black (#1B1F1D), darker than the tyre, in place of cream, so they stand out clearly against a pale cream path seen through the wheel. The hub stays coral with no cream ring. Between the spokes, inside the tyre, and all round the wheel: pure solid #FF00FF magenta. No other spokes, no rim stripe, no shadow, no ground, no text.
+
+Target aspect ratio and size: 1254x1254. Save the tool's native output; never resize it. Fill the image edge to edge.
+References in order:
+1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
+2. <repo>/art/generated/overworld/rider-master/image.webp
+3. <repo>/art/references/local/drafts/rider-wheel-cream.png

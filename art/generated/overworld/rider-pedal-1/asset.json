@@ -1,0 +1,65 @@
+{
+  "id": "rider-pedal-1",
+  "scene": "overworld",
+  "kind": "part",
+  "file": "overworld/rider-pedal-1/image.webp",
+  "world": {
+    "x": 915,
+    "y": 453,
+    "w": 265,
+    "h": 352
+  },
+  "source": {
+    "w": 418,
+    "h": 418,
+    "sha256": "58c41f3f933cd70a92ee97a2dfc7f4bcdb42fabf7b6e47e40dbd027c546a5e30"
+  },
+  "trim": {
+    "x": 79,
+    "y": 35,
+    "w": 265,
+    "h": 352
+  },
+  "width": 265,
+  "height": 352,
+  "rig": {
+    "name": "rider",
+    "part": "pedal-1",
+    "parent": null,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "anchor": [
+      91.5,
+      333.5
+    ]
+  },
+  "registration": {
+    "asset": "rider-sheet",
+    "rect": {
+      "x": 836,
+      "y": 418,
+      "w": 418,
+      "h": 418
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        1
+      ]
+    ]
+  }
+}

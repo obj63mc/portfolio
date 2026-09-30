@@ -78,7 +78,8 @@ function drawRig(name,target,time,context=ctx) {
     if(key==='eye'&&((moving&&time%4700>4510)||click>.75))context.scale(1,.14);
     context.translate(-px,-py);
   };
-  for(const [key,p] of parts.sort(([a],[b])=>data.rigDrawOrder.indexOf(a)-data.rigDrawOrder.indexOf(b))) {
+  // Parts outside the draw order (the rider's pedal frames) are the site's to animate; the workshop draws the rest frame.
+  for(const [key,p] of parts.filter(([k])=>data.rigDrawOrder.includes(k)).sort(([a],[b])=>data.rigDrawOrder.indexOf(a)-data.rigDrawOrder.indexOf(b))) {
     context.save();transform(key);drawImage(context,`generated/${p.file}`,p);context.restore();
   }
   context.restore();

@@ -1,7 +1,8 @@
 // Every cursor on the overlay canvas (buildout ticket 13), carried over from the pointer-lock prototype's draw-cursors.ts
-// and sprites.ts: one local sprite atlas, the arrow's white and gold bodies, the own cursor's halo and the seven
-// cosmetics (ticket 16) rasterized once at the session's scale, beside the flag sheet (scripts/flags.ts). Only ids cross
-// the wire; every client draws every cursor itself, and the sizes, the pop and the tag are local drawing, never sent.
+// and sprites.ts: one local sprite atlas, the arrow's white and gold bodies, the own cursor's halo, the pointing hand's
+// white and gold bodies and the seven cosmetics (ticket 16) rasterized once at the session's scale, beside the flag
+// sheet (scripts/flags.ts). Only ids cross the wire; every client draws every cursor itself, and the sizes, the pop, the
+// hand and the tag are local drawing, never sent.
 import { COSMETICS, KNOWN } from '../cosmetics.ts';
 import type { CosmeticId } from '../scenes/types';
 import SHEET from './flags.webp?no-inline';
@@ -9,7 +10,8 @@ import FLAGS from './flags.json';
 
 /**
  * A cursor to draw: its tip in device px, its country code, whether its body is gold, the cosmetic it wears (0 none, an
- * id this build doesn't know draws nothing) and when that went on (performance.now() ms), which pops it in.
+ * id this build doesn't know draws nothing) and when that went on (performance.now() ms), which pops it in; and whether
+ * it is a pointing hand, over something to click (the own cursor only: a peer's is always the arrow).
  */
 export interface Drawn {
 	x: number;
@@ -18,28 +20,45 @@ export interface Drawn {
 	gold: boolean;
 	cos: number;
 	wornAt: number;
+	hand?: boolean;
 }
 
 /** The arrow, 32 units tall with its tip at the origin; a unit is a world px at 1x. */
 const ARROW = new Path2D('M0 0V29L7 22L11.5 32L16 30L11.5 21H21Z');
+/**
+ * The pointing hand over something to click (Joe, 2026-09-30), the CSS `pointer` shape in the arrow's flat style, 24
+ * units tall with its index fingertip at the origin, so the hotspot stays where the arrow's tip was: the index finger
+ * up, the other three folded as knuckles to its right, the thumb out to the left.
+ */
+const HAND = new Path2D(
+	'M-3 3A3 3 0 0 1 3 3V10.6A2.15 2.15 0 0 1 7.3 10.6V11.2A2.1 2.1 0 0 1 11.5 11.2V12.4A1.75 1.75 0 0 1 15 12.4V18Q15 22 12.5 23.8H2Q-0.5 23 -2.5 19.5L-6.8 15.6A1.95 1.95 0 0 1 -4.2 12.8L-3 13.9Z'
+);
+/** The creases between the hand's folded fingers, drawn over its body. */
+const CREASES = new Path2D('M3 10.6V14.2M7.3 11.2V14.6M11.5 12.4V15.2');
 /** The own cursor is drawn 1.25x and every peer 0.75x, about the tip so the hotspot never moves (spec: own cursor). */
 export const OWN = 1.25;
 export const PEER = 0.75;
 /** Where a cosmetic hangs, units from the tip: the head above it, the face across it, the side at its right; none covers the flag badge. */
 export const ANCHORS = { head: { x: 6, y: 0 }, face: { x: 8, y: 11 }, side: { x: 21, y: 13 } } as const;
-/** The flag badge at the arrow's lower right, units from the tip, 4:3 like the sheet's cells. */
-const BADGE = { x: 13, y: 21, w: 16, h: 12 };
+/**
+ * The flag badge, units from the tip, 4:3 like the sheet's cells: tucked by the arrow's tail at its lower right, and at
+ * the hand's palm's lower right, below the side cosmetics' reach (the popcorn tub's foot, 20). Smaller than it was (Joe,
+ * 2026-09-30), 11 x 8.25 in place of 16 x 12.
+ */
+const BADGE = { arrow: { x: 14, y: 23, w: 11, h: 8.25 }, hand: { x: 10, y: 21.5, w: 11, h: 8.25 } };
 /** St. Louis city-flag blue: the halo and the tag. The outline is the engine's backdrop. */
 const BLUE = '#1f5fd1';
 const OUTLINE = '#1d2b3a';
 const GOLD = '#f2c230';
 /**
  * An atlas cell round the arrow, units, with room for the halo's glow and the antlers' tips: white body, gold body,
- * halo, then a cell per cosmetic, drawn over the body at the same place.
+ * halo, the hand's white and gold bodies, then a cell per cosmetic, drawn over the body at the same place.
  */
 const PAD = 14;
 const CELL = { w: 52, h: 60 };
-const CELLS = 3 + KNOWN.length;
+const BODY = { arrow: 0, halo: 2, hand: 3 };
+const COSMETIC = 5;
+const CELLS = COSMETIC + KNOWN.length;
 /** A cosmetic pops in over this long, ms, when it goes on. */
 const POP = 300;
 /** The tag shows this long, ms, then fades over FADE. */
@@ -154,14 +173,19 @@ function rasterize(r: number) {
 	g.lineJoin = 'round';
 	const cell = (i: number, x = 0, y = 0) => g.setTransform(r, 0, 0, r, i * w + (PAD + x) * r, (PAD + y) * r);
 	['#fff', GOLD].forEach((fill, i) => {
-		cell(i);
-		g.lineWidth = 2;
-		g.strokeStyle = OUTLINE;
-		g.fillStyle = fill;
-		g.stroke(ARROW);
-		g.fill(ARROW);
+		for (const [body, path] of [[BODY.arrow, ARROW], [BODY.hand, HAND]] as const) {
+			cell(body + i);
+			g.lineWidth = 2;
+			g.strokeStyle = OUTLINE;
+			g.fillStyle = fill;
+			g.stroke(path);
+			g.fill(path);
+		}
+		g.lineWidth = 1;
+		g.lineCap = 'round';
+		g.stroke(CREASES);
 	});
-	cell(2);
+	cell(BODY.halo);
 	const glow = g.createRadialGradient(9, 15, 2, 9, 15, 21);
 	glow.addColorStop(0, 'rgb(31 95 209 / 0.6)');
 	glow.addColorStop(1, 'rgb(31 95 209 / 0)');
@@ -169,7 +193,7 @@ function rasterize(r: number) {
 	g.fillRect(-PAD, -PAD, CELL.w, CELL.h);
 	KNOWN.forEach((id, i) => {
 		const a = ANCHORS[COSMETICS[id].anchor];
-		cell(3 + i, a.x, a.y);
+		cell(COSMETIC + i, a.x, a.y);
 		DRAW[id](g);
 	});
 	return c;
@@ -214,7 +238,7 @@ export class Cursors {
 	draw(own: Drawn | null, peers: Drawn[], now: number) {
 		const tag = own ? Math.max(0, Math.min(1, (this.tagAt + TAG + FADE - now) / FADE)) : 0;
 		const pop = (p: Drawn) => Math.min(1, (now - p.wornAt) / POP);
-		const key = [tag, this.ready, ...[own, ...peers].flatMap((p) => (p ? [p.x, p.y, p.cc, p.gold, p.cos, pop(p)] : ['-']))].join();
+		const key = [tag, this.ready, ...[own, ...peers].flatMap((p) => (p ? [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand] : ['-']))].join();
 		if (key === this.key) return;
 		this.key = key;
 		const g = this.g;
@@ -237,25 +261,25 @@ export class Cursors {
 	}
 
 	/**
-	 * One cursor `size` times its 32 units, scaled about its tip: its cosmetic, `pop` of the way through popping in about
-	 * its anchor, and its flag badge outlined for contrast at a few px.
+	 * One cursor `size` times its 32 units, scaled about its tip: the arrow or the hand, its cosmetic, `pop` of the way
+	 * through popping in about its anchor, and its flag badge outlined for contrast at a few px.
 	 */
 	private one(p: Drawn, size: number, halo: boolean, pop: number) {
 		const g = this.g, r = OWN * this.scale, k = size * this.scale, cw = this.atlas.width / CELLS, ch = this.atlas.height;
-		const x = p.x - PAD * k, y = p.y - PAD * k, w = (cw * k) / r, h = (ch * k) / r;
-		if (halo) g.drawImage(this.atlas, 2 * cw, 0, cw, ch, x, y, w, h);
-		g.drawImage(this.atlas, p.gold ? cw : 0, 0, cw, ch, x, y, w, h);
+		const x = p.x - PAD * k, y = p.y - PAD * k, w = (cw * k) / r, h = (ch * k) / r, body = p.hand ? 'hand' : 'arrow';
+		if (halo) g.drawImage(this.atlas, BODY.halo * cw, 0, cw, ch, x, y, w, h);
+		g.drawImage(this.atlas, (BODY[body] + +p.gold) * cw, 0, cw, ch, x, y, w, h);
 		const c = KNOWN.indexOf(p.cos as CosmeticId);
 		if (c >= 0) {
 			const a = ANCHORS[COSMETICS[KNOWN[c]].anchor], ax = p.x + a.x * k, ay = p.y + a.y * k, s = popIn(pop);
 			g.setTransform(s, 0, 0, s, ax - s * ax, ay - s * ay);
-			g.drawImage(this.atlas, (3 + c) * cw, 0, cw, ch, x, y, w, h);
+			g.drawImage(this.atlas, (COSMETIC + c) * cw, 0, cw, ch, x, y, w, h);
 			g.setTransform(1, 0, 0, 1, 0, 0);
 		}
 		if (!this.ready) return;
 		// Unknown geo (XX), Tor (T1), EU, UN and any code without a country flag wear the St. Louis flag, the sheet's first cell.
 		const i = this.flags.get(p.cc.toLowerCase()) ?? 0;
-		const bx = p.x + BADGE.x * k, by = p.y + BADGE.y * k, bw = BADGE.w * k, bh = BADGE.h * k;
+		const b = BADGE[body], bx = p.x + b.x * k, by = p.y + b.y * k, bw = b.w * k, bh = b.h * k;
 		g.drawImage(this.sheet, (i % FLAGS.cols) * FLAGS.w, Math.floor(i / FLAGS.cols) * FLAGS.h, FLAGS.w, FLAGS.h, bx, by, bw, bh);
 		g.lineWidth = Math.max(1, 0.8 * k);
 		g.strokeStyle = OUTLINE;

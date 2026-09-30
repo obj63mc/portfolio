@@ -1,0 +1,25 @@
+{
+  "id": "rider-wheel",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld/rider-wheel/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "6774a88fdc363c945eb72b67c681b64847649e39ee3df9819d08fe23191f443e"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}

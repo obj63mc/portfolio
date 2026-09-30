@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { magick, processAsset } from './process.ts';
 import { generate } from './generate.ts';
 import { validateOutputs } from './validate.ts';
+import { rigPart } from './review.ts';
 import type { Asset, Manifest } from './types.ts';
 
 test('trimmed extraction retains scene registration and accepts measured fixture bounds', () => {
@@ -81,5 +82,26 @@ test('foreground may cover scenery but must remain clear of an interactive prop'
     assert.deepEqual(validateOutputs(root,manifest),['chair: foreground bounds overlap prop rider']);
     manifest.sceneLayouts.room.rigs[0].travelX = 0;
     assert.deepEqual(validateOutputs(root,manifest),[]);
+  } finally { rmSync(root,{recursive:true,force:true}); }
+});
+
+test('a rig part cut from a sprite sheet sits at its trim less its anchor, and needs no master frame', () => {
+  const root = mkdtempSync(join(tmpdir(), 'art-anchor-'));
+  try {
+    const source = join(root,'source.png');
+    magick(['-size','60x40','xc:#ff00ff','-fill','#205a68','-draw','circle 20,15 20,5',source]);
+    // A sprite sheet is kept lossless, so its keyed cells' edges carry no bleed of the key.
+    const master: Asset = {id:'bike-master',scene:'room',kind:'reference',prompt:'bike',lossless:true};
+    magick(['-size','100x100','plasma:','-depth','8',source.replace('source','master')]);
+    const sheet = join(root,'art/generated',processAsset(master,source.replace('source','master'),join(root,'art/generated')).file);
+    assert.equal(magick([sheet,source.replace('source','master'),'-compose','difference','-composite','-format','%[fx:maxima]','info:']),'0');
+    const frame: Asset = {id:'bike-frame',scene:'room',kind:'part',prompt:'frame',rig:{name:'bike',part:'body',parent:null,pivot:[.5,.5],anchor:[20,15]}};
+    const result = processAsset(frame,source,join(root,'art/generated'));
+    assert.deepEqual(rigPart(result),{parent:null,x:-9,y:-9,w:19,h:19,pivot:[.5,.5],file:'room/bike-frame/image.webp'});
+    assert.deepEqual(rigPart({...result,rig:{...result.rig!,anchor:undefined}}),{parent:null,x:11,y:6,w:19,h:19,pivot:[.5,.5],file:'room/bike-frame/image.webp'});
+    const manifest: Manifest = {version:1,style:'unused',references:[],assets:[master,frame]};
+    assert.deepEqual(validateOutputs(root,manifest),[]);
+    processAsset({...frame,rig:{...frame.rig!,anchor:undefined}},source,join(root,'art/generated'));
+    assert.deepEqual(validateOutputs(root,{...manifest,assets:[master,{...frame,rig:{...frame.rig!,anchor:undefined}}]}),['bike-frame: master and part frame dimensions differ; registration requires review']);
   } finally { rmSync(root,{recursive:true,force:true}); }
 });

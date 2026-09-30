@@ -1,9 +1,24 @@
 // The Carondelet lap timer (buildout ticket 18) and the course it times, the lake loop in the overworld's scene data,
 // which the rider rides too (motion.ts). Pure functions of positions and a clock, for the engine and for tests. The
-// timer is forgiving, for a thumb on a phone's joystick (Joe, 2026-09-29): a corridor wider than the painted path, and
-// a moment off it before a lap is lost.
+// timer is forgiving, for a thumb on a phone's joystick (Joe, 2026-09-29): a corridor wider than the painted path, far
+// wider in the turns at the loop's west and east ends (Joe, 2026-09-30), and a moment off it before a lap is lost.
 import { OVERWORLD } from '../scenes/overworld.ts';
 import type { Point } from '../scenes/types';
+
+/** How far past the painted edge a cursor still counts as on the course, world px. */
+export const CORRIDOR = 70;
+/** The same in the turns at the loop's ends, where a cursor swinging round them is let go much wider (Joe, 2026-09-30). */
+export const TURN = 230;
+/** How far along world x the corridor widens from CORRIDOR to TURN going into a turn. */
+const RAMP = 250;
+/** How long a cursor may be off the course before its lap is lost, ms. */
+export const GRACE = 1000;
+/**
+ * How far along the loop from where a cursor was last on it the timer looks for it again, world px: as far as the
+ * joystick carries it in the grace (600 world px/s), and short of the other side of the lake anywhere, so cutting
+ * across it never rejoins the course.
+ */
+export const REACH = 600;
 
 /** A closed loop: its points, the distance along it to each (world px from the start line) and its length. */
 export interface Course {
@@ -12,12 +27,23 @@ export interface Course {
 	length: number;
 	/** The painted path's half-width. */
 	half: number;
+	/** How far from the centreline a cursor still counts as on the course beside each segment, world px. */
+	limit: number[];
 }
 
-export function course({ path, half }: { path: Point[]; half: number }): Course {
-	const at = [0];
-	for (let i = 1; i <= path.length; i++) at.push(at[i - 1] + Math.hypot(path[i % path.length].x - path[i - 1].x, path[i % path.length].y - path[i - 1].y));
-	return { path, at, length: at[path.length], half };
+/**
+ * A course round `path`: beside each segment a cursor is on it within the painted half-width plus CORRIDOR, widening to
+ * TURN over RAMP world px of x going into the turns west of `ends.west` and east of `ends.east`.
+ */
+export function course({ path, half, ends }: { path: Point[]; half: number; ends?: { west: number; east: number } }): Course {
+	const at = [0], limit: number[] = [];
+	for (let i = 1; i <= path.length; i++) {
+		const a = path[i - 1], b = path[i % path.length], x = (a.x + b.x) / 2;
+		at.push(at[i - 1] + Math.hypot(b.x - a.x, b.y - a.y));
+		const turn = ends ? Math.min(1, Math.max(0, (ends.west - x) / RAMP, (x - ends.east) / RAMP)) : 0;
+		limit.push(half + CORRIDOR + (TURN - CORRIDOR) * turn);
+	}
+	return { path, at, length: at[path.length], half, limit };
 }
 
 /** The lake loop in Carondelet Park: the course the timer times and the rider rides. */
@@ -36,12 +62,12 @@ export function along(c: Course, s: number) {
 const delta = (c: Course, a: number, b: number) => ((((b - a) % c.length) + 1.5 * c.length) % c.length) - c.length / 2;
 
 /**
- * Where `p` is on the loop: the distance along it `s` of the nearest point, and how far `p` is from it. With `near`,
- * only the loop within REACH of that distance is searched, so a cursor is followed along the path and never jumps
- * across the lake to the other side's.
+ * Where `p` is on the loop: the distance along it `s` of the nearest point, how far `p` is from it, and how far it is
+ * past the corridor's edge, `off`, at most 0 on the course. With `near`, only the loop within REACH of that distance is
+ * searched, so a cursor is followed along the path and never jumps across the lake to the other side's.
  */
 export function locate(c: Course, p: Point, near?: number) {
-	let best = { s: 0, d: Infinity };
+	let best = { s: 0, d: Infinity, off: Infinity };
 	const n = c.path.length;
 	for (let i = 0; i < n; i++) {
 		const a = c.path[i], b = c.path[(i + 1) % n], len = c.at[i + 1] - c.at[i];
@@ -55,21 +81,12 @@ export function locate(c: Course, p: Point, near?: number) {
 		}
 		const u = Math.max(lo, Math.min(hi, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / (len * len)));
 		const x = a.x + (b.x - a.x) * u, y = a.y + (b.y - a.y) * u, d = Math.hypot(p.x - x, p.y - y);
-		if (d < best.d) best = { s: (c.at[i] + u * len) % c.length, d };
+		// On the course beside any segment counts, so the wide turns reach past the nearest point's own corridor.
+		best.off = Math.min(best.off, d - c.limit[i]);
+		if (d < best.d) best = { ...best, s: (c.at[i] + u * len) % c.length, d };
 	}
 	return best;
 }
-
-/** How far past the painted edge a cursor still counts as on the course, world px. */
-export const CORRIDOR = 70;
-/** How long a cursor may be off the course before its lap is lost, ms. */
-export const GRACE = 1000;
-/**
- * How far along the loop from where a cursor was last on it the timer looks for it again, world px: as far as the
- * joystick carries it in the grace (600 world px/s), and short of the other side of the lake anywhere, so cutting
- * across it never rejoins the course.
- */
-export const REACH = 600;
 
 /**
  * The timer: idle, knowing where on the loop the cursor last was if it was on the course (null if not, or never), to see
@@ -88,10 +105,9 @@ export type LapEvent = { is: 'start' } | { is: 'lap'; ms: number } | { is: 'canc
  */
 export function ride(c: Course, lap: Lap, p: Point | null, t: number): [Lap, LapEvent] {
 	if (!p) return [{ is: 'idle', s: null }, lap.is === 'riding' ? { is: 'cancel' } : null];
-	const limit = c.half + CORRIDOR;
 	if (lap.is === 'idle') {
 		const at = locate(c, p);
-		if (at.d > limit) return [{ is: 'idle', s: null }, null];
+		if (at.off > 0) return [{ is: 'idle', s: null }, null];
 		const ds = lap.s === null ? 0 : delta(c, lap.s, at.s);
 		// Over the line: from the end of the loop to its start, or back.
 		const past = lap.s === null ? 0 : lap.s + ds < 0 ? -1 : lap.s + ds >= c.length ? 1 : 0;
@@ -99,7 +115,7 @@ export function ride(c: Course, lap: Lap, p: Point | null, t: number): [Lap, Lap
 		return [{ is: 'riding', from: t, dir: past, run: past > 0 ? at.s : c.length - at.s, s: at.s, off: null }, { is: 'start' }];
 	}
 	const at = locate(c, p, lap.s);
-	if (at.d > limit) {
+	if (at.off > 0) {
 		const off = lap.off ?? t;
 		return t - off > GRACE ? [{ is: 'idle', s: null }, { is: 'cancel' }] : [{ ...lap, off }, null];
 	}

@@ -57,7 +57,8 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
       const opaque = magick([file, '-format', '%[opaque]', 'info:']);
       if (opaque === 'True') problems.push(`${asset.id}: missing transparent background`);
     }
-    if (asset.rig) {
+    // A part cut from a sprite sheet is registered by its anchor, not the master's frame.
+    if (asset.rig && !asset.rig.anchor) {
       const master = join(root, 'art/generated', asset.scene, `${asset.rig.name}-master`, 'asset.json');
       if (existsSync(master)) {
         const source = JSON.parse(readFileSync(master, 'utf8')).source;

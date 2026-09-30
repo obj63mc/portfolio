@@ -71,7 +71,7 @@ function processInto(asset: Asset, input: string, outputRoot: string): Processed
       unlinkSync(layer);
     }
   } else if (asset.kind === 'reference') {
-    magick([input, '-quality', '90', join(outputRoot, file)]);
+    magick([input, ...(asset.lossless ? ['-define', 'webp:lossless=true'] : ['-quality', '90']), join(outputRoot, file)]);
   } else {
     const keyed = join(dir, 'keyed.png');
     // Existing alpha is preserved. The key is outside the art palette.

@@ -3,26 +3,63 @@
   "scene": "overworld",
   "kind": "part",
   "file": "overworld/rider-front-wheel/image.webp",
+  "world": {
+    "x": 150,
+    "y": 138,
+    "w": 954,
+    "h": 960
+  },
   "source": {
-    "w": 1536,
-    "h": 1024,
-    "sha256": "9e1cf900a671f5bf3397896adba71d2f6afe2b57378348abd8bc43f602a00df9"
+    "w": 209,
+    "h": 209,
+    "sha256": "d80b0dd62ccf761f6362e859420ed5fb99f19d855a04d7a9051f1a7abe21c2eb"
   },
   "trim": {
-    "x": 833,
-    "y": 545,
-    "w": 306,
-    "h": 307
+    "x": 25,
+    "y": 23,
+    "w": 159,
+    "h": 160
   },
-  "width": 306,
-  "height": 307,
+  "width": 159,
+  "height": 160,
   "rig": {
     "name": "rider",
     "part": "front-wheel",
-    "parent": "body",
+    "parent": null,
     "pivot": [
       0.5,
       0.5
+    ],
+    "anchor": [
+      -135.4,
+      102.8
+    ]
+  },
+  "registration": {
+    "asset": "rider-wheel",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "w": 1254,
+      "h": 1254
+    },
+    "mask": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        1
+      ]
     ]
   }
 }

@@ -7,7 +7,8 @@
 import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
 import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
-import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, type Pose } from './motion.ts';
+import { drawCourse } from './course-overlay.ts';
+import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
@@ -22,11 +23,12 @@ interface Part {
 }
 
 // Cut-outs by path, never inlined (the page's CSP has no data: source). The scene plates and the masters they are cut
-// from stay out of the build: the tiles are the plates.
+// from stay out of the build: the tiles are the plates. So does the rider's pedal sheet, whose frames are cut-outs.
 const IMAGES = import.meta.glob<string>(
 	[
 		'/art/generated/*/*/image.webp',
 		'!/art/generated/*/*-master/image.webp',
+		'!/art/generated/overworld/rider-sheet/image.webp',
 		'!/art/generated/{overworld,slu,foundry,moosylvania,side-project,brennans}/{overworld,slu,foundry,moosylvania,side-project,brennans}/image.webp'
 	],
 	{ eager: true, query: '?no-inline', import: 'default' }
@@ -96,6 +98,8 @@ const union = (rs: Rect[]): Rect => {
 };
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
 const isBottle = (p?: Prop) => !!p?.id.startsWith('bottle-');
+/** The rider's pedal frames in its rig: the resting frame, its near pedal down, is its body; each next turns the cranks on. */
+const pedal = (frame: number) => (frame ? `pedal-${frame}` : 'body');
 /** Drawing order: by base y, nearest the camera last. */
 const byBase = (a: Layer, b: Layer) => a.box.y + a.box.h - (b.box.y + b.box.h);
 
@@ -124,6 +128,8 @@ export class Props {
 	private scratch: OffscreenCanvas | undefined;
 	private listeners = new AbortController();
 	private layer: HTMLElement;
+	/** Dev only, with `?course` in the URL: the lap timer's course drawn over the loop (course-overlay.ts). */
+	private course = import.meta.env.DEV && new URLSearchParams(location.search).has('course');
 
 	/** `layer` is the prerendered layer: its prop buttons are the hit targets, and their clicks open the cards. */
 	constructor(layer: HTMLElement) {
@@ -236,6 +242,7 @@ export class Props {
 		g.setTransform(k, 0, 0, k, -cam.x * k, -cam.y * k);
 		if (this.line) this.startLine(g, this.line);
 		for (const l of this.layers) if (overlaps(grow(l.box, REACH), view)) this.drawLayer(g, l, k);
+		if (import.meta.env.DEV && this.course && this.line) drawCourse(g);
 		g.setTransform(1, 0, 0, 1, 0, 0);
 	}
 
@@ -317,31 +324,33 @@ export class Props {
 		g.restore();
 	}
 
-	/** A rig fitted into its rect as the art workshop fits it, each part turned and squashed about its pivot by its pose. */
+	/**
+	 * A rig fitted into its rect as the art workshop fits it, each part turned and squashed about its pivot by its pose. The
+	 * rider draws its two wheels, turning, under the one frame of its pedal sheet it is at, leaning with the path about
+	 * where its wheels meet the ground and turned round about its middle.
+	 */
 	private drawRig(g: CanvasRenderingContext2D, l: Layer) {
 		const { name, parts, at, bounds } = l.rig!, sc = Math.min(at.w / bounds.w, at.h / bounds.h);
-		let poses: Record<string, Pose>, facing = 1;
+		let poses: Record<string, Pose>, drawn = parts;
+		g.save();
 		if (name === 'moose') poses = moose(this.t, l.hover, this.t - l.clicked, this.rm);
 		else {
 			// `step` has put its rect where the rider is.
-			const r = rider(this.t, this.rm), wheel = { r: 0, sy: 1 };
-			facing = r.facing;
+			const r = rider(this.t, this.rm), wheel = { r: 0, sy: 1 }, wheels = parts.filter((p) => p.key.endsWith('wheel'));
 			// A wheel turns by the distance ridden over its radius, both in world px.
-			wheel.r = r.travelled / ((parts.find((p) => p.key.endsWith('wheel'))?.w ?? 1) * sc * 0.5);
+			wheel.r = turned(r.travelled, (wheels[0]?.w ?? 1) * sc * 0.5);
 			poses = { 'rear-wheel': wheel, 'front-wheel': wheel };
+			drawn = [...wheels, ...parts.filter((p) => p.key === pedal(r.frame))];
+			const gx = at.x + at.w / 2, gy = at.y + at.h;
+			g.translate(gx, gy);
+			g.rotate(r.lean);
+			g.scale(r.flip, 1);
+			g.translate(-gx, -gy);
 		}
-		g.save();
 		g.translate(at.x + (at.w - bounds.w * sc) / 2, at.y + at.h - bounds.h * sc);
 		g.scale(sc, sc);
 		g.translate(-bounds.x, -bounds.y);
-		if (facing < 0) {
-			// Riding west, the rig is mirrored about its middle.
-			const cx = bounds.x + bounds.w / 2;
-			g.translate(cx, 0);
-			g.scale(-1, 1);
-			g.translate(-cx, 0);
-		}
-		for (const p of parts) {
+		for (const p of drawn) {
 			if (!p.bmp) continue;
 			g.save();
 			for (const q of p.chain) {

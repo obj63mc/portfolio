@@ -1,6 +1,7 @@
 // Seam 4 for the Carondelet lap timer and the rider (buildout ticket 18), over the built site: the drawn cursor ridden
-// once round the lake loop, weaving across the path as a thumb on a joystick does, shows a lap time and a new best, and
-// under reduced motion the rider rests. The browser refuses the pointer lock here, so the drawn cursor follows the mouse.
+// once round the lake loop, weaving across the path as a thumb on a joystick does, shows its time as a new best on the
+// lap board, and under reduced motion the rider rests. The browser refuses the pointer lock here, so the drawn cursor
+// follows the mouse.
 import { test, expect, type Page } from '@playwright/test';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { along, course } from '../src/lib/engine/track.ts';
@@ -35,7 +36,7 @@ const onScreen = (page: Page, p: { x: number; y: number }) =>
 
 test.beforeEach(({ page }) => page.addInitScript(setUp));
 
-test('a lap round the lake loop, weaving across the path, shows its time and a new best', async ({ page }) => {
+test('a lap round the lake loop, weaving across the path, shows its time as a new best on the lap board', async ({ page }) => {
 	test.setTimeout(60_000);
 	await page.goto('/#park');
 	await join(page);
@@ -48,7 +49,13 @@ test('a lap round the lake loop, weaving across the path, shows its time and a n
 		await page.mouse.move(at.x, at.y);
 		if (s === 208) await expect(readout).toHaveText(/^Lap 0:0\d\.\d$/);
 	}
-	await expect(readout).toHaveText(/^New best \d:\d\d\.\d$/);
+	// The board shows the lap, a new best at the top of the visitor's top ten, while the clock runs on into the next lap.
+	const board = page.locator('.board');
+	await expect(board.locator('.head')).toHaveText('New personal best');
+	await expect(board.locator('.time')).toHaveText(/^\d:\d\d\.\d$/);
+	await expect(board.locator('li')).toHaveCount(1);
+	await expect(board.locator('li.this')).toContainText('this lap');
+	await expect(readout).toHaveText(/^Lap 0:0\d\.\d$/);
 	await expect(page.getByRole('status')).toHaveText(/^Lap \d+\.\d seconds, a new best$/);
 });
 

@@ -1,6 +1,11 @@
 {
-  "sourceSha256": "9e1cf900a671f5bf3397896adba71d2f6afe2b57378348abd8bc43f602a00df9",
-  "run": "art/runs/rider-front-wheel/2026-09-24T19-22-22.305Z",
-  "provider": "codex",
+  "sourceSha256": "d80b0dd62ccf761f6362e859420ed5fb99f19d855a04d7a9051f1a7abe21c2eb",
+  "run": "art/runs/rider-front-wheel/2026-09-30T08-18-32.955Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "rider-wheel",
+    "referenceSha256": "9b3cc93ecfdd171606164eea4cdffe01392dfb23a51bf72669a32119208e219a",
+    "operation": "masked-composition-crop"
+  },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

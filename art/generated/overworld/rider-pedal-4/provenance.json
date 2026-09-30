@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "c3253021cee51cd3b7c4f7a52fe2b32003fb848b0c92adc0aec8a4508cc392b5",
+  "run": "art/runs/rider-pedal-4/2026-09-30T08-08-29.949Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "rider-sheet",
+    "referenceSha256": "cfc43a0ca2ae4d99688deed01ff8a241b5538752d0b71c9e3903d9b8f6459e20",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

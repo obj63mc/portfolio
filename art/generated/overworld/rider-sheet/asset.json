@@ -1,0 +1,25 @@
+{
+  "id": "rider-sheet",
+  "scene": "overworld",
+  "kind": "reference",
+  "file": "overworld/rider-sheet/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "8d866c3c98f6b6ade139ef41e9f2a76de03faa5e155ec5bbd16b364f99a58249"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}

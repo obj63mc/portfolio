@@ -466,6 +466,16 @@ export class Engine {
 		return hit && !(touch && hit.closest(CONTROLS)) ? hit : null;
 	}
 
+	/**
+	 * Something to click is under the drawn cursor, which points at it with the hand (Joe, 2026-09-30): what `mark` found
+	 * under the lock or a steered touch, or the link or button under the unlocked mouse, whose own cursor is hidden too.
+	 */
+	private get pointing() {
+		const c = this.cursor;
+		if (this.input.is !== 'unlocked') return !!this.hot;
+		return !!c && !!document.elementFromPoint(c.x, c.y)?.closest('a, button');
+	}
+
 	/** Every change of input goes through here: the card it calls for is open and any other is closed. */
 	private enter(input: Input) {
 		this.input = input;
@@ -760,7 +770,8 @@ export class Engine {
 	}
 
 	/**
-	 * The drawn cursor, from Join on, goes to the room at its world position, with what it wears. Peers near the camera are
+	 * The drawn cursor, from Join on, goes to the room at its world position, with what it wears; over something to click
+	 * it is drawn as the pointing hand, a local drawing the room never hears of. Peers near the camera are
 	 * drawn 100 ms behind; the rest are neither interpolated nor drawn. A cosmetic newly worn, granted here or in another
 	 * tab, pops in.
 	 */
@@ -776,7 +787,7 @@ export class Engine {
 			const at = visible(p.snaps, view) && sample(p.snaps, now);
 			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt });
 		}
-		const own = c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt };
+		const own = c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing };
 		this.art.draw(own, peers, now);
 	}
 

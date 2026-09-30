@@ -52,21 +52,35 @@ const lockedClick = (page: Page) => page.evaluate(() => document.pointerLockElem
 const lockHolder = (page: Page) => page.evaluate(() => document.pointerLockElement?.className ?? null);
 
 /**
- * The drawn cursor's tip, CSS px, read off the cursor canvas: the top-left of its opaque pixels, past the halo's glow
- * (ticket 13); null when none is drawn.
+ * The drawn cursor's tip, CSS px, read off the cursor canvas: the middle of the leftmost run of its body's white or gold
+ * in its topmost row, past the halo's glow (ticket 13), clear of a cosmetic above it (the moose's antlers) and of the
+ * "you" tag's white outline, which borders its blue letters. That is the arrow's tip, and the pointing hand's fingertip
+ * over something to click (Joe, 2026-09-30); null when none is drawn.
  */
 const tip = (page: Page) =>
 	page.evaluate(() => {
 		const c = document.querySelector<HTMLCanvasElement>('canvas.cursors')!;
-		const { data, width } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
-		let x0 = Infinity, y0 = Infinity;
-		for (let i = 3; i < data.length; i += 4) {
-			if (data[i] < 200) continue;
-			x0 = Math.min(x0, ((i - 3) / 4) % width);
-			y0 = Math.min(y0, Math.floor((i - 3) / 4 / width));
-		}
-		const k = c.width / innerWidth;
-		return x0 === Infinity ? null : { x: x0 / k, y: y0 / k };
+		const { data, width, height } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
+		const px = (x: number, y: number) => data.subarray((y * width + x) * 4, (y * width + x) * 4 + 4);
+		const blue = (x: number, y: number) => ((p) => p[3] >= 200 && p[2] > 180 && p[0] < 120)(px(x, y));
+		const tagged = (x: number, y: number) => {
+			for (let v = y; v <= Math.min(height - 1, y + 3); v++)
+				for (let u = Math.max(0, x - 3); u <= Math.min(width - 1, x + 3); u++) if (blue(u, v)) return true;
+			return false;
+		};
+		const body = (x: number, y: number) => {
+			const [r, g, b, a] = px(x, y);
+			return a >= 200 && r >= 220 && g >= 180 && (b >= 220 || b <= 90) && !tagged(x, y);
+		};
+		for (let y = 0; y < height; y++)
+			for (let x = 0; x < width; x++) {
+				if (!body(x, y)) continue;
+				let end = x;
+				while (end + 1 < width && body(end + 1, y)) end++;
+				const k = c.width / innerWidth;
+				return { x: (x + end) / 2 / k, y: y / k };
+			}
+		return null;
 	});
 /** How far the drawn cursor is from `p`; its outline reaches a pixel or two past the tip. */
 const off = async (page: Page, p: Point) => {

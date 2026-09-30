@@ -7,6 +7,12 @@ import { SUB_SCENES } from '../../src/lib/scenes/index.ts';
 import { compose } from './compose.ts';
 import { saveProvenance } from './provenance.ts';
 
+/** A rig part in its rig's space: where its trim sits in the master's frame, or from its anchor if cut from a sheet. */
+export function rigPart({ rig, trim, width, height, file }: ProcessedAsset) {
+  const [ax, ay] = rig!.anchor ?? [0, 0];
+  return { parent: rig!.parent, x: trim.x - ax, y: trim.y - ay, w: width, h: height, pivot: rig!.pivot, file };
+}
+
 export async function buildReview(root: string, manifest: Manifest, composites = false) {
   const assets: ProcessedAsset[] = manifest.assets.flatMap(a => {
     const path = join(root, 'art/generated', assetDir(a), 'asset.json');
@@ -16,11 +22,11 @@ export async function buildReview(root: string, manifest: Manifest, composites =
   const rigScenes: Record<string, string> = {};
   for (const asset of assets) saveProvenance(root, asset);
   for (const asset of assets) if (asset.rig) {
-    const { name, part, parent, pivot } = asset.rig;
+    const { name, part } = asset.rig;
     const rig = rigs[name] ??= {};
     rigScenes[name] = asset.scene;
     // Source-space trim offsets preserve registration when independently keyed parts are trimmed.
-    rig[part] = { parent, x: asset.trim.x, y: asset.trim.y, w: asset.width, h: asset.height, pivot, file: asset.file };
+    rig[part] = rigPart(asset);
   }
   const rigBounds = Object.fromEntries(Object.entries(rigs).map(([name, rig]) => {
     const parts = Object.values(rig), x = Math.min(...parts.map(p => p.x)), y = Math.min(...parts.map(p => p.y));

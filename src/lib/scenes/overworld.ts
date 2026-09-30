@@ -252,6 +252,10 @@ export const OVERWORLD: Overworld = {
 		],
 		// 25 to 57 px wide, 37 on the lower straight.
 		half: 18,
+		// The turns at the loop's far west and east ends, round which the lap timer's corridor widens (Joe, 2026-09-30): the
+		// path bends west of x 1450 and east of x 3450, and the corridor is at its widest there, having widened along the last
+		// 250 px of each straight.
+		ends: { west: 1650, east: 3200 },
 		cover: ['park-sign', 'track-tree-west', 'park-tree', 'track-tree-east'],
 		// On the lawn where a bench stood, just south of the start line (Joe, 2026-09-29): scenery, not a prop.
 		sign: 'start-sign'

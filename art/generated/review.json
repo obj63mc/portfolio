@@ -1038,6 +1038,10 @@
           }
         ],
         "half": 18,
+        "ends": {
+          "west": 1650,
+          "east": 3200
+        },
         "cover": [
           "park-sign",
           "track-tree-west",
@@ -1384,7 +1388,7 @@
           "name": "rider",
           "rect": {
             "x": 2639,
-            "y": 2470,
+            "y": 2469,
             "w": 120,
             "h": 85
           },
@@ -1495,7 +1499,7 @@
           "id": "rider",
           "rect": {
             "x": 2639,
-            "y": 2470,
+            "y": 2469,
             "w": 120,
             "h": 85
           }
@@ -28769,58 +28773,572 @@
       "height": 1024
     },
     {
-      "id": "rider-body",
+      "id": "rider-sheet",
       "scene": "overworld",
-      "kind": "part",
-      "file": "overworld/rider-body/image.webp",
+      "kind": "reference",
+      "file": "overworld/rider-sheet/image.webp",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
+      },
       "source": {
-        "w": 1536,
-        "h": 1024,
-        "sha256": "0d6953dc184dcb4d11eb0f4a5b69b5d22dee331035ff55d166ff70f904a9d671"
+        "w": 1254,
+        "h": 1254,
+        "sha256": "8d866c3c98f6b6ade139ef41e9f2a76de03faa5e155ec5bbd16b364f99a58249"
       },
       "trim": {
-        "x": 523,
-        "y": 128,
-        "w": 481,
-        "h": 661
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
       },
-      "width": 481,
-      "height": 661,
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "rider-pedal-0",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-0/image.webp",
+      "world": {
+        "x": 496,
+        "y": 453,
+        "w": 266,
+        "h": 357
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "a522fcdb7806e1e63aabd66530dfb915ef970456bf2a134aad2b61571a876db2"
+      },
+      "trim": {
+        "x": 78,
+        "y": 35,
+        "w": 266,
+        "h": 357
+      },
+      "width": 266,
+      "height": 357,
       "rig": {
         "name": "rider",
         "part": "body",
         "parent": null,
         "pivot": [
           0.5,
-          0.7
+          0.5
+        ],
+        "anchor": [
+          90.5,
+          333.5
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 418,
+          "y": 418,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
         ]
       }
+    },
+    {
+      "id": "rider-pedal-1",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-1/image.webp",
+      "world": {
+        "x": 915,
+        "y": 453,
+        "w": 265,
+        "h": 352
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "58c41f3f933cd70a92ee97a2dfc7f4bcdb42fabf7b6e47e40dbd027c546a5e30"
+      },
+      "trim": {
+        "x": 79,
+        "y": 35,
+        "w": 265,
+        "h": 352
+      },
+      "width": 265,
+      "height": 352,
+      "rig": {
+        "name": "rider",
+        "part": "pedal-1",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333.5
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 836,
+          "y": 418,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-2",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-2/image.webp",
+      "world": {
+        "x": 79,
+        "y": 872,
+        "w": 265,
+        "h": 333
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "c2d5770488af2f00f19d12d35bfb5750e00ac7f9ee77aaadc522e8d3c5eaf0c7"
+      },
+      "trim": {
+        "x": 79,
+        "y": 36,
+        "w": 265,
+        "h": 333
+      },
+      "width": 265,
+      "height": 333,
+      "rig": {
+        "name": "rider",
+        "part": "pedal-2",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          334
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 0,
+          "y": 836,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-3",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-3/image.webp",
+      "world": {
+        "x": 79,
+        "y": 35,
+        "w": 265,
+        "h": 356
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "e749a6a5b54109203a6f8261d753c374175b6a0d4e3286d5869dfa379d3e8ea7"
+      },
+      "trim": {
+        "x": 79,
+        "y": 35,
+        "w": 265,
+        "h": 356
+      },
+      "width": 265,
+      "height": 356,
+      "rig": {
+        "name": "rider",
+        "part": "pedal-3",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-4",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-4/image.webp",
+      "world": {
+        "x": 496,
+        "y": 35,
+        "w": 266,
+        "h": 352
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "c3253021cee51cd3b7c4f7a52fe2b32003fb848b0c92adc0aec8a4508cc392b5"
+      },
+      "trim": {
+        "x": 78,
+        "y": 35,
+        "w": 266,
+        "h": 352
+      },
+      "width": 266,
+      "height": 352,
+      "rig": {
+        "name": "rider",
+        "part": "pedal-4",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          90.5,
+          333
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 418,
+          "y": 0,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-5",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-5/image.webp",
+      "world": {
+        "x": 915,
+        "y": 35,
+        "w": 265,
+        "h": 350
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "3660735d2e91f31fff62cf47cfa792eeffe6a337219a01a2bcf18a3ba9824b47"
+      },
+      "trim": {
+        "x": 79,
+        "y": 35,
+        "w": 265,
+        "h": 350
+      },
+      "width": 265,
+      "height": 350,
+      "rig": {
+        "name": "rider",
+        "part": "pedal-5",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 836,
+          "y": 0,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-6",
+      "scene": "overworld",
+      "kind": "part",
+      "file": "overworld/rider-pedal-6/image.webp",
+      "world": {
+        "x": 79,
+        "y": 453,
+        "w": 265,
+        "h": 352
+      },
+      "source": {
+        "w": 418,
+        "h": 418,
+        "sha256": "73deac033eac86f513cb350d5dcf9878b3dccf2e65831e6bf1fb7ed88e05b99c"
+      },
+      "trim": {
+        "x": 79,
+        "y": 35,
+        "w": 265,
+        "h": 352
+      },
+      "width": 265,
+      "height": 352,
+      "rig": {
+        "name": "rider",
+        "part": "pedal-6",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333.5
+        ]
+      },
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 0,
+          "y": 418,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rider-wheel",
+      "scene": "overworld",
+      "kind": "reference",
+      "file": "overworld/rider-wheel/image.webp",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
+      },
+      "source": {
+        "w": 1254,
+        "h": 1254,
+        "sha256": "6774a88fdc363c945eb72b67c681b64847649e39ee3df9819d08fe23191f443e"
+      },
+      "trim": {
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
+      },
+      "width": 1254,
+      "height": 1254
     },
     {
       "id": "rider-rear-wheel",
       "scene": "overworld",
       "kind": "part",
       "file": "overworld/rider-rear-wheel/image.webp",
+      "world": {
+        "x": 150,
+        "y": 138,
+        "w": 954,
+        "h": 960
+      },
       "source": {
-        "w": 1536,
-        "h": 1024,
-        "sha256": "a60de53dce3c8c310c9bfe4170dbedcb689e56b76d19894b790b8e0ae54392cf"
+        "w": 209,
+        "h": 209,
+        "sha256": "2e90ec30ee775ace4a7a8042082d4b72121be2dacf4a1eef25af0b3c762feb3e"
       },
       "trim": {
-        "x": 394,
-        "y": 554,
-        "w": 293,
-        "h": 297
+        "x": 25,
+        "y": 23,
+        "w": 159,
+        "h": 160
       },
-      "width": 293,
-      "height": 297,
+      "width": 159,
+      "height": 160,
       "rig": {
         "name": "rider",
         "part": "rear-wheel",
-        "parent": "body",
+        "parent": null,
         "pivot": [
           0.5,
           0.5
+        ],
+        "anchor": [
+          104.6,
+          102.8
+        ]
+      },
+      "registration": {
+        "asset": "rider-wheel",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1254,
+          "h": 1254
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
         ]
       }
     },
@@ -28829,26 +29347,63 @@
       "scene": "overworld",
       "kind": "part",
       "file": "overworld/rider-front-wheel/image.webp",
+      "world": {
+        "x": 150,
+        "y": 138,
+        "w": 954,
+        "h": 960
+      },
       "source": {
-        "w": 1536,
-        "h": 1024,
-        "sha256": "9e1cf900a671f5bf3397896adba71d2f6afe2b57378348abd8bc43f602a00df9"
+        "w": 209,
+        "h": 209,
+        "sha256": "d80b0dd62ccf761f6362e859420ed5fb99f19d855a04d7a9051f1a7abe21c2eb"
       },
       "trim": {
-        "x": 833,
-        "y": 545,
-        "w": 306,
-        "h": 307
+        "x": 25,
+        "y": 23,
+        "w": 159,
+        "h": 160
       },
-      "width": 306,
-      "height": 307,
+      "width": 159,
+      "height": 160,
       "rig": {
         "name": "rider",
         "part": "front-wheel",
-        "parent": "body",
+        "parent": null,
         "pivot": [
           0.5,
           0.5
+        ],
+        "anchor": [
+          -135.4,
+          102.8
+        ]
+      },
+      "registration": {
+        "asset": "rider-wheel",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1254,
+          "h": 1254
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
         ]
       }
     },
@@ -29472,22 +30027,94 @@
     "rider": {
       "body": {
         "parent": null,
-        "x": 523,
-        "y": 128,
-        "w": 481,
-        "h": 661,
+        "x": -12.5,
+        "y": -298.5,
+        "w": 266,
+        "h": 357,
         "pivot": [
           0.5,
-          0.7
+          0.5
         ],
-        "file": "overworld/rider-body/image.webp"
+        "file": "overworld/rider-pedal-0/image.webp"
+      },
+      "pedal-1": {
+        "parent": null,
+        "x": -12.5,
+        "y": -298.5,
+        "w": 265,
+        "h": 352,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "file": "overworld/rider-pedal-1/image.webp"
+      },
+      "pedal-2": {
+        "parent": null,
+        "x": -12.5,
+        "y": -298,
+        "w": 265,
+        "h": 333,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "file": "overworld/rider-pedal-2/image.webp"
+      },
+      "pedal-3": {
+        "parent": null,
+        "x": -12.5,
+        "y": -298,
+        "w": 265,
+        "h": 356,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "file": "overworld/rider-pedal-3/image.webp"
+      },
+      "pedal-4": {
+        "parent": null,
+        "x": -12.5,
+        "y": -298,
+        "w": 266,
+        "h": 352,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "file": "overworld/rider-pedal-4/image.webp"
+      },
+      "pedal-5": {
+        "parent": null,
+        "x": -12.5,
+        "y": -298,
+        "w": 265,
+        "h": 350,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "file": "overworld/rider-pedal-5/image.webp"
+      },
+      "pedal-6": {
+        "parent": null,
+        "x": -12.5,
+        "y": -298.5,
+        "w": 265,
+        "h": 352,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "file": "overworld/rider-pedal-6/image.webp"
       },
       "rear-wheel": {
-        "parent": "body",
-        "x": 394,
-        "y": 554,
-        "w": 293,
-        "h": 297,
+        "parent": null,
+        "x": -79.6,
+        "y": -79.8,
+        "w": 159,
+        "h": 160,
         "pivot": [
           0.5,
           0.5
@@ -29495,11 +30122,11 @@
         "file": "overworld/rider-rear-wheel/image.webp"
       },
       "front-wheel": {
-        "parent": "body",
-        "x": 833,
-        "y": 545,
-        "w": 306,
-        "h": 307,
+        "parent": null,
+        "x": 160.4,
+        "y": -79.8,
+        "w": 159,
+        "h": 160,
         "pivot": [
           0.5,
           0.5
@@ -29544,10 +30171,10 @@
       "h": 849
     },
     "rider": {
-      "x": 394,
-      "y": 128,
-      "w": 745,
-      "h": 724
+      "x": -79.6,
+      "y": -298.5,
+      "w": 399,
+      "h": 378.7
     },
     "marquee": {
       "x": 38,
@@ -29563,9 +30190,9 @@
     }
   },
   "rigDrawOrder": [
-    "body",
     "rear-wheel",
     "front-wheel",
+    "body",
     "head",
     "antlers",
     "eye"

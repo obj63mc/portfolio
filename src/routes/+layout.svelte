@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import type { Engine } from '$lib/engine/engine';
+	import LapBoard from '$lib/LapBoard.svelte';
 	import { SUB_SCENES } from '$lib/scenes';
 	import { OVERWORLD } from '$lib/scenes/overworld';
 
@@ -33,6 +34,7 @@
 <div role="status" aria-live="polite" bind:this={live}></div>
 <!-- The Carondelet lap timer's clock (buildout ticket 18), written by the engine; the live region announces each finish. -->
 <p class="lap" aria-hidden="true" hidden bind:this={lap}></p>
+<LapBoard />
 <div class="controls">
 	<button type="button" aria-pressed="true">Sound</button>
 	<button type="button">Analytics settings</button>

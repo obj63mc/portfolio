@@ -2,7 +2,7 @@
 // round a course as a list of positions; the timer says when a lap starts, finishes or is cancelled.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CORRIDOR, along, course, ride, type Lap, type LapEvent } from '../src/lib/engine/track.ts';
+import { CORRIDOR, TURN, along, course, ride, type Lap, type LapEvent } from '../src/lib/engine/track.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
@@ -151,6 +151,34 @@ test('on the Carondelet loop, a thumb weaving round it at joystick speed makes a
 	const cut = legs([{ x: 2550, y: 2528 }, ...path.slice(1, 26), { x: 2300, y: 2493 }, { x: 2650, y: 2539 }]);
 	assert.deepEqual(
 		events(cut).map((e) => e.is),
+		['start', 'cancel', 'start']
+	);
+});
+
+test('on the Carondelet loop the turns at its far ends are far wider: swinging out round them counts, straying as far off a straight does not', () => {
+	const loop = course(OVERWORLD.track), { ends } = OVERWORLD.track;
+	assert.equal(loop.limit[0], loop.half + CORRIDOR, 'the start line on a straight');
+	assert.equal(Math.max(...loop.limit), loop.half + TURN);
+	/** The events of riding the centreline at 600 world px/s, pushed `out` px outward (away from the lake) where `where` says. */
+	const events = (out: number, where: (p: Point) => boolean) => {
+		let lap: Lap = { is: 'idle', s: null }, e: LapEvent;
+		const got: NonNullable<LapEvent>[] = [];
+		for (let s = -60, i = 0; s < loop.length + 60; s += 10, i++) {
+			const a = along(loop, s), o = where(a) ? out : 0;
+			[lap, e] = ride(loop, lap, { x: a.x - a.dy * o, y: a.y + a.dx * o }, (i * 1000) / 60);
+			if (e) got.push(e);
+		}
+		return got.map((e) => e.is);
+	};
+	// 200 px out all the way round both turns, where the path bends.
+	assert.ok(200 > loop.half + CORRIDOR);
+	assert.deepEqual(
+		events(200, ({ x }) => x < ends.west - 200 || x > ends.east + 250),
+		['start', 'lap']
+	);
+	// As far out along 800 px of the top straight, over a second at this speed: lost, and the line only starts the next.
+	assert.deepEqual(
+		events(200, ({ x, y }) => y < 2200 && x > 1900 && x < 2700),
 		['start', 'cancel', 'start']
 	);
 });

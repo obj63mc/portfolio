@@ -120,7 +120,8 @@ test.describe('two browsers on wrangler dev', () => {
 		await expect(b.locator('.presence')).toHaveText('2 here');
 		expect(await opaque(b), 'nobody has joined, so nobody is drawn').toBeNull();
 		await joinScene(a);
-		const s = await scale(a), p: Point = { x: 600, y: 380 };
+		// Clear of the church's door link and every prop, so a's own cursor is the arrow, not the pointing hand.
+		const s = await scale(a), p: Point = { x: 760, y: 420 };
 		await a.mouse.move(p.x, p.y);
 		// b hasn't joined, so everything on its cursor canvas is a's cursor, where a's own camera shows it.
 		// Polled on the distance: the first position b receives is where a joined, which may already be left of p.
@@ -130,11 +131,11 @@ test.describe('two browsers on wrangler dev', () => {
 		// The tag sits right of the own arrow, clear of its body, for about two seconds.
 		const tagBox = { x: p.x + 23 * 1.25 * s, y: p.y - 2, w: 40, h: 12 * 1.25 * s };
 		expect(await opaque(a, tagBox), 'the "you" tag').not.toBeNull();
-		// The badge's right half, clear of the arrow's tail.
-		expect(await opaque(b, { x: p.x + 18 * 0.75 * s, y: p.y + 23 * 0.75 * s, w: 9 * 0.75 * s, h: 8 * 0.75 * s }), 'the flag').not.toBeNull();
+		// The badge's right half, clear of the arrow's tail (the badge is 11 x 8.25 units from x 14, y 23).
+		expect(await opaque(b, { x: p.x + 18 * 0.75 * s, y: p.y + 24 * 0.75 * s, w: 7 * 0.75 * s, h: 7 * 0.75 * s }), 'the flag').not.toBeNull();
 		await expect.poll(() => opaque(a, tagBox), { timeout: 4000 }).toBeNull();
-		// Arrow and badge, tip to the badge's foot at 33 units: 1.25x on a's screen, 0.75x on b's. Only opaque pixels count,
-		// so the antialiased edges fall short by a little, most at the peer's few px.
+		// Arrow and badge, tip to the tail's outlined foot at 33 units, below the badge's: 1.25x on a's screen, 0.75x on b's.
+		// Only opaque pixels count, so the antialiased edges fall short by a little, most at the peer's few px.
 		const own = (await opaque(a, { x: p.x - 4, y: p.y - 4, w: 60, h: 60 }))!;
 		expect(Math.abs(own.h / (33 * 1.25 * s) - 1)).toBeLessThan(0.1);
 		expect(Math.abs(peer.h / (33 * 0.75 * s) - 1)).toBeLessThan(0.1);
@@ -150,12 +151,14 @@ test.describe('two browsers on wrangler dev', () => {
 		await hop(b, '/slu');
 		await expect(a.locator('.presence')).toHaveText('2 here');
 		await expect(b.locator('.presence')).toHaveText('2 here');
-		// Both cameras are centred on the door they came in by; a's cursor stayed at the mouse and is sent on hello.
-		await expect.poll(async () => (await opaque(b))?.x ?? Infinity).toBeLessThan(704);
+		// Both cameras are centred on the door they came in by; a's cursor stayed at the mouse, where the last test left it,
+		// and is sent on hello.
+		const at: Point = { x: 860, y: 440 };
+		await expect.poll(async () => (await opaque(b))?.x ?? Infinity).toBeLessThan(at.x + 4);
 		const peer = (await opaque(b))!;
-		expect(Math.hypot(peer.x - 700, peer.y - 400)).toBeLessThan(4);
+		expect(Math.hypot(peer.x - at.x, peer.y - at.y)).toBeLessThan(4);
 		// The tag came back with the new scene.
-		expect(await opaque(a, { x: 700 + 23 * 1.25 * (await scale(a)), y: 398, w: 40, h: 10 })).not.toBeNull();
+		expect(await opaque(a, { x: at.x + 23 * 1.25 * (await scale(a)), y: at.y - 2, w: 40, h: 10 })).not.toBeNull();
 	});
 
 	test('a killed server leaves each visitor solo, announced once, the scene still usable, until it returns', async () => {

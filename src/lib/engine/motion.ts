@@ -15,9 +15,13 @@ export const CLICK_MS = { pop: 300, wobble: 1200, blink: 250 } as const;
 /**
  * The rider on the Carondelet lake loop (buildout ticket 18): the size of the box its rig is fitted into, its wheels on
  * the ground `drop` below the path's centreline, on the near half; its speed, world px/s; and where it rests under
- * reduced motion, world px along the loop past the start line (art/manifest.json sceneLayouts places it there).
+ * reduced motion, world px along the loop past the start line (art/manifest.json sceneLayouts places it there). So that
+ * it rides rather than slides (Joe, 2026-09-30), it follows the centreline averaged `smooth` world px either way, which
+ * rounds the loop's corners; turns round over `turn` world px of travel at each end of the loop instead of flipping; leans
+ * with the path's slope on screen, up to `lean` radians; and turns its cranks once every `stride` world px, a gear of
+ * about one and a half wheel turns, through the seven `frames` of its pedal sheet (art/manifest.json rider-pedal-*).
  */
-export const RIDER = { w: 120, h: 85, drop: 12, speed: 200, rest: 100 };
+export const RIDER = { w: 120, h: 85, drop: 12, speed: 200, rest: 100, smooth: 40, turn: 60, lean: 0.1, stride: 170, frames: 7 };
 
 export const ease = (u: number) => u * u * (3 - 2 * u);
 
@@ -59,16 +63,62 @@ export function moose(t: number, h: number, since: number, rm: boolean): Record<
 	};
 }
 
+/** Samples each side of the rider in its moving average. */
+const TAPS = 8;
+
+/** The loop at `s`, averaged over RIDER.smooth world px either way with a triangular weight: a point and a unit direction. */
+function smoothed(s: number) {
+	let x = 0, y = 0, dx = 0, dy = 0, total = 0;
+	for (let i = -TAPS; i <= TAPS; i++) {
+		const w = TAPS + 1 - Math.abs(i), a = along(LOOP, s + (i / TAPS) * RIDER.smooth);
+		x += w * a.x;
+		y += w * a.y;
+		dx += w * a.dx;
+		dy += w * a.dy;
+		total += w;
+	}
+	const len = Math.hypot(dx, dy);
+	return { x: x / total, y: y / total, dx: dx / len, dy: dy / len };
+}
+
+/** Where along the loop the rider changes between riding east and riding west: the middle of each turn round. */
+export const TURNS = (() => {
+	const turns: number[] = [], step = 4;
+	for (let s = step, last = smoothed(0).dx; s <= LOOP.length; s += step) {
+		const dx = smoothed(s).dx;
+		if (Math.sign(dx) !== Math.sign(last)) turns.push(s - step + (step * last) / (last - dx));
+		last = dx;
+	}
+	return turns;
+})();
+
+/** How far `a` and `b` are apart round the loop, the shorter way. */
+const apart = (a: number, b: number) => Math.abs(((((b - a) % LOOP.length) + 1.5 * LOOP.length) % LOOP.length) - LOOP.length / 2);
+
 /**
- * The rider at server time `t`: the box its rig is fitted into, the way it faces (1 east, -1 west), and how far it has
- * ridden since the epoch, which turns its wheels. It rides the whole loop, anticlockwise on screen, at a steady speed.
- * Under reduced motion it rests past the start line facing east.
+ * The rider at server time `t`: the box its rig is fitted into; the way it faces (1 east, -1 west) and its horizontal
+ * scale, which passes through 0 as it turns round; its lean, radians about where its wheels meet the ground; its pedal
+ * frame; and how far it has ridden since the epoch, which turns its wheels. It rides the whole loop, anticlockwise on
+ * screen, at a steady speed. Under reduced motion it rests past the start line facing east, its near pedal down.
  */
 export function rider(t: number, rm: boolean) {
-	const travelled = rm ? 0 : (t / 1000) * RIDER.speed, p = along(LOOP, RIDER.rest + travelled);
+	const travelled = rm ? 0 : (t / 1000) * RIDER.speed, s = RIDER.rest + travelled, p = smoothed(s);
 	const at = { x: p.x - RIDER.w / 2, y: p.y + RIDER.drop - RIDER.h, w: RIDER.w, h: RIDER.h };
-	return { at, facing: p.dx < 0 ? -1 : 1, travelled };
+	const facing = p.dx < 0 ? -1 : 1, near = Math.min(...TURNS.map((c) => apart(s, c)));
+	const flip = facing * Math.sin((Math.PI / 2) * Math.min(1, near / (RIDER.turn / 2)));
+	// Heading north or south it faces the camera side on no longer, so its lean fades as it turns.
+	const lean = Math.max(-RIDER.lean, Math.min(RIDER.lean, Math.atan(p.dy / p.dx))) * Math.abs(flip);
+	const frame = Math.floor((travelled / RIDER.stride) * RIDER.frames) % RIDER.frames;
+	return { at, facing, flip, lean, frame, travelled };
 }
+
+/**
+ * How far a wheel of `radius` has turned after rolling `distance` (both world px), radians within one turn. The rider's
+ * distance counts from the epoch, some 10^11 px, so the whole angle is some 10^10 rad, and Chrome hands a canvas's
+ * rotation to its drawing in single-precision degrees, whose steps at that size are 131,072 degrees: the wheels stood
+ * still (Joe, 2026-09-30). Taken within one turn here, in double precision, the angle is exact.
+ */
+export const turned = (distance: number, radius: number) => (distance / radius) % (2 * Math.PI);
 
 /** How long the own cursor takes to glide to its Foundry seat after a poster's click, ms (Joe, 2026-09-29). */
 export const SIT_MS = 700;

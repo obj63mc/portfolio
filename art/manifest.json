@@ -17603,16 +17603,62 @@
       ]
     },
     {
-      "id": "rider-body",
+      "id": "rider-sheet",
       "scene": "overworld",
-      "kind": "part",
-      "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY cyclist and bicycle frame, fork and handlebars; remove both wheels entirely. Everything else pure solid #FF00FF. Never recenter or enlarge.",
-      "size": "1536x1024",
+      "kind": "reference",
+      "prompt": "A game sprite sheet of one cyclist, one pedal revolution. Reference 3 is the approved DRAFT of this exact sprite sheet, nearly finished. Keep its square canvas and 3 by 3 grid of equal square cells with wide empty magenta gutters, its flat vector style and colours, and the rider and the bicycle frame in every cell at the same size and the same place within the cell. Keep cells 1, 2, 3, 4, 5 and 8, in reading order (left to right, then top to bottom), and the single wheel in cell 9 exactly as drawn. Reference 2 is the same cyclist complete, for detail. The cyclist faces right, so we see the rider's LEFT side: the left leg is the near leg, drawn IN FRONT of the frame in the light skin tone with a white sock; the right leg is the far leg, BEHIND the frame in a slightly darker flat tone. In cells 6 and 7 the legs are only rough flat guide shapes (sticks for thighs and shins, blobs for shoes, straight dark lines for the crank arms): redraw those legs properly, as the legs in cells 1 to 5 are drawn, keeping EXACTLY each guide's pose, and keep which leg is which: the LIGHT guide leg is the near left leg, the DARK guide leg is the far right leg. Cell 6 has the two feet where cell 2 has them, but with the legs swapped: here the LIGHT near left leg reaches DOWN AND BACK to the pedal behind and below the chainring, towards the rear wheel, and the DARK far right leg is the one raised up and forward. Cell 7 has the two feet where cell 3 has them, but with the legs swapped: here the LIGHT near left leg reaches straight BACK to the pedal behind the chainring, level with it, its knee bent back under the saddle, and the DARK far right leg reaches forward to the pedal in front of the chainring. Mend the teal frame tubes wherever the guide shapes cross or broke them, so the frame is whole and identical to cells 1 to 5. The crank arms are drawn in the bicycle's own dark grey, one straight arm from the chainring to each pedal, the two arms always in one straight line. In cells 1 to 8 the bicycle has NO wheels, only the two small hub circles at the ends of the frame. Everything else pure solid #FF00FF magenta. No grid lines, no cell borders, no numbers, no labels, no ground, no shadows.",
+      "size": "1254x1254",
       "references": [
-        "art/generated/overworld/rider-master/image.webp"
+        "art/generated/overworld/rider-master/image.webp",
+        "art/references/local/drafts/rider-sheet-guide-t6.png"
       ],
       "dependsOn": [
         "rider-master"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
+      },
+      "lossless": true
+    },
+    {
+      "id": "rider-pedal-0",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 0 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 5 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 418,
+          "y": 418,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
       ],
       "rig": {
         "name": "rider",
@@ -17620,29 +17666,389 @@
         "parent": null,
         "pivot": [
           0.5,
-          0.7
+          0.5
+        ],
+        "anchor": [
+          90.5,
+          333.5
         ]
+      }
+    },
+    {
+      "id": "rider-pedal-1",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 1 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 6 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 836,
+          "y": 418,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "pedal-1",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333.5
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-2",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 2 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 7 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 0,
+          "y": 836,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "pedal-2",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          334
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-3",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 3 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 1 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "pedal-3",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-4",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 4 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 2 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 418,
+          "y": 0,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "pedal-4",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          90.5,
+          333
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-5",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 5 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 3 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 836,
+          "y": 0,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "pedal-5",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333
+        ]
+      }
+    },
+    {
+      "id": "rider-pedal-6",
+      "scene": "overworld",
+      "kind": "part",
+      "prompt": "Frame 6 of the rider's seven-frame pedal cycle, counted from the near pedal straight down: cell 4 of rider-sheet, copied through a measured matte, not redrawn. Its anchor is its rear hub, the rider rig's origin.",
+      "size": "418x418",
+      "deriveFrom": "rider-sheet",
+      "registration": {
+        "asset": "rider-sheet",
+        "rect": {
+          "x": 0,
+          "y": 418,
+          "w": 418,
+          "h": 418
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "dependsOn": [
+        "rider-sheet"
+      ],
+      "rig": {
+        "name": "rider",
+        "part": "pedal-6",
+        "parent": null,
+        "pivot": [
+          0.5,
+          0.5
+        ],
+        "anchor": [
+          91.5,
+          333.5
+        ]
+      }
+    },
+    {
+      "id": "rider-wheel",
+      "scene": "overworld",
+      "kind": "reference",
+      "prompt": "One single bicycle wheel alone, for a game sprite, seen perfectly side on and perfectly round, centred on the square canvas and filling about two thirds of it. Reference 3 is this exact wheel: keep its flat vector style, its thick dark tyre, its round coral hub, its five straight spokes evenly spaced from the hub to the tyre, and its proportions (tyre thickness, spoke thickness, hub size). ONE change: the five spokes are solid near-black (#1B1F1D), darker than the tyre, in place of cream, so they stand out clearly against a pale cream path seen through the wheel. The hub stays coral with no cream ring. Between the spokes, inside the tyre, and all round the wheel: pure solid #FF00FF magenta. No other spokes, no rim stripe, no shadow, no ground, no text.",
+      "size": "1254x1254",
+      "lossless": true,
+      "references": [
+        "art/generated/overworld/rider-master/image.webp",
+        "art/references/local/drafts/rider-wheel-cream.png"
+      ],
+      "dependsOn": [
+        "rider-master"
+      ],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
       }
     },
     {
       "id": "rider-rear-wheel",
       "scene": "overworld",
       "kind": "part",
-      "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY the rear wheel, round dark tire with cream hub and three simple spokes. Everything else pure solid #FF00FF. Never recenter or enlarge.",
-      "size": "1536x1024",
-      "references": [
-        "art/generated/overworld/rider-master/image.webp"
-      ],
+      "prompt": "The rider's rear wheel: rider-wheel, its black spokes turning over the cream path, copied through a measured matte and scaled to 0.167 so it is as wide, against the hub spacing, as the master's wheels. Centred on the rest frame's rear hub.",
+      "size": "209x209",
+      "deriveFrom": "rider-wheel",
+      "registration": {
+        "asset": "rider-wheel",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1254,
+          "h": 1254
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
       "dependsOn": [
-        "rider-master"
+        "rider-wheel"
       ],
       "rig": {
         "name": "rider",
         "part": "rear-wheel",
-        "parent": "body",
+        "parent": null,
         "pivot": [
           0.5,
           0.5
+        ],
+        "anchor": [
+          104.6,
+          102.8
         ]
       }
     },
@@ -17650,21 +18056,50 @@
       "id": "rider-front-wheel",
       "scene": "overworld",
       "kind": "part",
-      "prompt": "Exact same cyclist master as final reference, SAME SIZE AND POSITION in 1536 by 1024 frame. ONLY the front wheel, round dark tire with cream hub and three simple spokes. Everything else pure solid #FF00FF. Never recenter or enlarge.",
-      "size": "1536x1024",
-      "references": [
-        "art/generated/overworld/rider-master/image.webp"
-      ],
+      "prompt": "The rider's front wheel: rider-wheel, its black spokes turning over the cream path, copied through a measured matte and scaled to 0.167 so it is as wide, against the hub spacing, as the master's wheels. Centred on the rest frame's front hub.",
+      "size": "209x209",
+      "deriveFrom": "rider-wheel",
+      "registration": {
+        "asset": "rider-wheel",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1254,
+          "h": 1254
+        },
+        "mask": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
       "dependsOn": [
-        "rider-master"
+        "rider-wheel"
       ],
       "rig": {
         "name": "rider",
         "part": "front-wheel",
-        "parent": "body",
+        "parent": null,
         "pivot": [
           0.5,
           0.5
+        ],
+        "anchor": [
+          -135.4,
+          102.8
         ]
       }
     },
@@ -18118,7 +18553,7 @@
           "name": "rider",
           "rect": {
             "x": 2639,
-            "y": 2470,
+            "y": 2469,
             "w": 120,
             "h": 85
           },

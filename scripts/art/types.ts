@@ -11,9 +11,15 @@ export interface Asset {
   world?: Rect;
   size?: string;
   upscale?: number;
+  /** A reference kept lossless because parts are keyed from it (a sprite sheet): lossy WebP bleeds the key into their edges. */
+  lossless?: boolean;
   opening?: { asset: string; rect: Rect };
   registration?: { asset: string; rect: Rect; mask?: [number, number][] };
-  rig?: { name: string; part: string; parent: string | null; pivot: [number, number] };
+  /**
+   * A rig part: its parent, its pivot as fractions of itself, and, for a part cut from a sprite sheet, `anchor`, the point
+   * of its own source (px) that sits at the rig's origin. Without one its source is the rig master's frame.
+   */
+  rig?: { name: string; part: string; parent: string | null; pivot: [number, number]; anchor?: [number, number] };
 }
 export interface Manifest {
   version: number;
@@ -38,4 +44,5 @@ export interface ProcessedAsset {
 }
 /** An asset's folder under art/generated: each scene keeps its assets together, `<scene>/<id>`. */
 export const assetDir = (asset: { id: string; scene: string }) => `${asset.scene}/${asset.id}`;
-export const RIG_DRAW_ORDER =['body', 'rear-wheel', 'front-wheel', 'head', 'antlers', 'eye'];
+// The rider's wheels turn under its frame; a rig's other parts (the rider's pedal frames) are drawn only by the site.
+export const RIG_DRAW_ORDER =['rear-wheel', 'front-wheel', 'body', 'head', 'antlers', 'eye'];
