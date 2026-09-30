@@ -3,8 +3,12 @@
 // the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Touch (ticket 10):
 // the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the fade, landing at
 // the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
-// the scene canvas (ticket 15) are props.ts. Carried over from the rendering and pointer-lock prototypes' engines
-// (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
+// the scene canvas (ticket 15) are props.ts. Cosmetics (ticket 16): a granting prop's card grants, the saved state
+// (saved.svelte.ts) keeps them, and the room hears what the cursor wears. Carried over from the rendering and pointer-lock
+// prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is
+// never re-rendered here.
+import { COSMETICS } from '../cosmetics.ts';
+import { saved } from '../saved.svelte.ts';
 import { propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { Net } from '../net/net.ts';
@@ -108,6 +112,11 @@ export class Engine {
 	private net: Net;
 	/** Every cursor, from one atlas. */
 	private art: Cursors;
+	/** The cosmetic the own cursor wears and when it went on (performance.now() ms), which pops it in; none on arrival. */
+	private worn = saved.worn;
+	private wornAt = -Infinity;
+	/** The polite live region: the visitor's own events only. */
+	private live: HTMLElement;
 	private props: Props;
 	private raf = 0;
 	private last = 0;
@@ -159,7 +168,8 @@ export class Engine {
 		this.cg = cg;
 		this.cards = cards;
 		this.art = new Cursors(cursors, cg, r.s * r.dpr, r.dpr);
-		// Only the visitor's own events are announced: offline, never another visitor's comings and goings.
+		this.live = status.live;
+		// Only the visitor's own events are announced: offline and cosmetics earned, never another visitor's comings and goings.
 		this.net = new Net({
 			count: (n) => (status.here.textContent = `${n} here`),
 			solo: (on) => (status.live.textContent = on ? 'Offline, exploring solo' : '')
@@ -394,6 +404,19 @@ export class Engine {
 				const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
 				const target = a && placed(byHash(a.hash));
 				if (target) this.panTo(target);
+			},
+			opts
+		);
+		// Opening a granting prop's card is the click that grants its cosmetic (spec: "Cosmetics"): earned and announced the
+		// first time, worn again every time. Ticket 22 plays the chime here, and the fanfare on the grant that turns it gold.
+		this.layer.addEventListener(
+			'click',
+			(e) => {
+				const id = (e.target as Element).closest<HTMLElement>('.prop > button')?.parentElement?.dataset.prop;
+				const cos = id && this.scene && propsOf(this.scene).find((p) => p.id === id)?.cosmetic;
+				if (!cos) return;
+				const gold = saved.gold;
+				if (saved.grant(cos)) this.live.textContent = `You earned the ${COSMETICS[cos].name}${!gold && saved.gold ? ', and your cursor turned gold' : ''}`;
 			},
 			opts
 		);
@@ -665,18 +688,24 @@ export class Engine {
 	}
 
 	/**
-	 * The drawn cursor, from Join on, goes to the room at its world position. Peers near the camera are drawn 100 ms behind;
-	 * the rest are neither interpolated nor drawn.
+	 * The drawn cursor, from Join on, goes to the room at its world position, with what it wears. Peers near the camera are
+	 * drawn 100 ms behind; the rest are neither interpolated nor drawn. A cosmetic newly worn, granted here or in another
+	 * tab, pops in.
 	 */
 	private drawCursors(now: number) {
-		const c = this.cursor, cam = this.cam, s = this.view.s, k = s * this.dpr;
-		if (c) this.net.move(cam.x + c.x / s, cam.y + c.y / s);
+		const c = this.cursor, cam = this.cam, s = this.view.s, k = s * this.dpr, gold = saved.gold;
+		if (saved.worn !== this.worn) (this.worn = saved.worn), (this.wornAt = now);
+		if (c) {
+			this.net.move(cam.x + c.x / s, cam.y + c.y / s);
+			this.net.presence({ cos: this.worn, gold, river: false });
+		}
 		const view = this.seen(), peers: Drawn[] = [];
 		for (const p of this.net.peers.values()) {
 			const at = visible(p.snaps, view) && sample(p.snaps, now);
-			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold });
+			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt });
 		}
-		this.art.draw(c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold: false }, peers, now);
+		const own = c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt };
+		this.art.draw(own, peers, now);
 	}
 
 	/** Shows the "you" tag on the own cursor again: the Arch reset (ticket 20) calls this. */

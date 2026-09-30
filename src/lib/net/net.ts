@@ -2,12 +2,16 @@
 // room, `/ws/<scene id>` on the page's own origin, open from the first frame so that peers move behind the Join card.
 // When it is down the scene carries on single-player with no reconnecting UI; the next `hello` overwrites what this
 // client knew without animation. Rates, sizes and the wire format are protocol.ts's.
-import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, type Peer } from './protocol.ts';
+import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, type ClientMessage, type Peer, type Presence } from './protocol.ts';
 import { record, type Snap } from './peers.ts';
 
-/** A peer as this client knows it: its presence, and the positions received for it (none until its first move). */
+/**
+ * A peer as this client knows it: its presence, the positions received for it (none until its first move), and when its
+ * cosmetic last changed (performance.now() ms), which pops it on; -Infinity for what it wore when this client met it.
+ */
 export interface NetPeer extends Omit<Peer, 'x' | 'y'> {
 	snaps: Snap[];
+	wornAt: number;
 }
 
 /**
@@ -58,6 +62,8 @@ export class Net {
 	private sent = -1;
 	private nextSend = 0;
 	private solo = false;
+	/** What this visitor wears, as the room last heard it or will on the next `hello`. */
+	private mine: Presence = { cos: 0, gold: false, river: false };
 	private hiddenClose: ReturnType<typeof setTimeout> | undefined;
 	private keepalive = setInterval(() => this.link.is === 'live' && this.link.ws.send('ping'), KEEPALIVE);
 	private status: Status;
@@ -90,6 +96,21 @@ export class Net {
 		this.nextSend = Math.max(this.nextSend + 1000 / RATE, t + 500 / RATE);
 		this.sent = key;
 		this.link.ws.send(encodeMove(xi, yi));
+	}
+
+	/**
+	 * This visitor's presence, every frame from Join on: sent when it changes, a hidden tab included (a cosmetic earned in
+	 * another tab), and to every room after its `hello`.
+	 */
+	presence(p: Presence) {
+		const m = this.mine;
+		if (p.cos === m.cos && p.gold === m.gold && p.river === m.river) return;
+		this.mine = { ...p };
+		this.tell();
+	}
+
+	private tell() {
+		if (this.link.is === 'live') this.link.ws.send(JSON.stringify({ t: 'presence', ...this.mine } satisfies ClientMessage));
 	}
 
 	destroy() {
@@ -166,7 +187,7 @@ export class Net {
 		const m = readServer(text);
 		if (!m) return;
 		const t = performance.now();
-		const known = ({ id, cc, cos, gold, river, x, y }: Peer): NetPeer => ({ id, cc, cos, gold, river, snaps: x >= 0 ? [{ t, x, y }] : [] });
+		const known = ({ id, cc, cos, gold, river, x, y }: Peer): NetPeer => ({ id, cc, cos, gold, river, snaps: x >= 0 ? [{ t, x, y }] : [], wornAt: -Infinity });
 		switch (m.t) {
 			case 'hello':
 				this.id = m.id;
@@ -175,6 +196,7 @@ export class Net {
 				this.peers = new Map(m.peers.map((p) => [p.id, known(p)]));
 				this.link = { is: 'live', ws, at: t };
 				this.sent = -1; // the new room hears where this cursor is at once
+				this.tell(); // and what it wears; the room drops it if that's nothing
 				this.setSolo(false);
 				break;
 			case 'in':
@@ -185,7 +207,9 @@ export class Net {
 				break;
 			case 'presence': {
 				const p = this.peers.get(m.id);
-				if (p) Object.assign(p, { cos: m.cos, gold: m.gold, river: m.river });
+				if (!p) return;
+				if (m.cos !== p.cos) p.wornAt = t;
+				Object.assign(p, { cos: m.cos, gold: m.gold, river: m.river });
 				return;
 			}
 		}

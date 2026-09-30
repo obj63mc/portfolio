@@ -4,10 +4,22 @@
 
 **Blocked by:** 13 (presence and the atlas), 15 (the click)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Each of the seven granting props grants its cosmetic on first interaction with the pop, and the room sees it; opening the card counts as the click
-- [ ] Wearing, replacing and re-wearing behave as specified; the worn id crosses the wire and the server rejects ids outside 0 to 7
-- [ ] Earning all seven turns the cursor gold; gold is derived, and a build that knows fewer cosmetics still computes it
-- [ ] Reload restores worn and earned; a second tab earning a cosmetic updates the first tab silently and sends its presence
-- [ ] The rune module's read-merge-write and validation are pure functions tested with plain inputs (seam 2), including the bad-field, newer-`v`, unknown-id and merge cases
+- [x] Each of the seven granting props grants its cosmetic on first interaction with the pop, and the room sees it; opening the card counts as the click
+- [x] Wearing, replacing and re-wearing behave as specified; the worn id crosses the wire and the server rejects ids outside 0 to 7
+- [x] Earning all seven turns the cursor gold; gold is derived, and a build that knows fewer cosmetics still computes it
+- [x] Reload restores worn and earned; a second tab earning a cosmetic updates the first tab silently and sends its presence
+- [x] The rune module's read-merge-write and validation are pure functions tested with plain inputs (seam 2), including the bad-field, newer-`v`, unknown-id and merge cases
+
+## Comments
+
+### Built, 2026-09-29
+
+- **Modules.** `src/lib/saved.ts` holds the schema, the read rules, the write-time merge, the grant, the lap and gold as pure functions (`tests/saved.test.ts`, seam 2). `src/lib/saved.svelte.ts` is the one module touching `localStorage['stl-portfolio']`: `$state.raw`, replaced whole on each change, written at once merged over a fresh read, memory-only when storage throws, and the window `storage` event adopting another tab's write as the last writer's. It exports `saved`: `worn`, `gold`, `laps` (fastest first), `sound`, `analytics`, `grant(id)` (true the first time) and `lap(ms, at)` (true on a new personal best; ticket 18's contract). Setters for `sound` and `analytics` wait for tickets 21 and 23. `src/lib/cosmetics.ts` names each id and its anchor.
+- **Merge, one refinement.** Worn and sound are the writer's, and so is the analytics choice once the writing tab has one; a tab that never saw a choice doesn't erase another tab's (spec Persistence updated).
+- **Grants.** The engine hears the layer's prop clicks: a prop with `cosmetic` in scene data grants it (the Foundry screen too, as its data already said). The first grant is announced in the live region, "You earned the graduation cap", and the one completing the set adds ", and your cursor turned gold". The chime and fanfare are ticket 22's, marked at the listener. A cosmetic from another tab is worn, popped and sent, and says and plays nothing.
+- **Wire.** `Net.presence()` takes this visitor's presence every frame from Join (nothing is sent before Join), sends it when it changes, hidden tab included, and again after every `hello`. Peers record when their cosmetic changed (`NetPeer.wornAt`), which pops it in; one worn on arrival doesn't pop.
+- **Sprites.** No cosmetic art exists, so the seven are flat vector shapes with the arrow's dark outline, rasterized into the atlas beside the bodies at the session's scale and drawn at their anchor (`ANCHORS`), all above or right of the arrow, clear of the flag badge: a navy mortarboard with a gold tassel, white-framed red and cyan glasses, purple ears lined pink on a band, brown antlers, an amber mug with foam, a cigar with a gold band, ember and smoke, a blue helmet with white vents. The atlas cell grew to 52 x 60 units (pad 14) for the antlers' tips. The pop is a 300 ms scale-in about the anchor with a little overshoot.
+- **Checked.** `tests/cosmetics.spec.ts` (vite preview): the diploma's card grants the cap, announced once, drawn above the tip, stored, kept on reload; seeding six and opening the moose turns the body gold; a grant in a second tab is drawn in the first with nothing said. `tests/peers.spec.ts` (wrangler dev): a's grant pops onto a's cursor on b's screen. Seam 1 already rejected `cos` 8 (`tests/rooms.test.ts`).
+- **Hands-on.** The sprites' legibility as a 0.75x peer on a phone at 0.6 scale, and each of the seven props in its scene (only the diploma, the moose and gold were driven by the smoke).

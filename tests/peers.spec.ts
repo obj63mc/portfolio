@@ -178,6 +178,16 @@ test.describe('two browsers on wrangler dev', () => {
 		await expect.poll(async () => (await opaque(b))?.x ?? Infinity).toBeLessThan(504);
 	});
 
+	test('a cosmetic granted in one browser pops onto its cursor in the other’s (ticket 16)', async () => {
+		// a's cursor is at (500, 300) on both screens; b draws it at 0.75x, and its cap sits above the tip.
+		const s = await scale(b), head = { x: 500 - 8 * 0.75 * s, y: 300 - 13 * 0.75 * s, w: 26 * 0.75 * s, h: 12 * 0.75 * s };
+		expect(await opaque(b, head)).toBeNull();
+		// Clicked where it is, without focusing it, whose keyboard focus would pan a's camera and move a's cursor.
+		await a.evaluate(() => document.querySelector<HTMLButtonElement>('[data-prop="diploma"] > button')!.click());
+		await expect.poll(() => opaque(b, head)).not.toBeNull();
+		await a.keyboard.press('Escape');
+	});
+
 	test('a hidden tab stops sending at once and closes after a minute; shown again, it reconnects', async ({ browser }) => {
 		const c = await (await browser.newContext()).newPage();
 		await c.clock.install();
