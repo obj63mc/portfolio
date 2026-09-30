@@ -706,7 +706,8 @@ export class Engine {
 		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 };
 		// The current carries a free cursor left still like steering does, so the camera follows it through the push band,
 		// but it doesn't bring an unlocked mouse that has left the window back in. The keys and the joystick stop it.
-		const drift = c ? this.drift(scene, dt, now, !!(k.x || k.y || j.x || j.y)) : 0, d = { x: k.x + j.x, y: k.y + j.y + drift };
+		const drift = c ? this.drift(scene, dt, now, !!(k.x || k.y || j.x || j.y)) : { x: 0, y: 0 };
+		const d = { x: k.x + j.x + drift.x, y: k.y + j.y + drift.y };
 		if (c && (d.x || d.y) && !this.projector.seated) {
 			this.steerTo({ x: c.x + d.x, y: c.y + d.y }, now);
 			this.armed = true;
@@ -759,18 +760,19 @@ export class Engine {
 	};
 
 	/**
-	 * The river current on the free own cursor this frame (ticket 20), CSS px south: left still in the water for a second
-	 * it floats, until the visitor moves it (`steered` by the keys or joystick this frame, or `stirred` since the last);
-	 * floating to the south end, the visitor is washed out to the Arch (Joe, 2026-09-30).
+	 * The river current on the free own cursor this frame (ticket 20), CSS px: left still in the water for a second it
+	 * floats south, round the piers, boats and docks in its way, until the visitor moves it (`steered` by the keys or
+	 * joystick this frame, or `stirred` since the last); floating to the river's end, the visitor is washed out to the
+	 * Arch (Joe, 2026-09-30).
 	 */
-	private drift(scene: Scene, dt: number, now: number, steered: boolean) {
-		const at = this.own, stirred = this.stirred || steered;
+	private drift(scene: Scene, dt: number, now: number, steered: boolean): Point {
+		const at = this.own, stirred = this.stirred || steered, none = { x: 0, y: 0 };
 		this.stirred = false;
-		if (!('river' in scene) || !at) return 0;
+		if (!('river' in scene) || !at) return none;
 		const f = flow(scene.river, this.current, at, dt, stirred);
-		if (f.is.is === 'end') return this.toArch(scene, now), 0;
+		if (f.is.is === 'end') return this.toArch(scene, now), none;
 		this.current = f.is;
-		return f.dy * this.view.s;
+		return { x: f.d.x * this.view.s, y: f.d.y * this.view.s };
 	}
 
 	/**

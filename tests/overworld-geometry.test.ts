@@ -33,8 +33,9 @@ test('world is 4800 to 6750 wide, 2700 tall, every rect inside it', () => {
 		...OVERWORLD.districts.flatMap((d) => [d.rect, d.sign, ...d.venues.flatMap((v) => [v.rect, ...v.props.map((p) => p.rect)])]),
 		...OVERWORLD.depth.map((r) => r.rect),
 		...OVERWORLD.foreground.map((f) => f.rect),
-		bounds(OVERWORLD.river.deck),
-		OVERWORLD.river.bridge.rect
+		...OVERWORLD.river.decks.map(bounds),
+		...OVERWORLD.river.bridges.map((b) => b.rect),
+		...OVERWORLD.river.obstacles
 	];
 	for (const r of rects) assert.ok(inside(r, world), JSON.stringify(r));
 });
@@ -81,16 +82,34 @@ test('foreground scenery never overlaps a prop rect or the signpost', () => {
 	}
 });
 
-test('river: deck spans the water, bridge cut-out covers the deck, south end inside the mask, arch reset on land', () => {
-	const { mask, bridge, southEndY, arch } = OVERWORLD.river, deck = bounds(OVERWORLD.river.deck);
+test('river: deck spans the water, the bridge cut-outs cover it and the river’s end, south end inside the mask, arch reset on land', () => {
+	const { mask, bridges, southEnd, obstacles, arch } = OVERWORLD.river, [deck, poplarDeck] = OVERWORLD.river.decks.map(bounds);
 	assert.ok(mask.length >= 8);
-	const bbox = bounds(mask);
+	const bbox = bounds(mask), [eads, poplar] = bridges;
+	assert.deepEqual(bridges.map((b) => b.key), ['eads-bridge', 'poplar-bridge']);
 	assert.ok(overlap(deck, bbox), 'deck crosses the water');
-	assert.ok(inside(deck, bridge.rect), 'the bridge cut-out contains the walkable deck');
-	assert.ok(southEndY > deck.y + deck.h && southEndY <= bbox.y + bbox.h, 'south end below the deck, at the mask bottom');
-	assert.ok(!inPolygon(arch, mask), 'reset point is on land');
+	assert.ok(inside(deck, eads.rect), 'the Eads cut-out contains the walkable deck');
+	assert.ok(overlap(poplarDeck, bbox) && overlap(poplarDeck, poplar.rect), 'the Poplar Street deck crosses the water under its cut-out');
 	assert.ok(inPolygon({ x: deck.x + deck.w / 2, y: deck.y + deck.h + 100 }, mask), 'water flows under the deck');
-	assert.ok(arch.y < southEndY);
+	// The river's end runs west to east below the Eads deck, inside the Poplar Street cut-out, so a cursor floating to it is
+	// under that bridge; the Arch reset point is on land, north of it.
+	assert.ok(southEnd.length >= 2 && southEnd.every((p, i) => i === 0 || p.x > southEnd[i - 1].x));
+	for (const p of southEnd) {
+		assert.ok(p.y > deck.y + deck.h && p.y <= bbox.y + bbox.h, 'south end below the deck, inside the mask');
+		assert.ok(inside({ ...p, w: 0, h: 0 }, poplar.rect), 'under the Poplar Street bridge');
+	}
+	for (let i = 1; i < southEnd.length; i++)
+		for (const u of [0.1, 0.5, 0.9]) {
+			const [a, b] = [southEnd[i - 1], southEnd[i]];
+			assert.ok(inPolygon({ x: a.x + (b.x - a.x) * u, y: a.y + (b.y - a.y) * u }, OVERWORLD.river.decks[1]), 'along the Poplar Street deck');
+		}
+	assert.ok(!inPolygon(arch, mask), 'reset point is on land');
+	assert.ok(arch.y < Math.min(...southEnd.map((p) => p.y)));
+	// Everything standing in the water is in it, north of the river's end.
+	for (const o of obstacles) {
+		assert.ok(overlap(o, bbox), JSON.stringify(o));
+		assert.ok(o.y + o.h < Math.min(...southEnd.map((p) => p.y)), JSON.stringify(o));
+	}
 });
 
 test('track: a closed loop round the lake in the park, the start/finish sign at its start line, behind each cut-out it lists', () => {

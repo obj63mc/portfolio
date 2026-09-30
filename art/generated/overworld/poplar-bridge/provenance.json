@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "441150e58632bb214d7ce202538ffc10b820c5aab6e0c52b0268afad7d6264c1",
+  "run": "art/runs/poplar-bridge/2026-09-30T17-56-05.549Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "overworld-master",
+    "referenceSha256": "f663e38a30426057fa205f9329b546cb103573490b3b356c34669d7cba920a5b",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

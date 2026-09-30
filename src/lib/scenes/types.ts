@@ -127,11 +127,20 @@ export interface Overworld extends SceneBase {
 	river: {
 		/** Water polygon. The deck is excluded by the engine (`river.ts`), so walking across never drifts. */
 		mask: Point[];
-		/** The walkable deck, its outline clockwise from its north-west corner: it slopes, so a rect round it would cover open water. */
-		deck: Point[];
-		/** The bridge cut-out: drawn over a cursor in the river and under a cursor crossing the deck. */
-		bridge: Cutout;
-		southEndY: number;
+		/**
+		 * The walkable decks, Eads then Poplar Street, each outlined clockwise from its north-west corner: they slope, so a
+		 * rect round one would cover open water.
+		 */
+		decks: Point[][];
+		/**
+		 * The bridges' cut-outs over the water, Eads and Poplar Street: drawn over a cursor in the river and under a cursor
+		 * crossing a deck.
+		 */
+		bridges: Cutout[];
+		/** What stands in the water, which a floating cursor drifts round (buildout ticket 20): piers, a boat, a dock. */
+		obstacles: Rect[];
+		/** The river's end, west to east: a floating cursor that reaches it is put back at the Arch. */
+		southEnd: Point[];
 		arch: Point;
 		/**
 		 * Where the river and the Arch's bed plays at full (buildout ticket 21), fading out over the strips beside it; each

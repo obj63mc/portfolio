@@ -1,15 +1,17 @@
 // Seam 4 for the river current (buildout ticket 20), over the built site: the drawn cursor left still in the Mississippi
 // for a second floats south until the visitor moves it, reaches a bank or floats to the south end, which fades it back to
 // the Arch with its "you" tag; moving about near the south end never does (Joe, 2026-09-30). The Eads deck is crossed
-// without floating, and the bridge is drawn over a cursor under it but not over one on it. The browser refuses the
-// pointer lock here, so the drawn cursor follows the mouse until the keys steer it.
+// without floating, and a float drifts round its pier; each bridge, Eads and Poplar Street, is drawn over a cursor under
+// it but not over one on it. The browser refuses the pointer lock here, so the drawn cursor follows the mouse until the
+// keys steer it.
 import { test, expect, type Page } from '@playwright/test';
 import { factor } from '../src/lib/engine/depth.ts';
+import { ARROW } from '../src/lib/scenes/river.ts';
 import { lineY } from '../src/lib/scenes/walk.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
-const { arch, deck } = OVERWORLD.river;
+const { arch } = OVERWORLD.river, [deck, poplar] = OVERWORLD.river.decks;
 
 function refuseLock() {
 	Element.prototype.requestPointerLock = function () {
@@ -179,3 +181,63 @@ test('the deck is crossed without floating, however long the cursor stays on it;
 	const under = (await cursorAt(page, on))!;
 	expect(under.white, 'the bridge drawn over it').toBeLessThan(over.white / 4);
 });
+
+/** The own cursor's tip in world px, the top left of the opaque pixels on the cursor canvas (it is the only cursor here). */
+const tip = (page: Page) =>
+	page.evaluate(() => {
+		const c = document.querySelector<HTMLCanvasElement>('canvas.cursors')!, k = c.width / innerWidth;
+		const { data } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
+		for (let i = 3; i < data.length; i += 4) if (data[i] >= 200) return { x: ((i - 3) / 4) % c.width / k, y: Math.floor((i - 3) / 4 / c.width) / k };
+		return null;
+	}).then(async (p) => ((c) => p && { x: c.x + p.x / c.s, y: c.y + p.y / c.s })(await camera(page)));
+
+/** Joined off Belleville and steered north until the camera is at the top of the world, the Eads Bridge in view. */
+async function toEads(page: Page) {
+	await page.goto('/#belleville');
+	await join(page);
+	await page.keyboard.down('ArrowUp');
+	await expect.poll(async () => (await camera(page)).y, { timeout: 10_000 }).toBe(0);
+	await page.keyboard.up('ArrowUp');
+}
+
+test('a float drifts round the Eads Bridge’s middle pier, never through it, and on down the river', async ({ page }) => {
+	await toEads(page);
+	const [pier] = OVERWORLD.river.obstacles;
+	// Left still in the water just north of the deck, over the pier.
+	await point(page, { x: 5380, y: 385 });
+	const seen: Point[] = [];
+	for (let i = 0; i < 80; i++) {
+		const p = await tip(page);
+		if (p) seen.push(p);
+		if (p && p.y > pier.y + pier.h + 20) break;
+		await page.waitForTimeout(60);
+	}
+	const past = seen.at(-1)!;
+	expect(past.y, 'floated past the pier').toBeGreaterThan(pier.y + pier.h);
+	for (const p of seen) expect(p.x + ARROW.w <= pier.x + 1 || p.x >= pier.x + pier.w - 1 || p.y + ARROW.h <= pier.y + 1 || p.y >= pier.y + pier.h - 1, JSON.stringify(p)).toBe(true);
+});
+
+test('the Poplar Street bridge is crossed on top and passed in the river underneath', async ({ page }) => {
+	await page.goto('/#belleville');
+	await join(page);
+	// Waiting on the east bank for the "you" tag, a label nothing covers, to fade, so only the arrow's white is counted.
+	await point(page, { x: 5900, y: 1450 });
+	await page.waitForTimeout(2600);
+	const c = await camera(page), screen = (p: Point) => ({ x: (p.x - c.x) * c.s, y: (p.y - c.y) * c.s });
+	const top = (x: number) => lineY([poplar[0], poplar[1]], x), mid = (x: number) => top(x) + (poplar[3].y - poplar[0].y) / 2;
+	// Walked across the deck from the west bank, over the river's end: the cursor stays on it, drawn over the bridge.
+	for (let x = 5000; x <= 5500; x += 100) await point(page, { x, y: mid(x) });
+	const at = { x: 5500, y: top(5500) + 15 }, on = screen(at);
+	await point(page, at);
+	await page.waitForTimeout(1500);
+	const over = (await cursorAt(page, on))!;
+	expect(Math.hypot(over.x - on.x, over.y - on.y), 'still where it was put').toBeLessThan(1.5);
+	expect(over.white, 'drawn over the bridge').toBeGreaterThan(20);
+	// Into the water north of the deck and back to the same place: in the river, under the bridge.
+	await point(page, { x: 5500, y: top(5500) - 80 });
+	await page.waitForTimeout(100);
+	await point(page, at);
+	await page.waitForTimeout(50);
+	expect((await cursorAt(page, on))!.white, 'the bridge drawn over it').toBeLessThan(over.white / 4);
+});
+

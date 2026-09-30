@@ -134,9 +134,11 @@ function draw(time) {
   if(enabled('river')&&scene.river){
     const r=scene.river;ctx.fillStyle='#55d6e54d';ctx.beginPath();r.mask.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();
     // The deck is excluded from the overlay mask and outlined as a distinct walkable polygon.
-    const deck=()=>{ctx.beginPath();r.deck.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();};
-    if(plate) {ctx.save();deck();ctx.clip();drawImage(ctx,`generated/${plate.file}`,{x:0,y:0,w:scene.w,h:scene.h});ctx.restore();}
-    deck();ctx.strokeStyle='#fff';ctx.lineWidth=2*k();ctx.stroke();ctx.fillStyle='#fff';ctx.font=`${13*k()}px system-ui`;ctx.fillText('bridge deck',r.deck[0].x+5*k(),r.deck[0].y-5*k());if(r.bridge)rect(r.bridge.rect,'#f6a6d3',r.bridge.key);line(r.southEndY,'#ff7969');ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(r.arch.x,r.arch.y,18,0,Math.PI*2);ctx.fill();
+    for(const d of r.decks){
+      const deck=()=>{ctx.beginPath();d.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();};
+      if(plate) {ctx.save();deck();ctx.clip();drawImage(ctx,`generated/${plate.file}`,{x:0,y:0,w:scene.w,h:scene.h});ctx.restore();}
+      deck();ctx.strokeStyle='#fff';ctx.lineWidth=2*k();ctx.stroke();ctx.fillStyle='#fff';ctx.font=`${13*k()}px system-ui`;ctx.fillText('bridge deck',d[0].x+5*k(),d[0].y-5*k());
+    }for(const b of r.bridges??[])rect(b.rect,'#f6a6d3',b.key);for(const o of r.obstacles??[])rect(o,'#ffd34f','in the water');ctx.strokeStyle='#ff7969';ctx.lineWidth=3*k();ctx.beginPath();r.southEnd.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(r.arch.x,r.arch.y,18,0,Math.PI*2);ctx.fill();
   }
   const f=frame();
   pc.fillStyle='#e9dfbf';pc.fillRect(0,0,390,844);pc.drawImage(world,f.x,f.y,f.w,f.h,0,0,390,844);

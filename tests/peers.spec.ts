@@ -227,7 +227,7 @@ test.describe('two browsers on wrangler dev', () => {
 
 	test('a peer in the river is drawn under the bridge and one on the deck over it, for a late joiner too (ticket 20)', async ({ browser }) => {
 		test.setTimeout(60_000);
-		const { deck } = OVERWORLD.river, top = (x: number) => lineY([deck[0], deck[1]], x);
+		const [deck] = OVERWORLD.river.decks, top = (x: number) => lineY([deck[0], deck[1]], x);
 		/** Joined off Belleville and steered north until the camera is at the top of the world, the Eads deck in view. */
 		const toBridge = async () => {
 			const page = await (await browser.newContext()).newPage();

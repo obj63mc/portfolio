@@ -18530,6 +18530,85 @@
         ]
       },
       "deriveFrom": "overworld-master"
+    },
+    {
+      "id": "poplar-bridge",
+      "scene": "overworld",
+      "kind": "foreground",
+      "size": "1058x564",
+      "references": [],
+      "dependsOn": [
+        "overworld-master"
+      ],
+      "prompt": "Extract the original Poplar Street Bridge pixels over the river from the approved overworld master using the measured crop matte: a hand-measured polygon along the sloping deck from bank to bank, with its two piers in the water down to their bases, so the deck and piers draw over a cursor in the river (buildout ticket 20). The deck over the land stays in the plate. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
+      "registration": {
+        "asset": "overworld-master",
+        "rect": {
+          "x": 4950,
+          "y": 1660,
+          "w": 900,
+          "h": 480
+        },
+        "mask": [
+          [
+            0.0,
+            0.0167
+          ],
+          [
+            1.0,
+            0.3729
+          ],
+          [
+            1.0,
+            0.7312
+          ],
+          [
+            0.7833,
+            0.6479
+          ],
+          [
+            0.7833,
+            0.8875
+          ],
+          [
+            0.7189,
+            0.9854
+          ],
+          [
+            0.65,
+            0.9854
+          ],
+          [
+            0.65,
+            0.5958
+          ],
+          [
+            0.1667,
+            0.4125
+          ],
+          [
+            0.1667,
+            0.6917
+          ],
+          [
+            0.1056,
+            0.7104
+          ],
+          [
+            0.0411,
+            0.7104
+          ],
+          [
+            0.0411,
+            0.375
+          ],
+          [
+            0.0,
+            0.3583
+          ]
+        ]
+      },
+      "deriveFrom": "overworld-master"
     }
   ],
   "sceneLayouts": {

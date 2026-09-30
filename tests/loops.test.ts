@@ -42,7 +42,7 @@ test('every scene has its beds: the five districts and the river on the overworl
 test("the river's footprint holds the Arch and the water off the bridge, clear of Midtown and Belleville", () => {
 	const r = OVERWORLD.river.footprint, arch = OVERWORLD.river.arch;
 	assert.ok(arch.x >= r.x && arch.x <= r.x + r.w && arch.y >= r.y && arch.y <= r.y + r.h, 'the Arch');
-	const xs = OVERWORLD.river.deck.map((p) => p.x);
+	const xs = OVERWORLD.river.decks[0].map((p) => p.x);
 	assert.ok(Math.min(...xs) < r.x + r.w && Math.max(...xs) > r.x, 'the bridge crosses it');
 	for (const id of ['midtown', 'belleville']) {
 		const d = OVERWORLD.districts.find((d) => d.id === id)!.rect;

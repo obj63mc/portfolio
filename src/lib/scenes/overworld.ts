@@ -235,10 +235,27 @@ export const OVERWORLD: Overworld = {
 		// The Eads deck, road and parapet face, from the bridge cut-out's registration matte (its top edge and the girders'
 		// underside) between x 4880, on the west abutment, and 6430, on the east bank's grass, so stepping off either end
 		// lands ashore. Off its north or south edge is open water (buildout ticket 20).
-		deck: [{ x: 4880, y: 361 }, { x: 6430, y: 567 }, { x: 6430, y: 642 }, { x: 4880, y: 436 }],
-		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
-		// Passing under the Poplar Street bridge is the river's end.
-		southEndY: 1900,
+		// The Poplar Street deck, road and parapet face, read on a gridded crop of the master between x 4950 and 5850, both on
+		// the banks' grass, so a cursor crosses the river's end on it without being washed out.
+		decks: [
+			[{ x: 4880, y: 361 }, { x: 6430, y: 567 }, { x: 6430, y: 642 }, { x: 4880, y: 436 }],
+			[{ x: 4950, y: 1672 }, { x: 5850, y: 1843 }, { x: 5850, y: 2007 }, { x: 4950, y: 1828 }]
+		],
+		bridges: [
+			{ key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
+			{ key: 'poplar-bridge', rect: { x: 4950, y: 1668, w: 900, h: 466 } }
+		],
+		// Read on gridded crops of the master (Joe, 2026-09-30): the Eads Bridge's middle pier from the deck's underside to
+		// its base, the riverboat at the Arch levee with its gangway to the bank, and the Belleville barge dock's crane and
+		// stilted pier. The Poplar Street piers stand south of the river's end, so nothing floats to them.
+		obstacles: [
+			{ x: 5310, y: 455, w: 160, h: 195 },
+			{ x: 4960, y: 690, w: 225, h: 128 },
+			{ x: 5610, y: 1025, w: 195, h: 160 }
+		],
+		// Along the middle of the Poplar Street deck, which slopes down to the east: a cursor floating under the bridge is
+		// hidden by its cut-out when it reaches the river's end.
+		southEnd: [{ x: 4950, y: 1750 }, { x: 5850, y: 1925 }],
 		// The lawn between the Arch's legs, south of the museum entrance.
 		arch: { x: 4780, y: 1330 },
 		// The Arch grounds and the water, top to bottom, between Midtown's east edge and Belleville's west, each 100 px or more

@@ -11,5 +11,6 @@ for id in ['mc-sign', 'server-rack', 'bike', 'ride-sign', 'welcome']:
     s, n = re.subn(rf"(id: '{id}',(?:.|\n)*?rect: )\{{[^}}]*\}}", lambda m: m.group(1) + rect(id), s, count=1); assert n == 1, id
 for key in ['maplewood-tree', 'park-tree']:
     s, n = re.subn(rf"(key: '{key}', rect: )\{{[^}}]*\}}", lambda m: m.group(1) + rect(key), s); assert n == 1, key
-s, n = re.subn(r"(bridge: \{ key: 'eads-bridge', rect: )\{[^}]*\}", lambda m: m.group(1) + rect('eads-bridge'), s); assert n == 1
+for key in ['eads-bridge', 'poplar-bridge']:
+    s, n = re.subn(rf"(\{{ key: '{key}', rect: )\{{[^}}]*\}}", lambda m: m.group(1) + rect(key), s); assert n == 1, key
 open(p, 'w').write(s); print('synced', p)
