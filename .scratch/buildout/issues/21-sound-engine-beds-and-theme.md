@@ -74,3 +74,5 @@ Starred for later, alternatives for other places' music (no place assigned yet; 
 - andriih, "Bossa Nova Morning Music", https://pixabay.com/music/bossa-nova-bossa-nova-morning-music-599227/
 - Denis-Pavlov-Music, "Samba Bossa Nova Brazilian Jazz Podcast Music", https://pixabay.com/music/bossa-nova-samba-bossa-nova-brazilian-jazz-podcast-music-520231/
 - alex-morgan, "Samba Jazz Cocktail Bar", https://pixabay.com/music/modern-jazz-samba-jazz-cocktail-bar-567546/ (marked AI-generated on Pixabay)
+
+Joe downloaded the Pixabay tracks, 2026-09-30: `audio/sources/theme-pixabay-203047.mp3`, `music-brennans-pixabay-592657.mp3` and `music-side-project-pixabay-502969.mp3` (stereo MP3, 256 kbps, as downloaded), and the six starred alternatives under `audio/sources/alternatives/` with Pixabay's own file names. The repository is private, so the originals sit beside the Freesound sources; only this ticket's edited loops are ever served, as Pixabay's licence requires. The beds' Freesound sources are still the picker's 30 s previews, so this ticket's encode fetches each pick's full high-quality preview first (or Joe downloads the originals with a Freesound login).
