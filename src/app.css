@@ -135,11 +135,11 @@ html.engine {
 	}
 
 	/*
-	 * The control under the cursor: hovered by the free mouse, or marked by the engine under the lock or on touch, where
-	 * hover is stale or sticks to the last tap.
+	 * The control under the cursor, in a card, the toggles or the consent bar: hovered by the free mouse, or marked by the
+	 * engine under the lock or on touch, where hover is stale or sticks to the last tap.
 	 */
-	&:not([data-input='locked'], [data-input='touch']) :is(dialog, .controls) :is(a, button):hover,
-	& :is(dialog, .controls) .hot {
+	&:not([data-input='locked'], [data-input='touch']) :is(dialog, .controls, .consent) :is(a, button):hover,
+	& :is(dialog, .controls, .consent) .hot {
 		outline: 2px solid #1f5fd1;
 		outline-offset: 2px;
 	}

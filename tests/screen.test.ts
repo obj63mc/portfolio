@@ -2,7 +2,7 @@
 // length, the homography that maps the reel onto the screen's painted quad, and the poster's clicker taking a seat.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { playing, reel, reelMs, onQuad } from '../src/lib/net/screen.ts';
+import { accepted, playing, reel, reelMs, onQuad, type Screen } from '../src/lib/net/screen.ts';
 import { SCREEN_SURFACE, SEATS, seatOf } from '../src/lib/scenes/foundry.ts';
 import { SIT_MS, sitting } from '../src/lib/engine/motion.ts';
 
@@ -40,6 +40,17 @@ for (const [title, video, length] of [
 test('a clock a little behind the server starts the reel from its beginning', () => {
 	assert.deepEqual(reel({ title: 'lorax', at }, at - 40), { title: 'lorax', level: 0, show: null, video: 0 });
 	assert.equal(playing({ title: 'lorax', at }, at - 40), true);
+});
+
+// Ticket 23: `screen_play` counts only the visitor's own click the room took. The room says nothing of who asked (no
+// attribution), so it is a new reel of the title asked for, arriving after the ask.
+test('accepted: a new reel of the title asked for; not the reel already playing, another title, or no reel', () => {
+	const busy: Screen = { title: 'lorax', at };
+	assert.ok(accepted(null, { title: 'lorax', at: at + 50 }, 'lorax'), 'idle, then the echo');
+	assert.ok(accepted(busy, { title: 'lorax', at: at + 90_000 }, 'lorax'), 'a later reel of the same title');
+	assert.ok(!accepted(busy, busy, 'lorax'), 'dropped while it played: the same reel');
+	assert.ok(!accepted(null, { title: 'fast-five', at: at + 50 }, 'lorax'), 'another visitor was first');
+	assert.ok(!accepted(null, null, 'lorax'), 'nothing yet');
 });
 
 test('the reel maps onto the screen quad: corners to corners, and the middle where the diagonals cross', () => {

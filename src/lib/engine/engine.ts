@@ -8,6 +8,7 @@
 // projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. Carried over from
 // the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
 // rules; the layer's markup is never re-rendered here.
+import { earned, linkUsed } from '../analytics.svelte.ts';
 import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { propsOf } from '../scenes/index.ts';
@@ -50,11 +51,11 @@ type Gesture =
 const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 
 /**
- * The on-screen toggles: they hold the camera still when the mouse's cursor is near them. On touch they and the joystick
- * are the finger's, and the drawn cursor over them neither marks, clicks nor holds anything (Joe, 2026-09-29). Cards stop
- * the camera anyway.
+ * The on-screen toggles, and the consent bar on the page (ticket 23): they hold the camera still when the mouse's cursor
+ * is near them. On touch they and the joystick are the finger's, and the drawn cursor over them neither marks, clicks nor
+ * holds anything (Joe, 2026-09-29). Cards stop the camera anyway.
  */
-const CONTROLS = '.controls';
+const CONTROLS = '.controls, .consent:popover-open';
 /** The drawn cursor's height, world px: a touch drag carries it this far inside the viewport's edge, so it stays in view. */
 const CARRY = 40;
 /** A touch becomes a drag once it has gone this many CSS px, so a tap on a prop isn't eaten. */
@@ -353,7 +354,7 @@ export class Engine {
 			(e) => {
 				const a = e.button === 1 && this.under();
 				// No opener, as a native middle click gives none: a card's external link can't reach back into this tab.
-				if (a instanceof HTMLAnchorElement) window.open(a.href, '_blank', 'noopener');
+				if (a instanceof HTMLAnchorElement) linkUsed(a), window.open(a.href, '_blank', 'noopener');
 			},
 			opts
 		);
@@ -365,7 +366,7 @@ export class Engine {
 			(e) => {
 				if (this.gesture.is === 'tap' || this.gesture.is === 'drag') return; // one finger drags
 				this.gesture = { is: 'none' }; // any touch stops a fling
-				if (this.input.is !== 'touch' || e.pointerType !== 'touch' || (e.target as Element).closest('dialog, .controls, .joystick')) return;
+				if (this.input.is !== 'touch' || e.pointerType !== 'touch' || (e.target as Element).closest('dialog, .controls, .consent, .joystick')) return;
 				this.gesture = { is: 'tap', id: e.pointerId, from: { x: e.clientX, y: e.clientY } };
 			},
 			opts
@@ -456,7 +457,8 @@ export class Engine {
 		// "Persistence"). The saved state heard the event first: it listened from its module's load.
 		addEventListener('storage', () => this.tellRoom(), opts);
 		// Opening a granting prop's card is the click that grants its cosmetic (spec: "Cosmetics"): earned and announced the
-		// first time, worn again every time. Ticket 22 plays the chime here, and the fanfare on the grant that turns it gold.
+		// first time, worn again every time, and counted for analytics (ticket 23). Ticket 22 plays the chime here, and the
+		// fanfare on the grant that turns it gold.
 		this.layer.addEventListener(
 			'click',
 			(e) => {
@@ -464,7 +466,9 @@ export class Engine {
 				const cos = id && this.scene && propsOf(this.scene).find((p) => p.id === id)?.cosmetic;
 				if (!cos) return;
 				const gold = saved.gold;
-				if (saved.grant(cos)) this.live.textContent = `You earned the ${COSMETICS[cos].name}${!gold && saved.gold ? ', and your cursor turned gold' : ''}`;
+				if (!saved.grant(cos)) return;
+				this.live.textContent = `You earned the ${COSMETICS[cos].name}${!gold && saved.gold ? ', and your cursor turned gold' : ''}`;
+				earned(cos, !gold && saved.gold);
 			},
 			opts
 		);

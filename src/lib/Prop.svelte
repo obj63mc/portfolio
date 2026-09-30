@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { cardOpen } from './analytics.svelte.ts';
 	import { at } from './scenes/index.ts';
 	import { VIDEOS } from './videos.ts';
 	import type { Prop } from './scenes/types';
@@ -16,6 +17,7 @@
 		if (!dialog) return;
 		dialog.showModal();
 		dialog.querySelector('video')?.play().catch(() => {});
+		cardOpen(prop.id);
 	}
 </script>
 

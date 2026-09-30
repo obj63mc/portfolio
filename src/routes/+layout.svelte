@@ -7,6 +7,8 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
+	import { GA_ID, bar, pageView } from '$lib/analytics.svelte';
+	import Consent from '$lib/Consent.svelte';
 	import type { Engine } from '$lib/engine/engine';
 	import LapBoard from '$lib/LapBoard.svelte';
 	import { SUB_SCENES } from '$lib/scenes';
@@ -26,6 +28,8 @@
 	// chunk failed to load) the page stays the plain document.
 	afterNavigate(({ to }) => {
 		if (!to) return;
+		// A scene entered, the first load included, counts for analytics (ticket 23); a fragment on the same scene doesn't.
+		pageView(to.url);
 		engine ??= import('$lib/engine/engine')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
 			.catch((err) => void console.error(err));
@@ -66,8 +70,15 @@
 <LapBoard />
 <div class="controls">
 	<button type="button" aria-pressed="true">Sound</button>
-	<button type="button">Analytics settings</button>
+	<!-- It reopens the consent bar (ticket 23). A build with no GA, every one but production's, has no bar for it to open,
+		and keeps it disabled in its place. -->
+	<button type="button" class="analytics" disabled={!GA_ID} aria-expanded={GA_ID ? bar.open : undefined} onclick={() => bar.toggle()}>
+		Analytics settings
+	</button>
 </div>
+{#if GA_ID}
+	<Consent />
+{/if}
 <!-- The touch joystick (buildout ticket 10), shown after Join on a device with no mouse or trackpad. Hidden from assistive
 	tech: a keyboard steers with the keys. -->
 <div class="joystick" aria-hidden="true" bind:this={joystick}><div></div></div>
@@ -78,6 +89,10 @@
 -->
 <dialog class="gate join" aria-label="Join" bind:this={join}>
 	<button type="button">Join</button>
+	<!-- The consent bar for a European visitor, over the card, operable before Join (ticket 23). -->
+	{#if GA_ID}
+		<Consent gate />
+	{/if}
 </dialog>
 <dialog class="gate paused" aria-labelledby="paused-title" bind:this={paused}>
 	<p id="paused-title">Paused, click to resume</p>

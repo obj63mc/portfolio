@@ -27,8 +27,8 @@ function save(next: Saved) {
 }
 
 // Another tab wrote: its cosmetics, laps and choices apply here as the last writer's. The engine sees a new worn cosmetic,
-// pops it on and tells this tab's room, and plays nothing. Ticket 23: a consent denial arriving here is where this tab
-// sends `consent update denied`.
+// pops it on and tells this tab's room, and plays nothing. Analytics (analytics.svelte.ts) applies a consent choice made
+// there, a denial sending `consent update denied` from this tab.
 if (typeof window !== 'undefined') addEventListener('storage', (e) => { if (e.key === KEY) data = merge(data, read(e.newValue)); });
 
 export const saved = {
@@ -47,8 +47,12 @@ export const saved = {
 	get sound() {
 		return data.sound;
 	},
-	get analytics() {
+	get analytics(): Saved['analytics'] {
 		return data.analytics;
+	},
+	/** The consent bar's Allow or No thanks. */
+	set analytics(choice: 'granted' | 'denied') {
+		if (choice !== data.analytics) save({ ...data, analytics: choice });
 	},
 	/** A granting prop's click: its cosmetic is worn; true the first time, when it is earned. */
 	grant(id: CosmeticId) {

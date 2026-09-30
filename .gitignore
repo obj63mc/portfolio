@@ -149,6 +149,7 @@ build/
 # wrangler dev state
 .wrangler/
 
-# Playwright smoke output
+# Playwright smoke output, and the consent smoke's build with a test GA ID (playwright.config.ts)
 test-results/
+.smoke/
 playwright-report/
