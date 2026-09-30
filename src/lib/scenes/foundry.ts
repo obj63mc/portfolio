@@ -12,14 +12,18 @@ export type ScreenTitle = keyof typeof SCREEN_TITLES;
 export const screenGist = (playing?: ScreenTitle) =>
 	playing ? `now playing ${SCREEN_TITLES[playing]}` : 'idle, pick a poster to start a reel';
 
-/** The demo of the game each title's reel shows on the screen, a file in art/sources/videos (Joe, 2026-09-29). */
-export const SCREEN_VIDEOS: Record<ScreenTitle, string> = {
-	'fast-five': 'fastfive-demo-full-1024x768.mp4',
-	'snow-white': 'swath-demo-tour-1280x800.mp4',
-	lorax: 'lorax-demo-tour-1280x800.mp4'
+/**
+ * The demo of the game each title's reel shows on the screen, a file in art/sources/videos (Joe, 2026-09-29), and its
+ * length in ms (ffprobe), which sets the reel's (net/screen.ts).
+ */
+export const SCREEN_VIDEOS: Record<ScreenTitle, { file: string; ms: number }> = {
+	'fast-five': { file: 'fastfive-demo-full-1024x768.mp4', ms: 58_167 },
+	'snow-white': { file: 'swath-demo-tour-1280x800.mp4', ms: 35_070 },
+	lorax: { file: 'lorax-demo-tour-1280x800.mp4', ms: 36_400 }
 };
 
-const caseStudy: Record<ScreenTitle, string> = {
+/** The line of case-study text the screen shows after each title's video, and its card and the screen's card say. */
+export const CASE_STUDY: Record<ScreenTitle, string> = {
 	'fast-five': 'A find-and-seek and safe-cracking game promoting the home video release.',
 	'snow-white': 'Multiple mini games built from scenes in the film.',
 	lorax: 'A partnership with Words With Friends.'
@@ -37,17 +41,24 @@ const posters: Record<ScreenTitle, Rect> = {
 
 /**
  * The screen's painted surface, clockwise from its top left. The timeline draws into this quad: the camera sees the right
- * wall at an angle, so it is not a rectangle, and its bottom edge falls more steeply than its top.
+ * wall at an angle, so it is not a rectangle, and its bottom edge falls more steeply than its top. The top edge was
+ * re-measured for the reel (ticket 17): the ivory starts 3 px above where it was first traced.
  */
 export const SCREEN_SURFACE: Point[] = [
-	{ x: 1661, y: 90 },
-	{ x: 2666, y: 303 },
+	{ x: 1661, y: 87 },
+	{ x: 2666, y: 300 },
 	{ x: 2665, y: 913 },
 	{ x: 1661, y: 571 }
 ];
 
 /** Where the beam starts: the end of the projector's lens barrel, on the ledge at the lower left, aimed up-right at the screen. */
 export const PROJECTOR_LENS: Point = { x: 381, y: 1047 };
+
+/**
+ * What the camera frames while a reel plays (Joe, 2026-09-29, ticket 17): the projector, whose body on the ledge spans
+ * x 100 to 390 and y 1010 to 1250 on the master, and the whole screen, with 40 px to spare.
+ */
+export const REEL_FRAME: Rect = { x: 60, y: 50, w: 2646, h: 1240 };
 
 /** The picture light over each poster. Painted switched off; hovering a poster lights it. */
 export const POSTER_LAMPS: Record<ScreenTitle, Point> = {
@@ -70,7 +81,7 @@ export const FOUNDRY: SubScene = {
 			id: `poster-${id}`,
 			name: `${SCREEN_TITLES[id]} poster`,
 			gist: 'Universal Pictures Home Entertainment',
-			body: [caseStudy[id]],
+			body: [CASE_STUDY[id]],
 			rect: posters[id],
 			cosmetic: 2 as const
 		})),
@@ -80,7 +91,7 @@ export const FOUNDRY: SubScene = {
 			gist: screenGist(),
 			body: [
 				'The screen plays one reel at a time for everyone in the room. Click a poster to start one.',
-				...Object.entries(SCREEN_TITLES).map(([id, title]) => `${title}: ${caseStudy[id as ScreenTitle]}`)
+				...Object.entries(SCREEN_TITLES).map(([id, title]) => `${title}: ${CASE_STUDY[id as ScreenTitle]}`)
 			],
 			rect: { x: 1656, y: 85, w: 1016, h: 833 },
 			// Clipped where its lower-left corner reaches behind the front row's seat backs (spec: an irregular prop gets a clip-path).

@@ -2,7 +2,7 @@
 // fake clock the way the engine steps it each frame.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { centreOn, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Frame } from '../src/lib/engine/camera.ts';
+import { centreOn, coast, fling, framing, glide, pan, rendering, steer, step, stick, tileRange, zoom, type Frame } from '../src/lib/engine/camera.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
 const desktop = { w: 1000, h: 800, s: 1 };
@@ -185,4 +185,25 @@ test('the joystick: nothing in the 15 percent dead zone, then up to 600 world px
 	const diagonal = second(-30, 30);
 	assert.ok(diagonal.x < 0 && diagonal.x === -diagonal.y, 'down-left, along the pull');
 	assert.deepEqual(second(60, 0, 0.6), { x: 360, y: 0 }, 'at the phone scale, 360 CSS px a second');
+});
+
+test('framing a rect (the Foundry reel): the largest scale that holds it whole, never past the session scale, centred', () => {
+	const r = { x: 400, y: 200, w: 2000, h: 1000 }, theatre = { w: 2845, h: 1600 };
+	assert.deepEqual(framing(r, desktop, 1), { s: 0.5, at: { x: 1400, y: 700 } }, 'the width binds');
+	assert.deepEqual(framing(r, { w: 390, h: 844, s: 0.6 }, 0.6), { s: 0.195, at: { x: 1400, y: 700 } }, 'a phone held upright');
+	assert.deepEqual(framing(r, { w: 1000, h: 300, s: 1 }, 1), { s: 0.3, at: { x: 1400, y: 700 } }, 'a short window: the height binds');
+	assert.equal(framing({ x: 0, y: 0, w: 100, h: 100 }, desktop, 1).s, 1, 'a small rect is not zoomed into');
+	for (const view of [desktop, { w: 390, h: 844, s: 0.6 }, { w: 844, h: 390, s: 0.6 }]) {
+		const shot = framing(r, view, view.s), v = { ...view, s: shot.s }, cam = centreOn(shot.at, v, theatre);
+		assert.ok(cam.x <= r.x && cam.y <= r.y && cam.x + v.w / v.s >= r.x + r.w && cam.y + v.h / v.s >= r.y + r.h, 'all of it in view');
+	}
+});
+
+test('a zoom eases scale and centre together toward the shot and lands on it exactly', () => {
+	const from = { s: 1, at: { x: 1000, y: 800 } }, to = { s: 0.5, at: { x: 1400, y: 700 } };
+	const next = zoom(from, to, 0.1);
+	assert.ok(next.s < 1 && next.s > 0.5 && next.at.x > 1000 && next.at.x < 1400, 'part of the way after 0.1 s');
+	let shot = from;
+	for (let i = 0; i < 60 && shot !== to; i++) shot = zoom(shot, to, 1 / 60);
+	assert.equal(shot, to, 'there within a second');
 });

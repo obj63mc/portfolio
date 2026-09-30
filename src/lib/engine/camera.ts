@@ -80,6 +80,32 @@ export function glide(cam: Point, goal: Point, dt: number): Point {
 	return Math.hypot(goal.x - x, goal.y - y) < 0.5 ? goal : { x, y };
 }
 
+/** A camera's scale and the world point at its centre: the zoom's ends (ticket 17). */
+export interface Shot {
+	s: number;
+	at: Point;
+}
+
+/**
+ * The shot that holds world rect `r` whole, centred on it, at the largest scale up to `most` (the session's render scale)
+ * that fits the viewport: the Foundry's reel frames the projector and the whole screen this way on every device (Joe,
+ * 2026-09-29, ticket 17, amending ADR 0001's one zoom level).
+ */
+export const framing = (r: Rect, v: View, most: number): Shot => ({
+	s: Math.min(most, v.w / r.w, v.h / r.h),
+	at: { x: r.x + r.w / 2, y: r.y + r.h / 2 }
+});
+
+/**
+ * One frame of a zoom toward `to`: scale and centre ease together (time constant 0.15 s, about 600 ms to all but
+ * arrive), returning `to` itself once within a world px and a five-hundredth of scale, so the engine knows it is over.
+ */
+export function zoom(from: Shot, to: Shot, dt: number): Shot {
+	const k = 1 - Math.exp(-dt / 0.15), s = from.s + (to.s - from.s) * k;
+	const at = { x: from.at.x + (to.at.x - from.at.x) * k, y: from.at.y + (to.at.y - from.at.y) * k };
+	return Math.abs(to.s - s) < 0.002 && Math.hypot(to.at.x - at.x, to.at.y - at.y) < 1 ? to : { s, at };
+}
+
 /**
  * A touch drag of `d` CSS px (ticket 10): the camera moves against it (drag left, the view moves right), clamped. The drawn
  * cursor keeps its world place unless the drag would take it out of view: then it is carried along with its tip on the

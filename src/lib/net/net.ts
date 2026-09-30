@@ -2,8 +2,10 @@
 // room, `/ws/<scene id>` on the page's own origin, open from the first frame so that peers move behind the Join card.
 // When it is down the scene carries on single-player with no reconnecting UI; the next `hello` overwrites what this
 // client knew without animation. Rates, sizes and the wire format are protocol.ts's.
+import type { ScreenTitle } from '../scenes/foundry.ts';
 import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, type ClientMessage, type Peer, type Presence } from './protocol.ts';
 import { record, type Snap } from './peers.ts';
+import { playing, type Screen } from './screen.ts';
 
 /**
  * A peer as this client knows it: its presence, the positions received for it (none until its first move), and when its
@@ -51,6 +53,8 @@ export class Net {
 	id = 0;
 	cc = 'XX';
 	peers = new Map<number, NetPeer>();
+	/** The room's Foundry screen (ticket 17), from its `hello` and its echoes; offline, the reel of a poster clicked here. */
+	screen: Screen = null;
 	private link: Link = { is: 'off' };
 	private scene: string | null = null;
 	private bot = isBot();
@@ -84,8 +88,19 @@ export class Net {
 	/** Joins a scene's room, closing the last scene's socket. */
 	join(scene: string) {
 		this.scene = scene;
+		this.screen = null;
 		this.backoff = BACKOFF.first;
 		this.open();
+	}
+
+	/**
+	 * A Foundry poster's click: the room plays the title for everyone if its screen is idle, and nothing changes here until
+	 * it echoes. Offline the screen's state machine runs here, from this click, until a `hello` overwrites it.
+	 */
+	play(title: ScreenTitle) {
+		const now = this.serverNow();
+		if (this.link.is === 'live') this.link.ws.send(JSON.stringify({ t: 'screen.play', title } satisfies ClientMessage));
+		else if (!playing(this.screen, now)) this.screen = { title, at: now };
 	}
 
 	/** The own cursor's world position, every frame from Join on: sent at most RATE times a second, and only when it moved. */
@@ -194,6 +209,7 @@ export class Net {
 				this.cc = m.cc;
 				this.offset = m.now - Date.now();
 				this.peers = new Map(m.peers.map((p) => [p.id, known(p)]));
+				this.screen = m.screen;
 				this.link = { is: 'live', ws, at: t };
 				this.sent = -1; // the new room hears where this cursor is at once
 				this.tell(); // and what it wears; the room drops it if that's nothing
@@ -212,6 +228,9 @@ export class Net {
 				Object.assign(p, { cos: m.cos, gold: m.gold, river: m.river });
 				return;
 			}
+			case 'screen':
+				this.screen = { title: m.title, at: m.at };
+				return;
 		}
 		this.status.count(this.peers.size + 1);
 	}

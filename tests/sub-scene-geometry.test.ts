@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readingOrder, SUB_SCENES } from '../src/lib/scenes/index.ts';
-import { POSTER_LAMPS, PROJECTOR_LENS, SCREEN_SURFACE, SCREEN_TITLES, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
+import { POSTER_LAMPS, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
 import type { Point, Prop, Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
@@ -129,6 +129,10 @@ test('Foundry: posters left to right beside the screen, the beam from the ledge 
 	const ledge = foundry.walkBehind.find((w) => w.key === 'foundry-projector-ledge')!;
 	assert.ok(inPolygon(PROJECTOR_LENS, ledge.outline));
 	assert.ok(PROJECTOR_LENS.x < screen.x && PROJECTOR_LENS.y > screen.y + screen.h);
+	// While a reel plays the camera frames the lens, the projector behind it and the whole screen, inside the scene.
+	const f = REEL_FRAME, inFrame = (p: { x: number; y: number }) => p.x > f.x && p.x < f.x + f.w && p.y > f.y && p.y < f.y + f.h;
+	for (const p of [...SCREEN_SURFACE, PROJECTOR_LENS, { x: 100, y: 1250 }]) assert.ok(inFrame(p), JSON.stringify(p));
+	assert.ok(f.x >= 0 && f.y >= 0 && f.x + f.w <= foundry.w && f.y + f.h <= foundry.h);
 });
 
 test('Side Project: ten bottles in a row on one shelf, the sign on the cooler door grants the beer mug', () => {

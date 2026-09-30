@@ -4,9 +4,9 @@
 // the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the fade, landing at
 // the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
 // the scene canvas (ticket 15) are props.ts. Cosmetics (ticket 16): a granting prop's card grants, the saved state
-// (saved.svelte.ts) keeps them, and the room hears what the cursor wears. Carried over from the rendering and pointer-lock
-// prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is
-// never re-rendered here.
+// (saved.svelte.ts) keeps them, and the room hears what the cursor wears. The Foundry screen's reel (ticket 17) is
+// projector.ts, and the camera zooms out to frame it. Carried over from the rendering and pointer-lock prototypes' engines
+// (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
 import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { propsOf } from '../scenes/index.ts';
@@ -14,7 +14,10 @@ import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { Net } from '../net/net.ts';
 import { sample, visible } from '../net/peers.ts';
 import { Props } from './props.ts';
-import { KEYS, TILE, centreOn, clamp, coast, fling, glide, pan, rendering, steer, step, stick, tileRange, type Move, type View } from './camera.ts';
+import { Projector } from './projector.ts';
+import {
+	KEYS, TILE, centreOn, clamp, coast, fling, framing, glide, pan, rendering, steer, step, stick, tileRange, zoom, type Move, type View
+} from './camera.ts';
 import { Cursors, type Drawn } from './cursors.ts';
 
 export type Scene = Overworld | SubScene;
@@ -78,6 +81,8 @@ const placed = (el: Element | null) => (el?.matches('section') ? el.querySelecto
 export class Engine {
 	private scene: Scene | null = null;
 	private view: View;
+	/** The session's render scale, which the view's leaves only to frame the Foundry's reel (ticket 17). */
+	private base: number;
 	/** Fixed per session with the render scale. */
 	private dpr: number;
 	private density: number;
@@ -118,6 +123,7 @@ export class Engine {
 	/** The polite live region: the visitor's own events only. */
 	private live: HTMLElement;
 	private props: Props;
+	private projector: Projector;
 	private raf = 0;
 	private last = 0;
 	private canvas: HTMLCanvasElement;
@@ -157,6 +163,7 @@ export class Engine {
 		if (!g || !cg) throw new Error('No 2D canvas');
 		const r = rendering(screen.width, screen.height, devicePixelRatio);
 		this.view = { w: innerWidth, h: innerHeight, s: r.s };
+		this.base = r.s;
 		this.dpr = r.dpr;
 		this.density = r.density;
 		this.canvas = canvas;
@@ -175,6 +182,7 @@ export class Engine {
 			solo: (on) => (status.live.textContent = on ? 'Offline, exploring solo' : '')
 		});
 		this.props = new Props(layer);
+		this.projector = new Projector(layer, this.net);
 		document.documentElement.classList.add('engine');
 		this.bind();
 		this.resize();
@@ -191,6 +199,7 @@ export class Engine {
 		this.net.destroy();
 		this.listeners.abort();
 		this.props.destroy();
+		this.projector.destroy();
 		this.raise.disconnect();
 		for (const t of this.held.values()) t.bmp?.close();
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
@@ -224,6 +233,7 @@ export class Engine {
 		for (const t of this.held.values()) t.bmp?.close();
 		this.held.clear();
 		this.props.show(scene, this.density);
+		this.projector.show(scene);
 		this.goal = null;
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
 		const at = door ?? target;
@@ -231,6 +241,8 @@ export class Engine {
 		// Just inside a sub-scene's door is the floor in front of it, a cursor's height below the door on its wall, where a
 		// click doesn't leave again. The overworld's doors are whole buildings.
 		const c = door && !overworld ? { x: box.x + box.w / 2, y: box.y + box.h + CARRY } : centre(box);
+		// A hop out of the Foundry mid-reel lands at the session's scale; the box above was read at the reel's.
+		this.view = { ...this.view, s: this.base };
 		this.moveTo(centreOn(c, this.view, scene));
 		if (!door) return;
 		// Before Join there is no cursor. The unlocked mouse's cursor stays at the OS pointer, where its clicks land. Push
@@ -525,7 +537,7 @@ export class Engine {
 
 	/** A drag or its fling moves the camera against the finger; the cursor keeps its world place, carried at the edge. */
 	private slide(d: Point) {
-		if (!this.scene || !this.cursor) return;
+		if (!this.scene || !this.cursor || this.zooming) return;
 		const next = pan(this.cam, this.cursor, d, this.view, this.scene, CARRY * this.view.s);
 		this.cursor = next.cursor;
 		this.moveTo(next.cam);
@@ -587,7 +599,7 @@ export class Engine {
 			this.slide({ x: g.vel.x * dt, y: g.vel.y * dt });
 			g.vel = coast(g.vel, dt);
 		}
-		if (this.input.is !== 'paused') {
+		if (!this.reframe(dt) && this.input.is !== 'paused') {
 			let cam: Point;
 			if (this.goal) {
 				cam = glide(this.cam, this.goal, dt);
@@ -606,9 +618,9 @@ export class Engine {
 		}
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
-		const moved = this.props.step(dt * 1000, this.net.serverNow(), this.seen(), this.reducedMotion.matches);
+		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
 		if (this.dirty) this.drawScene(scene);
-		else if (moved) this.drawScene(scene, moved);
+		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		this.mark();
 		this.drawCursors(now);
 	};
@@ -620,6 +632,40 @@ export class Engine {
 		this.hot?.classList.remove('hot');
 		hit?.classList.add('hot');
 		this.hot = hit;
+	}
+
+	/** The camera is framing the Foundry's reel, or easing to or from it. */
+	private get zooming() {
+		return !!this.projector.framing() || this.view.s !== this.base;
+	}
+
+	/**
+	 * While the Foundry's reel plays the camera eases out to frame the projector and the whole screen, whatever the device
+	 * (Joe, 2026-09-29), and back to the session's scale on the visitor's cursor when it ends; a cut under reduced motion.
+	 * The cursor keeps its world place, except the unlocked mouse's, which is the OS pointer's. It runs paused too, and
+	 * nothing else moves the camera meanwhile. True while it holds the camera.
+	 */
+	private reframe(dt: number) {
+		if (!this.zooming) return false;
+		const scene = this.scene!, v = this.view, c = this.cursor, r = this.projector.framing();
+		const world = c && { x: this.cam.x + c.x / v.s, y: this.cam.y + c.y / v.s };
+		// A shot's centre as the clamp leaves it, so that an eased shot arrives exactly.
+		const clamped = (s: number, p: Point) => {
+			const cam = centreOn(p, { ...v, s }, scene);
+			return { s, at: { x: cam.x + v.w / s / 2, y: cam.y + v.h / s / 2 } };
+		};
+		const from = { s: v.s, at: { x: this.cam.x + v.w / v.s / 2, y: this.cam.y + v.h / v.s / 2 } };
+		const goal = r ? framing(r, v, this.base) : { s: this.base, at: world ?? from.at }, to = clamped(goal.s, goal.at);
+		const shot = this.reducedMotion.matches ? to : zoom(from, to, dt);
+		const cam = centreOn(shot.at, { ...v, s: shot.s }, scene);
+		// Push waits for the cursor to move once the zoom lets go, so a cursor resting in the band doesn't carry the camera off.
+		this.goal = null;
+		this.armed = false;
+		if (shot.s === v.s && cam.x === this.cam.x && cam.y === this.cam.y) return true;
+		this.view = { ...v, s: shot.s };
+		this.moveTo(cam);
+		if (world && this.input.is !== 'unlocked') this.cursor = inView({ x: (world.x - cam.x) * shot.s, y: (world.y - cam.y) * shot.s }, this.view);
+		return true;
 	}
 
 	/** Fetch the tiles in view and one ring beyond; close and forget any beyond two rings, so phone memory stays flat. */
@@ -684,6 +730,7 @@ export class Engine {
 				g.drawImage(bmp, x0, y0, x1 - x0, y1 - y0);
 			}
 		this.props.draw(g, this.cam, k, a);
+		this.projector.draw(g, this.cam, k);
 		g.restore();
 	}
 

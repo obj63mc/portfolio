@@ -88,3 +88,23 @@ test('server: anything else is dropped, the pong auto-response included', () => 
 	])
 		assert.equal(readServer(text), null, text);
 });
+
+test('control: a poster click is `screen.play` with a title the build knows; anything else is dropped', () => {
+	assert.deepEqual(readControl('{"t":"screen.play","title":"lorax","x":1}'), { t: 'screen.play', title: 'lorax' });
+	for (const title of ['toString', 'Lorax', 7, null, undefined])
+		assert.equal(readControl(JSON.stringify({ t: 'screen.play', title })), null, String(title));
+});
+
+test('server: the screen snapshot in hello and the echo of an accepted play are read; bad ones are dropped', () => {
+	const hello = { t: 'hello', id: 1, cc: 'XX', now: 5, rate: 20, cap: 60, room: 'foundry:1', peers: [] };
+	for (const m of [{ ...hello, screen: { title: 'fast-five', at: 4 } }, { t: 'screen', title: 'snow-white', at: 4 }])
+		assert.deepEqual(readServer(JSON.stringify(m)), m);
+	for (const m of [
+		{ ...hello, screen: { title: 'jaws', at: 4 } },
+		{ ...hello, screen: { title: 'lorax' } },
+		hello,
+		{ t: 'screen', title: 'lorax', at: '4' },
+		{ t: 'screen', at: 4 }
+	])
+		assert.equal(readServer(JSON.stringify(m)), null, JSON.stringify(m));
+});

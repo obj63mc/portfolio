@@ -4,10 +4,13 @@
 // client -> server
 //   binary  [1, x u16, y u16]                        a move in whole world px, at most RATE a second, only when it moved
 //   text    {"t":"presence","cos":0-7,"gold":bool,"river":bool}
+//   text    {"t":"screen.play","title":"fast-five"}   a Foundry poster's click, accepted only while the screen is idle
 //   text    ping                                     keepalive every KEEPALIVE, answered pong by the hibernation auto-response
 // server -> client
 //   binary  [2, n u16, (id u16, x u16, y u16) * n]   every cursor that moved since the last tick
-//   text    ServerMessage below: hello, in, out, presence
+//   text    ServerMessage below: hello, in, out, presence, screen
+import { SCREEN_TITLES, type ScreenTitle } from '../scenes/foundry.ts';
+import type { Screen } from './screen.ts';
 
 /** Moves up and frames down, per second. */
 export const RATE = 20;
@@ -53,14 +56,16 @@ export type ServerMessage =
 			/** The room's name, `scene:n`. */
 			room: string;
 			peers: Peer[];
-			/** The shared-prop snapshot: the Foundry screen's state once ticket 17 adds it, null until then. */
-			screen: null;
+			/** The shared-prop snapshot: the Foundry screen's title and start, server time, or null while idle and elsewhere. */
+			screen: Screen;
 	  }
 	| ({ t: 'in' } & Peer)
 	| { t: 'out'; id: number }
-	| ({ t: 'presence'; id: number } & Presence);
+	| ({ t: 'presence'; id: number } & Presence)
+	/** An accepted `screen.play`, to everyone in the room, its sender included. */
+	| ({ t: 'screen' } & NonNullable<Screen>);
 
-export type ClientMessage = { t: 'presence' } & Presence;
+export type ClientMessage = ({ t: 'presence' } & Presence) | { t: 'screen.play'; title: ScreenTitle };
 
 export function encodeMove(x: number, y: number): ArrayBuffer {
 	const b = new ArrayBuffer(5);
@@ -103,6 +108,8 @@ const isPresence = (m: Record<string, unknown>) => Number.isInteger(m.cos) && ty
 const isPeer = (m: Record<string, unknown>) =>
 	Number.isInteger(m.id) && typeof m.cc === 'string' && isPresence(m) && Number.isInteger(m.x) && Number.isInteger(m.y);
 const isObject = (m: unknown): m is Record<string, unknown> => typeof m === 'object' && m !== null;
+const isTitle = (t: unknown): t is ScreenTitle => typeof t === 'string' && Object.hasOwn(SCREEN_TITLES, t);
+const isScreen = (m: unknown) => isObject(m) && isTitle(m.title) && typeof m.at === 'number';
 
 /**
  * A text message from the room, narrowed for the client, or null to drop it: the `pong` auto-response, anything not
@@ -124,14 +131,16 @@ export function readServer(text: string): ServerMessage | null {
 				Number.isInteger(m.rate) &&
 				Number.isInteger(m.cap) &&
 				typeof m.room === 'string' &&
-				m.screen === null &&
+				(m.screen === null || isScreen(m.screen)) &&
 				Array.isArray(m.peers) &&
 				m.peers.every((p) => isObject(p) && isPeer(p))
 			: m.t === 'in'
 				? isPeer(m)
 				: m.t === 'out'
 					? Number.isInteger(m.id)
-					: m.t === 'presence' && Number.isInteger(m.id) && isPresence(m);
+					: m.t === 'screen'
+						? isScreen(m)
+						: m.t === 'presence' && Number.isInteger(m.id) && isPresence(m);
 	return ok ? (m as ServerMessage) : null;
 }
 
@@ -145,8 +154,9 @@ export function readControl(text: string): ClientMessage | null {
 	} catch {
 		return null;
 	}
-	if (typeof m !== 'object' || m === null) return null;
-	const { t, cos, gold, river } = m as Record<string, unknown>;
+	if (!isObject(m)) return null;
+	const { t, cos, gold, river, title } = m;
+	if (t === 'screen.play') return isTitle(title) ? { t, title } : null;
 	if (t !== 'presence' || typeof gold !== 'boolean' || typeof river !== 'boolean') return null;
 	return Number.isInteger(cos) && typeof cos === 'number' && cos >= 0 && cos <= 7 ? { t, cos, gold, river } : null;
 }

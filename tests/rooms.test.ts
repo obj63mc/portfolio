@@ -15,6 +15,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { decodeFrame, encodeMove, type ServerMessage } from '../src/lib/net/protocol.ts';
+import { reelMs } from '../src/lib/net/screen.ts';
 
 const MAX = 70;
 const root = new URL('..', import.meta.url).pathname;
@@ -194,6 +195,43 @@ test('changing scene closes one socket and opens another: the old room sees it g
 	assert.equal(there.hello.room, 'foundry:1');
 	assert.equal(there.hello.peers.length, 1, 'with the bot already in the foundry');
 	assert.ok(!b.inbox.some((m) => m.t === 'in' && m.id === there.hello.id), 'the overworld never hears of it');
+});
+
+const play = (bot: Bot, title: string) => bot.ws.send(JSON.stringify({ t: 'screen.play', title }));
+
+test('the Foundry screen plays for the whole room on one poster click, first accepted wins, and a joiner gets it mid-reel', async () => {
+	play(a, 'lorax');
+	const x = await enter('foundry'), y = await enter('foundry');
+	assert.equal(x.hello.room, 'foundry:1');
+	assert.equal(x.hello.screen, null, 'idle');
+	const sent = Date.now();
+	play(x, 'lorax');
+	const echo = await x.take('screen');
+	assert.equal(echo.title, 'lorax', 'echoed to its sender too');
+	assert.ok(Math.abs(echo.at - sent) < 5000, 'started at server time');
+	assert.deepEqual(await y.take('screen'), echo);
+	play(y, 'fast-five');
+	play(x, 'snow-white');
+	await sleep(100);
+	for (const bot of [a, b, x, y]) assert.ok(!bot.inbox.some((m) => m.t === 'screen'), 'plays while playing, and any outside the Foundry, are dropped');
+	const z = await enter('foundry');
+	assert.deepEqual(z.hello.screen, { title: 'lorax', at: echo.at });
+	assert.ok(z.hello.now - echo.at < reelMs('lorax'), 'partway through its reel');
+});
+
+test('the screen is idle again once its room empties', async () => {
+	const foundry = [...ledger].filter((bot) => bot.hello.room === 'foundry:1');
+	const last = foundry.pop()!;
+	for (const bot of foundry) await leave(bot, last);
+	last.ws.close();
+	ledger.delete(last);
+	// The next visitor lands once the last one has gone: a probe that still found company goes again.
+	let probe: Bot;
+	while ((probe = await enter('foundry')).hello.peers.length) probe.ws.close(), ledger.delete(probe), await sleep(50);
+	assert.equal(probe.hello.room, 'foundry:1');
+	assert.equal(probe.hello.screen, null);
+	play(probe, 'fast-five');
+	assert.equal((await probe.take('screen')).title, 'fast-five', 'and takes a play');
 });
 
 test('a socket past its token bucket (twice the rate, four seconds of burst) is closed with 4008', async () => {

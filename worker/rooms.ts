@@ -14,16 +14,21 @@ import {
 	type Peer,
 	type ServerMessage
 } from '../src/lib/net/protocol.ts';
+import { playing, type Screen } from '../src/lib/net/screen.ts';
 import { DIRECTORY, SCENES, refuse, type Env } from './index.ts';
 
 export { default } from './index.ts';
 
-/** What a room keeps with each socket, so that it can hibernate and wake with everyone where they were. */
+/**
+ * What a room keeps with each socket, so that it can hibernate and wake with everyone where they were, and with the
+ * Foundry screen partway through its reel: every socket carries the room's screen, rewritten on each play.
+ */
 interface Attachment {
 	room: string;
 	peer: Peer;
 	/** When they joined, epoch ms: a socket's keepalive clock until its first ping. */
 	at: number;
+	screen: Screen;
 }
 
 interface Visitor {
@@ -55,6 +60,8 @@ export class Room extends DurableObject<Env> {
 	private still = 0;
 	/** When the room last looked for stale sockets, epoch ms. */
 	private swept = 0;
+	/** The Foundry screen (spec: "One shared prop"): held here, reset when the room empties, idle outside the Foundry. */
+	private screen: Screen = null;
 	/** One stub for every report, so that they reach the directory in the order they were sent. */
 	private directory = this.ctx.exports.Directory.getByName(DIRECTORY);
 
@@ -64,8 +71,9 @@ export class Room extends DurableObject<Env> {
 		ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
 		// Waking from hibernation runs the constructor again: rebuild the room from its sockets' attachments.
 		for (const ws of ctx.getWebSockets()) {
-			const { room, peer, at } = ws.deserializeAttachment() as Attachment;
+			const { room, peer, at, screen } = ws.deserializeAttachment() as Attachment;
 			this.name = room;
+			this.screen = screen;
 			this.visitors.set(ws, { peer, at, tokens: BURST, refill: Date.now() });
 		}
 	}
@@ -100,7 +108,7 @@ export class Room extends DurableObject<Env> {
 			cap: CAP,
 			room: this.name,
 			peers,
-			screen: null
+			screen: playing(this.screen, Date.now()) ? this.screen : null
 		};
 		send(ws, JSON.stringify(hello));
 		this.broadcast({ t: 'in', ...peer }, ws);
@@ -130,10 +138,19 @@ export class Room extends DurableObject<Env> {
 			this.tick ??= setTimeout(this.step, 1000 / RATE);
 			return;
 		}
-		// Dropped unless valid (too long, not JSON, an unknown op or a bad field) and a change: presence goes out when it
-		// changes, never in the tick's frame.
+		// Dropped unless valid (too long, not JSON, an unknown op or a bad field).
 		const m = readControl(msg), p = v.peer;
-		if (!m || (m.cos === p.cos && m.gold === p.gold && m.river === p.river)) return;
+		if (!m) return;
+		if (m.t === 'screen.play') {
+			// The first play accepted while the screen is idle wins; any other, or one outside the Foundry, is dropped. No
+			// attribution: the room hears only which title and when.
+			if (!this.name.startsWith('foundry:') || playing(this.screen, now)) return;
+			this.screen = { title: m.title, at: now };
+			for (const [w, visitor] of this.visitors) this.save(w, visitor);
+			return this.broadcast({ t: 'screen', ...this.screen });
+		}
+		// Presence goes out when it changes, never in the tick's frame.
+		if (m.cos === p.cos && m.gold === p.gold && m.river === p.river) return;
 		const { t, ...presence } = m;
 		Object.assign(p, presence);
 		this.save(ws, v);
@@ -196,6 +213,7 @@ export class Room extends DurableObject<Env> {
 		if (!this.visitors.size) {
 			clearTimeout(this.tick);
 			this.tick = undefined;
+			this.screen = null;
 		}
 		// The directory hears first, so a peer that sees `out` knows the directory has counted it.
 		await this.report();
@@ -211,7 +229,7 @@ export class Room extends DurableObject<Env> {
 	}
 
 	private save(ws: WebSocket, { peer, at }: Visitor) {
-		ws.serializeAttachment({ room: this.name, peer, at } satisfies Attachment);
+		ws.serializeAttachment({ room: this.name, peer, at, screen: this.screen } satisfies Attachment);
 	}
 
 	private broadcast(m: ServerMessage, except?: WebSocket) {
