@@ -139,15 +139,17 @@
                   "gist": "the Carondelicious Criterium and Tuesday night training",
                   "body": [
                     "The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.",
-                    "Cross the chequered line to time a lap of the loop, either way round. Your ten best laps stay in this browser."
+                    "Cross the chequered line by this sign to time a lap of the loop, either way round. Your ten best laps stay in this browser."
                   ],
                   "rect": {
-                    "x": 2575,
-                    "y": 2505,
-                    "w": 50,
-                    "h": 60
+                    "x": 2544,
+                    "y": 2560,
+                    "w": 110,
+                    "h": 85
                   },
-                  "art": []
+                  "art": [
+                    "start-sign"
+                  ]
                 },
                 {
                   "id": "bike",
@@ -1111,15 +1113,17 @@
           "gist": "the Carondelicious Criterium and Tuesday night training",
           "body": [
             "The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.",
-            "Cross the chequered line to time a lap of the loop, either way round. Your ten best laps stay in this browser."
+            "Cross the chequered line by this sign to time a lap of the loop, either way round. Your ten best laps stay in this browser."
           ],
           "rect": {
-            "x": 2575,
-            "y": 2505,
-            "w": 50,
-            "h": 60
+            "x": 2544,
+            "y": 2560,
+            "w": 110,
+            "h": 85
           },
-          "art": []
+          "art": [
+            "start-sign"
+          ]
         },
         {
           "id": "bike",
@@ -1378,6 +1382,17 @@
           }
         },
         {
+          "id": "start-sign",
+          "asset": "start-sign",
+          "kind": "prop",
+          "rect": {
+            "x": 2544,
+            "y": 2560,
+            "w": 110,
+            "h": 85
+          }
+        },
+        {
           "id": "eads-bridge",
           "asset": "eads-bridge",
           "kind": "foreground",
@@ -1500,6 +1515,15 @@
             "y": 2600,
             "w": 78,
             "h": 94
+          }
+        },
+        {
+          "id": "start-sign",
+          "rect": {
+            "x": 2544,
+            "y": 2560,
+            "w": 110,
+            "h": 85
           }
         },
         {
@@ -4331,10 +4355,9 @@
         {
           "id": "poster-fast-five",
           "name": "Fast Five poster",
-          "gist": "Universal Pictures Home Entertainment",
-          "body": [
-            "A find-and-seek and safe-cracking game promoting the home video release."
-          ],
+          "gist": "play it on the screen",
+          "kind": "action",
+          "body": [],
           "rect": {
             "x": 247,
             "y": 187,
@@ -4346,10 +4369,9 @@
         {
           "id": "poster-snow-white",
           "name": "Snow White and the Huntsman poster",
-          "gist": "Universal Pictures Home Entertainment",
-          "body": [
-            "Multiple mini games built from scenes in the film."
-          ],
+          "gist": "play it on the screen",
+          "kind": "action",
+          "body": [],
           "rect": {
             "x": 543,
             "y": 129,
@@ -4361,10 +4383,9 @@
         {
           "id": "poster-lorax",
           "name": "The Lorax poster",
-          "gist": "Universal Pictures Home Entertainment",
-          "body": [
-            "A partnership with Words With Friends."
-          ],
+          "gist": "play it on the screen",
+          "kind": "action",
+          "body": [],
           "rect": {
             "x": 822,
             "y": 70,
@@ -4377,20 +4398,14 @@
           "id": "screen",
           "name": "Screen",
           "gist": "idle, pick a poster to start a reel",
-          "body": [
-            "The screen plays one reel at a time for everyone in the room. Click a poster to start one.",
-            "Fast Five: A find-and-seek and safe-cracking game promoting the home video release.",
-            "Snow White and the Huntsman: Multiple mini games built from scenes in the film.",
-            "The Lorax: A partnership with Words With Friends."
-          ],
+          "kind": "status",
+          "body": [],
           "rect": {
             "x": 1656,
             "y": 85,
             "w": 1016,
             "h": 833
-          },
-          "clip": "polygon(100% 0%, 0% 0%, 0% 91.16%, 0.31% 91.32%, 0.35% 93.27%, 0% 93.51%, 0% 95.55%, 1.24% 95.2%, 10.43% 100%, 15.47% 100%, 15.72% 99.87%, 16.1% 100%, 100% 100%)",
-          "cosmetic": 2
+          }
         }
       ],
       "exit": {
@@ -6559,7 +6574,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "34cd040037de109d9fdb6490ee9a2d07450fd1236570fc6fc5db9663648229b1"
+        "sha256": "10f27eab8260f976d8bec89d89c15bc3a328be7563c06cf03859241f25a47670"
       },
       "trim": {
         "x": 0,
@@ -18217,7 +18232,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "f440278d13051fbe35f0772eb93491fe41b56ca628ea070389e2d8cbd0e66c84"
+        "sha256": "e6a0fd0cbf43066a150289d0eddebce50b9158fb06c09096b43f2d6e85d5d40c"
       },
       "trim": {
         "x": 35,
@@ -18541,7 +18556,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "c4af3de806439f876db1bb7a531ff34079905f677e0caf12a60b808db231b14e"
+        "sha256": "66c73cf1c0d2c785dc11621812a3ba1a5f72707f011bdaac4bb8e72f29090854"
       },
       "trim": {
         "x": 332,
@@ -18869,7 +18884,7 @@
       "source": {
         "w": 1720,
         "h": 520,
-        "sha256": "910a6780c5087225e22012c57b89f7938ab10753732fd833b9922eed8dc297f0"
+        "sha256": "2180a32f6423efa80b66ce2e0228a6f6efbce9fcf93e00a5efab7315ece147dd"
       },
       "trim": {
         "x": 61,
@@ -19569,7 +19584,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "d183c247d77b628cbd4df92bcefe4b07d990085b13cd8dfda9fe9df5d917930b"
+        "sha256": "488cb710492ce03018c90cb9241722f58a0158e309323bf7da06f281ef262fa5"
       },
       "trim": {
         "x": 112,
@@ -20085,7 +20100,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "4a915355509b169e6fb779ce1fabd51e880a00f894132c77f19e9f37b0c0fca1"
+        "sha256": "2d657b2e4e46f012bcd01de624b82fb33ededeb92e7b2b185f34442ff306a2a1"
       },
       "trim": {
         "x": 175,
@@ -29020,7 +29035,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "1608cb33e0d36151165c0330f8202e3eb122ad43d4a11ee79e2ff4b2ecc52ccc"
+        "sha256": "bb9dfa616db0936dccf1398159515a924cec5a658d65ac9fd06ca1b70b587ecd"
       },
       "trim": {
         "x": 0,
@@ -29079,7 +29094,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "df823661e67241458b7c555abe90f186c9becf82ed0764d01517153618c8f862"
+        "sha256": "cf7895fb4803801cb43f88c0f5f1278450cbdf144ca496e751ab5dde55590ee2"
       },
       "trim": {
         "x": 38,
@@ -29148,7 +29163,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "6404ced01a17b3640a10de215a635c0d14b754f0a9b383e4e5d8d6cea871bc7c"
+        "sha256": "4cbd97667d73e3d4e52e1fc4aa5701f5283f3048439fced77289b527ed4de20f"
       },
       "trim": {
         "x": 145,
@@ -29330,6 +29345,31 @@
       "height": 1057
     },
     {
+      "id": "start-sign",
+      "scene": "overworld",
+      "kind": "prop",
+      "file": "overworld/start-sign/image.webp",
+      "world": {
+        "x": 2544,
+        "y": 2560,
+        "w": 110,
+        "h": 85
+      },
+      "source": {
+        "w": 1254,
+        "h": 1254,
+        "sha256": "9c6e7f8df09664294d36a86ad43287577d501820dc4a7146b90a98ae67afd0aa"
+      },
+      "trim": {
+        "x": 117,
+        "y": 235,
+        "w": 1021,
+        "h": 789
+      },
+      "width": 1021,
+      "height": 789
+    },
+    {
       "id": "eads-bridge",
       "scene": "overworld",
       "kind": "foreground",
@@ -29343,7 +29383,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "d384c23df6de29eb16efa8fb4b5594d8c3dc351e907c4ae3b11f85ba787b9592"
+        "sha256": "703cd12d5fdeaf69425647c6590848de7ffb47f24a963d7c30e8859209105388"
       },
       "trim": {
         "x": 15,

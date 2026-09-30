@@ -30,4 +30,4 @@
 - Nothing is sent before Join: `Net` holds no presence until the engine's first, so the `hello` before Join sends none.
 - A peer arriving from another room no longer pops: it joins wearing nothing and says what it wears right after, so a peer not yet seen moving takes its cosmetic at once, and only a peer already on screen pops.
 - Stored ids are narrowed with `isCosmetic()` (cosmetics.ts) instead of casts.
-- Open: whether "re-clicking a granting prop replays it" means the prop's click reaction, which plays, or the pop too; re-wearing the cosmetic already worn changes nothing on the wire.
+- Settled with Joe (2026-09-29): re-clicking a granting prop replays only the prop's click reaction; the cosmetic already worn doesn't pop again, and nothing crosses the wire.

@@ -11,12 +11,11 @@ import { course, locate } from '../src/lib/engine/track.ts';
 const generated = (path: string) => new URL(`../art/generated/${path}`, import.meta.url);
 const scenes = [OVERWORLD, ...Object.values(SUB_SCENES)];
 
-test('every prop resolves to its cut-outs or a rig in its scene; only the track, whose motion is the rider, has none', () => {
+test('every prop resolves to its cut-outs or a rig in its scene; the track is its start/finish sign', () => {
 	for (const s of scenes)
 		for (const p of propsOf(s)) {
 			const art = artOf(s, p);
-			if (p.id === 'track') assert.deepEqual(art, [], 'the track is artless');
-			else assert.ok(art.length, `${s.id}/${p.id} has art`);
+			assert.ok(art.length, `${s.id}/${p.id} has art`);
 			for (const id of art)
 				assert.ok(existsSync(generated(`${s.id}/${id}/image.webp`)) || existsSync(generated(`${s.id}/${id}-rig.json`)), `${s.id}/${p.id}: ${id}`);
 		}

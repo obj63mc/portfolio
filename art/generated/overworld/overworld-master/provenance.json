@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "1608cb33e0d36151165c0330f8202e3eb122ad43d4a11ee79e2ff4b2ecc52ccc",
-  "run": "art/runs/overworld-master/2026-09-29T15-55-33.000Z-upscale-4x",
+  "sourceSha256": "bb9dfa616db0936dccf1398159515a924cec5a658d65ac9fd06ca1b70b587ecd",
+  "run": "art/runs/overworld-master/2026-09-30T01-00-24.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/overworld-fix/stitched.png (native 1983 x 793, tile-map round sixteen)",
-    "baseSha256": "320baa21c06cbe28bd1ac0a98ea1149d8bcab45ed4a1c9c03b33c6868efc6508",
+    "base": "art/sources/overworld-fix/stitched.png (native 1983 x 793, tile-map round seventeen)",
+    "baseSha256": "1de9d7d616a0d02e8dd94182bd696f9a0a3bddf97a0c7bef86aadef84b991d7c",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
     "script": "scripts/art/overworld/install-master.sh",
     "decals": [

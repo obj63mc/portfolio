@@ -17999,6 +17999,25 @@
       }
     },
     {
+      "id": "start-sign",
+      "scene": "overworld",
+      "kind": "prop",
+      "size": "1024x1024",
+      "references": [
+        "art/generated/overworld/overworld/image.webp"
+      ],
+      "dependsOn": [
+        "overworld"
+      ],
+      "world": {
+        "x": 2544,
+        "y": 2560,
+        "w": 110,
+        "h": 85
+      },
+      "prompt": "A bike race start and finish sign for a park loop, standing on its own, seen from slightly above and front: one wide horizontal banner stretched between two slim dark teal #244F55 posts, the banner's top and bottom edges each a row of dark teal and ivory #FFF4D4 checks, its middle ivory with the words START FINISH in bold dark teal capitals on one line. Match the scale of the park benches and the flat cartoon style of the supplied park scene. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no flags, no other objects and no other lettering. All object edges entirely inside the frame."
+    },
+    {
       "id": "eads-bridge",
       "scene": "overworld",
       "kind": "foreground",

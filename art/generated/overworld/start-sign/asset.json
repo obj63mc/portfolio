@@ -1,0 +1,25 @@
+{
+  "id": "start-sign",
+  "scene": "overworld",
+  "kind": "prop",
+  "file": "overworld/start-sign/image.webp",
+  "world": {
+    "x": 2544,
+    "y": 2560,
+    "w": 110,
+    "h": 85
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "9c6e7f8df09664294d36a86ad43287577d501820dc4a7146b90a98ae67afd0aa"
+  },
+  "trim": {
+    "x": 117,
+    "y": 235,
+    "w": 1021,
+    "h": 789
+  },
+  "width": 1021,
+  "height": 789
+}

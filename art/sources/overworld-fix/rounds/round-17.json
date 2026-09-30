@@ -1,0 +1,21 @@
+{
+ "round": 17,
+ "base": "rounds/base-17.png",
+ "note": "Joe (2026-09-29, buildout ticket 18): the bench on the lake loop's lower straight, just south of the start line, goes, to make room for a start/finish sign. The bench, its legs and its shadow are painted over with the lawn's own flat colour, read round them (174, 206, 55, within a level everywhere near); cloned lawn cells (forcefill) left blocky patches and another tree's shadow here. The rectangle's top edge stays below the path's south edge.",
+ "tiles": {},
+ "paints": [
+  {
+   "rect": [
+    740,
+    753,
+    786,
+    779
+   ],
+   "color": [
+    174,
+    206,
+    55
+   ]
+  }
+ ]
+}

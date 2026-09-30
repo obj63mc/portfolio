@@ -3,11 +3,10 @@ STYLE: Flat vector illustration matching the supplied original daytime artwork. 
 REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.
 
 
-ASSET: track-tree-east
-Extract the original tree pixels from the approved overworld master using the measured crop matte (a radial polygon traced by colour around the canopy and trunk). The lake loop runs behind it: drawn over the rider riding past behind it (buildout ticket 18). The matte is normalized to the registration crop; no image-generation call is needed for this derivative.
+ASSET: start-sign
+A bike race start and finish sign for a park loop, standing on its own, seen from slightly above and front: one wide horizontal banner stretched between two slim dark teal #244F55 posts, the banner's top and bottom edges each a row of dark teal and ivory #FFF4D4 checks, its middle ivory with the words START FINISH in bold dark teal capitals on one line. Match the scale of the park benches and the flat cartoon style of the supplied park scene. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no flags, no other objects and no other lettering. All object edges entirely inside the frame.
 
-Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Preserve the exact framing of the final crop, including objects clipped by its edge.
+Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Keep the entire object within the frame with a clean margin.
 References in order:
 1. <repo>/prototypes/art-pipeline/reference/ref-scene-1-day.png
-2. <repo>/art/runs/track-tree-east/2026-09-30T01-01-30.495Z/registration.png
-REGISTRATION: The FINAL image is an exact crop from the approved composition. Extract the named object only. Keep its pixel position, size, camera angle and silhouette within that crop. Replace all other pixels with pure #FF00FF; do not recenter, enlarge, rotate, relight or redesign. Output the same canvas aspect ratio. The pipeline calculates placement from the retained trim offset.
+2. <repo>/art/generated/overworld/overworld/image.webp

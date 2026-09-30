@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "df823661e67241458b7c555abe90f186c9becf82ed0764d01517153618c8f862",
-  "run": "art/runs/marquee-bulbs/2026-09-29T15-56-41.040Z",
+  "sourceSha256": "cf7895fb4803801cb43f88c0f5f1278450cbdf144ca496e751ab5dde55590ee2",
+  "run": "art/runs/marquee-bulbs/2026-09-30T01-01-32.276Z",
   "provider": "derived",
   "derivation": {
     "asset": "overworld-master",
-    "referenceSha256": "e337c4608624d0cfcbc9f28195d4af6b615f9e56b3c19b61cf14e1442bae3593",
+    "referenceSha256": "4ee09dff0ee5b2d21b08296b829e001ea981b86d7c49e1cd84051d6c882df871",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

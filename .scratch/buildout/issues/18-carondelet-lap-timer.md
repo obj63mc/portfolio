@@ -26,3 +26,8 @@ Joe's direction for this ticket: fix the cyclist so it goes round the whole trac
 - **Checks**: `tests/track.test.ts` and the rider's cases in `tests/props.test.ts` (seam 2); `tests/laps.spec.ts` rides the drawn cursor once round the loop weaving across the path and sees a time and a new best, and sees the rider rest under reduced motion (seam 4).
 
 Hands-on: a lap with a thumb on a real phone's joystick, to judge the corridor and the grace; two browsers side by side to see the rider at the same point; Joe's workshop acceptance of the three new mattes and the start line.
+
+### The start/finish sign, 2026-09-29
+
+Joe: the start line should be more distinguished; "we could remove the bench there and have a sign or possibly something else". Overworld round seventeen paints the bench south of the line over with the lawn's own flat colour, and `start-sign`, a START FINISH banner on two posts generated against the park at bench scale, stands in its place (x 2544, y 2560, 110 × 85), centred on the line with its top at the path's edge, so the chequered band on the path stays in view. It is the `track` prop's art and hit target: it glows when hovered and opens the Cycling course card, whose line now says to cross the chequered line by the sign. `overworld-geometry.test.ts` holds the sign spanning the start line just south of it; review note `art/reviews/2026-09-29-overworld-start-sign.md` with hashes.
+

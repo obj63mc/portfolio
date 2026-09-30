@@ -90,7 +90,7 @@ test('river: deck spans the water, bridge cut-out covers the deck, south end ins
 	assert.ok(arch.y < southEndY);
 });
 
-test('track: a closed loop round the lake in the park, its start line under the track prop, behind each cut-out it lists', () => {
+test('track: a closed loop round the lake in the park, the start/finish sign at its start line, behind each cut-out it lists', () => {
 	const { path, half, cover } = OVERWORLD.track;
 	const park = OVERWORLD.districts.find((d) => d.id === 'carondelet-park')!;
 	const track = props.find((p) => p.id === 'track')!;
@@ -100,7 +100,9 @@ test('track: a closed loop round the lake in the park, its start line under the 
 		assert.ok(inside({ ...p, w: 0, h: 0 }, park.rect), `point ${i} in the park`);
 		assert.ok(Math.hypot(q.x - p.x, q.y - p.y) <= 250, `points ${i} and ${i + 1} close enough to follow the curves`);
 	}
-	assert.ok(inside({ ...path[0], w: 0, h: 0 }, track.rect), 'the start line is the track prop');
+	// The start/finish sign stands on the lawn just south of the line, spanning it.
+	const [start] = path, sign = track.rect;
+	assert.ok(sign.x < start.x && start.x < sign.x + sign.w && sign.y > start.y && sign.y - start.y < 60, 'the sign stands at the start line');
 	for (const id of cover) {
 		const world: Rect = JSON.parse(readFileSync(new URL(`../art/generated/overworld/${id}/asset.json`, import.meta.url), 'utf8')).world;
 		assert.ok(

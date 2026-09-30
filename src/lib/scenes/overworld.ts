@@ -79,12 +79,13 @@ const districts: District[] = [
 						gist: 'the Carondelicious Criterium and Tuesday night training',
 						body: [
 							'The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.',
-							'Cross the chequered line to time a lap of the loop, either way round. Your ten best laps stay in this browser.'
+							'Cross the chequered line by this sign to time a lap of the loop, either way round. Your ten best laps stay in this browser.'
 						],
-						// The start/finish line on the lower straight (`track` below), which props.ts paints across the path.
-						rect: { x: 2575, y: 2505, w: 50, h: 60 },
-						// The loop is painted in the plate; the rider riding it is ambient motion (motion.ts RIDER).
-						art: []
+						// The start/finish sign on the lawn where a bench stood, just south of the start line on the lower straight
+						// (`track` below), which props.ts paints across the path (Joe, 2026-09-29; the manifest's world rect). The loop
+						// is painted in the plate; the rider riding it is ambient motion (motion.ts RIDER).
+						rect: { x: 2544, y: 2560, w: 110, h: 85 },
+						art: ['start-sign']
 					},
 					{
 						id: 'bike',
