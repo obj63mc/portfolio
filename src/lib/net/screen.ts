@@ -19,6 +19,12 @@ export const reelMs = (title: ScreenTitle) => REEL.beam + REEL.title + SCREEN_VI
 export const playing = (s: Screen, now: number): s is NonNullable<Screen> => !!s && now - s.at < reelMs(s.title);
 
 /**
+ * The room took the visitor's own ask for `title` (ticket 23: `screen_play`): the screen it holds now is a reel of that
+ * title that wasn't there when they asked (`was`). The room never says who asked, and drops an ask while a reel plays.
+ */
+export const accepted = (was: Screen, now: Screen, title: ScreenTitle) => !!now && now !== was && now.title === title;
+
+/**
  * The reel at `now`: how lit the projector and the screen are (0 to 1), what the screen shows (nothing while the beam
  * comes up, the title card, the video or the case study), and how far into the video it is, seconds. Null when idle.
  */

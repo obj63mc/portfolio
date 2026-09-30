@@ -1,10 +1,27 @@
 import adapter from '@sveltejs/adapter-static';
 
-const gaHosts = ['https://*.google-analytics.com', 'https://*.googletagmanager.com'];
+const gaHosts = /** @type {const} */ (['https://*.google-analytics.com', 'https://*.googletagmanager.com']);
 
+/**
+ * The GA4 measurement ID the site is built with (buildout ticket 23): Workers Builds sets `PUBLIC_GA_ID` for every build,
+ * and only a `main` build, `WORKERS_CI_BRANCH` being `main`, passes it through. Previews, local builds and the dev server
+ * get none, so they carry no GA script and no queue.
+ * @param {Record<string, string | undefined>} env
+ */
+export const measurementId = (env) => (env.WORKERS_CI_BRANCH === 'main' && env.PUBLIC_GA_ID) || '';
+
+// Set before SvelteKit reads the environment, and always set, if empty, so `$env/static/public` always exports it.
+process.env.PUBLIC_GA_ID = measurementId(process.env);
+
+// The consent smoke (tests/consent.spec.ts) builds the site with a test ID into a folder of its own, so it never
+// overwrites the site's build or SvelteKit's output, which `vite preview` serves.
+const smoke = process.env.SMOKE_OUT;
+
+/** @type {import('@sveltejs/kit').Config} */
 export default {
 	kit: {
-		adapter: adapter(),
+		adapter: adapter(smoke ? { pages: `${smoke}/build`, assets: `${smoke}/build` } : undefined),
+		...(smoke && { outDir: `${smoke}/.svelte-kit` }),
 		// The one page policy: hash mode writes it, with the bootstrap script's hash, into each prerendered page's
 		// meta tag. static/_headers adds frame-ancestors.
 		csp: {

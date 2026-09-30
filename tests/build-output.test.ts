@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { screenGist } from '../src/lib/scenes/foundry.ts';
+import { measurementId } from '../svelte.config.js';
 
 const page = (file: string) => readFileSync(new URL(`../build/${file}`, import.meta.url), 'utf8');
 const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
@@ -20,6 +21,10 @@ const overworldProps = OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) =
 const subScenes = Object.values(SUB_SCENES);
 const allProps = [...overworldProps, ...subScenes.flatMap((s) => s.props)];
 const files = ['index.html', ...subScenes.map((s) => `${s.id}.html`)];
+/** The GA4 measurement ID this build was made with: none but on a `main` build in Workers Builds (ticket 23). */
+const gaId = measurementId(process.env);
+/** The consent bar, a popover: in the Join card and on the page, only in a build with GA. */
+const consentBar = /<div class="consent[^"]*" popover="manual"[\s\S]*?<\/button>\s*<\/div>(\s*<!--[^>]*-->)*\s*<\/div>/g;
 
 // No test pins the site's copy, its title tags and headings, cards and labels (Joe, 2026-09-30): it is being rewritten.
 // Names come from the scene data where the markup's order or structure is under test.
@@ -30,8 +35,14 @@ test('overworld: description and the shell around the layer', () => {
 	assert.ok(opens(html, 'canvas').every((c) => c.includes('aria-hidden="true"')));
 	assert.match(html, /role="status"[^>]*aria-live="polite"|aria-live="polite"[^>]*role="status"/);
 	assert.match(html, /class="presence"[^>]*>\d+ here</);
-	// The Sound toggle, on until the visitor turns it off, named by its hidden label beside the speaker icon (ticket 22).
-	assert.match(html, /<div class="controls">\s*<button[^>]*aria-pressed="true"[^>]*>\s*<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>\s*<span[^>]*>[^<]+<\/span>\s*<\/button>(?:<!---->)?\s*<button[^>]*>[^<]+<\/button>/);
+	// The Sound toggle, on until the visitor turns it off, named by its hidden label beside the speaker icon (ticket 22), then
+	// the analytics icon, disabled in a build with no GA (ticket 23).
+	const controls = html.match(/<div class="controls">([\s\S]*?)<\/div>/)![1];
+	const [sound, icon, ...rest] = opens(controls, 'button');
+	assert.match(sound, /aria-pressed="true"/);
+	assert.match(controls, /<button[^>]*aria-pressed="true"[^>]*>\s*<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>\s*<span[^>]*>[^<]+<\/span>\s*<\/button>/);
+	assert.equal(/\sdisabled\b/.test(icon), !gaId, icon);
+	assert.equal(rest.length, 0);
 });
 
 test('overworld: skip link, h1, signpost, then districts west to east with their venues', () => {
@@ -149,7 +160,8 @@ test('the Foundry: a poster is a button with no card, and the screen only says i
 
 test('the Join and Paused cards: on every page, outside the layer, closed until the engine opens them', () => {
 	for (const file of files) {
-		const html = page(file), shell = html.replace(main(html), '');
+		// The consent bar in the Join card is a popover over it, not the card's content (ticket 23).
+		const html = page(file), shell = html.replace(main(html), '').replace(consentBar, '');
 		const [join, paused, ...rest] = [...shell.matchAll(/<dialog\b[\s\S]*?<\/dialog>/g)].map((m) => m[0]);
 		assert.equal(rest.length, 0, file);
 		for (const card of [join, paused]) {
@@ -159,6 +171,28 @@ test('the Join and Paused cards: on every page, outside the layer, closed until 
 		assert.equal(join.replace(/<[^>]+>/g, '').trim(), texts(join, 'button').join(), `${file}: the Join card holds only its button`);
 		assert.equal(opens(join, 'button').length, 1, file);
 		assert.equal(opens(paused, 'button').length, 1, file);
+	}
+});
+
+// Ticket 23: only production's build carries GA. Any other has no gtag.js loader, no dataLayer queue and no consent bar;
+// production's has all of them and its measurement ID, and still never an inline script.
+test('analytics: a build without a measurement ID has no GA script, no queue and no bar; with one it has them', () => {
+	const dir = new URL('../build/_app/immutable/', import.meta.url);
+	const js = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.js')).map((f) => readFileSync(new URL(f, dir), 'utf8')).join('\n');
+	const loader = /googletagmanager\.com\/gtag\/js/, queue = /dataLayer/;
+	for (const file of files) {
+		const html = page(file), bars = html.match(consentBar) ?? [];
+		assert.doesNotMatch(html, /<script[^>]*googletagmanager/, `${file}: never an inline or static GA script`);
+		assert.equal(bars.length, gaId ? 2 : 0, `${file}: the bar in the Join card and on the page`);
+		if (gaId) assert.ok(bars.every((b) => opens(b, 'button').length === 2), file);
+	}
+	if (gaId) {
+		assert.match(js, loader);
+		assert.match(js, queue);
+		assert.ok(js.includes(gaId), 'the measurement ID');
+	} else {
+		assert.doesNotMatch(js, loader);
+		assert.doesNotMatch(js, queue);
 	}
 });
 

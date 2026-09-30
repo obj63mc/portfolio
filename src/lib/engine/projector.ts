@@ -4,8 +4,9 @@
 // camera sees the right wall at an angle) through a mesh of triangles. The video plays in step with the room, with sound.
 // A poster's clicker first takes a seat in the second row, and watches from it with steering off for the reel's first 5 s.
 import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, inSeats, posterOf, screenGist, seatOf, type ScreenTitle } from '../scenes/foundry.ts';
+import { screenPlay } from '../analytics.svelte.ts';
 import type { Net } from '../net/net.ts';
-import { onQuad, reel } from '../net/screen.ts';
+import { accepted, onQuad, reel, type Screen } from '../net/screen.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { VIDEOS } from '../videos.ts';
 import { BODY, HEADLINE, loadFaces, settled } from './fonts.ts';
@@ -75,10 +76,10 @@ export class Projector {
 	/**
 	 * The visitor's own seat, from their poster's click until the reel they sat down for ends (Joe, 2026-09-29): the cursor
 	 * glides there from where it was (`from`, world px, at the click's `at`, performance ms), and only once seated asks the
-	 * room for the title (`asked`). `seen` from when a reel first runs after it asked, the one it asked for or one already
-	 * playing.
+	 * room for the title (`asked`), when the screen was `was`. `seen` from when a reel first runs after it asked, the one it
+	 * asked for or one already playing.
 	 */
-	private seat: { title: ScreenTitle; to: Point; from: Point | null; at: number; asked: number | null; seen: number | null } | null = null;
+	private seat: { title: ScreenTitle; to: Point; from: Point | null; at: number; asked: number | null; was: Screen; seen: number | null } | null = null;
 	/**
 	 * Whether the own cursor was in the seats when it last moved on screen (`moved`, CSS px): a zoom alone never changes it,
 	 * since the unlocked mouse's cursor stays at the OS pointer as the view scales, which could carry it in and out.
@@ -100,7 +101,7 @@ export class Projector {
 			'click',
 			(e) => {
 				const title = posterOf(clickedProp(e));
-				if (this.foundry && title) this.seat ??= { title, to: seatOf(net.id), from: null, at: performance.now(), asked: null, seen: null };
+				if (this.foundry && title) this.seat ??= { title, to: seatOf(net.id), from: null, at: performance.now(), asked: null, was: null, seen: null };
 			},
 			{ signal: this.listeners.signal }
 		);
@@ -144,8 +145,12 @@ export class Projector {
 		const s = this.seat;
 		if (!s) return null;
 		s.from ??= at;
-		if (s.asked === null && (rm || now - s.at >= SIT_MS)) (s.asked = now), this.net.play(s.title);
-		if (s.asked !== null && this.reel) s.seen ??= now;
+		if (s.asked === null && (rm || now - s.at >= SIT_MS)) (s.asked = now), (s.was = this.net.screen), this.net.play(s.title);
+		if (s.asked !== null && this.reel && s.seen === null) {
+			s.seen = now;
+			// The room took this visitor's own click, which analytics counts (ticket 23); offline the click plays here.
+			if (accepted(s.was, this.net.screen, s.title)) screenPlay(s.title);
+		}
 		if (s.seen !== null ? !this.reel || now - s.seen >= WATCH_MS : s.asked !== null && now - s.asked > UNHEARD) return (this.seat = null);
 		return sitting(s.from, s.to, now - s.at, rm);
 	}
