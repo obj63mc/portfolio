@@ -7,6 +7,8 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { createServer, type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { factor } from '../src/lib/engine/depth.ts';
+import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
 const root = new URL('..', import.meta.url).pathname;
@@ -55,6 +57,15 @@ const opaque = (page: Page, box?: { x: number; y: number; w: number; h: number }
 
 /** The render scale, off the layer's transform. */
 const scale = (page: Page) => page.locator('main').evaluate((m) => new DOMMatrix(getComputedStyle(m).transform).a);
+/** The overworld's depth factor (ticket 19) at a point on `page`'s screen, through its camera: every cursor is drawn times it. */
+const depthAt = async (page: Page, p: Point) =>
+	factor(
+		OVERWORLD.depth,
+		await page.locator('main').evaluate((m, p) => {
+			const w = new DOMMatrix(getComputedStyle(m).transform).inverse().transformPoint(p);
+			return { x: w.x, y: w.y };
+		}, p)
+	);
 
 /** Joins with a click near the Join button's corner, the lock refused, so the drawn cursor follows the mouse. */
 async function joinScene(page: Page) {
@@ -126,9 +137,11 @@ test.describe('two browsers on wrangler dev', () => {
 		await expect(b.locator('.presence')).toHaveText(/\b2\b/);
 		expect(await opaque(b), 'nobody has joined, so nobody is drawn').toBeNull();
 		await joinScene(a);
-		// Clear of the church's door link and every prop, so a's own cursor is the arrow, not the pointing hand.
-		const s = await scale(a), p: Point = { x: 760, y: 420 };
+		// Clear of the church's door link and every prop, so a's own cursor is the arrow, not the pointing hand. Both sizes
+		// are times the depth factor there, the same world point on both screens.
+		const p: Point = { x: 760, y: 420 };
 		await a.mouse.move(p.x, p.y);
+		const s = (await scale(a)) * (await depthAt(a, p));
 		// b hasn't joined, so everything on its cursor canvas is a's cursor, where a's own camera shows it.
 		// Polled on the distance: the first position b receives is where a joined, which may already be left of p.
 		const from = async () => ((o) => (o ? Math.hypot(o.x - p.x, o.y - p.y) : Infinity))(await opaque(b));

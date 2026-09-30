@@ -144,6 +144,15 @@ html.engine {
 		outline-offset: 2px;
 	}
 
+	/*
+	 * A prop standing on walk-behind scenery the visitor's cursor is behind (buildout ticket 19): the mouse's hover and
+	 * clicks pass through it, and the engine skips it under a locked or steered cursor. Keyboard focus, a screen reader and
+	 * a finger's own tap still reach it.
+	 */
+	&:not([data-input='touch']) main .prop.behind > button {
+		pointer-events: none;
+	}
+
 	& main {
 		position: fixed;
 		left: 0;

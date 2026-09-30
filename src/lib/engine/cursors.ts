@@ -2,17 +2,19 @@
 // and sprites.ts: one local sprite atlas, the arrow's white and gold bodies, the own cursor's halo, the pointing hand's
 // white and gold bodies and the seven cosmetics (ticket 16) rasterized once at the session's scale, beside the flag
 // sheet (scripts/flags.ts). Only ids cross the wire; every client draws every cursor itself, and the sizes, the pop, the
-// hand and the tag are local drawing, never sent.
+// hand and the tag are local drawing, never sent. So are the depth factor and the scenery over a cursor (ticket 19).
 import { COSMETICS, KNOWN } from '../cosmetics.ts';
 import type { CosmeticId } from '../scenes/types';
 import SHEET from './flags.webp?no-inline';
 import FLAGS from './flags.json';
 import { BODY as COPY, loadFaces, settled } from './fonts.ts';
+import type { Cover } from './scenery.ts';
 
 /**
  * A cursor to draw: its tip in device px, its country code, whether its body is gold, the cosmetic it wears (0 none, an
- * id this build doesn't know draws nothing) and when that went on (performance.now() ms), which pops it in; and whether
- * it is a pointing hand, over something to click (the own cursor only: a peer's is always the arrow).
+ * id this build doesn't know draws nothing) and when that went on (performance.now() ms), which pops it in; whether
+ * it is a pointing hand, over something to click (the own cursor only: a peer's is always the arrow); its depth factor
+ * (depth.ts, ticket 19), 1 unless set; and the walk-behind scenery it is behind, back to front (scenery.ts).
  */
 export interface Drawn {
 	x: number;
@@ -22,7 +24,12 @@ export interface Drawn {
 	cos: number;
 	wornAt: number;
 	hand?: boolean;
+	d?: number;
+	behind?: Cover[];
 }
+
+type Box = { x: number; y: number; w: number; h: number };
+const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
 /** The arrow, 32 units tall with its tip at the origin; a unit is a world px at 1x. */
 const ARROW = new Path2D('M0 0V29L7 22L11.5 32L16 30L11.5 21H21Z');
@@ -212,6 +219,9 @@ export class Cursors {
 	/** What was last drawn, so a still frame isn't redrawn. */
 	private key = '';
 	private tagAt = -Infinity;
+	/** Where a cursor that scenery covers is drawn first, so the scenery lands on its pixels alone. */
+	private scratch = new OffscreenCanvas(1, 1);
+	private sg = this.scratch.getContext('2d')!;
 
 	/** `scale` is device px per world px, fixed for the session with the render scale; `dpr` sizes the tag's text. */
 	constructor(canvas: HTMLCanvasElement, g: CanvasRenderingContext2D, scale: number, dpr: number) {
@@ -237,26 +247,29 @@ export class Cursors {
 	}
 
 	/**
-	 * Peers first, then the own cursor over them, then the iris between scenes (iris.ts) over all of it: black but for a
-	 * circle `r` device px round `x, y`. Redrawn only when a cursor, its badge, its cosmetic, the tag or the iris has changed.
+	 * Peers first, then the own cursor over them, each at its size times its depth factor with the scenery that covers it
+	 * (ticket 19): the walk-behind scenery it is behind, back to front, then the `foreground` scenery, which covers every
+	 * cursor. Then the own cursor's tag, a label never covered, and the iris between scenes (iris.ts) over all of it: black
+	 * but for a circle `r` device px round `x, y`. Redrawn only when a cursor, its badge, its cosmetic, its size, the
+	 * scenery over it, the tag or the iris has changed.
 	 */
-	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null) {
+	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null, foreground: Cover[] = []) {
 		const tag = own ? Math.max(0, Math.min(1, (this.tagAt + TAG + FADE - now) / FADE)) : 0;
 		const pop = (p: Drawn) => Math.min(1, (now - p.wornAt) / POP);
+		const all = [...peers.map((p) => ({ p, size: PEER * (p.d ?? 1), halo: false })), ...(own ? [{ p: own, size: OWN * (own.d ?? 1), halo: true }] : [])].map(
+			(c) => ({ ...c, over: [...(c.p.behind ?? []), ...foreground].filter((o) => overlaps(o, this.box(c.p, c.size))) })
+		);
 		const key = [
 			tag, this.ready, settled.size, iris && [iris.x, iris.y, iris.r],
-			...[own, ...peers].flatMap((p) => (p ? [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand] : ['-']))
+			...all.flatMap(({ p, size, halo, over }) => [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand, size, halo, ...over.flatMap((o) => [o.key, o.x, o.y])])
 		].join();
 		if (key === this.key) return;
 		this.key = key;
 		const g = this.g, { width, height } = this.canvas;
 		g.setTransform(1, 0, 0, 1, 0, 0);
 		g.clearRect(0, 0, width, height);
-		for (const p of peers) this.one(p, PEER, false, pop(p));
-		if (own) {
-			this.one(own, OWN, true, pop(own));
-			if (tag) this.you(own, tag);
-		}
+		for (const c of all) this.covered(c.p, c.size, c.halo, pop(c.p), c.over);
+		if (own && tag) this.you(own, tag);
 		if (!iris) return;
 		g.beginPath();
 		g.rect(0, 0, width, height);
@@ -265,9 +278,34 @@ export class Cursors {
 		g.fill('evenodd');
 	}
 
-	/** The own cursor's "you" tag, `alpha` of the way through fading. */
+	/** A cursor's atlas cell at `size`, device px: everything it draws, its halo and its cosmetic included. */
+	private box(p: Drawn, size: number): Box {
+		const k = size * this.scale;
+		return { x: p.x - PAD * k, y: p.y - PAD * k, w: CELL.w * k, h: CELL.h * k };
+	}
+
+	/**
+	 * One cursor, and the scenery `over` it painted onto its own pixels: the cursor is drawn on the scratch canvas, the
+	 * cut-outs over it there source-atop, and the result onto the overlay at whole device px, so no copy of the scenery
+	 * reaches past the cursor's own pixels, over the scene canvas or another cursor.
+	 */
+	private covered(p: Drawn, size: number, halo: boolean, pop: number, over: Cover[]) {
+		if (!over.length) return this.one(this.g, p, size, halo, pop);
+		const b = this.box(p, size), x = Math.floor(b.x), y = Math.floor(b.y), w = Math.ceil(b.x + b.w) - x, h = Math.ceil(b.y + b.h) - y;
+		const s = this.scratch, sg = this.sg;
+		if (s.width < w || s.height < h) (s.width = Math.max(s.width, w)), (s.height = Math.max(s.height, h));
+		sg.setTransform(1, 0, 0, 1, 0, 0);
+		sg.clearRect(0, 0, w, h);
+		this.one(sg, { ...p, x: p.x - x, y: p.y - y }, size, halo, pop);
+		sg.globalCompositeOperation = 'source-atop';
+		for (const o of over) sg.drawImage(o.bmp, o.x - x, o.y - y, o.w, o.h);
+		sg.globalCompositeOperation = 'source-over';
+		this.g.drawImage(s, 0, 0, w, h, x, y, w, h);
+	}
+
+	/** The own cursor's "you" tag, `alpha` of the way through fading, beside the cursor at its drawn size. */
 	private you(own: Drawn, alpha: number) {
-		const g = this.g, d = this.dpr, k = OWN * this.scale, x = own.x + 22 * k, y = own.y + 12 * k;
+		const g = this.g, d = this.dpr, k = OWN * (own.d ?? 1) * this.scale, x = own.x + 22 * k, y = own.y + 12 * k;
 		g.globalAlpha = alpha;
 		g.font = `500 ${12 * d}px ${COPY}`;
 		g.lineJoin = 'round';
@@ -280,11 +318,11 @@ export class Cursors {
 	}
 
 	/**
-	 * One cursor `size` times its 32 units, scaled about its tip: the arrow or the hand, its cosmetic, `pop` of the way
-	 * through popping in about its anchor, and its flag badge outlined for contrast at a few px.
+	 * One cursor on `g`, `size` times its 32 units, scaled about its tip: the arrow or the hand, its cosmetic, `pop` of the
+	 * way through popping in about its anchor, and its flag badge outlined for contrast at a few px.
 	 */
-	private one(p: Drawn, size: number, halo: boolean, pop: number) {
-		const g = this.g, r = OWN * this.scale, k = size * this.scale, cw = this.atlas.width / CELLS, ch = this.atlas.height;
+	private one(g: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, p: Drawn, size: number, halo: boolean, pop: number) {
+		const r = OWN * this.scale, k = size * this.scale, cw = this.atlas.width / CELLS, ch = this.atlas.height;
 		const x = p.x - PAD * k, y = p.y - PAD * k, w = (cw * k) / r, h = (ch * k) / r, body = p.hand ? 'hand' : 'arrow';
 		if (halo) g.drawImage(this.atlas, BODY.halo * cw, 0, cw, ch, x, y, w, h);
 		g.drawImage(this.atlas, (BODY[body] + +p.gold) * cw, 0, cw, ch, x, y, w, h);

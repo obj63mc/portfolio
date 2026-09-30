@@ -32,6 +32,28 @@ async function join(page: Page) {
 	await expect(page.locator('dialog.join')).toBeHidden();
 }
 
+/** A world point on screen, CSS px, through the layer's camera transform. */
+const screenOf = (page: Page, p: { x: number; y: number }) =>
+	page.locator('main').evaluate((m, p) => {
+		const q = new DOMMatrix(getComputedStyle(m).transform).transformPoint(p);
+		return { x: q.x, y: q.y };
+	}, p);
+
+/** Walks the mouse through world points, a few frames at each, so the engine steps its cursor at every one. */
+async function walk(page: Page, ...points: { x: number; y: number }[]) {
+	for (const p of points) {
+		const at = await screenOf(page, p);
+		await page.mouse.move(at.x, at.y);
+		await page.waitForTimeout(100);
+	}
+}
+
+// The lab's near-left desk carries the workstation's monitor (ticket 19): stepped onto from the aisle between the rows the
+// cursor is behind it, and from the floor by its chair, up through the chair, in front of it. World px.
+const AISLE = { x: 935, y: 979 };
+const FLOOR = { x: 1060, y: 1570 };
+const CHAIR = { x: 1005, y: 1450 };
+
 test.beforeEach(({ page }) => page.addInitScript(countDraws));
 
 test.describe('the SLU lab, the whole height in view', () => {
@@ -45,6 +67,7 @@ test.describe('the SLU lab, the whole height in view', () => {
 		expect(await drawsOver(page, 1000)).toBe(0);
 
 		const workstation = page.locator('[data-prop="workstation"] > button');
+		await walk(page, FLOOR, CHAIR); // the monitor is used from in front of its desk
 		await workstation.hover();
 		expect(await drawsOver(page, 400)).toBeGreaterThan(0); // the glow fading in
 		expect(await drawsOver(page, 1000)).toBe(0); // held, still
@@ -55,6 +78,36 @@ test.describe('the SLU lab, the whole height in view', () => {
 		await page.mouse.move(5, 5);
 		await page.waitForTimeout(500);
 		expect(await drawsOver(page, 1000)).toBe(0);
+	});
+
+	test('stepping onto a desk from between the rows, its monitor takes neither hover nor click; from the chair side it takes both', async ({ page }) => {
+		await page.goto('/slu');
+		await join(page);
+		const prop = page.locator('[data-prop="workstation"]'), button = prop.locator('> button'), card = prop.locator('dialog');
+		const box = (await button.boundingBox())!, monitor = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+		await page.mouse.move(5, 5);
+		await page.waitForTimeout(300);
+
+		await walk(page, AISLE);
+		await page.mouse.move(monitor.x, monitor.y);
+		await expect(prop).toHaveClass(/\bbehind\b/);
+		expect(await drawsOver(page, 600)).toBe(0); // no glow
+		await page.mouse.click(monitor.x, monitor.y);
+		await expect(card).toBeHidden();
+		// The keyboard still reaches it.
+		await button.focus();
+		await page.keyboard.press('Enter');
+		await expect(card).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(card).toBeHidden();
+		await button.blur(); // the focus the card handed back plays the hover glow too
+
+		await walk(page, { x: 1150, y: 1590 }, FLOOR, CHAIR);
+		await page.mouse.move(monitor.x, monitor.y);
+		await expect(prop).not.toHaveClass(/\bbehind\b/);
+		expect(await drawsOver(page, 400)).toBeGreaterThan(0); // the glow fading in
+		await page.mouse.click(monitor.x, monitor.y);
+		await expect(card).toBeVisible();
 	});
 });
 

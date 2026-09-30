@@ -29,6 +29,12 @@ export const inOutline = (p: Point, outline: Point[]) => {
 export type Side = 'front' | 'behind';
 
 /**
+ * The props a cursor with `sides` can't use: those standing on scenery it is behind. The engine takes their hover and
+ * cursor clicks away from the visitor's own cursor; keyboard focus and the DOM buttons themselves are untouched.
+ */
+export const blocked = (units: WalkBehind[], sides: ReadonlyMap<string, Side>) => units.flatMap((w) => (sides.get(w.key) === 'behind' ? w.props : []));
+
+/**
  * One cursor's side of each walk-behind unit it is on. The side is decided when the cursor steps onto a unit's outline,
  * read where it stepped from, its last position outside the outline: on or below the front line is in front, above it
  * behind. For a staircase, stepping on from on or above its landing is in front too, as is stepping on within
