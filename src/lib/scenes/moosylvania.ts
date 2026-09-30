@@ -56,11 +56,13 @@ export const MOOSYLVANIA: SubScene = {
 		{
 			id: 'moose-statue',
 			name: 'Moose statue',
-			gist: 'about Moosylvania',
-			// TODO Joe: what Moosylvania is and general information about the agency (content inventory, 2026-09-28).
-			body: ['Moosylvania, 7303 Marietta Avenue, Maplewood.'],
+			gist: 'the Moosylvania mascot',
+			// No card, like the moose outside: an Easter egg granting the same antlers (Joe, 2026-09-30).
+			kind: 'action',
+			body: [],
 			rect: { x: 1623, y: 2549, w: 124, h: 179 },
-			art: ['moosylvania-statue']
+			art: ['moosylvania-statue'],
+			cosmetic: 4
 		},
 		{
 			id: 'meeting-tv',

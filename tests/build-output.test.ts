@@ -58,11 +58,11 @@ test('overworld: skip link, h1, signpost, then districts west to east with their
 	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
 });
 
-test('overworld: one button and one dialog per prop, named prop plus gist', () => {
-	const html = main(page('index.html'));
+test('overworld: one button per prop, named prop plus gist, and one dialog per card', () => {
+	const html = main(page('index.html')), cards = overworldProps.filter((p) => !p.kind);
 	const buttons = opens(html, 'button').filter((b) => b.includes('aria-haspopup="dialog"'));
-	assert.equal(buttons.length, overworldProps.length);
-	assert.equal(opens(html, 'dialog').length, overworldProps.length);
+	assert.equal(buttons.length, cards.length);
+	assert.equal(opens(html, 'dialog').length, cards.length);
 	for (const p of overworldProps) assert.ok(texts(html, 'button').includes(`${p.name}: ${p.gist}`), p.id);
 	const moosylvania = texts(withoutDialogs(html).slice(html.indexOf('id="moosylvania"')), 'button').slice(0, 2);
 	const byX = OVERWORLD.districts[0].venues[0].props.slice().sort((a, b) => a.rect.x - b.rect.x).map((p) => p.name);
@@ -115,7 +115,7 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 		'diploma', 'whiteboard', 'workstation',
 		// The marquee is scenery, its letters scrolling what's showing (Joe, 2026-09-30).
 		'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
-		'mc-sign', 'server-rack',
+		'mc-sign', 'mc-eye', 'server-rack',
 		'chalkboard', 'bottle-bacardi', 'bottle-grey-goose', 'bottle-new-amsterdam', 'bottle-camarena', 'bottle-barefoot',
 		'bottle-bud-light', 'bottle-ej', 'bottle-pink-whitney', 'bottle-rumchata', 'bottle-soonhari', 'brewery-sign',
 		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it (ticket 25).
@@ -129,7 +129,9 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	assert.deepEqual([...new Set(allProps.map((p) => p.cosmetic).filter(Boolean))].sort(), [1, 2, 3, 4, 5, 6, 7]);
 	const links = (id: string) => (allProps.find((p) => p.id === id)!.links ?? []).map((l) => l.href).join(' ');
 	assert.match(links('workstation'), /github\.com/);
-	assert.match(links('bike'), /strava\.com/);
+	assert.match(links('ride-sign'), /strava\.com/);
+	// Easter eggs: their click is the grant, with no card (Joe, 2026-09-30).
+	for (const id of ['moose', 'moose-statue', 'bike', 'mc-eye']) assert.equal(allProps.find((p) => p.id === id)!.kind, 'action', id);
 });
 
 test.todo('inventory: the ATM on the overworld, for PayPal and Venmo (buildout ticket 25)');
@@ -170,7 +172,9 @@ test('the Join and Paused cards: on every page, outside the layer, closed until 
 		}
 		assert.equal(join.replace(/<[^>]+>/g, '').trim(), texts(join, 'button').join(), `${file}: the Join card holds only its button`);
 		assert.equal(opens(join, 'button').length, 1, file);
-		assert.equal(opens(paused, 'button').length, 1, file);
+		// Resume, and the Sound toggle, since the modal card makes the corner's inert.
+		assert.equal(opens(paused, 'button').length, 2, file);
+		assert.match(paused, /class="sound\b/, file);
 	}
 });
 
@@ -258,7 +262,7 @@ test('cards: every card is labelled and closes natively', () => {
 		assert.equal(layer.match(/<form method="dialog"[\s>]/g)?.length ?? 0, dialogs.length, file);
 	}
 	// Card titles stay inside the page's heading hierarchy when the cards read inline without JavaScript.
-	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.length);
+	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.filter((p) => !p.kind).length);
 	for (const s of subScenes) assert.equal(texts(page(`${s.id}.html`), 'h2').length, s.props.filter((p) => !p.kind).length, s.id);
 	assert.match(page('index.html'), /<noscript>[\s\S]*dialog \{ display: block/);
 });

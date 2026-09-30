@@ -35,6 +35,7 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 	'moose-statue': 'moose',
 	bike: 'bell',
 	'mc-sign': 'squelch',
+	'mc-eye': 'squelch',
 	'server-rack': 'fan',
 	'computer-frontend': 'click',
 	'computer-backend': 'click',
@@ -80,9 +81,9 @@ export const LINGER = 60_000;
 export const needed = (scene: Overworld | SubScene): ReadonlySet<SoundId> =>
 	new Set([...GLOBAL, ...propsOf(scene).flatMap((p) => (PROP_SOUNDS[p.id] ? [PROP_SOUNDS[p.id]] : [])), ...(EXTRAS[scene.id] ?? [])]);
 
-/** What a prop's click sounds like: its card opening, unless it has none, and its signature. Hover never sounds. */
+/** What a prop's click sounds like: its signature, or else its card opening, unless it has none. Hover never sounds. */
 export const clickSounds = (prop: Prop | undefined): SoundId[] =>
-	prop ? [...(prop.kind ? [] : (['card'] as const)), ...(PROP_SOUNDS[prop.id] ? [PROP_SOUNDS[prop.id]] : [])] : [];
+	prop && PROP_SOUNDS[prop.id] ? [PROP_SOUNDS[prop.id]] : prop && !prop.kind ? ['card'] : [];
 
 /**
  * A granting click's sound, from what the cursor wore and whether it was gold before and after: the chime as a cosmetic

@@ -66,7 +66,7 @@ const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp',
  * is near them. On touch they and the joystick are the finger's, and the drawn cursor over them neither marks, clicks nor
  * holds anything (Joe, 2026-09-29). Cards stop the camera anyway.
  */
-const CONTROLS = '.controls, .consent:popover-open';
+const CONTROLS = '.controls:not(dialog *), .consent:popover-open';
 /** The drawn cursor's height, world px: a touch drag carries it this far inside the viewport's edge, so it stays in view. */
 const CARRY = 40;
 /** A touch becomes a drag once it has gone this many CSS px, so a tap on a prop isn't eaten. */
@@ -111,6 +111,8 @@ export class Engine {
 	private inside = false;
 	/** Arrow keys and WASD held, by code. */
 	private keys = new Set<string>();
+	/** The props' videos a pause stopped, the meeting TV's, to play again on Resume; the Foundry screen plays on. */
+	private stopped: HTMLVideoElement[] = [];
 	/** The control under the locked or touch-steered cursor, marked `.hot` since the page gets no hover there. */
 	private hot: Element | null = null;
 	/** False after a keyboard or fragment pan, or a drag, until the cursor moves, so a cursor resting in the band doesn't undo it. */
@@ -588,21 +590,27 @@ export class Engine {
 		card.close();
 	}
 
-	/** Esc with no card, blur or a hidden tab: the lock released, the cursor frozen where it is, the camera and keys stopped. */
+	/**
+	 * Esc with no card, blur or a hidden tab: the lock released, the cursor frozen where it is, the camera and keys stopped,
+	 * and a prop's video held.
+	 */
 	private pause() {
 		if (!joined(this.input)) return;
 		this.keys.clear();
+		this.stopped = [...this.layer.querySelectorAll('video')].filter((v) => !v.paused);
+		for (const v of this.stopped) v.pause();
 		this.enter({ is: 'paused', relock: this.input.is === 'locked' || this.input.is === 'released' });
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
 	}
 
 	/**
 	 * Re-locks with the cursor where it froze; the lock's arrival closes the card, a refusal keeps it up and says so. The
-	 * press resumes audio a hidden tab suspended, on touch as on desktop.
+	 * press resumes audio a hidden tab suspended, on touch as on desktop, and the videos the pause held.
 	 */
 	private resume() {
 		if (this.input.is !== 'paused') return;
 		sound.resume();
+		for (const v of this.stopped.splice(0)) v.play().catch(() => {});
 		if (this.input.relock) this.lock();
 		else this.enter({ is: this.fine.matches ? 'unlocked' : 'touch' });
 	}

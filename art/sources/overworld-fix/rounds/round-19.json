@@ -1,0 +1,208 @@
+{
+ "round": 19,
+ "base": "rounds/base-19.png",
+ "note": "Joe (2026-09-30): the small cream office building north of the Arch, on the Laclede's Landing edge, is cut into by the lawn east of it; the riverside warehouse on the Illinois bank, north of MonsterCommerce, is cut into by the lawn at its east end; the Maplewood storefront row has ghosts of its awnings between the shops and reads soft. Each is redrawn whole and crisp. The three Forest Park picnic tables west of the sign are painted over with the lawn's own colour here and come back as decals (decals.json), as does the FOREST PARK sign's lettering: at 10 to 13 native px neither survives the 4x upscale.",
+ "tiles": {
+  "landing": {
+   "rect": [
+    1140,
+    60,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      1245,
+      163
+     ],
+     [
+      1273,
+      163
+     ],
+     [
+      1279,
+      168
+     ],
+     [
+      1275,
+      180
+     ],
+     [
+      1268,
+      195
+     ],
+     [
+      1265,
+      207
+     ],
+     [
+      1245,
+      207
+     ]
+    ]
+   ],
+   "keep": "the grey plaza and the red-roofed pavilion above the outline, the big cream and brick blocks to the west, the cream footpath running diagonally up to the right just east of the outline, the lawn and trees beyond it, and the Arch",
+   "fixes": [
+    "Outline (the downtown edge north of the Arch): a small cream four-storey office building with rows of blue windows and a flat roof, whose right (east) half is swallowed by the green lawn beside it, so the lawn cuts into the building. Draw the building whole at exactly the same position and size as its visible left part: a crisp box with a flat cream roof, its front wall and its right side wall complete with blue windows in even rows, standing on the cream pavement, its right side ending in a clean vertical corner. The narrow strip of lawn between the building and the diagonal footpath east of it begins at the building's foot and never overlaps it. Keep the three small round trees inside the outline, whole, at the same positions, standing in front of the building."
+   ]
+  },
+  "warehouse": {
+   "rect": [
+    1590,
+    170,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      1714,
+      286
+     ],
+     [
+      1740,
+      279
+     ],
+     [
+      1751,
+      287
+     ],
+     [
+      1749,
+      300
+     ],
+     [
+      1745,
+      319
+     ],
+     [
+      1714,
+      319
+     ]
+    ]
+   ],
+   "keep": "the river and shoreline, the dock crane, the crates and the small shed below, the two white houses and their trees above, the cream road running diagonally at the right, and the MonsterCommerce building at the lower right",
+   "fixes": [
+    "Outline (the Illinois riverbank, north of the MonsterCommerce building): the east end of a long cream warehouse with a slate-blue double roof and dark grey roll-up doors. Its east end wall and the right part of its front wall fade into the green lawn beside it, so the ground cuts into the building. Draw the warehouse's east end whole and crisp at exactly the same position and size: the front wall continues in the same cream with a clean bottom edge on the cream paving, the east gable wall is complete with its dark door and a clean vertical corner, and the roof edge is unbroken. The narrow strip of lawn between the warehouse and the diagonal road begins at the building's foot and never overlaps its walls."
+   ]
+  },
+  "storefronts": {
+   "rect": [
+    185,
+    212,
+    320,
+    128
+   ],
+   "polygons": [
+    [
+     [
+      192,
+      240
+     ],
+     [
+      214,
+      226
+     ],
+     [
+      292,
+      228
+     ],
+     [
+      300,
+      236
+     ],
+     [
+      352,
+      233
+     ],
+     [
+      420,
+      242
+     ],
+     [
+      486,
+      252
+     ],
+     [
+      490,
+      262
+     ],
+     [
+      490,
+      284
+     ],
+     [
+      456,
+      284
+     ],
+     [
+      456,
+      333
+     ],
+     [
+      300,
+      316
+     ],
+     [
+      192,
+      303
+     ]
+    ]
+   ],
+   "protect": [
+    [
+     456,
+     284,
+     505,
+     340
+    ]
+   ],
+   "keep": "the cream sidewalk and the grey parking lot with its white stall lines below the row, the lawn, paths and trees above it, and the brick church at the right",
+   "fixes": [
+    "Outline (Maplewood's main street): a row of two-storey red-brick storefronts with flat cream roofs, arched white-trimmed upper windows and a coloured fabric awning over each shop door (red, red, red, green, green, green, yellow, then further right terracotta, green, blue, blue). The row is soft and smeared, and ghosts of the awnings repeat faintly lower down between the shops and behind the street trees. Redraw the whole row crisp and clean at exactly the same position and size: the same brick buildings, roof line and parapets, the same arched upper windows in the same places, one clean awning over each shop door in the same colours and places with a dark doorway and shop window beneath it, and plain brick wall between the shops. No duplicated or faded awnings anywhere. Keep the street trees and the low green shrubs along the front, whole and crisp, at the same positions, standing on the sidewalk in front of the shops."
+   ]
+  }
+ },
+ "paints": [
+  {
+   "rect": [
+    240,
+    179,
+    259,
+    192
+   ],
+   "color": [
+    192,
+    208,
+    56
+   ]
+  },
+  {
+   "rect": [
+    258,
+    176,
+    277,
+    189
+   ],
+   "color": [
+    192,
+    208,
+    56
+   ]
+  },
+  {
+   "rect": [
+    273,
+    186,
+    294,
+    197
+   ],
+   "color": [
+    190,
+    207,
+    57
+   ]
+  }
+ ]
+}

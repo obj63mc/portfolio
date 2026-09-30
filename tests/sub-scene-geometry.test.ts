@@ -269,6 +269,6 @@ test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers 
 		assert.ok(!on({ x: x0 - 1, y: mid }) && !on({ x: x1 + 1, y: mid }), `${key}: from either side, underneath`);
 		assert.deepEqual(stairs.props, []);
 	}
-	// The lobby grants nothing: Moosylvania's antlers come from the moose outside.
-	assert.ok(!lobby.props.some((p) => p.cosmetic));
+	// The lobby grants only the statue's antlers, the same as the moose outside (Joe, 2026-09-30).
+	assert.deepEqual(lobby.props.filter((p) => p.cosmetic).map((p) => [p.id, p.cosmetic]), [['moose-statue', 4]]);
 });

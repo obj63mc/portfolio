@@ -122,8 +122,7 @@ test('ambient motion draws while in view; under reduced motion it rests, and a c
 	expect(await drawsOver(page, 1000)).toBe(0);
 	const moose = page.locator('[data-prop="moose"] > button');
 	await moose.focus();
-	await page.keyboard.press('Enter'); // the click: the card opens and the antlers wobble
-	await expect(page.locator('[data-prop="moose"] dialog')).toBeVisible();
+	await page.keyboard.press('Enter'); // the click: the antlers wobble
 	expect(await drawsOver(page, 600)).toBeGreaterThan(10);
 	await page.waitForTimeout(800);
 	expect(await drawsOver(page, 1000)).toBe(0);

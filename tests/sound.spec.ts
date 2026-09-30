@@ -42,7 +42,8 @@ function spy() {
 const played = (page: Page) => page.evaluate(() => [...((window as Window & { played?: string[] }).played ?? [])].sort());
 /** Every pass a loop has started, in order, with the offset it started from. */
 const passes = (page: Page) => page.evaluate(() => [...((window as Window & { passes?: { id: string; offset: number }[] }).passes ?? [])]);
-const toggle = (page: Page) => page.locator('.controls .sound');
+/** The corner's Sound toggle; the Paused card has its own. */
+const toggle = (page: Page) => page.locator('.controls:not(dialog *) .sound');
 
 /** Every sound the page fetched, by id; `each` counts the fetches of each. */
 function fetched(page: Page) {
@@ -139,6 +140,26 @@ test("a video's own sound follows the toggle: muted while it is off, unmuted by 
 	await toggle(page).click();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
 	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(false);
+});
+
+test("paused, the card's own Sound toggle mutes, and the meeting TV holds until Resume", async ({ page }) => {
+	await page.goto('/moosylvania');
+	await join(page);
+	const tv = page.locator('[data-prop="meeting-tv"] video'), playing = () => tv.evaluate((v: HTMLVideoElement) => !v.paused);
+	await page.locator('[data-prop="meeting-tv"] > button').focus();
+	await page.keyboard.press('Enter');
+	await expect.poll(playing).toBe(true);
+	await page.evaluate(() => dispatchEvent(new Event('blur')));
+	const paused = page.locator('dialog.paused');
+	await expect(paused).toBeVisible();
+	expect(await playing()).toBe(false);
+	await paused.locator('.sound').click();
+	await expect(paused.locator('.sound')).toHaveAttribute('aria-pressed', 'false');
+	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(true);
+	await expect(paused, 'the toggle is no Resume').toBeVisible();
+	expect(await playing()).toBe(false);
+	await paused.locator('button.primary').click();
+	await expect.poll(playing).toBe(true);
 });
 
 test("Join starts the bed and the theme; in Brennan's the theme gives way to the jazz, and back out it resumes where it left off", async ({ page }) => {

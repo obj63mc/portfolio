@@ -2,8 +2,8 @@
   "scenes": [
     {
       "id": "overworld",
-      "title": "Joe Madden, St. Louis",
-      "description": "An explorable St. Louis where Joe Madden, Chief Architect at Moosylvania, keeps his career, client work, resume and contact details. Move through it as a cursor alongside other visitors.",
+      "title": "Welcome to the Portfolio of Joseph Madden | BarMadden.com",
+      "description": "Explore the portfolio of Joseph Madden, showcasing his career, client work, resume, and contact details in an explorable St. Louis setting.",
       "w": 6750,
       "h": 2700,
       "pushBand": 0.25,
@@ -831,6 +831,12 @@
         "arch": {
           "x": 4780,
           "y": 1330
+        },
+        "footprint": {
+          "x": 4450,
+          "y": 0,
+          "w": 1250,
+          "h": 2700
         }
       },
       "track": {
@@ -1060,7 +1066,7 @@
             "y": 1662
           }
         ],
-        "text": "Now Playing: Fast Five, Snow White & the Huntsman, The Lorax"
+        "text": "Now Playing  *  Fast Five  *  Snow White & the Huntsman  *  The Lorax"
       },
       "arrival": {
         "x": 1835,
@@ -6510,7 +6516,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "d7b3e82725b1a42378324a22f032e00838445855d87bc0448c22f977d78665e8"
+        "sha256": "d06a8fd001f564ae75422eb563bb7826ebed3a91f7249975429fe0c492609ed2"
       },
       "trim": {
         "x": 0,
@@ -18168,7 +18174,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "230cb713ac8aa43c3ee0af9993500e53860743d447c55661dffcbd19ac821c07"
+        "sha256": "abe3db91cadc5d47807768fcc589f398011ffa8d75bad26aa1bc7741987b1484"
       },
       "trim": {
         "x": 35,
@@ -18492,7 +18498,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "e53b51fe706fc8f874ca15cfc1dae631bb9a16d5a29a65cc1e6d99fc4ddef321"
+        "sha256": "930e6423a3ee399d06c401882d9b62b8a5edbc49faacd5ec8dcac0aed1a72d7e"
       },
       "trim": {
         "x": 332,
@@ -18820,7 +18826,7 @@
       "source": {
         "w": 1720,
         "h": 520,
-        "sha256": "f6dbd4b748f2b90343bd00d2087523c75a7ba762ba91772efe1ab528483bc7eb"
+        "sha256": "32479c70a1e059ac9267aa29104b34b99d3b6159dc9bab215234dcadd263a190"
       },
       "trim": {
         "x": 61,
@@ -19520,7 +19526,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "82faf916b54dfa23ffbceca05ab62b7ace0da8e1f10cc942c632fc030588f583"
+        "sha256": "4d72681eb2e085536c19656d618440a3520239331cb127c297a72469c0ac3f6d"
       },
       "trim": {
         "x": 112,
@@ -20036,7 +20042,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "c63d4317122c3eb217faeaf387029d2482ab47c1b24913cb6bcb976c37b76c04"
+        "sha256": "c86fd41e85495e7b6b64a5d0acab82182860a7874859ba90b8d6098bace0deda"
       },
       "trim": {
         "x": 175,
@@ -29522,7 +29528,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "e6a2ceec06cf91e33dbaea9e6dd8786d1c9e6cf6f2769e3cae8ee5b6af021694"
+        "sha256": "5a6ed91dab38c24144585222e46839237719f6a26ed011a250ee1e7c9c2e8516"
       },
       "trim": {
         "x": 0,
@@ -29581,7 +29587,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "193f4a1143b45a2bbf2db7699e0564b7d13a0ac4404f0d10a3b521a1c7812442"
+        "sha256": "022d5320d40280ce6d87d460056b8344ff066485d209d2a4cbe283afdf5d0fcd"
       },
       "trim": {
         "x": 38,
@@ -29650,7 +29656,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "dffb2bdb447c924cd3f6d2f4c7c67fce613b65ddcddd40167c2ddd5cf55cfd8b"
+        "sha256": "27dfad22c1f4554e2cde08bff20bcbe8d66973d1eaa2156b07967300acdf0f7d"
       },
       "trim": {
         "x": 145,
@@ -29870,7 +29876,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "45b982e9c63fe55b9914071fbe6017b3616e3f83a96862bb54c534353f240366"
+        "sha256": "6aac27e99ae3fe3381773692e05296c16ee0e272c1580e55780a04990d1ba285"
       },
       "trim": {
         "x": 15,

@@ -241,7 +241,7 @@ test('Esc, blur and a hidden tab pause; Resume re-locks with the cursor where it
 	const frozen = { x: at.x + 150, y: at.y + 80 };
 	await expect.poll(() => off(page, frozen)).toBeLessThan(5);
 	const paused = page.locator('dialog.paused');
-	const resume = paused.locator('button');
+	const resume = paused.locator('button.primary');
 	const resumed = async () => {
 		await resume.click();
 		await expect(paused).toBeHidden();
@@ -432,7 +432,7 @@ test('a back or forward hop behind the Join or Paused card lands at the door and
 	await page.goForward();
 	await expect(page.locator('main h1')).toBeFocused();
 	await page.keyboard.press('Escape');
-	const resume = page.locator('dialog.paused').locator('button');
+	const resume = page.locator('dialog.paused button.primary');
 	await expect(resume).toBeVisible();
 	await page.goBack();
 	await expect.poll(() => offCentre(page, door)).toBeLessThan(1);
@@ -531,31 +531,30 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		await page.keyboard.press('Escape');
 		await expect(card).toBeHidden();
 
-		// A finger that wanders under 6 px still taps.
-		const moose = await centre(page.locator('[data-prop="moose"] > button'));
-		await drag(page, f, moose, { x: 2, y: 0 }, 2);
-		await f.up();
-		await expect(page.locator('[data-prop="moose"] dialog')).toBeVisible();
-		await page.keyboard.press('Escape');
-		expect(await camera(page), 'and pans nothing').toEqual(start);
-		const cursor = { x: moose.x + 4, y: moose.y }; // where the finger lifted
-		await expect.poll(() => off(page, cursor)).toBeLessThan(5);
-
 		// Past 6 px it is a drag, from a prop too: the view catches up with the finger, and the click the browser still sends
 		// for a finger inside its own tap slop opens nothing.
-		await drag(page, f, moose, { x: 2, y: 0 }, 4);
+		await drag(page, f, at, { x: 2, y: 0 }, 4);
 		await f.up();
 		const nudged = await camera(page);
 		expect(nudged).toEqual({ x: start.x - 8, y: start.y });
 		await page.waitForTimeout(200);
-		await expect(page.locator('[data-prop="moose"] dialog')).toBeHidden();
+		await expect(card).toBeHidden();
+
+		// A finger that wanders under 6 px still taps: the moose's click grants its antlers, with no card.
+		const moose = await centre(page.locator('[data-prop="moose"] > button'));
+		await drag(page, f, moose, { x: 2, y: 0 }, 2);
+		await f.up();
+		await expect(page.locator('[role="status"]')).toContainText('antlers');
+		expect(await camera(page), 'and pans nothing').toEqual(nudged);
+		const cursor = { x: moose.x + 4, y: moose.y }; // where the finger lifted
+		await expect.poll(() => off(page, cursor)).toBeLessThan(5);
 
 		// A drag pans against the finger and leaves the cursor where it is in the world; held still, it doesn't coast.
 		await drag(page, f, ground, { x: -15, y: 0 }, 10);
 		await page.waitForTimeout(150);
 		await f.up();
 		expect(await camera(page)).toEqual({ x: nudged.x + 150, y: nudged.y });
-		expect(await off(page, { x: cursor.x + 8 - 150, y: cursor.y })).toBeLessThan(5);
+		expect(await off(page, { x: cursor.x - 150, y: cursor.y })).toBeLessThan(5);
 		await page.waitForTimeout(200);
 		expect(await camera(page), 'no fling').toEqual({ x: nudged.x + 150, y: nudged.y });
 
@@ -614,7 +613,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		// Midtown, where no prop is near the toggles once the cursor is on them. Dragging the view up to the scene's top
 		// carries the cursor down by the camera's height, so Join is tapped that far above the toggles.
 		await page.goto('/#midtown');
-		const toggles = (await page.locator('.controls').boundingBox())!, join = (await page.locator('dialog.join[open] button').boundingBox())!;
+		const toggles = (await page.locator('.controls:not(dialog *)').boundingBox())!, join = (await page.locator('dialog.join[open] button').boundingBox())!;
 		// The Join button's left end: the drag carries the cursor down level with the toggles, just right of them, and the
 		// joystick steers it left onto them.
 		const at = { x: join.x + 4, y: toggles.y + toggles.height / 2 - (await camera(page)).y };
@@ -633,7 +632,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		const on = (await tip(page))!;
 		expect(on.y > toggles.y && on.y < toggles.y + toggles.height && on.x > toggles.x && on.x < toggles.x + toggles.width, 'the cursor sits on the toggles').toBe(true);
 		await page.waitForTimeout(100);
-		await expect(page.locator('.controls .hot')).toHaveCount(0);
+		await expect(page.locator('.controls:not(dialog *) .hot')).toHaveCount(0);
 		// Steered slowly right along the bottom band, still within 40 px of the toggles, it scrolls down at once.
 		const before = await camera(page);
 		await f.down(hub);
@@ -676,7 +675,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		});
 		const paused = page.locator('dialog.paused');
 		await expect(paused).toBeVisible();
-		await paused.locator('button').tap();
+		await paused.locator('button.primary').tap();
 		await expect(paused).toBeHidden();
 		await expect(page.locator('.joystick')).toBeVisible();
 		expect(await lockHolder(page)).toBeNull();

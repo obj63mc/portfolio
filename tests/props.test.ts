@@ -15,7 +15,8 @@ test('every prop resolves to its cut-outs or a rig in its scene; the track is it
 	for (const s of scenes)
 		for (const p of propsOf(s)) {
 			const art = artOf(s, p);
-			assert.ok(art.length, `${s.id}/${p.id} has art`);
+			// Or it is drawn in another prop's layer: the MonsterCommerce eye, over its sign.
+			assert.ok(art.length || propsOf(s).some((q) => artOf(s, q).includes(p.id)), `${s.id}/${p.id} has art`);
 			for (const id of art)
 				assert.ok(existsSync(generated(`${s.id}/${id}/image.webp`)) || existsSync(generated(`${s.id}/${id}-rig.json`)), `${s.id}/${p.id}: ${id}`);
 		}

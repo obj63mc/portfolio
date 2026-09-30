@@ -25,6 +25,7 @@ test('the sound design table, by prop', () => {
 		'moose-statue': 'moose',
 		bike: 'bell',
 		'mc-sign': 'squelch',
+		'mc-eye': 'squelch',
 		'server-rack': 'fan',
 		'computer-frontend': 'click',
 		'computer-data': 'click',
@@ -43,10 +44,10 @@ test('the sound design table, by prop', () => {
 	for (const p of SUB_SCENES.brennans.props.filter((p) => p.id.startsWith('humidor-'))) assert.equal(PROP_SOUNDS[p.id], 'creak', p.id);
 });
 
-test("a card's click sounds the card and the prop's signature; a card with no signature only the card", () => {
-	assert.deepEqual(clickSounds(prop('bike')), ['card', 'bell']);
-	assert.deepEqual(clickSounds(prop('brewery-sign')), ['card', 'cooler']);
-	assert.deepEqual(clickSounds(prop('stg-logo')), ['card', 'lighter']);
+test("a card's click sounds the prop's signature alone; a card with no signature only the card", () => {
+	assert.deepEqual(clickSounds(prop('bike')), ['bell']);
+	assert.deepEqual(clickSounds(prop('brewery-sign')), ['cooler']);
+	assert.deepEqual(clickSounds(prop('stg-logo')), ['lighter']);
 	assert.deepEqual(clickSounds(prop('diploma')), ['card'], "the card's own paper is its sound (Joe, 2026-09-30)");
 	assert.deepEqual(clickSounds(prop('meeting-tv')), ['card'], 'its video is its sound');
 });

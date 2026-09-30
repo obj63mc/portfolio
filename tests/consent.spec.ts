@@ -93,7 +93,7 @@ test.describe('in a European timezone', () => {
 		expect(await stored(page)).toBe('denied');
 		await join(page);
 		// A card opened while declined is never kept for later.
-		await page.locator('main [data-prop="moose"] > button').focus();
+		await page.locator('main [data-prop="welcome"] > button').focus();
 		await page.keyboard.press('Enter');
 		await page.keyboard.press('Escape');
 		await page.waitForTimeout(3500);
@@ -186,12 +186,12 @@ test.describe('elsewhere', () => {
 		await page.keyboard.press('Enter');
 		await expect(page).toHaveURL(/#belleville$/);
 		// A card opened: its prop and scene. A contact link: its method.
-		await page.locator('main [data-prop="moose"] > button').focus();
+		await page.locator('main [data-prop="welcome"] > button').focus();
 		await page.keyboard.press('Enter');
 		await page.keyboard.press('Escape');
 		expect(await views()).toEqual([{ page_location: `${GA}/` }]);
 		const events = (await queued(page)).filter((c) => c[0] === 'event').map((c) => c.slice(1));
-		expect(events).toContainEqual(['card_open', { prop_id: 'moose', scene: 'overworld' }]);
+		expect(events).toContainEqual(['card_open', { prop_id: 'welcome', scene: 'overworld' }]);
 		await page.evaluate(() => document.querySelector<HTMLAnchorElement>('#signpost a[href^="mailto:"]')!.addEventListener('click', (e) => e.preventDefault()));
 		await page.locator('#signpost a[href^="mailto:"]').focus();
 		await page.keyboard.press('Enter');

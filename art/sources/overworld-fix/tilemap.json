@@ -1,17 +1,41 @@
 {
- "round": 18,
- "base": "rounds/base-18.png",
+ "round": 19,
+ "base": "rounds/base-19.png",
  "tiles": [
   {
-   "name": "house",
+   "name": "landing",
    "rect": [
-    654,
-    430,
+    1140,
+    60,
     256,
     256
    ],
    "loops": [],
-   "repaintPx": 6845,
+   "repaintPx": 1262,
+   "edit": true
+  },
+  {
+   "name": "warehouse",
+   "rect": [
+    1590,
+    170,
+    256,
+    256
+   ],
+   "loops": [],
+   "repaintPx": 1312,
+   "edit": true
+  },
+  {
+   "name": "storefronts",
+   "rect": [
+    185,
+    212,
+    320,
+    128
+   ],
+   "loops": [],
+   "repaintPx": 23386,
    "edit": true
   }
  ],
@@ -19,28 +43,41 @@
  "paints": [
   {
    "rect": [
-    782,
-    585,
-    791,
-    587
+    240,
+    179,
+    259,
+    192
    ],
    "color": [
-    173,
-    201,
-    57
+    192,
+    208,
+    56
    ]
   },
   {
    "rect": [
-    782,
-    587,
-    791,
-    588
+    258,
+    176,
+    277,
+    189
    ],
    "color": [
-    160,
     192,
-    51
+    208,
+    56
+   ]
+  },
+  {
+   "rect": [
+    273,
+    186,
+    294,
+    197
+   ],
+   "color": [
+    190,
+    207,
+    57
    ]
   }
  ],

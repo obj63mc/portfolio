@@ -99,8 +99,11 @@ test('earning the last cosmetic turns the cursor gold', async ({ page }) => {
 	// Inside the arrow's body, clear of its outline.
 	const body = () => pixel(page, TIP.x + 3 * U, TIP.y + 14 * U);
 	await expect.poll(body).toEqual([255, 255, 255, 255]);
-	await open(page, 'moose');
+	// The moose is an Easter egg: its click grants the antlers, with no card.
+	await page.locator('[data-prop="moose"] > button').focus();
+	await page.keyboard.press('Enter');
 	await expect(page.locator('[role="status"]')).toContainText(COSMETICS[4].name);
+	await expect(page.locator('[data-prop="moose"] dialog')).toHaveCount(0);
 	await expect.poll(body).toEqual([242, 194, 48, 255]);
 });
 

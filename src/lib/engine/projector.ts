@@ -35,17 +35,37 @@ const bounds = (ps: Point[], d = 0): Rect => {
 	const x = Math.min(...ps.map((p) => p.x)) - d, y = Math.min(...ps.map((p) => p.y)) - d;
 	return { x, y, w: Math.max(...ps.map((p) => p.x)) + d - x, h: Math.max(...ps.map((p) => p.y)) + d - y };
 };
-/** How far inside the painted surface the film stops, world px, so that nothing of the reel ever draws past the screen. */
-const INSET = 1;
+/**
+ * The painted surface with each edge moved `d` world px out along its normal (in, for a negative `d`), its corners where
+ * the moved edges meet. The surface runs clockwise on screen, so an edge's outward normal is its direction turned left.
+ */
+const grown = (d: number) => {
+	const n = SCREEN_SURFACE.length;
+	const edges = SCREEN_SURFACE.map((a, i) => {
+		const b = SCREEN_SURFACE[(i + 1) % n], len = Math.hypot(b.x - a.x, b.y - a.y);
+		return { x: a.x + ((b.y - a.y) * d) / len, y: a.y - ((b.x - a.x) * d) / len, dx: b.x - a.x, dy: b.y - a.y };
+	});
+	return edges.map((e, i) => {
+		const p = edges[(i + n - 1) % n], t = ((e.x - p.x) * e.dy - (e.y - p.y) * e.dx) / (p.dx * e.dy - p.dy * e.dx);
+		return { x: p.x + p.dx * t, y: p.y + p.dy * t };
+	});
+};
+/**
+ * The dark film (title, video, case study) runs 3 world px past the painted surface (Joe, 2026-09-30): over the ivory's lit
+ * rim, which showed as a yellow line round the picture, and onto the screen's dark frame, where its black is lost. The lamp's
+ * light on the blank screen stops 1 px inside the ivory instead, since the light would show on the black masking.
+ */
+const SCREEN = grown(3);
+const LIT = grown(-1);
 /** The letterbox round the video on every side, a fraction of the film's height: the video always sits inside the screen. */
 const MARGIN = 0.04;
 /** The screen's box, which a new frame of the video redraws, and the beam's, which a change of light redraws. */
-const QUAD = bounds(SCREEN_SURFACE, 1);
-const BEAM = bounds([PROJECTOR_LENS, ...SCREEN_SURFACE], GLOW);
+const QUAD = bounds(SCREEN, 1);
+const BEAM = bounds([PROJECTOR_LENS, ...SCREEN], GLOW);
 
 /** Each triangle of the mesh: its corners on the film and on the screen, and the film's box round it. */
 const TRIANGLES = (() => {
-	const at = onQuad(SCREEN_SURFACE), out: { film: Point[]; screen: Point[]; box: Rect }[] = [];
+	const at = onQuad(SCREEN), out: { film: Point[]; screen: Point[]; box: Rect }[] = [];
 	const film = (i: number, j: number) => ({ x: (i / MESH.cols) * FILM.w, y: (j / MESH.rows) * FILM.h });
 	const screen = (i: number, j: number) => at(i / MESH.cols, j / MESH.rows);
 	for (let j = 0; j < MESH.rows; j++)
@@ -218,7 +238,7 @@ export class Projector {
 
 	/** The beam: a cone of light from the lens to the screen's corners, round the screen, and the lamp glowing at the lens. */
 	private beam(g: CanvasRenderingContext2D, level: number) {
-		const [tl, tr, br, bl] = SCREEN_SURFACE, o = PROJECTOR_LENS, mid = { x: (tl.x + br.x) / 2, y: (tl.y + br.y) / 2 };
+		const [tl, tr, br, bl] = SCREEN, o = PROJECTOR_LENS, mid = { x: (tl.x + br.x) / 2, y: (tl.y + br.y) / 2 };
 		g.save();
 		g.globalCompositeOperation = 'screen';
 		g.beginPath();
@@ -255,11 +275,7 @@ export class Projector {
 		g.clearRect(QUAD.x, QUAD.y, QUAD.w, QUAD.h);
 		g.save();
 		g.beginPath();
-		const [tl, , br] = SCREEN_SURFACE, mid = { x: (tl.x + br.x) / 2, y: (tl.y + br.y) / 2 };
-		for (const p of SCREEN_SURFACE) {
-			const len = Math.hypot(p.x - mid.x, p.y - mid.y);
-			g.lineTo(p.x - ((p.x - mid.x) * INSET) / len, p.y - ((p.y - mid.y) * INSET) / len);
-		}
+		for (const p of r.show ? SCREEN : LIT) g.lineTo(p.x, p.y);
 		g.clip();
 		// Each triangle of film goes onto its triangle of screen by the one affine map that takes three corners to three,
 		// clipped a device px wider so that neighbours overlap instead of leaving hairlines between them.

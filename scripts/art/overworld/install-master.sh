@@ -16,7 +16,7 @@ RUN=art/runs/$MASTER/$(date -u +%Y-%m-%dT%H-%M-%S.000Z)-upscale-4x; mkdir -p $RU
 cp $NATIVE $RUN/native.png
 $UP/bin/upscayl-bin -i $NATIVE -o $RUN/source.png -s 4 -m $UP/models -n digital-art-4x >/dev/null 2>&1
 magick identify -format "4x source %wx%h\n" $RUN/source.png
-# A logo too fine for the native master (the SLU logomark on McDonnell Douglas Hall) is a decal: $FIX/decals.json places
+# A logo, lettering or small prop too fine for the native master (the SLU logomark, the FOREST PARK sign) is a decal: $FIX/decals.json places
 # each one in native px, sheared to its wall's slope, and it is composited onto the 4x source at full resolution.
 DECALS=$FIX/decals.json; [[ -f $DECALS ]] || DECALS=
 [[ -n $DECALS ]] && cp $DECALS $RUN/ && python3 - $FIX $RUN/source.png <<'PY'
@@ -40,7 +40,7 @@ PREV=$(mktemp); cp art/generated/$SCENE/$MASTER/prompt.txt $PREV
 { echo "${(U)SCENE} MASTER DERIVATION, $(date -u +%Y-%m-%d) (round $ROUND, upscaled 4x for the background)"; echo
   [[ -n $NOTE ]] && { echo "$NOTE"; echo; }
   echo "The retained image is $NATIVE, the native $SIZE master after the tile-map rounds (round specs in $FIX/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The $SCENE plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled."; echo
-  [[ -n $DECALS ]] && { echo "After the upscale, the decals in $DECALS (a logo too fine for the native master) are composited onto the 4x source at full resolution."; echo; }
+  [[ -n $DECALS ]] && { echo "After the upscale, the decals in $DECALS (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution."; echo; }
   cat $PREV; } > $RUN/prompt.txt
 npm run -s art -- process $MASTER --source $RUN/source.png --force
 rm -f art/sources/$MASTER.png  # committed sources/ keeps originals only; this 4x PNG is in the run and rebuilt from stitched.png

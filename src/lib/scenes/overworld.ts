@@ -39,8 +39,10 @@ const districts: District[] = [
 						id: 'moose',
 						name: 'The moose',
 						gist: 'the Moosylvania mascot',
-						// TODO Joe: the content inventory leaves the moose's personal line to be written.
-						body: ['The Moosylvania moose.'],
+						// No card: the moose, the statue, the bike and the MonsterCommerce eye are Easter eggs, their click the
+						// grant (Joe, 2026-09-30).
+						kind: 'action',
+						body: [],
 						rect: { x: 1790, y: 1520, w: 140, h: 105 },
 						cosmetic: 4
 					}
@@ -79,9 +81,9 @@ const districts: District[] = [
 					{
 						id: 'bike',
 						name: 'Joe’s bike',
-						gist: 'still riding, on Strava',
-						body: ['Joe raced criteriums and still rides. Follow along on Strava.'],
-						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
+						gist: 'still riding',
+						kind: 'action',
+						body: [],
 						rect: { x: 2012, y: 1884, w: 100, h: 57 },
 						cosmetic: 7
 					},
@@ -93,6 +95,8 @@ const districts: District[] = [
 							'Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.',
 							'Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.'
 						],
+						// The bike's card went (Joe, 2026-09-30); its Strava link came here.
+						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
 						rect: { x: 1992, y: 1806, w: 78, h: 94 }
 					}
 				]
@@ -138,9 +142,20 @@ const districts: District[] = [
 							'Acquired by Network Solutions, announced December 2005.'
 						],
 						rect: { x: 5945, y: 1106, w: 581, h: 165 },
-						cosmetic: 3,
-						// The sign, then the monster's eye forming its O, which blinks.
+						// The sign, then the monster's eye forming its O, which blinks. The eye is its own prop, drawn here, over the sign.
 						art: ['mc-sign', 'mc-eye']
+					},
+					{
+						id: 'mc-eye',
+						name: 'The monster’s eye',
+						gist: 'MonsterCommerce',
+						kind: 'action',
+						body: [],
+						// The eye's cut-out, measured on the plate.
+						rect: { x: 6007, y: 1137, w: 66, h: 75 },
+						clip: 'ellipse(50% 50%)',
+						cosmetic: 3,
+						art: []
 					},
 					{
 						id: 'server-rack',

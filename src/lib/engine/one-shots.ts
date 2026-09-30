@@ -1,4 +1,4 @@
-// The scene's one-shots (buildout ticket 22): a prop's click sounds its card opening and its signature, a signpost link
+// The scene's one-shots (buildout ticket 22): a prop's click sounds its signature, or else its card opening, a signpost link
 // knocks, a card closing sounds, and the Foundry screen's projector start sounds for everyone in the room when a reel
 // starts, from the right point for a visitor who arrives mid-sequence. A door hovered or focused loads its scene's
 // one-shots ahead of the hop. Hover is silent, and nothing a peer does sounds but the screen. The rules are sound.ts's;

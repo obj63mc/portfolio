@@ -101,5 +101,9 @@
 	<p id="paused-title">Paused, click to resume</p>
 	<button type="button" class="primary">Resume</button>
 	<p class="refused" hidden>The browser didn't take the mouse. Try again in a moment.</p>
+	<!-- The modal card makes the controls behind it inert: its own Sound toggle stands in their place, over them. -->
+	<div class="controls">
+		<SoundToggle />
+	</div>
 </dialog>
 <canvas class="cursors" popover="manual" aria-hidden="true" bind:this={cursors}></canvas>

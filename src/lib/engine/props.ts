@@ -164,7 +164,8 @@ export class Props {
 			'click',
 			(e) => {
 				const id = clickedProp(e);
-				const l = id && this.layers.find((l) => l.prop?.id === id);
+				// A prop drawn in another's layer, the MonsterCommerce eye on its sign, reacts there: hover and step do the same.
+				const l = id && this.layers.find((l) => l.prop?.id === id || l.cuts.some((c) => c.id === id));
 				if (l) l.clicked = this.t;
 			},
 			{ signal: this.listeners.signal }
@@ -247,7 +248,7 @@ export class Props {
 		this.arrived = false;
 		let rode = false;
 		for (const l of this.layers) {
-			if (l.prop) l.hover = hover(l.hover, hovered.has(l.prop.id), dt, rm);
+			if (l.prop) l.hover = hover(l.hover, hovered.has(l.prop.id) || l.cuts.some((c) => hovered.has(c.id)), dt, rm);
 			if (l.rig?.name === 'rider') {
 				// The rider moves along the loop: where it was is drawn again too, and its base y reorders it.
 				const was = l.box;

@@ -8,5 +8,25 @@
     "height": 18,
     "shear": 0.12,
     "note": "The SLU logomark (slu-logomark-blue-rgb.svg, supplied by Joe on 2026-09-29, with the TM path removed) on McDonnell Douglas Hall's central parapet, above the glass atrium. Its centre and height are in native px, and it is sheared to the parapet's slope (dy/dx)."
+  },
+  {
+    "file": "forest-park-sign.svg",
+    "center": [
+      464,
+      213
+    ],
+    "height": 17,
+    "shear": 0,
+    "note": "The FOREST PARK sign's face between its posts, with its lettering (Barlow Condensed 700, the site's headline face, as outlines; SIL OFL), 2026-09-30: at 9 native px the lettering came out of the 4x upscale wobbly. Drawn in native px (its viewBox is the master's own coordinates), the face inset about 1 px from the board's dark rims and the lettering skewed with the board's slope, so it is placed unsheared at its viewBox centre."
+  },
+  {
+    "file": "picnic-tables.svg",
+    "center": [
+      266,
+      186.5
+    ],
+    "height": 25,
+    "shear": 0,
+    "note": "The three Forest Park picnic tables north-west of the FOREST PARK sign, 2026-09-30: at 13 native px each came out of the 4x upscale a blob, so round nineteen paints them over with the lawn's own colour and they are drawn here instead, in the map's bench colours (orange-brown wood, dark brown rim, a soft shadow on the lawn). Drawn in native px (its viewBox is the master's own coordinates), each table modelled in its own units and projected to the map's elevated camera, so it is placed unsheared at its viewBox centre."
   }
 ]
