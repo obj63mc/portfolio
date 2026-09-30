@@ -5,7 +5,7 @@
 // choice persists through saved.svelte.ts.
 import { browser } from '$app/environment';
 import { PUBLIC_GA_ID } from '$env/static/public';
-import { contactMethod, initial, sceneOf, type Choice, type Consent } from './analytics/consent.ts';
+import { contactMethod, european, initial, sceneOf, type Choice, type Consent } from './analytics/consent.ts';
 import { Tracker, type Gtag } from './analytics/tracker.ts';
 import { saved } from './saved.svelte.ts';
 import { KEY } from './saved.ts';
@@ -44,14 +44,11 @@ function load() {
 	requestAnimationFrame(() => ('requestIdleCallback' in window ? requestIdleCallback(inject, { timeout: 3000 }) : setTimeout(inject)));
 }
 
+// TEMP (ticket 23 hands-on testing): the dev server asks everyone, as in Europe. Remove once testing is done.
+const timeZone = browser ? (import.meta.env.DEV ? 'Europe/London' : (Intl.DateTimeFormat().resolvedOptions().timeZone ?? '')) : '';
 const consent: Consent =
 	browser && GA_ID
-		? initial({
-				id: GA_ID,
-				gpc: navigator.globalPrivacyControl === true,
-				timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? '',
-				stored: saved.analytics
-			})
+		? initial({ id: GA_ID, gpc: navigator.globalPrivacyControl === true, timeZone, stored: saved.analytics })
 		: { is: 'off' };
 const tracker = browser && GA_ID ? new Tracker(GA_ID, consent, queue(), load) : null;
 
@@ -63,6 +60,8 @@ let joinUp = $state(false);
 
 /** The consent bar (Consent.svelte) and the analytics icon beside the Sound toggle. */
 export const bar = {
+	/** The bar is offered at all: GA in the build and a European timezone. Elsewhere the icon is left out. */
+	offered: !!GA_ID && european(timeZone),
 	get open() {
 		return open;
 	},

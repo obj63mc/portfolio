@@ -175,6 +175,7 @@ test.describe('elsewhere', () => {
 		await arrive(page);
 		await expect.poll(() => gtagJs(asked)).toBe(true);
 		await expect(bar(page)).toHaveCount(0);
+		await expect(page.locator('.controls .analytics')).toHaveCount(0);
 		const views = async () => (await queued(page)).filter((c) => c[0] === 'event' && c[1] === 'page_view').map((c) => c[2]);
 		expect(await views()).toEqual([{ page_location: `${GA}/` }]);
 		const calls = await queued(page);

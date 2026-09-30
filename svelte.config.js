@@ -11,7 +11,8 @@ const gaHosts = /** @type {const} */ (['https://*.google-analytics.com', 'https:
 export const measurementId = (env) => (env.WORKERS_CI_BRANCH === 'main' && env.PUBLIC_GA_ID) || '';
 
 // Set before SvelteKit reads the environment, and always set, if empty, so `$env/static/public` always exports it.
-process.env.PUBLIC_GA_ID = measurementId(process.env);
+// TEMP (ticket 23 hands-on testing): `vite dev` passes PUBLIC_GA_ID through too. Remove once testing is done.
+process.env.PUBLIC_GA_ID = measurementId(process.env) || (process.argv.includes('dev') && process.env.PUBLIC_GA_ID) || '';
 
 // The consent smoke (tests/consent.spec.ts) builds the site with a test ID into a folder of its own, so it never
 // overwrites the site's build or SvelteKit's output, which `vite preview` serves.

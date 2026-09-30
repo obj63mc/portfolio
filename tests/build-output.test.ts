@@ -35,13 +35,12 @@ test('overworld: description and the shell around the layer', () => {
 	assert.ok(opens(html, 'canvas').every((c) => c.includes('aria-hidden="true"')));
 	assert.match(html, /role="status"[^>]*aria-live="polite"|aria-live="polite"[^>]*role="status"/);
 	assert.match(html, /class="presence"[^>]*>\d+ here</);
-	// The Sound toggle, on until the visitor turns it off, named by its hidden label beside the speaker icon (ticket 22), then
-	// the analytics icon, disabled in a build with no GA (ticket 23).
+	// The Sound toggle, on until the visitor turns it off, named by its hidden label beside the speaker icon (ticket 22). The
+	// analytics icon depends on the visitor's timezone, so the browser adds it (ticket 23).
 	const controls = html.match(/<div class="controls">([\s\S]*?)<\/div>/)![1];
-	const [sound, icon, ...rest] = opens(controls, 'button');
+	const [sound, ...rest] = opens(controls, 'button');
 	assert.match(sound, /aria-pressed="true"/);
 	assert.match(controls, /<button[^>]*aria-pressed="true"[^>]*>\s*<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>\s*<span[^>]*>[^<]+<\/span>\s*<\/button>/);
-	assert.equal(/\sdisabled\b/.test(icon), !gaId, icon);
 	assert.equal(rest.length, 0);
 });
 

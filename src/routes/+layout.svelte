@@ -75,12 +75,13 @@
 <LapBoard />
 <div class="controls">
 	<SoundToggle />
-	<!-- It reopens the consent bar (ticket 23). A build with no GA, every one but production's, has no bar for it to open,
-		and keeps it disabled in its place. -->
-	<button type="button" class="analytics" disabled={!GA_ID} aria-expanded={GA_ID ? bar.open : undefined} onclick={() => bar.toggle()}>
-		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5" /></svg>
-		<span>Analytics settings</span>
-	</button>
+	<!-- It reopens the consent bar (ticket 23), only where the bar is offered: a build with GA and a European timezone. -->
+	{#if bar.offered}
+		<button type="button" class="analytics" aria-expanded={bar.open} onclick={() => bar.toggle()}>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5" /></svg>
+			<span>Analytics settings</span>
+		</button>
+	{/if}
 </div>
 <!-- The touch joystick (buildout ticket 10), shown after Join on a device with no mouse or trackpad. Hidden from assistive
 	tech: a keyboard steers with the keys. -->
