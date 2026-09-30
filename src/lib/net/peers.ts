@@ -11,7 +11,7 @@ export interface Snap extends Point {
 /** How far behind its positions a peer is drawn, ms: two intervals at 20 Hz. */
 export const DELAY = 100;
 /** A jump longer than this, world px (a door, the Arch reset), snaps instead of gliding. */
-const SNAP = 400;
+export const SNAP = 400;
 /** Positions kept per peer: enough to cover DELAY with a late frame. */
 const KEEP = 4;
 /** World px round the view where a peer is still drawn: an arrow whose tip is just off the top left reaches in. */

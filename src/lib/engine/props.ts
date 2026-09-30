@@ -94,9 +94,12 @@ interface Layer {
 	drawn: string;
 }
 
-/** The props hovered: by the free mouse, by the engine's mark for a locked or steered cursor, and by keyboard focus. */
+/**
+ * The props hovered: by the free mouse, by the engine's mark for a locked or steered cursor, and by keyboard focus. Not
+ * by the mouse on a prop the visitor's cursor is behind (ticket 19), whose `:hover` outlasts the step behind by a frame.
+ */
 const HOVERED = [
-	"html:not([data-input='locked'], [data-input='touch']) .prop > button:hover",
+	"html:not([data-input='locked'], [data-input='touch']) .prop:not(.behind) > button:hover",
 	'.prop > button:is(.hot, :focus-visible)'
 ].join(', ');
 
@@ -121,6 +124,17 @@ function load(url: string, w: number, h: number) {
 	return fetch(url)
 		.then((r) => r.blob())
 		.then((b) => createImageBitmap(b, { resizeWidth: Math.max(1, Math.round(w)), resizeHeight: Math.max(1, Math.round(h)), resizeQuality: 'high' }));
+}
+
+/**
+ * A scenery cut-out in art/generated/<scene>/<id>/ for the overlay canvas (scenery.ts, buildout ticket 19): its world rect
+ * as the art pipeline registered it, else `rect`, and its bitmap loading at `density`; null for one with no art.
+ */
+export function cutout(scene: string, id: string, rect: Rect, density: number) {
+	const url = IMAGES[`/art/generated/${scene}/${id}/image.webp`];
+	if (!url) return null;
+	const world = WORLDS[`/art/generated/${scene}/${id}/asset.json`] ?? rect;
+	return { rect: world, bmp: load(url, world.w * density, world.h * density) };
 }
 
 export class Props {

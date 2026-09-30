@@ -5,8 +5,10 @@
 // landing at the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
 // the scene canvas (ticket 15) are props.ts. Cosmetics (ticket 16): a granting prop's card grants, the saved state
 // (saved.svelte.ts) keeps them, and the room hears what the cursor wears. The Foundry screen's reel (ticket 17) is
-// projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. The one-shots
-// (ticket 22) are one-shots.ts, played by the sound engine (sound.svelte.ts), which the Join press starts. Carried over from
+// projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. Horizon scaling
+// and the scenery over the cursors (ticket 19): depth.ts follows each cursor's depth factor and its side of the
+// walk-behind scenery, scenery.ts holds the cut-outs drawn over it. The one-shots (ticket 22) are one-shots.ts, played by
+// the sound engine (sound.svelte.ts), which the Join press starts. Carried over from
 // the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
 // rules; the layer's markup is never re-rendered here.
 import { COSMETICS } from '../cosmetics.ts';
@@ -15,8 +17,11 @@ import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
 import { propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
+import { blocked, type Side } from '../scenes/walk.ts';
 import { Net } from '../net/net.ts';
-import { sample, visible } from '../net/peers.ts';
+import { SNAP, sample, visible } from '../net/peers.ts';
+import { follower } from './depth.ts';
+import { Scenery } from './scenery.ts';
 import { Props, clickedProp } from './props.ts';
 import { Projector } from './projector.ts';
 import {
@@ -135,6 +140,18 @@ export class Engine {
 	private laps: Laps;
 	/** The one-shots (ticket 22). */
 	private shots: OneShots;
+	/** Foreground and walk-behind scenery, drawn over the cursors it covers (ticket 19). */
+	private scenery = new Scenery();
+	/** The own cursor followed through the scene: none until its first step there; `jumped` makes its next step a jump. */
+	private follow: ReturnType<typeof follower> | null = null;
+	private jumped = false;
+	/** The own cursor's depth factor and its side of the walk-behind scenery, this frame. */
+	private ownDepth = 1;
+	private ownSides: ReadonlyMap<string, Side> = new Map();
+	/** Each drawn peer followed the same way, by id. */
+	private peerFollow = new Map<number, ReturnType<typeof follower>>();
+	/** The ids of the props the own cursor is behind, joined: those marked `.behind` in the layer. */
+	private marked = '';
 	/** The iris between scenes. */
 	private iris: Iris = OPEN;
 	private raf = 0;
@@ -217,6 +234,7 @@ export class Engine {
 		this.props.destroy();
 		this.projector.destroy();
 		this.shots.destroy();
+		this.scenery.destroy();
 		this.raise.disconnect();
 		for (const t of this.held.values()) t.bmp?.close();
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
@@ -255,6 +273,12 @@ export class Engine {
 		this.held.clear();
 		this.props.show(scene, this.density);
 		this.projector.show(scene);
+		// Every cursor enters the new scene afresh: the own takes the depth and sides of where it lands, and peers are a new room's.
+		this.scenery.show(scene, this.density);
+		this.follow = null;
+		this.ownSides = new Map();
+		this.marked = '';
+		this.peerFollow.clear();
 		this.goal = null;
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
 		this.shots.show(scene, !!door);
@@ -494,12 +518,12 @@ export class Engine {
 	/**
 	 * The link or button under the drawn cursor when it is locked, or steered by touch outside a card (whose controls take
 	 * their own taps, the joystick behind it) and off the toggles, which are the finger's too; null for the mouse's real
-	 * pointer.
+	 * pointer. A prop standing on scenery the cursor is behind isn't there for it (ticket 19).
 	 */
 	private under() {
 		const touch = this.input.is === 'touch', c = (this.input.is === 'locked' || (touch && !document.querySelector('dialog[open]'))) && this.cursor;
 		const hit = c ? document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button') : null;
-		return hit && !(touch && hit.closest(CONTROLS)) ? hit : null;
+		return hit && !(touch && hit.closest(CONTROLS)) && !hit.matches('.prop.behind > button') ? hit : null;
 	}
 
 	/**
@@ -676,6 +700,8 @@ export class Engine {
 			}
 			if (cam.x !== this.cam.x || cam.y !== this.cam.y) this.moveTo(cam);
 		}
+		// Where the cursor now is decides which props it is behind, before their hover is read.
+		this.walk(scene, now);
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
 		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
@@ -693,8 +719,28 @@ export class Engine {
 		this.iris = advance(this.iris, now, this.iris.is === 'shut' && this.tilesIn());
 		const html = document.documentElement;
 		if (html.dataset.iris !== this.iris.is) html.dataset.iris = this.iris.is;
-		this.drawCursors(now);
+		this.drawCursors(scene, now);
 	};
+
+	/**
+	 * The own cursor's step through the scene (ticket 19), before anything reads what it is over: its depth factor, and
+	 * its side of the walk-behind scenery. The props standing on scenery it is behind are marked `.behind`, and take neither
+	 * its hover nor its clicks: the free mouse's pass through them (app.css), and `under` skips them for a locked or steered
+	 * cursor. Keyboard focus, a screen reader and a finger's own tap still reach them, so nothing is out of reach.
+	 */
+	private walk(scene: Scene, now: number) {
+		const at = this.own;
+		if (at) {
+			const f = (this.follow ??= follower(scene)).step(at, now, this.jumped);
+			this.ownDepth = f.d;
+			this.ownSides = f.sides;
+			this.jumped = false;
+		}
+		const ids = at && 'walkBehind' in scene ? blocked(scene.walkBehind, this.ownSides) : [];
+		if (ids.join() === this.marked) return;
+		this.marked = ids.join();
+		for (const el of this.layer.querySelectorAll<HTMLElement>('.prop[data-prop]')) el.classList.toggle('behind', ids.includes(el.dataset.prop!));
+	}
 
 	/** Locked or on touch, the page has no hover at the drawn cursor, so the link or button under it is marked `.hot` instead. */
 	private mark() {
@@ -827,23 +873,36 @@ export class Engine {
 	 * The drawn cursor, from Join on, goes to the room at its world position, with what it wears; over something to click
 	 * it is drawn as the pointing hand, a local drawing the room never hears of. Peers near the camera are
 	 * drawn 100 ms behind; the rest are neither interpolated nor drawn. A cosmetic newly worn, granted here or in another
-	 * tab, pops in.
+	 * tab, pops in. Every cursor shrinks toward its depth region's horizon, and the scenery that covers it is drawn over
+	 * it (ticket 19): peers are followed through the scene as the own cursor is, locally, from where they are drawn, a
+	 * peer's snap being a jump. With a prop card open no scenery is drawn: the cursor canvas is then over the card and its
+	 * backdrop, where a cut-out would paint the scenery undimmed over both, and the cursors are drawn over everything.
 	 */
-	private drawCursors(now: number) {
+	private drawCursors(scene: Scene, now: number) {
 		const c = this.cursor, cam = this.cam, s = this.view.s, k = s * this.dpr, gold = saved.gold;
 		if (saved.worn !== this.worn) (this.worn = saved.worn), (this.wornAt = now);
 		if (c) {
 			this.net.move(cam.x + c.x / s, cam.y + c.y / s);
 			this.tellRoom();
 		}
+		const card = !!this.layer.querySelector('dialog[open]');
+		const behind = (sides: ReadonlyMap<string, Side>) => (card ? [] : this.scenery.behind(sides, cam, k));
 		const view = this.seen(), peers: Drawn[] = [];
-		for (const p of this.net.peers.values()) {
+		for (const [id, p] of this.net.peers) {
 			const at = visible(p.snaps, view) && sample(p.snaps, now);
-			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt });
+			if (!at) continue;
+			let f = this.peerFollow.get(id);
+			if (!f) this.peerFollow.set(id, (f = follower(scene)));
+			const last = f.last, { d, sides } = f.step(at, now, !!last && Math.hypot(at.x - last.x, at.y - last.y) > SNAP);
+			peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt, d, behind: behind(sides) });
 		}
-		const own = c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing };
+		for (const id of this.peerFollow.keys()) if (!this.net.peers.has(id)) this.peerFollow.delete(id);
+		const own = c && {
+			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides)
+		};
 		const r = hole(this.iris, now, this.view), iris = this.iris;
-		this.art.draw(own, peers, now, r === null || iris.is === 'open' ? null : { x: iris.at.x * this.dpr, y: iris.at.y * this.dpr, r: r * this.dpr });
+		const shade = r === null || iris.is === 'open' ? null : { x: iris.at.x * this.dpr, y: iris.at.y * this.dpr, r: r * this.dpr };
+		this.art.draw(own, peers, now, shade, card ? [] : this.scenery.foreground(cam, k));
 	}
 
 	/** What the cursor wears, to the room from Join on; the net client sends only a change. */
@@ -851,8 +910,12 @@ export class Engine {
 		if (this.cursor) this.net.presence({ cos: saved.worn, gold: saved.gold, river: false });
 	}
 
-	/** Shows the "you" tag on the own cursor again: the Arch reset (ticket 20) calls this. */
+	/**
+	 * Shows the "you" tag on the own cursor again: the Arch reset (ticket 20) calls this. The reset is a jump, so the cursor
+	 * takes the depth factor and the sides of where it lands (ticket 19).
+	 */
 	tagYou() {
 		this.art.tag();
+		this.jumped = true;
 	}
 }

@@ -156,13 +156,16 @@ const offCentre = async (page: Page, l: Locator) => {
 /** Nothing has focus, so no ring shows: the page's body holds it. */
 const unfocused = (page: Page) => page.evaluate(() => document.activeElement === document.body && !document.querySelector(':focus-visible'));
 
-/** Joins with a click near the Join button's corner, where the cursor starts, and waits for the lock. */
-async function join(page: Page) {
+/**
+ * Joins with a click near the Join button's corner, where the cursor starts, and waits for the lock; and for the cursor
+ * to be drawn there, unless scenery there covers it (`seen` false: a desk in the SLU lab, ticket 19).
+ */
+async function join(page: Page, seen = true) {
 	const b = (await page.locator('dialog.join[open] button').boundingBox())!, at = { x: b.x + 8, y: b.y + 8 };
 	await page.mouse.click(at.x, at.y);
 	await expect(page.locator('dialog.join')).toBeHidden();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
-	await expect.poll(() => off(page, at)).toBeLessThan(5);
+	if (seen) await expect.poll(() => off(page, at)).toBeLessThan(5);
 	return at;
 }
 
@@ -191,7 +194,9 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 
 	test('Join locks the pointer where pressed; the drawn cursor opens a card, closes it and follows its link', async ({ page }) => {
 		await page.goto('/slu');
-		let at = await join(page);
+		// At this size Join puts the cursor on a desk, appearing above its front line, so behind it and covered (ticket 19);
+		// the first move below shows it started where pressed.
+		let at = await join(page, false);
 		const moveTo = async (p: Point) => {
 			await nudge(page, p.x - at.x, p.y - at.y);
 			await expect.poll(() => off(page, p)).toBeLessThan(5);
@@ -199,8 +204,18 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 		};
 		const card = page.locator('[data-prop="workstation"] dialog');
 		const prop = page.locator('[data-prop="workstation"] > button');
+		// The monitor stands on its desk and is used from in front of it (ticket 19): the cursor comes to it from the floor
+		// beside the desk's chair (world 1060, 1570), up through the chair (1005, 1450), which joins the desktop.
+		const world = (x: number, y: number) =>
+			page.locator('main').evaluate((m, p) => {
+				const q = new DOMMatrix(getComputedStyle(m).transform).transformPoint(p);
+				return { x: q.x, y: q.y };
+			}, { x, y });
+		const toMonitor = async () => {
+			for (const p of [await world(1060, 1570), await world(1005, 1450), await centre(prop)]) await moveTo(p);
+		};
 
-		await moveTo(await centre(prop));
+		await toMonitor();
 		await lockedClick(page);
 		await expect(card).toBeVisible();
 		const close = card.locator('form[method="dialog"] button');
@@ -209,7 +224,7 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 		await lockedClick(page);
 		await expect(card).toBeHidden();
 
-		await moveTo(await centre(prop));
+		await toMonitor(); // the card's Close is over the scene beyond the desk, so the cursor had stepped off it
 		await lockedClick(page);
 		await expect(card).toBeVisible();
 		await page.route('https://github.com/**', (r) => r.fulfill({ contentType: 'text/html', body: 'GitHub' }));
