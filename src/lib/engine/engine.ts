@@ -10,8 +10,8 @@
 // walk-behind scenery, scenery.ts holds the cut-outs drawn over it. The one-shots (ticket 22) are one-shots.ts, played by
 // the sound engine (sound.svelte.ts), which the Join press starts; the beds, the theme and the music (ticket 21, loops.ts)
 // follow the camera and the scene through it every frame. The river current (ticket 20) is river.ts. Carried over from
-// the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
-// rules; the layer's markup is never re-rendered here.
+// the rendering and pointer-lock prototypes' engines (tags archive/prototype/rendering-camera and
+// archive/prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
 import { earned, linkUsed } from '../analytics.svelte.ts';
 import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';

@@ -4,7 +4,7 @@
 // marquee, its letters scrolling. The
 // prerendered layer stays the hit target: this reads which props are hovered (the free mouse, the engine's `.hot` mark
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
-// their timing is in motion.ts. Carried over from the rendering prototype's canvas props (prototype/rendering-camera).
+// their timing is in motion.ts. Carried over from the rendering prototype's canvas props (tag archive/prototype/rendering-camera).
 import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
 import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';

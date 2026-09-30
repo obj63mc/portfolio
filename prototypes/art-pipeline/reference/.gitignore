@@ -1,6 +1,0 @@
-# Private repo: the references the recipe attaches are committed; the large full-page screenshots and the Wayback archive stay local.
-*
-!.gitignore
-!INDEX.md
-!ref-*.png
-!church-entrance-crop.png

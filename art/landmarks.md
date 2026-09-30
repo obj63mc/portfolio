@@ -23,7 +23,7 @@ The overworld master is a diorama, not an aerial map: the camera sits at about 3
 
 ## Visual language
 
-[Cursor Camp](https://neal.fun/cursor-camp/) informs connected paths, shared ground, consistent camera angle and readable props; one screenshot of it (via Aftermath's write-up, kept in `references/local/cursor-camp/`) is attached to the overworld prompt for camera angle and object scale only. The original [daytime illustration](../prototypes/art-pipeline/reference/ref-scene-1-day.png) supplies bright greens, cyan, cream and coral. Brown is restricted to photographed wood, brick and upholstery instead of tinting every scene. The [arrival mock](../prototypes/art-pipeline/reference/ref-scene-0-arrival-mock.png) remains an architecture reference. Accessible labels and portfolio content are supplied by the application.
+[Cursor Camp](https://neal.fun/cursor-camp/) informs connected paths, shared ground, consistent camera angle and readable props; one screenshot of it (via Aftermath's write-up, kept in `references/local/cursor-camp/`) is attached to the overworld prompt for camera angle and object scale only. The original [daytime illustration](references/ref-scene-1-day.png) supplies bright greens, cyan, cream and coral. Brown is restricted to photographed wood, brick and upholstery instead of tinting every scene. The [arrival mock](references/ref-scene-0-arrival-mock.png) remains an architecture reference. Accessible labels and portfolio content are supplied by the application.
 
 ## Fill scenery between the key scenes
 

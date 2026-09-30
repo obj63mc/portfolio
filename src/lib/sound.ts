@@ -1,7 +1,7 @@
 // The one-shots (spec: "Sound"; buildout ticket 22) as pure rules: every one-shot by id, each prop's signature from the
-// sound design table (.scratch/stl-cursor-portfolio/issues/19-sound-design.md), what a click, a grant or the Foundry
-// screen sounds like, which one-shots a scene loads, and when a scene's buffers are let go. The Web Audio module that
-// plays them is sound.svelte.ts; the files are audio/sounds.json's, encoded by `npm run audio`.
+// sound design table (.scratch/stl-cursor-portfolio/issues/19-sound-design.md at tag archive/buildout), what a click, a
+// grant or the Foundry screen sounds like, which one-shots a scene loads, and when a scene's buffers are let go. The
+// Web Audio module that plays them is sound.svelte.ts; the files are audio/sounds.json's, encoded by `npm run audio`.
 import { propsOf } from './scenes/index.ts';
 import type { Overworld, Prop, SubScene } from './scenes/types';
 import type { Screen } from './net/screen.ts';
