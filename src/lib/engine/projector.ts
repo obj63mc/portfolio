@@ -8,6 +8,7 @@ import type { Net } from '../net/net.ts';
 import { onQuad, reel } from '../net/screen.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { VIDEOS } from '../videos.ts';
+import { BODY, HEADLINE, loadFaces, settled } from './fonts.ts';
 import { SIT_MS, sitting } from './motion.ts';
 import { clickedProp } from './props.ts';
 
@@ -26,7 +27,6 @@ const WATCH_MS = 5000;
 const DRIFT = 0.5;
 /** The lamp's glow round the lens, world px. */
 const GLOW = 70;
-const FONT = 'system-ui, sans-serif';
 const GOLD = '#f2c230';
 
 const bounds = (ps: Point[], d = 0): Rect => {
@@ -93,6 +93,7 @@ export class Projector {
 	constructor(layer: HTMLElement, net: Net) {
 		this.layer = layer;
 		this.net = net;
+		loadFaces(`800 1px ${HEADLINE}`, `500 1px ${BODY}`);
 		this.video.playsInline = true;
 		this.video.preload = 'auto';
 		layer.addEventListener(
@@ -157,7 +158,7 @@ export class Projector {
 		const last = this.reel, r = (this.reel = this.foundry ? reel(this.net.screen, t) : null), v = this.video;
 		if ((r?.title ?? null) !== this.title) this.load(r?.title ?? null);
 		if (r) this.sync(r);
-		const look = r ? `${r.title}|${r.level}|${r.show}|${r.show === 'video' ? v.currentTime : ''}` : '';
+		const look = r ? `${r.title}|${r.level}|${r.show}|${r.show === 'video' ? v.currentTime : settled.size}` : '';
 		if (look === this.drawn) return null;
 		this.drawn = look;
 		return last && r && last.level === r.level && last.show === r.show ? QUAD : BEAM;
@@ -288,26 +289,26 @@ export class Projector {
 			g.drawImage(v, (w - vw) / 2, (h - vh) / 2, vw, vh);
 		} else if (r.show === 'title') {
 			g.fillStyle = GOLD;
-			g.font = `600 44px ${FONT}`;
+			g.font = `800 56px ${HEADLINE}`;
 			g.fillText('Now Showing', w / 2, h * 0.34);
 			g.fillStyle = '#fff';
-			line(g, title, 700, 92, w / 2, h * 0.56, w * 0.86);
+			line(g, title, 120, w / 2, h * 0.56, w * 0.86);
 		} else if (r.show === 'case') {
 			g.fillStyle = GOLD;
-			line(g, title, 600, 48, w / 2, h * 0.3, w * 0.86);
+			line(g, title, 64, w / 2, h * 0.3, w * 0.86);
 			g.fillStyle = '#fff';
-			g.font = `500 50px ${FONT}`;
+			g.font = `500 50px ${BODY}`;
 			const lines = wrap(g, CASE_STUDY[r.title], w * 0.8);
 			lines.forEach((l, i) => g.fillText(l, w / 2, h * 0.56 + (i - (lines.length - 1) / 2) * 66));
 		}
 	}
 }
 
-/** One line of text at `size` px, or smaller to fit `most` px wide. */
-function line(g: OffscreenCanvasRenderingContext2D, text: string, weight: number, size: number, x: number, y: number, most: number) {
-	g.font = `${weight} ${size}px ${FONT}`;
+/** One line of headline at `size` px, or smaller to fit `most` px wide. */
+function line(g: OffscreenCanvasRenderingContext2D, text: string, size: number, x: number, y: number, most: number) {
+	g.font = `800 ${size}px ${HEADLINE}`;
 	const fit = Math.min(size, (size * most) / g.measureText(text).width);
-	g.font = `${weight} ${fit}px ${FONT}`;
+	g.font = `800 ${fit}px ${HEADLINE}`;
 	g.fillText(text, x, y);
 }
 

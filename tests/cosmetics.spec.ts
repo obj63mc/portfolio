@@ -3,6 +3,7 @@
 // earned in another tab appears here silently. The room seeing it is peers.spec.ts's. The browser refuses the pointer
 // lock, so the drawn cursor follows the mouse. `npm run build` first.
 import { test, expect, type Page } from '@playwright/test';
+import { COSMETICS } from '../src/lib/cosmetics.ts';
 
 function refuseLock() {
 	Element.prototype.requestPointerLock = function () {
@@ -19,8 +20,15 @@ function listen() {
 		new MutationObserver(() => live.textContent && said.push(live.textContent)).observe(live, { childList: true, characterData: true, subtree: true });
 	});
 }
-/** What the live region said of cosmetics; vite preview has no room, so it also says the visitor is offline. */
-const said = (page: Page) => page.evaluate(() => (window as unknown as { said: string[] }).said.filter((s) => s.startsWith('You earned')));
+/**
+ * What the live region said of cosmetics, told by a cosmetic's name (its wording isn't tested); vite preview has no room,
+ * so it also says the visitor is offline.
+ */
+const said = (page: Page) =>
+	page.evaluate(
+		(names) => (window as unknown as { said: string[] }).said.filter((s) => names.some((n) => s.includes(n))),
+		Object.values(COSMETICS).map((c) => c.name)
+	);
 
 /** The cursor canvas's pixel at CSS px `x`, `y`, as [r, g, b, a]. */
 const pixel = (page: Page, x: number, y: number) =>
@@ -47,17 +55,17 @@ const TIP = { x: 600, y: 500 };
 const HEAD = { x: TIP.x - 8 * U, y: TIP.y - 12 * U, w: 26 * U, h: 11 * U };
 
 async function join(page: Page) {
-	const b = (await page.getByRole('button', { name: 'Join' }).boundingBox())!;
+	const b = (await page.locator('dialog.join[open] button').boundingBox())!;
 	await page.mouse.click(b.x + 8, b.y + 8);
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await expect(page.locator('dialog.join')).toBeHidden();
 	await page.mouse.move(TIP.x, TIP.y);
 }
 
 /** Opens a prop's card from the keyboard, the mouse and its cursor staying put. */
-async function open(page: Page, name: RegExp) {
-	await page.getByRole('button', { name }).focus();
+async function open(page: Page, id: string) {
+	await page.locator(`[data-prop="${id}"] > button`).focus();
 	await page.keyboard.press('Enter');
-	await expect(page.getByRole('dialog').filter({ visible: true })).toBeVisible();
+	await expect(page.locator(`[data-prop="${id}"] dialog`)).toBeVisible();
 }
 
 test.use({ viewport: { width: 1920, height: 1600 } });
@@ -67,14 +75,14 @@ test('the diploma’s card grants the graduation cap: announced once, popped on,
 	await page.goto('/slu');
 	await join(page);
 	expect(await drawn(page, HEAD), 'nothing worn yet').toBe(false);
-	await open(page, /^Diploma/);
-	await expect(page.locator('[role="status"]')).toHaveText('You earned the graduation cap');
+	await open(page, 'diploma');
+	await expect(page.locator('[role="status"]')).toContainText(COSMETICS[1].name);
 	await expect.poll(() => drawn(page, HEAD)).toBe(true);
 	expect(JSON.parse((await page.evaluate(() => localStorage.getItem('stl-portfolio')))!)).toMatchObject({ v: 1, worn: 1, earned: [1] });
 	// Opened again, it is worn again, and nothing new is said.
 	await page.keyboard.press('Escape');
-	await open(page, /^Diploma/);
-	expect(await said(page)).toEqual(['You earned the graduation cap']);
+	await open(page, 'diploma');
+	expect(await said(page)).toHaveLength(1);
 
 	await page.reload();
 	await join(page);
@@ -91,8 +99,8 @@ test('earning the last cosmetic turns the cursor gold', async ({ page }) => {
 	// Inside the arrow's body, clear of its outline.
 	const body = () => pixel(page, TIP.x + 3 * U, TIP.y + 14 * U);
 	await expect.poll(body).toEqual([255, 255, 255, 255]);
-	await open(page, /^The moose/);
-	await expect(page.locator('[role="status"]')).toHaveText('You earned the antlers, and your cursor turned gold');
+	await open(page, 'moose');
+	await expect(page.locator('[role="status"]')).toContainText(COSMETICS[4].name);
 	await expect.poll(body).toEqual([242, 194, 48, 255]);
 });
 
@@ -101,7 +109,7 @@ test('a cosmetic earned in another tab is worn here too, with nothing said', asy
 	for (const page of [here, there]) await page.goto('/slu');
 	await join(here);
 	await join(there);
-	await open(there, /^Diploma/);
+	await open(there, 'diploma');
 	await expect.poll(() => drawn(here, HEAD)).toBe(true);
 	expect(await said(here)).toEqual([]);
 });

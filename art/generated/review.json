@@ -241,26 +241,13 @@
                 "h": 415
               },
               "door": "/foundry",
-              "props": [
-                {
-                  "id": "marquee",
-                  "name": "Marquee",
-                  "gist": "Universal Pictures Home Entertainment",
-                  "body": [
-                    "Universal Pictures Home Entertainment: three titles, now showing inside."
-                  ],
-                  "rect": {
-                    "x": 3238,
-                    "y": 1585,
-                    "w": 563,
-                    "h": 152
-                  },
-                  "art": [
-                    "marquee",
-                    "marquee-bulbs"
-                  ]
-                }
-              ]
+              "doorRect": {
+                "x": 3236,
+                "y": 1380,
+                "w": 819,
+                "h": 415
+              },
+              "props": []
             }
           ]
         },
@@ -1050,6 +1037,31 @@
         ],
         "sign": "start-sign"
       },
+      "marquee": {
+        "art": [
+          "marquee",
+          "marquee-bulbs"
+        ],
+        "face": [
+          {
+            "x": 3238,
+            "y": 1608
+          },
+          {
+            "x": 3715,
+            "y": 1668
+          },
+          {
+            "x": 3715,
+            "y": 1725
+          },
+          {
+            "x": 3238,
+            "y": 1662
+          }
+        ],
+        "text": "Now Playing: Fast Five, Snow White & the Huntsman, The Lorax"
+      },
       "arrival": {
         "x": 1835,
         "y": 1438
@@ -1129,24 +1141,6 @@
             "w": 78,
             "h": 94
           }
-        },
-        {
-          "id": "marquee",
-          "name": "Marquee",
-          "gist": "Universal Pictures Home Entertainment",
-          "body": [
-            "Universal Pictures Home Entertainment: three titles, now showing inside."
-          ],
-          "rect": {
-            "x": 3238,
-            "y": 1585,
-            "w": 563,
-            "h": 152
-          },
-          "art": [
-            "marquee",
-            "marquee-bulbs"
-          ]
         },
         {
           "id": "mc-sign",
@@ -1276,7 +1270,7 @@
         {
           "id": "marquee",
           "asset": "marquee",
-          "kind": "prop",
+          "kind": "scenery",
           "rect": {
             "x": 3238.8671875,
             "y": 1585.78125,
@@ -1287,7 +1281,7 @@
         {
           "id": "marquee-bulbs",
           "asset": "marquee-bulbs",
-          "kind": "prop",
+          "kind": "scenery",
           "rect": {
             "x": 3195.3385416666665,
             "y": 1640.33203125,
@@ -1421,24 +1415,6 @@
             "y": 1264.6570972886761,
             "w": 123.44497607655502,
             "h": 105.58213716108453
-          }
-        },
-        {
-          "id": "marquee",
-          "rect": {
-            "x": 3238.8671875,
-            "y": 1585.78125,
-            "w": 562.03125,
-            "h": 150.390625
-          }
-        },
-        {
-          "id": "marquee-bulbs",
-          "rect": {
-            "x": 3195.3385416666665,
-            "y": 1640.33203125,
-            "w": 569.9479166666667,
-            "h": 151.6484375
           }
         },
         {
@@ -29560,7 +29536,7 @@
     {
       "id": "marquee",
       "scene": "overworld",
-      "kind": "prop",
+      "kind": "scenery",
       "file": "overworld/marquee/image.webp",
       "world": {
         "x": 3238.8671875,
@@ -29594,7 +29570,7 @@
     {
       "id": "marquee-bulbs",
       "scene": "overworld",
-      "kind": "prop",
+      "kind": "scenery",
       "file": "overworld/marquee-bulbs/image.webp",
       "world": {
         "x": 3195.3385416666665,

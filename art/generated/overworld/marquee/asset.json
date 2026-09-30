@@ -1,7 +1,7 @@
 {
   "id": "marquee",
   "scene": "overworld",
-  "kind": "prop",
+  "kind": "scenery",
   "file": "overworld/marquee/image.webp",
   "world": {
     "x": 3238.8671875,

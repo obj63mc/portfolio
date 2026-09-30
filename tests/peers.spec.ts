@@ -58,13 +58,19 @@ const scale = (page: Page) => page.locator('main').evaluate((m) => new DOMMatrix
 
 /** Joins with a click near the Join button's corner, the lock refused, so the drawn cursor follows the mouse. */
 async function joinScene(page: Page) {
-	const b = (await page.getByRole('button', { name: 'Join' }).boundingBox())!;
+	const b = (await page.locator('dialog.join[open] button').boundingBox())!;
 	await page.mouse.click(b.x + 8, b.y + 8);
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await expect(page.locator('dialog.join')).toBeHidden();
 }
 
-/** A same-page hop through a door link, as the router takes it. */
-const hop = (page: Page, href: string) => page.evaluate((href) => document.querySelector<HTMLAnchorElement>(`main a[href="${href}"]`)!.click(), href);
+/**
+ * A same-page hop through a door link, as the router takes it, done once the iris between scenes has opened on the new
+ * scene: its black is opaque on the cursor canvas.
+ */
+async function hop(page: Page, href: string) {
+	await page.evaluate((href) => document.querySelector<HTMLAnchorElement>(`main a[href="${href}"]`)!.click(), href);
+	await page.waitForFunction((href) => location.pathname === href && document.documentElement.dataset.iris === 'open', href);
+}
 
 test.describe('two browsers on wrangler dev', () => {
 	test.describe.configure({ mode: 'serial' });
@@ -116,8 +122,8 @@ test.describe('two browsers on wrangler dev', () => {
 
 	test('they see each other move: peers at 0.75x, the own cursor 1.25x with its tag, each with a flag badge', async () => {
 		// Connected behind the Join card, before either has joined.
-		await expect(a.locator('.presence')).toHaveText('2 here');
-		await expect(b.locator('.presence')).toHaveText('2 here');
+		await expect(a.locator('.presence')).toHaveText(/\b2\b/);
+		await expect(b.locator('.presence')).toHaveText(/\b2\b/);
 		expect(await opaque(b), 'nobody has joined, so nobody is drawn').toBeNull();
 		await joinScene(a);
 		// Clear of the church's door link and every prop, so a's own cursor is the arrow, not the pointing hand.
@@ -145,12 +151,12 @@ test.describe('two browsers on wrangler dev', () => {
 
 	test('a hop joins the sub-scene’s room: the overworld’s peers are gone, and the new room’s appear', async () => {
 		await hop(a, '/slu');
-		await expect(a.locator('.presence')).toHaveText('1 here');
-		await expect(b.locator('.presence')).toHaveText('1 here');
+		await expect(a.locator('.presence')).toHaveText(/\b1\b/);
+		await expect(b.locator('.presence')).toHaveText(/\b1\b/);
 		await expect.poll(() => opaque(b)).toBeNull();
 		await hop(b, '/slu');
-		await expect(a.locator('.presence')).toHaveText('2 here');
-		await expect(b.locator('.presence')).toHaveText('2 here');
+		await expect(a.locator('.presence')).toHaveText(/\b2\b/);
+		await expect(b.locator('.presence')).toHaveText(/\b2\b/);
 		// Both cameras are centred on the door they came in by; a's cursor stayed at the mouse, where the last test left it,
 		// and is sent on hello.
 		const at: Point = { x: 860, y: 440 };
@@ -165,18 +171,18 @@ test.describe('two browsers on wrangler dev', () => {
 		test.setTimeout(90_000);
 		await stop();
 		for (const page of [a, b]) {
-			await expect(page.locator('[role="status"]')).toHaveText('Offline, exploring solo');
-			await expect(page.locator('.presence')).toHaveText('1 here');
+			await expect(page.locator('[role="status"]')).not.toBeEmpty();
+			await expect(page.locator('.presence')).toHaveText(/\b1\b/);
 		}
 		await expect.poll(() => opaque(b)).toBeNull();
 		await a.mouse.move(500, 300);
 		await expect.poll(async () => (await opaque(a))?.x ?? Infinity).toBeLessThan(504);
 		// Several retries later, still one announcement each.
 		await a.waitForTimeout(4000);
-		expect(await said(a)).toEqual(['Offline, exploring solo']);
-		expect(await said(b)).toEqual(['Offline, exploring solo']);
+		expect(await said(a)).toHaveLength(1);
+		expect(await said(b)).toHaveLength(1);
 		await start();
-		for (const page of [a, b]) await expect(page.locator('.presence')).toHaveText('2 here', { timeout: 45_000 });
+		for (const page of [a, b]) await expect(page.locator('.presence')).toHaveText(/\b2\b/, { timeout: 45_000 });
 		await expect(a.locator('[role="status"]')).toHaveText('');
 		await expect.poll(async () => (await opaque(b))?.x ?? Infinity).toBeLessThan(504);
 	});
@@ -196,7 +202,7 @@ test.describe('two browsers on wrangler dev', () => {
 		await c.clock.install();
 		await c.addInitScript(refuseLock);
 		await c.goto(`${base()}/slu`);
-		await expect(b.locator('.presence')).toHaveText('3 here');
+		await expect(b.locator('.presence')).toHaveText(/\b3\b/);
 		const hidden = (on: boolean) =>
 			c.evaluate((on) => {
 				Object.defineProperty(document, 'hidden', { configurable: true, get: () => on });
@@ -204,11 +210,11 @@ test.describe('two browsers on wrangler dev', () => {
 			}, on);
 		await hidden(true);
 		await c.clock.fastForward(59_000);
-		await expect(b.locator('.presence')).toHaveText('3 here');
+		await expect(b.locator('.presence')).toHaveText(/\b3\b/);
 		await c.clock.fastForward(2000);
-		await expect(b.locator('.presence')).toHaveText('2 here');
+		await expect(b.locator('.presence')).toHaveText(/\b2\b/);
 		await hidden(false);
-		await expect(b.locator('.presence')).toHaveText('3 here');
+		await expect(b.locator('.presence')).toHaveText(/\b3\b/);
 		await c.context().close();
 	});
 });
@@ -220,13 +226,13 @@ test.describe('without a room', () => {
 		let sockets = 0;
 		page.on('websocket', () => sockets++);
 		await page.goto('/');
-		await expect(page.locator('[role="status"]')).toHaveText('Offline, exploring solo');
-		await expect(page.locator('.presence')).toHaveText('1 here');
+		await expect(page.locator('[role="status"]')).not.toBeEmpty();
+		await expect(page.locator('.presence')).toHaveText(/\b1\b/);
 		await joinScene(page);
 		await page.mouse.move(640, 360);
 		await expect.poll(async () => (await opaque(page))?.x ?? Infinity).toBeLessThan(644);
 		await expect.poll(() => sockets, { timeout: 5000 }).toBeGreaterThan(2);
-		expect(await said(page)).toEqual(['Offline, exploring solo']);
+		expect(await said(page)).toHaveLength(1);
 	});
 
 	test('a page the edge flags `Server-Timing: bot` opens no socket, announces nothing and never retries', async ({ page }) => {
@@ -244,6 +250,6 @@ test.describe('without a room', () => {
 		await page.waitForTimeout(3000);
 		expect(sockets).toBe(0);
 		expect(await said(page)).toEqual([]);
-		await expect(page.locator('.presence')).toHaveText('1 here');
+		await expect(page.locator('.presence')).toHaveText(/\b1\b/);
 	});
 });

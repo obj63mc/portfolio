@@ -111,18 +111,10 @@ const districts: District[] = [
 				name: 'The Foundry',
 				rect: { x: 2200, y: 1380, w: 1900, h: 415 },
 				door: '/foundry',
-				props: [
-					{
-						id: 'marquee',
-						name: 'Marquee',
-						gist: 'Universal Pictures Home Entertainment',
-						// Clearance: the three titles are told only on the screen and under the posters inside.
-						body: ['Universal Pictures Home Entertainment: three titles, now showing inside.'],
-						rect: { x: 3238, y: 1585, w: 563, h: 152 },
-						// The canopy, then its string of bulbs, which chase.
-						art: ['marquee', 'marquee-bulbs']
-					}
-				]
+				// The cinema east of the sawtooth-roofed hall, its roof to the foot of the venue, under its marquee: the hall
+				// itself is no way in (Joe, 2026-09-30).
+				doorRect: { x: 3236, y: 1380, w: 819, h: 415 },
+				props: []
 			}
 		]
 	},
@@ -168,9 +160,9 @@ const districts: District[] = [
 
 export const OVERWORLD: Overworld = {
 	id: 'overworld',
-	title: 'Joe Madden, St. Louis',
+	title: 'Welcome to the Portfolio of Joseph Madden | BarMadden.com',
 	description:
-		'An explorable St. Louis where Joe Madden, Chief Architect at Moosylvania, keeps his career, client work, resume and contact details. Move through it as a cursor alongside other visitors.',
+		'Explore the portfolio of Joseph Madden, showcasing his career, client work, resume, and contact details in an explorable St. Louis setting.',
 	w: 6750,
 	h: 2700,
 	pushBand: 0.25,
@@ -259,5 +251,17 @@ export const OVERWORLD: Overworld = {
 		cover: ['park-sign', 'track-tree-west', 'park-tree', 'track-tree-east'],
 		// On the lawn where a bench stood, just south of the start line (Joe, 2026-09-29): scenery, not a prop.
 		sign: 'start-sign'
+	},
+	// Scenery, not a prop: no button or card, its letters scrolling what's showing inside (Joe, 2026-09-30). The face is
+	// the canopy's white front, measured on the plate: 54 px tall at its west end and 57 at its east.
+	marquee: {
+		art: ['marquee', 'marquee-bulbs'],
+		face: [
+			{ x: 3238, y: 1608 },
+			{ x: 3715, y: 1668 },
+			{ x: 3715, y: 1725 },
+			{ x: 3238, y: 1662 }
+		],
+		text: 'Now Playing  *  Fast Five  *  Snow White & the Huntsman  *  The Lorax'
 	}
 };

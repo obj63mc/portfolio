@@ -58,6 +58,8 @@ export interface Venue {
 	props: Prop[];
 	/** URL of the sub-scene behind the venue door, absent for exterior-only venues. */
 	door?: string;
+	/** The door link's hit area where it is less than the whole building: the Foundry's cinema, under its marquee. */
+	doorRect?: Rect;
 }
 
 export interface District {
@@ -143,6 +145,18 @@ export interface Overworld extends SceneBase {
 		cover: string[];
 		/** The start/finish sign's cut-out, scenery beside the line that nothing clicks: the lap timer is an Easter egg. */
 		sign: string;
+	};
+	/** The Foundry cinema's marquee: scenery that nothing clicks, whose letter board scrolls what's showing. */
+	marquee: {
+		/** Its cut-outs, bottom first: the canopy, then its string of bulbs, which chase. */
+		art: string[];
+		/**
+		 * The canopy's front face, clockwise from its top left, its sides upright: the letter board fills it inside a white
+		 * frame, the letters following its slope.
+		 */
+		face: Point[];
+		/** What scrolls across the board, over and over. */
+		text: string;
 	};
 }
 

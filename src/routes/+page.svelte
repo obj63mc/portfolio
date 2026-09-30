@@ -32,8 +32,8 @@
 					<PropCard {prop} level={4} />
 				{/each}
 				{#if v.door}
-					<!-- The whole building (ticket 05); its props sit above it. -->
-					<a class="door at" style={at(v.rect)} href={v.door}>Enter {v.name}</a>
+					<!-- The whole building (ticket 05), or the part of it that is the way in; its props sit above it. -->
+					<a class="door at" style={at(v.doorRect ?? v.rect)} href={v.door}>Enter {v.name}</a>
 				{/if}
 			</section>
 		{/each}

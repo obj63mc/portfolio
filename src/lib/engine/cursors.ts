@@ -7,6 +7,7 @@ import { COSMETICS, KNOWN } from '../cosmetics.ts';
 import type { CosmeticId } from '../scenes/types';
 import SHEET from './flags.webp?no-inline';
 import FLAGS from './flags.json';
+import { BODY as COPY, loadFaces, settled } from './fonts.ts';
 
 /**
  * A cursor to draw: its tip in device px, its country code, whether its body is gold, the cosmetic it wears (0 none, an
@@ -220,6 +221,7 @@ export class Cursors {
 		this.dpr = dpr;
 		this.atlas = rasterize(OWN * scale);
 		this.sheet.src = SHEET;
+		loadFaces(`500 1px ${COPY}`);
 		// Until the sheet arrives cursors go without a badge; a failed sheet leaves them without one.
 		this.sheet.decode().then(() => ((this.ready = true), this.invalidate()), () => {});
 	}
@@ -234,23 +236,40 @@ export class Cursors {
 		this.key = '';
 	}
 
-	/** Peers first, then the own cursor over them; redrawn only when a cursor, its badge, its cosmetic or the tag has changed. */
-	draw(own: Drawn | null, peers: Drawn[], now: number) {
+	/**
+	 * Peers first, then the own cursor over them, then the iris between scenes (iris.ts) over all of it: black but for a
+	 * circle `r` device px round `x, y`. Redrawn only when a cursor, its badge, its cosmetic, the tag or the iris has changed.
+	 */
+	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null) {
 		const tag = own ? Math.max(0, Math.min(1, (this.tagAt + TAG + FADE - now) / FADE)) : 0;
 		const pop = (p: Drawn) => Math.min(1, (now - p.wornAt) / POP);
-		const key = [tag, this.ready, ...[own, ...peers].flatMap((p) => (p ? [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand] : ['-']))].join();
+		const key = [
+			tag, this.ready, settled.size, iris && [iris.x, iris.y, iris.r],
+			...[own, ...peers].flatMap((p) => (p ? [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand] : ['-']))
+		].join();
 		if (key === this.key) return;
 		this.key = key;
-		const g = this.g;
+		const g = this.g, { width, height } = this.canvas;
 		g.setTransform(1, 0, 0, 1, 0, 0);
-		g.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		g.clearRect(0, 0, width, height);
 		for (const p of peers) this.one(p, PEER, false, pop(p));
-		if (!own) return;
-		this.one(own, OWN, true, pop(own));
-		if (!tag) return;
-		const d = this.dpr, k = OWN * this.scale, x = own.x + 22 * k, y = own.y + 12 * k;
-		g.globalAlpha = tag;
-		g.font = `600 ${12 * d}px system-ui, sans-serif`;
+		if (own) {
+			this.one(own, OWN, true, pop(own));
+			if (tag) this.you(own, tag);
+		}
+		if (!iris) return;
+		g.beginPath();
+		g.rect(0, 0, width, height);
+		g.arc(iris.x, iris.y, iris.r, 0, 2 * Math.PI);
+		g.fillStyle = '#000';
+		g.fill('evenodd');
+	}
+
+	/** The own cursor's "you" tag, `alpha` of the way through fading. */
+	private you(own: Drawn, alpha: number) {
+		const g = this.g, d = this.dpr, k = OWN * this.scale, x = own.x + 22 * k, y = own.y + 12 * k;
+		g.globalAlpha = alpha;
+		g.font = `500 ${12 * d}px ${COPY}`;
 		g.lineJoin = 'round';
 		g.lineWidth = 3 * d;
 		g.strokeStyle = '#fff';

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES, artOf, propsOf } from '../src/lib/scenes/index.ts';
-import { CLICK_MS, HOVER_MS, RIDER, TURNS, blink, chase, glint, hover, moose, pop, progress, rider, turned } from '../src/lib/engine/motion.ts';
+import { CLICK_MS, HOVER_MS, RIDER, SCROLL_SPEED, TURNS, blink, chase, glint, hover, moose, pop, progress, rider, scrolled, turned } from '../src/lib/engine/motion.ts';
 import { along, course, locate } from '../src/lib/engine/track.ts';
 
 const generated = (path: string) => new URL(`../art/generated/${path}`, import.meta.url);
@@ -132,4 +132,14 @@ test('the marquee chases in three steps and the bottles glint in sweeps; both ho
 	assert.equal(glint(3000, false), null, 'still between sweeps');
 	assert.equal(glint(3500, false), glint(5000, false));
 	assert.equal(glint(700, true), null);
+});
+
+test('the marquee, scenery with its own cut-outs, scrolls its letters on server time a whole px at a time; under reduced motion it rests on its first words', () => {
+	for (const id of OVERWORLD.marquee.art) assert.ok(existsSync(generated(`overworld/${id}/image.webp`)), id);
+	assert.deepEqual([0, 999, 1000, 2000].map((t) => scrolled(t, false)), [0, 44, SCROLL_SPEED, 2 * SCROLL_SPEED]);
+	// Server time is some 10^12 ms from the epoch: still whole px, at the same steady speed.
+	const now = 1_790_000_000_007;
+	assert.ok(Number.isInteger(scrolled(now, false)));
+	assert.equal(scrolled(now + 1000, false) - scrolled(now, false), SCROLL_SPEED);
+	assert.equal(scrolled(now, true), 0);
 });

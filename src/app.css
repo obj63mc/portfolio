@@ -1,6 +1,35 @@
+/*
+ * The site's type (Joe, 2026-09-30), every face self-hosted: headlines in Barlow Condensed ExtraBold and body copy in
+ * Montserrat at 400 or 500, from the @fontsource packages imported in +layout.svelte, and the Foundry marquee's
+ * dot-matrix face, drawn on the canvas alone (engine/fonts.ts keeps the canvas's families in step with these). No other
+ * weight is loaded, so none is faked by emboldening.
+ */
+@font-face {
+	font-family: 'Doto Marquee';
+	font-display: block;
+	src: url('./lib/fonts/doto-marquee.woff2') format('woff2');
+}
+
 :root {
-	font-family: system-ui, sans-serif;
+	--headline: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+	--body: Montserrat, system-ui, sans-serif;
+	font-family: var(--body);
+	font-synthesis-weight: none;
 	line-height: 1.4;
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+	font-family: var(--headline);
+	font-weight: 800;
+	line-height: 1.1;
+}
+
+:where(button, input, select, textarea) {
+	font: inherit;
+}
+
+button {
+	font-weight: 500;
 }
 
 body {
@@ -46,7 +75,6 @@ dialog {
 	& button {
 		padding-block: 0.75rem;
 		padding-inline: 2.5rem;
-		font: inherit;
 		font-size: 1.25rem;
 	}
 
@@ -77,7 +105,7 @@ dialog {
  */
 html.engine {
 	overflow: hidden;
-	/* The engine's backdrop (BACKDROP in engine.ts), which a new scene fades in from (ticket 11). */
+	/* The engine's backdrop (BACKDROP in engine.ts), behind the scene where no tile has arrived. */
 	background: #1d2b3a;
 	/* Touch drags pan the scene (ticket 10), so the browser neither scrolls nor zooms it; a card, a scroll container, still scrolls. */
 	touch-action: none;
@@ -150,7 +178,7 @@ html.engine {
 			pointer-events: none;
 		}
 
-		/* Props and the signpost sit above a venue's door, which covers the whole building for now. */
+		/* Props and the signpost sit above a venue's door, which covers its building. */
 		& :is(.prop, nav) {
 			z-index: 1;
 		}
@@ -266,7 +294,7 @@ html.engine {
 		border-radius: 1rem;
 		background: rgb(36 79 85 / 0.9);
 		color: #fff4d4;
-		font-weight: 600;
+		font-weight: 500;
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
 		pointer-events: none;

@@ -28,8 +28,8 @@ const drawsOver = async (page: Page, ms: number) => {
 };
 
 async function join(page: Page) {
-	await page.getByRole('button', { name: 'Join' }).click();
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await page.locator('dialog.join button').click();
+	await expect(page.locator('dialog.join')).toBeHidden();
 }
 
 test.beforeEach(({ page }) => page.addInitScript(countDraws));
@@ -44,13 +44,13 @@ test.describe('the SLU lab, the whole height in view', () => {
 		await page.waitForTimeout(500);
 		expect(await drawsOver(page, 1000)).toBe(0);
 
-		const workstation = page.getByRole('button', { name: /^Lab workstation/ });
+		const workstation = page.locator('[data-prop="workstation"] > button');
 		await workstation.hover();
 		expect(await drawsOver(page, 400)).toBeGreaterThan(0); // the glow fading in
 		expect(await drawsOver(page, 1000)).toBe(0); // held, still
 
 		await workstation.click();
-		await expect(page.getByRole('dialog', { name: 'Lab workstation' })).toBeVisible();
+		await expect(page.locator('[data-prop="workstation"] dialog')).toBeVisible();
 		await page.keyboard.press('Escape');
 		await page.mouse.move(5, 5);
 		await page.waitForTimeout(500);
@@ -67,10 +67,10 @@ test('ambient motion draws while in view; under reduced motion it rests, and a c
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.waitForTimeout(300);
 	expect(await drawsOver(page, 1000)).toBe(0);
-	const moose = page.getByRole('button', { name: /^The moose/ });
+	const moose = page.locator('[data-prop="moose"] > button');
 	await moose.focus();
 	await page.keyboard.press('Enter'); // the click: the card opens and the antlers wobble
-	await expect(page.getByRole('dialog', { name: 'The moose' })).toBeVisible();
+	await expect(page.locator('[data-prop="moose"] dialog')).toBeVisible();
 	expect(await drawsOver(page, 600)).toBeGreaterThan(10);
 	await page.waitForTimeout(800);
 	expect(await drawsOver(page, 1000)).toBe(0);
@@ -81,12 +81,12 @@ test('the meeting TV loads its video only on the click that opens its card', asy
 	page.on('request', (r) => r.url().endsWith('.mp4') && videos.push(r.url()));
 	await page.goto('/moosylvania');
 	await join(page);
-	const tv = page.getByRole('button', { name: /^Meeting TV/ });
+	const tv = page.locator('[data-prop="meeting-tv"] > button');
 	await tv.focus();
 	await page.waitForTimeout(500);
 	expect(videos).toEqual([]);
 	await page.keyboard.press('Enter');
-	const card = page.getByRole('dialog', { name: 'Meeting TV' });
+	const card = page.locator('[data-prop="meeting-tv"] dialog');
 	await expect(card.locator('video[controls]')).toBeVisible();
 	await expect.poll(() => videos.length).toBeGreaterThan(0);
 });

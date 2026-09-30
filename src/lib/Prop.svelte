@@ -59,6 +59,13 @@
 {/if}
 
 <style>
+	/* The card's title, a headline (src/app.css). */
+	h2,
+	h4 {
+		margin-block: 0 0.75rem;
+		font-size: 1.75rem;
+	}
+
 	video {
 		display: block;
 		inline-size: 100%;

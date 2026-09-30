@@ -1,6 +1,6 @@
 // Prop motion and reactions (buildout ticket 15) as pure functions of time and state, for the props module and for tests:
-// ambient motion (the moose breathing and blinking, the rider round the park's lake loop, the marquee's bulbs chasing,
-// a glint along the Side Project bottles), hover and click reactions, and what reduced motion leaves of them. Times are
+// ambient motion (the moose breathing and blinking, the rider round the park's lake loop, the marquee's letters scrolling
+// and its bulbs chasing, a glint along the Side Project bottles), hover and click reactions, and what reduced motion leaves of them. Times are
 // ms. Ambient motion runs on server time, so every visitor in a room sees the rider at the same point. Carried over from
 // the rendering prototype's props.ts and the art workshop's drawRig (art/review.js).
 import type { Point } from '../scenes/types';
@@ -131,6 +131,15 @@ export const sitting = (from: Point, to: Point, since: number, rm: boolean): Poi
 
 /** Which third of the marquee's bulbs is lit, stepping every 150 ms; -1 under reduced motion, every bulb as painted. */
 export const chase = (t: number, rm: boolean) => (rm ? -1 : Math.floor(t / 150) % 3);
+
+/** How fast the marquee's letters scroll, world px/s. */
+export const SCROLL_SPEED = 45;
+
+/**
+ * How far the marquee's letters have scrolled at `t`, in whole world px since the epoch, so every visitor reads the same
+ * words; 0 under reduced motion, where the board rests on its first words. The board takes it round its text's length.
+ */
+export const scrolled = (t: number, rm: boolean) => (rm ? 0 : Math.floor((t / 1000) * SCROLL_SPEED));
 
 /** How far a glint has swept along the bottle row, 0 to 1, for 1.4 s every 7 s; null between sweeps and under reduced motion. */
 export const glint = (t: number, rm: boolean) => {

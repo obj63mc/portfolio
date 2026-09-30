@@ -9,7 +9,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { createServer, type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, seatOf } from '../src/lib/scenes/foundry.ts';
+import { PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, screenGist, seatOf } from '../src/lib/scenes/foundry.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
 const root = new URL('..', import.meta.url).pathname;
@@ -31,8 +31,8 @@ function refuseLock() {
 }
 
 async function joinScene(page: Page) {
-	await page.getByRole('button', { name: 'Join' }).click();
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await page.locator('dialog.join button').click();
+	await expect(page.locator('dialog.join')).toBeHidden();
 }
 
 /** A poster's click, which asks for its title and opens no card (Joe, 2026-09-29). */
@@ -69,7 +69,8 @@ const fromSeat = async (page: Page) => {
 };
 /** How far the drawn cursor's tip has moved from `from`, CSS px. */
 const moved = async (page: Page, from: Point) => ((t) => Math.hypot(t.x - from.x, t.y - from.y))(await tip(page));
-const idleText = 'Screen: idle, pick a poster to start a reel';
+/** What the screen's line says, idle and playing The Lorax, from the scene data (its wording isn't tested). */
+const idleLine = screenGist(), playingLine = screenGist('lorax');
 
 /** How bright the scene canvas is at the middle of the screen, 0 to 255: the idle screen is painted ivory. */
 const screenLight = async (page: Page) => {
@@ -92,7 +93,7 @@ test.describe('two browsers on wrangler dev', () => {
 		const page = await (await browser.newContext()).newPage();
 		await page.addInitScript(refuseLock);
 		await page.goto(`${base()}/foundry`);
-		await expect(page.locator('.presence')).not.toHaveText('1 here');
+		await expect(page.locator('.presence')).not.toHaveText(/\b1\b/);
 		return page;
 	}
 
@@ -125,13 +126,13 @@ test.describe('two browsers on wrangler dev', () => {
 
 	test('one poster click plays the title for both, and a second click during it does nothing for anyone', async () => {
 		await Promise.all([joinScene(a), joinScene(b)]);
-		for (const page of [a, b]) await expect(screenStatus(page)).toHaveText('Screen: idle, pick a poster to start a reel');
+		for (const page of [a, b]) await expect(screenStatus(page)).toContainText(idleLine);
 		const idle = await screenLight(a);
 		await poster(a, 'lorax');
-		for (const page of [a, b]) await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+		for (const page of [a, b]) await expect(screenStatus(page)).toContainText(playingLine);
 		await poster(b, 'fast-five');
 		await b.waitForTimeout(500);
-		for (const page of [a, b]) await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+		for (const page of [a, b]) await expect(screenStatus(page)).toContainText(playingLine);
 		// The beam comes up on the blank screen, then the title card darkens it.
 		await expect.poll(() => screenLight(a), { timeout: 5000 }).toBeLessThan(idle / 2);
 	});
@@ -145,7 +146,7 @@ test.describe('two browsers on wrangler dev', () => {
 			})
 		);
 		await c.goto(`${base()}/foundry`);
-		await expect(screenStatus(c)).toHaveText('Screen: now playing The Lorax');
+		await expect(screenStatus(c)).toContainText(playingLine);
 		expect(hello!.screen!.title).toBe('lorax');
 		expect(hello!.now - hello!.screen!.at).toBeGreaterThan(500);
 		// Arriving mid-reel, not in the seats, the visitor keeps the default view (Joe, 2026-09-29).
@@ -162,11 +163,11 @@ test.describe('without a room', () => {
 		await page.clock.install();
 		await page.addInitScript(refuseLock);
 		await page.goto('/foundry');
-		await expect(page.locator('[role="status"]')).toHaveText('Offline, exploring solo');
+		await expect(page.locator('[role="status"]')).not.toBeEmpty();
 		await joinScene(page);
 		expect((await transform(page)).s).toBeCloseTo(0.6);
 		await poster(page, 'lorax');
-		await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+		await expect(screenStatus(page)).toContainText(playingLine);
 		// Eased out to the reel's framing: the projector, its lens and the whole screen in the 390 px wide view.
 		await expect.poll(async () => (await transform(page)).s).toBeCloseTo(390 / REEL_FRAME.w, 3);
 		for (const p of [PROJECTOR_LENS, { x: 100, y: 1250 }, ...SCREEN_SURFACE]) {
@@ -174,7 +175,7 @@ test.describe('without a room', () => {
 			expect(at.x >= 0 && at.x <= 390 && at.y >= 0 && at.y <= 844, JSON.stringify(p)).toBe(true);
 		}
 		await page.clock.fastForward(45_000);
-		await expect(screenStatus(page)).toHaveText('Screen: idle, pick a poster to start a reel');
+		await expect(screenStatus(page)).toContainText(idleLine);
 		await expect.poll(async () => (await transform(page)).s).toBe(0.6);
 	});
 });
@@ -189,8 +190,8 @@ test('offline, a poster click seats its clicker in the second row, then plays; n
 	await page.mouse.move(lorax.x + lorax.width / 2, lorax.y + lorax.height / 2);
 	await page.mouse.click(lorax.x + lorax.width / 2, lorax.y + lorax.height / 2);
 	// The reel waits for the visitor to sit down.
-	await expect(screenStatus(page)).toHaveText(idleText);
-	await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+	await expect(screenStatus(page)).toContainText(idleLine);
+	await expect(screenStatus(page)).toContainText(playingLine);
 	await expect.poll(async () => (await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
 	expect(await fromSeat(page)).toBeLessThan(12);
 	const seated = await tip(page);
@@ -206,7 +207,7 @@ test('offline, a poster click seats its clicker in the second row, then plays; n
 	expect(new URL(page.url()).pathname).toBe('/foundry');
 	// Five seconds into the reel the keys steer again, so the visitor may leave while it plays, still framed (Joe, 2026-09-29).
 	await page.clock.fastForward(5_000);
-	await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+	await expect(screenStatus(page)).toContainText(playingLine);
 	const up = await tip(page);
 	await page.keyboard.down('ArrowLeft');
 	await page.waitForTimeout(300);
@@ -218,14 +219,14 @@ test('offline, a poster click seats its clicker in the second row, then plays; n
 	await expect.poll(async () => (await transform(page)).s).toBeGreaterThan(1280 / REEL_FRAME.w + 0.01);
 	await page.keyboard.up('ArrowUp');
 	await expect.poll(async () => (await transform(page)).s).toBe(scale);
-	await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+	await expect(screenStatus(page)).toContainText(playingLine);
 	await page.keyboard.down('ArrowDown');
 	await expect.poll(async () => (await transform(page)).s).toBeLessThan(scale - 0.01);
 	await page.keyboard.up('ArrowDown');
 	await expect.poll(async () => (await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
 	// When it ends the camera comes back to the session's scale.
 	await page.clock.fastForward(45_000);
-	await expect(screenStatus(page)).toHaveText(idleText);
+	await expect(screenStatus(page)).toContainText(idleLine);
 	await expect.poll(async () => (await transform(page)).s).toBe(scale);
 });
 
@@ -235,11 +236,11 @@ test.describe('a phone, with no mouse or trackpad', () => {
 	test('offline, a tapped poster seats its clicker; a drag moves neither the camera nor the cursor until the reel ends', async ({ page }) => {
 		await page.clock.install();
 		await page.goto('/foundry');
-		await page.getByRole('button', { name: 'Join' }).tap();
+		await page.locator('dialog.join button').tap();
 		// The Lorax poster's right edge, in view beside the exit door where a phone opens.
 		const at = await onScreen(page, { x: 1030, y: 300 });
 		await page.touchscreen.tap(at.x, at.y);
-		await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+		await expect(screenStatus(page)).toContainText(playingLine);
 		await expect.poll(async () => (await transform(page)).s).toBeCloseTo(390 / REEL_FRAME.w, 3);
 		expect(await fromSeat(page)).toBeLessThan(12);
 		const [seated, framed] = [await tip(page), await transform(page)];
@@ -256,7 +257,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		expect(await moved(page, seated)).toBeLessThan(1);
 		expect(await transform(page)).toEqual(framed);
 		await page.clock.fastForward(45_000);
-		await expect(screenStatus(page)).toHaveText(idleText);
+		await expect(screenStatus(page)).toContainText(idleLine);
 		await expect.poll(async () => (await transform(page)).s).toBeCloseTo(0.6);
 		const before = await transform(page);
 		await drag();

@@ -1,8 +1,8 @@
 // The scene loop (buildout ticket 08): background tiles on the scene canvas, the prerendered layer moved with one transform
 // per camera change, the visitor's drawn cursor on the overlay canvas, and the camera from camera.ts. The input (ticket 09):
 // the Join card, the pointer lock with its fallback to the unlocked mouse, pause and resume, and the keys. Touch (ticket 10):
-// the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the fade, landing at
-// the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
+// the joystick, drag-to-pan with its fling, and tap-to-activate. The hop between scenes (ticket 11): the iris (iris.ts),
+// landing at the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
 // the scene canvas (ticket 15) are props.ts. Cosmetics (ticket 16): a granting prop's card grants, the saved state
 // (saved.svelte.ts) keeps them, and the room hears what the cursor wears. The Foundry screen's reel (ticket 17) is
 // projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. Carried over from
@@ -21,6 +21,7 @@ import {
 } from './camera.ts';
 import { Cursors, type Drawn } from './cursors.ts';
 import { Laps } from './laps.ts';
+import { IRIS, OPEN, advance, closing, hole, type Iris } from './iris.ts';
 
 export type Scene = Overworld | SubScene;
 
@@ -128,6 +129,8 @@ export class Engine {
 	private projector: Projector;
 	/** The Carondelet lap timer (ticket 18). */
 	private laps: Laps;
+	/** The iris between scenes. */
+	private iris: Iris = OPEN;
 	private raf = 0;
 	private last = 0;
 	private canvas: HTMLCanvasElement;
@@ -214,6 +217,7 @@ export class Engine {
 		this.hot?.classList.remove('hot');
 		document.documentElement.classList.remove('engine');
 		delete document.documentElement.dataset.input;
+		delete document.documentElement.dataset.iris;
 		this.layer.style.transform = '';
 	}
 
@@ -221,8 +225,10 @@ export class Engine {
 	 * Each navigation's scene and fragment. A page load opens centred on the fragment's target, else the overworld's
 	 * arrival point (the welcome sign) or a sub-scene's exit door. A hop from another scene (ticket 11) lands at a door
 	 * whatever the fragment: into a sub-scene just inside its exit door, focus on its h1; back on the overworld, by the exit
-	 * door or the browser's back button, on the door of the venue left, focus on that door. The camera is centred on where
-	 * it lands, a joined cursor is put there and the new scene fades in over 300 ms, a cut under reduced motion.
+	 * door or the browser's back button, on the door of the venue left, with nothing focused: the visitor roams free, and
+	 * Tab reaches the door again (Joe, 2026-09-30). The camera is centred on where it lands, a joined cursor is put there
+	 * and the new scene opens out of the iris that `close` shut, from there, once its tiles in view have arrived (Joe,
+	 * 2026-09-30); a cut under reduced motion.
 	 */
 	show(scene: Scene, hash: string) {
 		const target = placed(byHash(hash));
@@ -246,23 +252,41 @@ export class Engine {
 		const at = door ?? target;
 		const box = at ? this.box(at) : overworld ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit;
 		// Just inside a sub-scene's door is the floor in front of it, a cursor's height below the door on its wall, where a
-		// click doesn't leave again. The overworld's doors are whole buildings.
+		// click doesn't leave again. The overworld's doors are buildings, or the Foundry's cinema.
 		const c = door && !overworld ? { x: box.x + box.w / 2, y: box.y + box.h + CARRY } : centre(box);
 		// A hop out of the Foundry mid-reel lands at the session's scale; the box above was read at the reel's.
 		this.view = { ...this.view, s: this.base };
 		this.moveTo(centreOn(c, this.view, scene));
+		const landing = { x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
+		if (door || this.iris.is !== 'open') this.iris = this.reducedMotion.matches ? OPEN : { is: 'shut', at: landing, t0: performance.now(), landed: true };
 		if (!door) return;
 		// Before Join there is no cursor. The unlocked mouse's cursor stays at the OS pointer, where its clicks land. Push
 		// waits for the cursor to move, so a door near the scene's edge doesn't carry the camera off it.
-		if (this.cursor && this.input.is !== 'unlocked') this.cursor = { x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
+		if (this.cursor && this.input.is !== 'unlocked') this.cursor = { ...landing };
 		this.armed = false;
 		// Focus moves after the router's own reset, which for a URL with a fragment (the exit door's `/#<venue>`) runs in a
 		// timeout queued before this one and clears focus, the venue's section being unfocusable. A back or forward hop
 		// behind the Join or Paused card, whose page is inert, hands focus back to the card's button, which that reset
-		// took it from.
-		const focus = document.querySelector<HTMLElement>('.gate[open] button') ?? (overworld ? door : this.layer.querySelector<HTMLElement>('h1'));
+		// took it from. Back on the overworld nothing else takes focus, so the door left shows no ring.
+		const focus = document.querySelector<HTMLElement>('.gate[open] button') ?? (overworld ? null : this.layer.querySelector<HTMLElement>('h1'));
 		setTimeout(() => focus?.focus());
-		if (!this.reducedMotion.matches) this.canvas.animate({ opacity: [0, 1] }, 300);
+	}
+
+	/**
+	 * Leaving the scene for another (ticket 11) for `to`: the iris closes on the door, the link to it when focused from
+	 * the keyboard, or else the drawn cursor, which clicked it, or the view's middle for the back button before Join. Only
+	 * that link counts: a sub-scene's h1, focused on arrival, shows as keyboard focus too (Joe, 2026-09-30). Resolves once it is shut,
+	 * for the hop to go; null under reduced motion or in a hidden tab, which draws nothing, and the hop goes at once.
+	 */
+	close(to: URL): Promise<void> | null {
+		if (this.reducedMotion.matches || document.hidden) return null;
+		const now = performance.now(), el = document.activeElement;
+		const link = el instanceof HTMLAnchorElement && el.href === to.href && el.matches(':focus-visible') && this.layer.contains(el);
+		const r = link ? el.getBoundingClientRect() : null;
+		const at = r ? { x: r.x + r.width / 2, y: r.y + r.height / 2 } : (this.cursor ?? { x: this.view.w / 2, y: this.view.h / 2 });
+		this.iris = closing(this.iris, { ...at }, now, this.view);
+		const left = this.iris.is === 'closing' ? this.iris.t0 + IRIS.close - now : 0;
+		return new Promise((done) => setTimeout(done, left));
 	}
 
 	private bind() {
@@ -651,6 +675,9 @@ export class Engine {
 		// The lap timer rides with the free cursor on the overworld; a pause, a card or a sub-scene loses a lap.
 		this.laps.step(free && 'districts' in scene ? this.own : null, now);
 		this.mark();
+		this.iris = advance(this.iris, now, this.iris.is === 'shut' && this.tilesIn());
+		const html = document.documentElement;
+		if (html.dataset.iris !== this.iris.is) html.dataset.iris = this.iris.is;
 		this.drawCursors(now);
 	};
 
@@ -732,6 +759,17 @@ export class Engine {
 		}
 	}
 
+	/** Every background tile in view has arrived, or has no art. */
+	private tilesIn() {
+		const scene = this.scene!, r = tileRange(this.cam, this.view, scene, 0);
+		for (let row = r.y0; row <= r.y1; row++)
+			for (let col = r.x0; col <= r.x1; col++) {
+				const key = `${col}-${row}`;
+				if (TILE_URLS[`/art/generated/${scene.id}/${scene.id}/${this.density}/${key}.webp`] && !this.held.get(key)?.bmp) return false;
+			}
+		return true;
+	}
+
 	/** The world rect in view. */
 	private seen(): Rect {
 		return { x: this.cam.x, y: this.cam.y, w: this.view.w / this.view.s, h: this.view.h / this.view.s };
@@ -788,7 +826,8 @@ export class Engine {
 			if (at) peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt });
 		}
 		const own = c && { x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing };
-		this.art.draw(own, peers, now);
+		const r = hole(this.iris, now, this.view), iris = this.iris;
+		this.art.draw(own, peers, now, r === null || iris.is === 'open' ? null : { x: iris.at.x * this.dpr, y: iris.at.y * this.dpr, r: r * this.dpr });
 	}
 
 	/** What the cursor wears, to the room from Join on; the net client sends only a change. */

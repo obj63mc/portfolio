@@ -23,8 +23,8 @@ function setUp() {
 }
 
 async function join(page: Page) {
-	await page.getByRole('button', { name: 'Join' }).click();
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await page.locator('dialog.join button').click();
+	await expect(page.locator('dialog.join')).toBeHidden();
 }
 
 /** Where a world point is on screen, CSS px, with the camera where it is now. */
@@ -47,16 +47,17 @@ test('a lap round the lake loop, weaving across the path, shows its time as a ne
 		const a = along(loop, s), o = 50 * Math.sin(s / 150);
 		const at = await onScreen(page, { x: a.x - a.dy * o, y: a.y + a.dx * o });
 		await page.mouse.move(at.x, at.y);
-		if (s === 208) await expect(readout).toHaveText(/^Lap 0:0\d\.\d$/);
+		if (s === 208) await expect(readout).toHaveText(/0:0\d\.\d/);
 	}
 	// The board shows the lap, a new best at the top of the visitor's top ten, while the clock runs on into the next lap.
-	const board = page.locator('.board');
-	await expect(board.locator('.head')).toHaveText('New personal best');
+	const board = page.locator('.board.best');
+	await expect(board).toBeVisible();
 	await expect(board.locator('.time')).toHaveText(/^\d:\d\d\.\d$/);
 	await expect(board.locator('li')).toHaveCount(1);
-	await expect(board.locator('li.this')).toContainText('this lap');
-	await expect(readout).toHaveText(/^Lap 0:0\d\.\d$/);
-	await expect(page.getByRole('status')).toHaveText(/^Lap \d+\.\d seconds, a new best$/);
+	await expect(board.locator('li.this')).toBeVisible();
+	await expect(readout).toHaveText(/0:0\d\.\d/);
+	// The finish is announced with its time.
+	await expect(page.locator('[role="status"]')).toHaveText(/\d+\.\d/);
 });
 
 test.describe('the whole loop in view', () => {

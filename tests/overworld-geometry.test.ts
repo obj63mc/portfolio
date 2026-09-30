@@ -119,3 +119,18 @@ test('track: a closed loop round the lake in the park, the start/finish sign at 
 	}
 	for (const id of cover) assert.ok(path.some((p) => inside({ ...p, w: 0, h: 0 }, world(id))), `the loop runs behind ${id}`);
 });
+
+test('the Foundry: its door is the cinema under its marquee, not the hall beside it, and the letter board is the canopy face', () => {
+	const asset = (id: string): Rect => JSON.parse(readFileSync(new URL(`../art/generated/overworld/${id}/asset.json`, import.meta.url), 'utf8')).world;
+	const venues = OVERWORLD.districts.flatMap((d) => d.venues), foundry = venues.find((v) => v.id === 'foundry')!;
+	for (const v of venues) if (v.doorRect) assert.ok(inside(v.doorRect, v.rect), `${v.id}: its door on its building`);
+	// The sawtooth-roofed hall fills the building's west half; the cinema stands east of it (Joe, 2026-09-30).
+	const door = foundry.doorRect!, canopy = asset('marquee');
+	assert.ok(door.x > foundry.rect.x + foundry.rect.w / 2, 'the cinema, east of the hall');
+	assert.ok(inside(canopy, door), 'the marquee hangs over the way in');
+	// The board is drawn with upright sides, its letters following the face's top edge.
+	const [tl, tr, br, bl] = OVERWORLD.marquee.face;
+	assert.ok(tl.x === bl.x && tr.x === br.x && tl.x < tr.x && tl.y < bl.y && tr.y < br.y, 'upright sides, west to east');
+	const reach = { x: canopy.x - 1, y: canopy.y - 1, w: canopy.w + 2, h: canopy.h + 2 };
+	for (const p of OVERWORLD.marquee.face) assert.ok(inside({ ...p, w: 0, h: 0 }, reach), `${p.x}, ${p.y} on the canopy`);
+});

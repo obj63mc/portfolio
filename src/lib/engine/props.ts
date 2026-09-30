@@ -1,6 +1,7 @@
 // Props on the scene canvas (buildout ticket 15): each prop's cut-outs drawn over the background tiles in order of their
 // base y, with the scenery the overworld's plate doesn't paint (the signpost, the church door, the rider and the
-// Carondelet start line) and the cut-outs of the scenery the lake loop runs behind, over the rider there. The
+// Carondelet start line), the cut-outs of the scenery the lake loop runs behind, over the rider there, and the Foundry's
+// marquee, its letters scrolling. The
 // prerendered layer stays the hit target: this reads which props are hovered (the free mouse, the engine's `.hot` mark
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
 // their timing is in motion.ts. Carried over from the rendering prototype's canvas props (prototype/rendering-camera).
@@ -8,7 +9,8 @@ import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
 import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { drawCourse } from './course-overlay.ts';
-import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, turned, type Pose } from './motion.ts';
+import { MARQUEE, loadFaces, settled } from './fonts.ts';
+import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, scrolled, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
@@ -51,6 +53,12 @@ const REACH = 2 * GLOW_PX;
 const GLINT_W = 36;
 /** The Carondelet start line's checks: ivory and dark teal from the style contract (art/style.txt). */
 const LINE = { light: '#fff4d4', dark: '#244f55' };
+/**
+ * The marquee's letter board: black inside a white frame this wide, world px, its capitals golden yellow from the style
+ * contract in a dot-matrix face, lit like bulbs (Joe, 2026-09-30), starting `pad` in from the frame at rest, with a dot
+ * between one showing and the next.
+ */
+const BOARD = { frame: 4, pad: 10, fill: '#111', ink: '#ffd34f', glow: 6, font: `40px ${MARQUEE}`, gap: '  *  ' };
 
 interface Cut {
 	id: string;
@@ -77,6 +85,8 @@ interface Layer {
 	cuts: Cut[];
 	rig?: { name: 'moose' | 'rider'; parts: RigPart[]; at: Rect; bounds: Rect };
 	video?: { el: HTMLVideoElement; screen: Rect };
+	/** The Foundry marquee's letter board: the canopy's face, its text, and how long one showing is once measured, world px. */
+	board?: { face: Point[]; text: string; period?: number };
 	/** Its hover level, 0 to 1, and when it was last clicked (server ms). */
 	hover: number;
 	clicked: number;
@@ -134,6 +144,7 @@ export class Props {
 	/** `layer` is the prerendered layer: its prop buttons are the hit targets, and their clicks open the cards. */
 	constructor(layer: HTMLElement) {
 		this.layer = layer;
+		loadFaces(BOARD.font);
 		// Opening a card is the click (spec: "Cards"): a click, a tap, Enter or Space, or the engine clicking under the cursor.
 		layer.addEventListener(
 			'click',
@@ -169,10 +180,11 @@ export class Props {
 		// The plate paints none of these: the signpost, the church door, the rider riding the park's lake loop, the loop's
 		// start line and its START FINISH sign, scenery that nothing clicks. The loop runs behind the park sign and three
 		// trees, whose cut-outs, the plate's own pixels, cover the rider there: each layer's base y orders it against the
-		// rider's, which `step` moves.
+		// rider's, which `step` moves. The Foundry's marquee is scenery too, its canopy's face a letter board.
 		if (overworld) {
 			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect), layer(undefined, ['rider'], rider(this.t, this.rm).at));
 			this.layers.push(...[...scene.track.cover, scene.track.sign].map((id) => layer(undefined, [id])));
+			this.layers.push({ ...layer(undefined, scene.marquee.art), board: { face: scene.marquee.face, text: scene.marquee.text } });
 			this.line = { ...along(LOOP, 0), half: LOOP.half };
 		}
 		for (const l of this.layers) {
@@ -274,7 +286,7 @@ export class Props {
 		const reaction = progress(since, l.rig?.name === 'moose' ? CLICK_MS.wobble : l.cuts.some((c) => c.id === 'mc-eye') ? CLICK_MS.blink : CLICK_MS.pop);
 		const v = l.video?.el;
 		const ambient =
-			l.rig && !rm ? t : l.cuts.some((c) => c.id === 'marquee-bulbs') ? chase(t, rm) : isBottle(l.prop) ? glint(t, rm) : v ? `${v.currentTime},${v.ended}` : '';
+			l.rig && !rm ? t : l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}` : isBottle(l.prop) ? glint(t, rm) : v ? `${v.currentTime},${v.ended}` : '';
 		return `${l.hover}|${reaction}|${ambient}`;
 	}
 
@@ -317,6 +329,7 @@ export class Props {
 			g.shadowColor = 'transparent';
 		}
 		paint();
+		if (l.board) this.letters(g, l.board, k);
 		for (const c of l.cuts) if (c.lit) this.chase(g, c);
 		if (isBottle(l.prop)) this.glint(g, l);
 		if (poster && h && !rm) this.lamp(g, l.cuts[0], POSTER_LAMPS[poster], h);
@@ -365,6 +378,37 @@ export class Props {
 			g.drawImage(p.bmp, p.x, p.y, p.w, p.h);
 			g.restore();
 		}
+		g.restore();
+	}
+
+	/**
+	 * The marquee's letter board, black inside the white frame of the canopy's face, its text scrolling west in capitals
+	 * over and over. Across the board x is world x and y runs down from the face's top edge, so the letters stand upright
+	 * and follow its slope.
+	 */
+	private letters(g: CanvasRenderingContext2D, b: NonNullable<Layer['board']>, k: number) {
+		const [tl, tr, br, bl] = b.face, w = tr.x - tl.x, west = bl.y - tl.y, east = br.y - tr.y, f = BOARD.frame;
+		g.save();
+		g.transform(1, (tr.y - tl.y) / w, 0, 1, tl.x, tl.y);
+		g.beginPath();
+		g.moveTo(f, f);
+		g.lineTo(w - f, f);
+		g.lineTo(w - f, east - f);
+		g.lineTo(f, west - f);
+		g.closePath();
+		g.fillStyle = BOARD.fill;
+		g.fill();
+		// Its letters wait for their face, which the board is measured in.
+		if (!settled.has(BOARD.font)) return g.restore();
+		g.clip();
+		g.font = BOARD.font;
+		g.textBaseline = 'middle';
+		g.fillStyle = g.shadowColor = BOARD.ink;
+		// A shadow's blur is in device px, whatever the transform.
+		g.shadowBlur = BOARD.glow * k;
+		const text = b.text.toUpperCase() + BOARD.gap, y = (west + east) / 4;
+		b.period ??= g.measureText(text).width;
+		for (let x = f + BOARD.pad - (scrolled(this.t, this.rm) % b.period); x < w - f; x += b.period) g.fillText(text, x, y);
 		g.restore();
 	}
 

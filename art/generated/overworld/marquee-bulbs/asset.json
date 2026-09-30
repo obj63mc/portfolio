@@ -1,7 +1,7 @@
 {
   "id": "marquee-bulbs",
   "scene": "overworld",
-  "kind": "prop",
+  "kind": "scenery",
   "file": "overworld/marquee-bulbs/image.webp",
   "world": {
     "x": 3195.3385416666665,

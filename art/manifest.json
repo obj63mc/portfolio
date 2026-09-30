@@ -18218,7 +18218,7 @@
     {
       "id": "marquee",
       "scene": "overworld",
-      "kind": "prop",
+      "kind": "scenery",
       "prompt": "ONLY the cinema's white rectangular marquee canopy on the front of the rust-red building: its white face, its top and its dark underside. Paint the underside plain dark where the string of bulbs hangs so no bulbs remain. No brick wall, glass doors, posts, awning, sidewalk or trees. Keep the exact shape and pixel position. Replace all other pixels with pure #FF00FF or genuine transparency. This is exact extraction, do not recenter, enlarge, rotate or redesign.",
       "size": "1536x1024",
       "references": [],
@@ -18238,7 +18238,7 @@
     {
       "id": "marquee-bulbs",
       "scene": "overworld",
-      "kind": "prop",
+      "kind": "scenery",
       "prompt": "Extract the original bulb-string pixels from the approved overworld master using the measured crop matte: a hand-measured band along the string of warm bulbs under the marquee canopy, so the strip carries the bulbs on their dark backing at their painted positions. The matte is normalized to the registration crop; no image-generation call is needed for this derivative.",
       "size": "1536x1024",
       "references": [],

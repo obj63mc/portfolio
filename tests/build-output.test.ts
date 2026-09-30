@@ -1,7 +1,7 @@
 // Seam 3: the prerendered HTML of every scene URL, as a crawler or screen reader sees it.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
@@ -21,31 +21,28 @@ const subScenes = Object.values(SUB_SCENES);
 const allProps = [...overworldProps, ...subScenes.flatMap((s) => s.props)];
 const files = ['index.html', ...subScenes.map((s) => `${s.id}.html`)];
 
-test('overworld: title, description and the shell around the layer', () => {
+// No test pins the site's copy, its title tags and headings, cards and labels (Joe, 2026-09-30): it is being rewritten.
+// Names come from the scene data where the markup's order or structure is under test.
+test('overworld: description and the shell around the layer', () => {
 	const html = page('index.html');
-	assert.equal(texts(html, 'title')[0], 'Joe Madden, St. Louis');
 	assert.match(html, /<meta name="description" content="[^"]{20,}"/);
 	assert.equal(opens(html, 'canvas').length, 2);
 	assert.ok(opens(html, 'canvas').every((c) => c.includes('aria-hidden="true"')));
 	assert.match(html, /role="status"[^>]*aria-live="polite"|aria-live="polite"[^>]*role="status"/);
 	assert.match(html, /class="presence"[^>]*>\d+ here</);
-	assert.match(html, /<button[^>]*aria-pressed="true"[^>]*>Sound</);
-	assert.match(html, /<button[^>]*>Analytics settings</);
+	assert.match(html, /<div class="controls">\s*<button[^>]*aria-pressed="true"[^>]*>[^<]+<\/button>\s*<button[^>]*>[^<]+<\/button>/);
 });
 
 test('overworld: skip link, h1, signpost, then districts west to east with their venues', () => {
 	const layer = withoutDialogs(main(page('index.html')));
 	assert.equal(hrefs(layer)[0], '#signpost-districts');
-	assert.deepEqual(texts(layer, 'h1'), ['Joe Madden, St. Louis']);
-	assert.deepEqual(texts(signpost(layer), 'a').slice(0, 4), ['Resume', 'Email', 'LinkedIn', 'GitHub']);
+	assert.equal(texts(layer, 'h1').length, 1);
 	assert.match(hrefs(signpost(layer))[0], /\.pdf$/);
 	assert.match(hrefs(signpost(layer))[1], /^mailto:/);
 	// West to east by centre x on the accepted master: the park lake sits west of the West End row.
 	assert.deepEqual(hrefs(signpost(layer)).slice(4), ['#maplewood', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
-	assert.deepEqual(texts(layer, 'h2'), ['Maplewood', 'Carondelet Park', 'Central West End', 'Midtown', 'Belleville']);
-	assert.deepEqual(texts(layer, 'h3'), [
-		'Moosylvania', 'Side Project Cellar', 'Carondelet Park', "Brennan's", 'Saint Louis University', 'The Foundry', 'MonsterCommerce'
-	]);
+	assert.deepEqual(texts(layer, 'h2'), OVERWORLD.districts.map((d) => d.name));
+	assert.deepEqual(texts(layer, 'h3'), OVERWORLD.districts.flatMap((d) => d.venues.map((v) => v.name)));
 	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
 });
 
@@ -55,7 +52,6 @@ test('overworld: one button and one dialog per prop, named prop plus gist', () =
 	assert.equal(buttons.length, overworldProps.length);
 	assert.equal(opens(html, 'dialog').length, overworldProps.length);
 	for (const p of overworldProps) assert.ok(texts(html, 'button').includes(`${p.name}: ${p.gist}`), p.id);
-	assert.match(html, /<dialog[^>]*>[\s\S]*Chief Architect[\s\S]*<\/dialog>/);
 	const moosylvania = texts(withoutDialogs(html).slice(html.indexOf('id="moosylvania"')), 'button').slice(0, 2);
 	const byX = OVERWORLD.districts[0].venues[0].props.slice().sort((a, b) => a.rect.x - b.rect.x).map((p) => p.name);
 	assert.deepEqual(moosylvania.map((t) => t.split(':')[0]), byX, 'props read left to right');
@@ -77,13 +73,13 @@ test('overworld: a door link to every sub-scene', () => {
 	}
 });
 
-test('sub-scenes: title with district, focusable h1, props in reading order, exit link to the venue anchor', () => {
+test('sub-scenes: focusable h1, props in reading order, exit link to the venue anchor', () => {
 	for (const s of subScenes) {
 		const html = page(`${s.id}.html`);
-		assert.equal(texts(html, 'title')[0], `${s.venue}, ${s.district}`);
 		assert.match(html, /<meta name="description" content="[^"]{20,}"/);
 		const layer = main(html);
-		assert.match(layer, new RegExp(`<h1[^>]*tabindex="-1"[^>]*>${s.venue}</h1>`));
+		assert.equal(opens(layer, 'h1').length, 1, s.id);
+		assert.match(opens(layer, 'h1')[0], /tabindex="-1"/, s.id);
 		assert.deepEqual(texts(withoutDialogs(layer), 'h2'), []);
 		// A prop opens its card, unless it is an action (a Foundry poster) or only says its state (the Foundry screen).
 		const carded = s.props.filter((p) => !p.kind).length;
@@ -105,7 +101,8 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	const inventory = [
 		'welcome', 'moose', 'computer-frontend', 'computer-backend', 'computer-cms', 'computer-data', 'moose-statue', 'meeting-tv',
 		'diploma', 'whiteboard', 'workstation',
-		'marquee', 'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
+		// The marquee is scenery, its letters scrolling what's showing (Joe, 2026-09-30).
+		'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
 		'mc-sign', 'server-rack',
 		'chalkboard', 'bottle-bacardi', 'bottle-grey-goose', 'bottle-new-amsterdam', 'bottle-camarena', 'bottle-barefoot',
 		'bottle-bud-light', 'bottle-ej', 'bottle-pink-whitney', 'bottle-rumchata', 'bottle-soonhari', 'brewery-sign',
@@ -118,17 +115,15 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	for (const id of inventory) assert.ok(ids.has(id), id);
 	assert.equal(ids.size, allProps.length, 'prop ids are unique across scenes');
 	assert.deepEqual([...new Set(allProps.map((p) => p.cosmetic).filter(Boolean))].sort(), [1, 2, 3, 4, 5, 6, 7]);
-	const cards = (id: string) => allProps.find((p) => p.id === id)!.body.join(' ');
 	const links = (id: string) => (allProps.find((p) => p.id === id)!.links ?? []).map((l) => l.href).join(' ');
 	assert.match(links('workstation'), /github\.com/);
 	assert.match(links('bike'), /strava\.com/);
-	assert.match(cards('mc-sign'), /Network Solutions/);
-	assert.match(cards('diploma'), /2005/);
 });
 
 test.todo('inventory: the ATM on the overworld, for PayPal and Venmo (buildout ticket 25)');
 
-test('clearance: the Universal titles are told only on the Foundry screen and its posters', () => {
+// The overworld's marquee scrolls them too (Joe, 2026-09-30), painted on the canvas, which has no markup.
+test('clearance: in the markup the Universal titles are told only on the Foundry screen and its posters', () => {
 	const titles = /Fast Five|Snow White|Lorax/;
 	for (const file of files.filter((f) => f !== 'foundry.html')) assert.doesNotMatch(page(file), titles, file);
 	let foundry = page('foundry.html');
@@ -139,7 +134,7 @@ test('clearance: the Universal titles are told only on the Foundry screen and it
 		assert.match(foundry, block, id);
 		foundry = foundry.replace(block, '');
 	}
-	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the marquee and the head included, the titles are not told');
+	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the head included, the titles are not told');
 });
 
 test('the Foundry: a poster is a button with no card, and the screen only says its state (Joe, 2026-09-29)', () => {
@@ -160,10 +155,9 @@ test('the Join and Paused cards: on every page, outside the layer, closed until 
 			assert.doesNotMatch(opens(card, 'dialog')[0], /\sopen\b/, `${file}: prerendered closed, so a page without the engine never shows it`);
 			assert.match(opens(card, 'dialog')[0], /aria-label(ledby)?=/, file);
 		}
-		assert.equal(join.replace(/<[^>]+>/g, '').trim(), 'Join', `${file}: the Join card holds only the Join button`);
-		assert.deepEqual(texts(join, 'button'), ['Join']);
-		assert.match(paused, /Paused, click to resume/);
-		assert.deepEqual(texts(paused, 'button'), ['Resume']);
+		assert.equal(join.replace(/<[^>]+>/g, '').trim(), texts(join, 'button').join(), `${file}: the Join card holds only its button`);
+		assert.equal(opens(join, 'button').length, 1, file);
+		assert.equal(opens(paused, 'button').length, 1, file);
 	}
 });
 
@@ -184,7 +178,7 @@ test('the layer: every prop, heading, door, exit and the signpost carries its wo
 		assert.deepEqual(rectOf(index, new RegExp(`<h2 id="${d.id}-heading"[^>]*>`)), d.sign, d.id);
 		for (const v of d.venues) {
 			assert.deepEqual(rectOf(index, new RegExp(`<h3 id="${v.id}-heading"[^>]*>`)), v.rect, v.id);
-			if (v.door) assert.deepEqual(rectOf(index, new RegExp(`<a[^>]*href="${v.door}"[^>]*>`)), v.rect, `${v.id} door`);
+			if (v.door) assert.deepEqual(rectOf(index, new RegExp(`<a[^>]*href="${v.door}"[^>]*>`)), v.doorRect ?? v.rect, `${v.id} door`);
 			for (const p of v.props) assert.deepEqual(rectOf(index, propOpen(p.id)), p.rect, p.id);
 		}
 	}
@@ -217,7 +211,7 @@ test('the meeting TV: its card holds the video with controls, loaded only when p
 
 test('the shared screen: its line carries its state, prerendered idle', () => {
 	assert.ok(texts(main(page('foundry.html')), 'p').includes(`Screen: ${screenGist()}`));
-	assert.equal(screenGist('fast-five'), 'now playing Fast Five');
+	assert.notEqual(screenGist('fast-five'), screenGist(), 'playing says so');
 });
 
 test('cards: every card is labelled and closes natively', () => {
@@ -252,6 +246,26 @@ test('headers: one CSP per page, allowing self, the GA hosts and the socket, wit
 	}
 });
 
+// The site's type (Joe, 2026-09-30) is self-hosted: every face a file of the site's own, never Google's, and never a data:
+// URL, which the page policy's default-src 'self' would refuse.
+test('fonts: every page preloads the latin faces it is set in, bundled with the site, and nothing inlines a font', () => {
+	for (const file of files) {
+		const html = page(file);
+		assert.doesNotMatch(html, /fonts\.(googleapis|gstatic)\.com/, file);
+		const preloads = [...html.matchAll(/<link href="([^"]*)" rel="preload" as="font" type="font\/woff2" crossorigin>/g)].map((m) => m[1]);
+		assert.deepEqual(preloads.map((href) => href.replace(/^.*\/|\.[\w-]+\.woff2$/g, '')).sort(), [
+			'barlow-condensed-latin-800-normal',
+			'montserrat-latin-400-normal',
+			'montserrat-latin-500-normal'
+		], file);
+		for (const href of preloads) assert.ok(existsSync(new URL(`../build/${href.replace(/^(\.\/|\/)/, '')}`, import.meta.url)), href);
+	}
+	const css = readdirSync(new URL('../build/_app/immutable/assets/', import.meta.url)).filter((f) => f.endsWith('.css'));
+	const faces = css.flatMap((f) => [...page(`_app/immutable/assets/${f}`).matchAll(/@font-face\{[^}]*\}/g)].map((m) => m[0]));
+	assert.ok(faces.some((f) => /Doto Marquee/.test(f)), 'the marquee face');
+	for (const face of faces) assert.match(face, /src:url\(\.\/[\w.-]+\.woff2?\)/, face);
+});
+
 test('headers: _headers sends frame-ancestors and the other page headers, never a second page policy; a 404 page', () => {
 	const headers = page('_headers');
 	assert.deepEqual([...headers.matchAll(/Content-Security-Policy: (.*)/g)].map((m) => m[1]), ["frame-ancestors 'none'"]);
@@ -259,5 +273,5 @@ test('headers: _headers sends frame-ancestors and the other page headers, never 
 	assert.match(headers, /X-Content-Type-Options: nosniff/);
 	assert.match(headers, /Referrer-Policy: strict-origin-when-cross-origin/);
 	assert.match(headers, /Permissions-Policy: camera=\(\), microphone=\(\), geolocation=\(\)/);
-	assert.match(page('404.html'), /<h1>Not found<\/h1>/);
+	assert.match(page('404.html'), /<h1>[^<]+<\/h1>/);
 });

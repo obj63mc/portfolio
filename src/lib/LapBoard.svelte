@@ -71,18 +71,25 @@
 			margin: 0;
 		}
 
+		/* Headlines: Barlow Condensed ExtraBold (src/app.css). */
+		& .head,
+		& h2,
+		& .time {
+			font-family: var(--headline);
+			font-weight: 800;
+		}
+
 		& .head,
 		& h2 {
 			color: #87cdd5;
-			font-size: 0.8125rem;
-			font-weight: 700;
+			font-size: 1rem;
 			letter-spacing: 0.08em;
+			line-height: 1.2;
 			text-transform: uppercase;
 		}
 
 		& .time {
-			font-size: 2.75rem;
-			font-weight: 800;
+			font-size: 3.25rem;
 			line-height: 1.1;
 		}
 
@@ -134,7 +141,7 @@
 			&.this {
 				background: #ffd34f;
 				color: #244f55;
-				font-weight: 700;
+				font-weight: 500;
 
 				& span {
 					opacity: 1;

@@ -88,18 +88,48 @@ const off = async (page: Page, p: Point) => {
 	return t ? Math.hypot(t.x - p.x, t.y - p.y) : Infinity;
 };
 /**
- * A hop's fade (ticket 11), started before the hop: the durations of the animations running on the first frame the new
- * scene's `selector` is in the page, which is the frame it lands in.
+ * A hop's iris (ticket 11, Joe 2026-09-30), watched from before the hop: each state `html[data-iris]` takes, in order,
+ * until the new scene's `selector` is in the page with the iris open again.
  */
 const landing = (page: Page, selector: string) =>
 	page.evaluate(
 		(selector) =>
-			new Promise<number[]>((done) => {
-				const frame = () =>
-					document.querySelector(selector) ? done(document.getAnimations().map((a) => Number(a.effect!.getTiming().duration))) : requestAnimationFrame(frame);
+			new Promise<string[]>((done) => {
+				const html = document.documentElement, seen = [html.dataset.iris ?? 'open'];
+				const watch = new MutationObserver(() => seen.push(html.dataset.iris ?? 'open'));
+				watch.observe(html, { attributeFilter: ['data-iris'] });
+				const frame = () => {
+					if (!document.querySelector(selector) || html.dataset.iris !== 'open') return requestAnimationFrame(frame);
+					watch.disconnect();
+					done(seen);
+				};
 				frame();
 			}),
 		selector
+	);
+/**
+ * Where the iris closes, watched from before a hop: the middle of the clear hole left on the cursor canvas once it is
+ * under 200 CSS px across, all else black.
+ */
+const irisAt = (page: Page) =>
+	page.evaluate(
+		() =>
+			new Promise<Point>((done) => {
+				const c = document.querySelector<HTMLCanvasElement>('canvas.cursors')!, k = c.width / innerWidth;
+				const frame = () => {
+					if (document.documentElement.dataset.iris !== 'closing') return requestAnimationFrame(frame);
+					const { data } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
+					let x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
+					for (let i = 3; i < data.length; i += 4) {
+						if (data[i] > 250) continue;
+						const px = ((i - 3) / 4) % c.width, py = Math.floor((i - 3) / 4 / c.width);
+						[x0, y0, x1, y1] = [Math.min(x0, px), Math.min(y0, py), Math.max(x1, px), Math.max(y1, py)];
+					}
+					if (x1 < 0 || (x1 - x0) / k > 200) return requestAnimationFrame(frame);
+					done({ x: (x0 + x1) / 2 / k, y: (y0 + y1) / 2 / k });
+				};
+				frame();
+			})
 	);
 /** Holds a key down for `ms`. */
 async function hold(page: Page, key: string, ms: number) {
@@ -123,12 +153,14 @@ const offCentre = async (page: Page, l: Locator) => {
 	const c = await centre(l), m = middle(page);
 	return Math.hypot(c.x - m.x, c.y - m.y);
 };
+/** Nothing has focus, so no ring shows: the page's body holds it. */
+const unfocused = (page: Page) => page.evaluate(() => document.activeElement === document.body && !document.querySelector(':focus-visible'));
 
 /** Joins with a click near the Join button's corner, where the cursor starts, and waits for the lock. */
 async function join(page: Page) {
-	const b = (await page.getByRole('button', { name: 'Join' }).boundingBox())!, at = { x: b.x + 8, y: b.y + 8 };
+	const b = (await page.locator('dialog.join[open] button').boundingBox())!, at = { x: b.x + 8, y: b.y + 8 };
 	await page.mouse.click(at.x, at.y);
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await expect(page.locator('dialog.join')).toBeHidden();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
 	await expect.poll(() => off(page, at)).toBeLessThan(5);
 	return at;
@@ -138,8 +170,8 @@ test.beforeEach(({ page }) => page.addInitScript(fakeLock));
 
 test('before Join only the Join card takes input, nothing moves and no cursor is drawn', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Join' })).toBeFocused();
+	await expect(page.locator('dialog.join')).toBeVisible();
+	await expect(page.locator('dialog.join button')).toBeFocused();
 	const camera = await page.locator('main').getAttribute('style');
 	for (let i = 0; i < 4; i++) {
 		await page.keyboard.press('Tab');
@@ -147,7 +179,7 @@ test('before Join only the Join card takes input, nothing moves and no cursor is
 	}
 	await page.keyboard.press('Escape'); // before any gesture, when Chrome won't let a page refuse the cancel
 	await page.keyboard.press('Escape');
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeVisible();
+	await expect(page.locator('dialog.join')).toBeVisible();
 	await page.mouse.move(1270, 360); // deep in the push band
 	await hold(page, 'ArrowRight', 400);
 	expect(await page.locator('main').getAttribute('style')).toBe(camera);
@@ -165,13 +197,13 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 			await expect.poll(() => off(page, p)).toBeLessThan(5);
 			at = p;
 		};
-		const card = page.getByRole('dialog', { name: 'Lab workstation' });
-		const prop = page.getByRole('button', { name: /^Lab workstation/ });
+		const card = page.locator('[data-prop="workstation"] dialog');
+		const prop = page.locator('[data-prop="workstation"] > button');
 
 		await moveTo(await centre(prop));
 		await lockedClick(page);
 		await expect(card).toBeVisible();
-		const close = card.getByRole('button', { name: 'Close' });
+		const close = card.locator('form[method="dialog"] button');
 		await moveTo(await centre(close));
 		await expect(close).toHaveCSS('outline-style', 'solid'); // the hover mark under the lock
 		await lockedClick(page);
@@ -181,7 +213,7 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 		await lockedClick(page);
 		await expect(card).toBeVisible();
 		await page.route('https://github.com/**', (r) => r.fulfill({ contentType: 'text/html', body: 'GitHub' }));
-		await moveTo(await centre(card.getByRole('link', { name: 'GitHub' })));
+		await moveTo(await centre(card.locator('a[href*="github.com"]')));
 		await lockedClick(page);
 		await expect(page).toHaveURL('https://github.com/obj63mc');
 	});
@@ -193,8 +225,8 @@ test('Esc, blur and a hidden tab pause; Resume re-locks with the cursor where it
 	await nudge(page, 150, 80);
 	const frozen = { x: at.x + 150, y: at.y + 80 };
 	await expect.poll(() => off(page, frozen)).toBeLessThan(5);
-	const paused = page.getByRole('dialog', { name: 'Paused, click to resume' });
-	const resume = paused.getByRole('button', { name: 'Resume' });
+	const paused = page.locator('dialog.paused');
+	const resume = paused.locator('button');
 	const resumed = async () => {
 		await resume.click();
 		await expect(paused).toBeHidden();
@@ -222,24 +254,24 @@ test('Esc, blur and a hidden tab pause; Resume re-locks with the cursor where it
 	await expect(paused).toBeVisible();
 	await page.evaluate(() => ((window as Stand).refuseLock = true));
 	await resume.click();
-	await expect(paused.getByText('Try again in a moment')).toBeVisible();
+	await expect(paused.locator('.refused')).toBeVisible();
 	await expect(paused).toBeVisible();
 	await page.evaluate(() => ((window as Stand).refuseLock = false));
 	await resumed();
-	await expect(paused.getByText('Try again in a moment')).toBeHidden();
+	await expect(paused.locator('.refused')).toBeHidden();
 });
 
 test('a refused lock at Join leaves the unlocked mouse: the drawn cursor follows the OS pointer', async ({ page }) => {
 	await page.goto('/');
 	await page.evaluate(() => ((window as Stand).refuseLock = true));
-	await page.getByRole('button', { name: 'Join' }).click();
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await page.locator('dialog.join button').click();
+	await expect(page.locator('dialog.join')).toBeHidden();
 	await page.mouse.move(400, 300);
 	await expect.poll(() => off(page, { x: 400, y: 300 })).toBeLessThan(5);
 	expect(await lockHolder(page)).toBeNull();
 	await expect(page.locator('.joystick'), 'the touch controls only without a mouse').toBeHidden();
 	// The OS pointer's middle click on a door opens it in a new tab, as on any page.
-	const door = await centre(page.getByRole('link', { name: 'Enter Moosylvania' }));
+	const door = await centre(page.locator('main a[href="/moosylvania"]'));
 	const tab = page.context().waitForEvent('page');
 	await page.mouse.click(door.x, door.y, { button: 'middle' });
 	await expect(await tab).toHaveURL('/moosylvania');
@@ -248,10 +280,10 @@ test('a refused lock at Join leaves the unlocked mouse: the drawn cursor follows
 
 test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.getByRole('button', { name: 'Join' })).toBeFocused();
-	const start = await centre(page.getByRole('button', { name: 'Join' }));
+	await expect(page.locator('dialog.join button')).toBeFocused();
+	const start = await centre(page.locator('dialog.join button'));
 	await page.keyboard.press('Enter');
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+	await expect(page.locator('dialog.join')).toBeHidden();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
 	await expect.poll(() => off(page, start)).toBeLessThan(5);
 
@@ -267,7 +299,7 @@ test('the keyboard joins with the lock; Esc in a card closes it without pausing,
 	await expect(card).toBeHidden();
 	await expect(prop).toBeFocused();
 	expect(await lockHolder(page)).toBeNull();
-	const paused = page.getByRole('dialog', { name: 'Paused, click to resume' });
+	const paused = page.locator('dialog.paused');
 	await expect(paused).toBeHidden();
 
 	await hold(page, 'ArrowRight', 300);
@@ -289,67 +321,81 @@ test('the keyboard joins with the lock; Esc in a card closes it without pausing,
 test('a door hops to its sub-scene and back, the lock held: by the locked cursor, the back button, Enter and the exit door', async ({ page }) => {
 	await page.goto('/');
 	const at = await join(page);
-	const door = page.getByRole('link', { name: 'Enter Moosylvania' }), exit = page.getByRole('link', { name: 'Back to Maplewood' });
-	const h1 = page.getByRole('heading', { level: 1, name: 'Moosylvania' });
+	const door = page.locator('main a[href="/moosylvania"]'), exit = page.locator('main a[href="/#moosylvania"]');
+	const h1 = page.locator('main h1');
 	/**
-	 * The cursor on the door, or just inside the exit door off it, with the camera centred on it; focus on `focused` once
-	 * the router's own focus reset has run.
+	 * The cursor on the door, or just inside the exit door off it, with the camera centred on it; once the router's own
+	 * focus reset has run, focus on `focused`, or on nothing back on the overworld, where the visitor roams free.
 	 */
-	const landed = async (link: Locator, focused: Locator) => {
+	const landed = async (link: Locator, focused: Locator | null) => {
 		const spot = link === exit ? () => below(page, exit) : () => centre(link);
 		await expect.poll(async () => off(page, await spot())).toBeLessThan(5);
 		await expect.poll(() => off(page, middle(page))).toBeLessThan(5);
 		if (link === exit) await expect(exit, 'a click there stays inside').not.toHaveClass(/hot/);
 		await page.waitForTimeout(100);
-		await expect(focused).toBeFocused();
+		if (focused) await expect(focused).toBeFocused();
+		else expect(await unfocused(page), 'nothing focused').toBe(true);
 		expect(await lockHolder(page)).toBe('scene');
 	};
 
-	// The locked cursor clicks the door: the lobby fades in, landing at its front doors.
+	// The locked cursor clicks the door: the iris closes on it, and the lobby opens out of the black at its front doors.
 	const c = await centre(door);
 	await nudge(page, c.x - at.x, c.y - at.y);
 	await expect.poll(() => off(page, c)).toBeLessThan(5);
 	let fade = landing(page, 'main a[href="/#moosylvania"]');
 	await lockedClick(page);
 	await expect(page).toHaveURL('/moosylvania');
-	expect(await fade).toEqual([300]);
+	expect(await fade).toEqual(['open', 'closing', 'shut', 'opening', 'open']);
 	await landed(exit, h1);
 
-	// The back button returns to the venue's door, on the overworld with no fragment.
+	// The back button returns to the venue's door, on the overworld with no fragment, with nothing focused.
 	fade = landing(page, 'main a[href="/moosylvania"]');
 	await page.goBack();
 	await expect(page).toHaveURL('/');
-	expect(await fade).toContain(300); // the first fade may not have finished
-	await landed(door, door);
+	expect((await fade).slice(-4), 'the first may still be opening').toEqual(['closing', 'shut', 'opening', 'open']);
+	await landed(door, null);
 
-	// Enter on the focused door hops the same way; the exit door, a nudge up from where the cursor landed, comes back.
+	// Enter on the door, focused, hops the same way; the exit door, a nudge up from where the cursor landed, comes back.
+	await door.focus();
 	await page.keyboard.press('Enter');
 	await expect(page).toHaveURL('/moosylvania');
 	await landed(exit, h1);
 	await nudge(page, 0, -60);
 	await expect(exit).toHaveClass(/hot/);
+	// The iris closes on the click, not on the h1, whose focus on arrival shows as the keyboard's (Joe, 2026-09-30).
+	const clicked = (await tip(page))!, closing = irisAt(page);
 	await lockedClick(page);
+	const hole = await closing;
+	expect(Math.hypot(hole.x - clicked.x, hole.y - clicked.y)).toBeLessThan(6);
 	await expect(page).toHaveURL('/#moosylvania');
-	await landed(door, door);
+	await landed(door, null);
 
-	// Back to that fragment URL from the lobby, the router's fragment focus reset included.
+	// Back to that fragment URL from the lobby, the router's fragment focus reset included; left by Enter on the exit door,
+	// the lobby comes back to nothing focused too.
+	await door.focus();
 	await page.keyboard.press('Enter');
 	await landed(exit, h1);
 	await page.goBack();
 	await expect(page).toHaveURL('/#moosylvania');
-	await landed(door, door);
+	await landed(door, null);
+	await page.goForward();
+	await landed(exit, h1);
+	await exit.focus();
+	await page.keyboard.press('Enter');
+	await expect(page).toHaveURL('/#moosylvania');
+	await landed(door, null);
 
 	// A middle click on the door opens the lobby in a new tab, a page load of its own with its Join card.
 	const tab = page.context().waitForEvent('page');
 	await page.evaluate(() => document.pointerLockElement!.dispatchEvent(new MouseEvent('auxclick', { bubbles: true, button: 1 })));
 	const lobby = await tab;
 	await expect(lobby).toHaveURL('/moosylvania');
-	await expect(lobby.getByRole('dialog', { name: 'Join' })).toBeVisible();
+	await expect(lobby.locator('dialog.join')).toBeVisible();
 	await expect(page).toHaveURL('/#moosylvania');
 });
 
 test('a back or forward hop behind the Join or Paused card lands at the door and leaves focus on the card', async ({ page }) => {
-	const door = page.getByRole('link', { name: 'Enter Moosylvania' });
+	const door = page.locator('main a[href="/moosylvania"]');
 	await page.goto('/');
 	await join(page);
 	await door.focus();
@@ -358,20 +404,20 @@ test('a back or forward hop behind the Join or Paused card lands at the door and
 
 	// Reloaded, the lobby opens on its Join card; back hops behind it, with no cursor to place.
 	await page.reload();
-	await expect(page.getByRole('dialog', { name: 'Join' })).toBeVisible();
+	await expect(page.locator('dialog.join')).toBeVisible();
 	await page.goBack();
 	await expect(page).toHaveURL('/');
 	await expect.poll(() => offCentre(page, door)).toBeLessThan(1);
 	await page.waitForTimeout(100);
-	await expect(page.getByRole('button', { name: 'Join' })).toBeFocused();
+	await expect(page.locator('dialog.join button')).toBeFocused();
 	expect(await tip(page)).toBeNull();
 
 	// Paused in the lobby, back hops behind the Paused card; Resume re-locks with the cursor on the door.
 	await join(page);
 	await page.goForward();
-	await expect(page).toHaveURL('/moosylvania');
+	await expect(page.locator('main h1')).toBeFocused();
 	await page.keyboard.press('Escape');
-	const resume = page.getByRole('dialog', { name: 'Paused, click to resume' }).getByRole('button', { name: 'Resume' });
+	const resume = page.locator('dialog.paused').locator('button');
 	await expect(resume).toBeVisible();
 	await page.goBack();
 	await expect.poll(() => offCentre(page, door)).toBeLessThan(1);
@@ -380,6 +426,30 @@ test('a back or forward hop behind the Join or Paused card lands at the door and
 	await resume.click();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
 	expect(await off(page, middle(page))).toBeLessThan(5);
+});
+
+test('the back button while the iris closes is undone, and the hop lands', async ({ page }) => {
+	const door = page.locator('main a[href="/moosylvania"]'), exit = page.locator('main a[href="/#moosylvania"]');
+	const iris = () => page.evaluate(() => document.documentElement.dataset.iris);
+	await page.goto('/moosylvania');
+	await join(page);
+	await exit.focus();
+	await page.keyboard.press('Enter');
+	await expect(page).toHaveURL('/#moosylvania');
+	await expect.poll(iris).toBe('open');
+	// The door, then back while the iris closes on it: the lobby is where back would go, but the hop there goes first.
+	await door.focus();
+	await page.keyboard.press('Enter');
+	await expect.poll(iris).toBe('closing');
+	await page.goBack();
+	await expect(page.locator('main h1')).toBeFocused();
+	await expect(page).toHaveURL('/moosylvania');
+	await expect.poll(iris).toBe('open');
+	// Back again, once it has landed, leaves for the overworld.
+	await page.goBack();
+	await expect(page).toHaveURL('/#moosylvania');
+	await expect(door).toBeAttached();
+	await expect.poll(iris).toBe('open');
 });
 
 test.describe('a phone, with no mouse or trackpad', () => {
@@ -421,20 +491,20 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		const post = (await page.locator('#signpost').boundingBox())!;
 		expect(post.x >= 0 && post.y >= 0 && post.x + post.width <= 390 && post.y + post.height <= 844, 'the signpost in the first frame').toBe(true);
 
-		const b = (await page.getByRole('button', { name: 'Join' }).boundingBox())!;
+		const b = (await page.locator('dialog.join[open] button').boundingBox())!;
 		await page.touchscreen.tap(b.x + 8, b.y + 8);
-		await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
+		await expect(page.locator('dialog.join')).toBeHidden();
 		await expect.poll(() => off(page, { x: b.x + 8, y: b.y + 8 })).toBeLessThan(5);
 		await expect(stick).toBeVisible();
 		expect(await lockHolder(page), 'no lock on touch').toBeNull();
 
 		// A tap on a prop moves the cursor there and opens its card; a tap on Close closes it.
-		const welcome = page.getByRole('button', { name: /^Welcome sign/ }), card = page.getByRole('dialog', { name: 'Welcome sign' });
+		const welcome = page.locator('[data-prop="welcome"] > button'), card = page.locator('[data-prop="welcome"] dialog');
 		const at = await centre(welcome);
 		await page.touchscreen.tap(at.x, at.y);
 		await expect(card).toBeVisible();
 		await expect.poll(() => off(page, at)).toBeLessThan(5);
-		const close = await centre(card.getByRole('button', { name: 'Close' }));
+		const close = await centre(card.locator('form[method="dialog"] button'));
 		await page.touchscreen.tap(close.x, close.y);
 		await expect(card).toBeHidden();
 
@@ -447,10 +517,10 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		await expect(card).toBeHidden();
 
 		// A finger that wanders under 6 px still taps.
-		const moose = await centre(page.getByRole('button', { name: /^The moose/ }));
+		const moose = await centre(page.locator('[data-prop="moose"] > button'));
 		await drag(page, f, moose, { x: 2, y: 0 }, 2);
 		await f.up();
-		await expect(page.getByRole('dialog', { name: 'The moose' })).toBeVisible();
+		await expect(page.locator('[data-prop="moose"] dialog')).toBeVisible();
 		await page.keyboard.press('Escape');
 		expect(await camera(page), 'and pans nothing').toEqual(start);
 		const cursor = { x: moose.x + 4, y: moose.y }; // where the finger lifted
@@ -463,7 +533,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		const nudged = await camera(page);
 		expect(nudged).toEqual({ x: start.x - 8, y: start.y });
 		await page.waitForTimeout(200);
-		await expect(page.getByRole('dialog', { name: 'The moose' })).toBeHidden();
+		await expect(page.locator('[data-prop="moose"] dialog')).toBeHidden();
 
 		// A drag pans against the finger and leaves the cursor where it is in the world; held still, it doesn't coast.
 		await drag(page, f, ground, { x: -15, y: 0 }, 10);
@@ -509,7 +579,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 
 	test('the joystick scrolls down and right even where the controls line the bottom edge', async ({ page }) => {
 		await page.goto('/');
-		await page.getByRole('button', { name: 'Join' }).tap();
+		await page.locator('dialog.join button').tap();
 		const f = await finger(page), hub = await centre(page.locator('.joystick'));
 		/** The camera's travel, CSS px, with the joystick held pulled (dx, dy) for 2.5 s. */
 		const hold = async (dx: number, dy: number) => {
@@ -529,7 +599,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		// Midtown, where no prop is near the toggles once the cursor is on them. Dragging the view up to the scene's top
 		// carries the cursor down by the camera's height, so Join is tapped that far above the toggles.
 		await page.goto('/#midtown');
-		const toggles = (await page.locator('.controls').boundingBox())!, join = (await page.getByRole('button', { name: 'Join' }).boundingBox())!;
+		const toggles = (await page.locator('.controls').boundingBox())!, join = (await page.locator('dialog.join[open] button').boundingBox())!;
 		const at = { x: join.x + 8, y: toggles.y + toggles.height / 2 - (await camera(page)).y };
 		expect(at.y > join.y && at.y < join.y + join.height, 'the Join tap on the button').toBe(true);
 		await page.touchscreen.tap(at.x, at.y);
@@ -555,34 +625,35 @@ test.describe('a phone, with no mouse or trackpad', () => {
 	test('a door tapped hops to its sub-scene and back with the joystick still there, cut under reduced motion', async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await page.goto('/');
-		await page.getByRole('button', { name: 'Join' }).tap();
-		const door = page.getByRole('link', { name: 'Enter Moosylvania' }), exit = page.getByRole('link', { name: 'Back to Maplewood' });
+		await page.locator('dialog.join button').tap();
+		const door = page.locator('main a[href="/moosylvania"]'), exit = page.locator('main a[href="/#moosylvania"]');
 		const stick = page.locator('.joystick');
 		const fade = landing(page, 'main a[href="/#moosylvania"]'), c = await centre(door);
 		await page.touchscreen.tap(c.x, c.y);
 		await expect(page).toHaveURL('/moosylvania');
-		expect(await fade, 'a cut').toEqual([]);
-		await expect(page.getByRole('heading', { level: 1, name: 'Moosylvania' })).toBeFocused();
+		expect(await fade, 'a cut').toEqual(['open']);
+		await expect(page.locator('main h1')).toBeFocused();
 		await expect.poll(async () => off(page, await below(page, exit))).toBeLessThan(5);
 		await expect(stick).toBeVisible();
 		await page.goBack();
 		await expect(page).toHaveURL('/');
-		await expect(door).toBeFocused();
 		await expect.poll(async () => off(page, await centre(door))).toBeLessThan(5);
+		await page.waitForTimeout(100);
+		expect(await unfocused(page), 'nothing focused').toBe(true);
 		await expect(stick).toBeVisible();
 	});
 
 	test('a hidden tab pauses; the Resume tap goes back to touch without a lock', async ({ page }) => {
 		await page.goto('/');
-		await page.getByRole('button', { name: 'Join' }).tap();
+		await page.locator('dialog.join button').tap();
 		await expect(page.locator('.joystick')).toBeVisible();
 		await page.evaluate(() => {
 			Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
 			document.dispatchEvent(new Event('visibilitychange'));
 		});
-		const paused = page.getByRole('dialog', { name: 'Paused, click to resume' });
+		const paused = page.locator('dialog.paused');
 		await expect(paused).toBeVisible();
-		await paused.getByRole('button', { name: 'Resume' }).tap();
+		await paused.locator('button').tap();
 		await expect(paused).toBeHidden();
 		await expect(page.locator('.joystick')).toBeVisible();
 		expect(await lockHolder(page)).toBeNull();
@@ -594,8 +665,8 @@ test.describe('without JavaScript', () => {
 
 	test('the page is the plain document: no Join or Paused card, and the cards read inline', async ({ page }) => {
 		await page.goto('/');
-		await expect(page.getByRole('button', { name: 'Join' })).toBeHidden();
-		await expect(page.getByText('Paused, click to resume')).toBeHidden();
-		await expect(page.getByText('Chief Architect').first()).toBeVisible();
+		await expect(page.locator('dialog.gate').first()).toBeHidden();
+		await expect(page.locator('dialog.gate').last()).toBeHidden();
+		await expect(page.locator('main dialog').first()).toBeVisible();
 	});
 });
