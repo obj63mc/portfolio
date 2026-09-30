@@ -4,9 +4,10 @@
 // floating cursor is washed out at the south end (Joe, 2026-09-30).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ARROW, ASHORE, CURRENT, STILL, flow, type Current } from '../src/lib/scenes/river.ts';
+import { ARROW, ASHORE, BANK, CURRENT, STILL, flow, type Current } from '../src/lib/scenes/river.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Overworld, Point } from '../src/lib/scenes/types.ts';
+import { inOutline as inPolygon } from '../src/lib/scenes/walk.ts';
 
 // A straight river from x 1000 to 1400, a deck sloping down across it at y 400 to 500, 60 px thick, its ends on the banks,
 // a pier in midstream at y 1200 to 1300 and a boat moored at the west bank at y 1400; the river ends at y 1800.
@@ -99,6 +100,21 @@ test('floating into a pier, it drifts round the nearer side and on down, never t
 	}
 });
 
+/** The arrow at `p`, with BANK world px of water beside it: all of it on the river. */
+const onWater = (r: Overworld['river'], p: Point) =>
+	[p.x - BANK, p.x + ARROW.w + BANK].every((x) => [p.y, p.y + ARROW.h - 1].every((y) => inPolygon({ x, y }, r.mask)));
+
+test('left still by either bank, the cursor floats in from it and down with water on both sides of its arrow', () => {
+	for (const x of [1003, 1395]) {
+		const t = ride({ x, y: 600 }, 64, { was: afloat({ x, y: 600 }, STILL) });
+		assert.ok(t.every((f) => f.is === 'afloat'));
+		const from = t.findIndex((f) => onWater(river, f.at));
+		assert.ok(from >= 0 && from < 16, `${x} moved in off the bank`);
+		assert.ok(t.slice(from).every((f) => onWater(river, f.at)), `${x} kept off the bank`);
+		assert.ok(t.at(-1)!.at.y > 900, `${x} floated on down`);
+	}
+});
+
 test('a boat moored at the bank is passed on its open side, and the float never carries the cursor ashore', () => {
 	const t = ride({ x: 1010, y: 1300 }, 40, { was: afloat({ x: 1010, y: 1300 }, STILL) });
 	assert.ok(t.every((f) => f.is === 'afloat'));
@@ -110,7 +126,7 @@ test('a boat moored at the bank is passed on its open side, and the float never 
 
 test('the river’s end is a line: a sloped one ends each floating cursor where it crosses it', () => {
 	const sloped = { ...river, obstacles: [], southEnd: [{ x: 1000, y: 1500 }, { x: 1400, y: 1700 }] };
-	for (const [x, y] of [[1050, 1525], [1350, 1675]]) {
+	for (const [x, y] of [[1100, 1550], [1300, 1650]]) {
 		const t = ride({ x, y: 1000 }, 10_000, { was: afloat({ x, y: 1000 }, STILL), r: sloped });
 		assert.equal(t.at(-1)!.is, 'end');
 		assert.ok(Math.abs(t.at(-2)!.at.y - y) < CURRENT / 16 + 1e-9, `${x} ended at ${t.at(-2)!.at.y}`);
@@ -147,7 +163,7 @@ test('only a floating cursor is washed out at the south end, after the time the 
 	assert.equal(t.at(-1)!.is, 'end');
 	assert.ok(t.slice(0, -1).every((f) => f.is === 'afloat'));
 	// 600 px at 150 px/s: four seconds of 1/16 s frames, the last one reaching the line.
-	assert.equal(t.length, 4 * 16 + 1);
+	assert.equal(t.length, 4 * 16);
 });
 
 test('moving about on the water at and past the south end washes nothing out; left still there a second, it does', () => {
@@ -195,6 +211,9 @@ test('the overworld: a float from anywhere across the water rounds every pier, b
 			const t = ride(from, 60 * 16, { was: afloat(from, STILL), r });
 			assert.equal(t.at(-1)!.is, 'end', `from ${x}, ${y}: stuck at ${JSON.stringify(t.at(-1)!.at)}`);
 			assert.ok(t.slice(0, -1).every((f) => f.is === 'afloat' && clear(f.at)), `from ${x}, ${y}`);
+			// Off the bank within a second, and kept off it all the way down.
+			const off = t.findIndex((f) => onWater(r, f.at));
+			assert.ok(off >= 0 && off < 16 && t.slice(off, -1).every((f) => onWater(r, f.at)), `from ${x}, ${y}: over the land`);
 		}
 	}
 });

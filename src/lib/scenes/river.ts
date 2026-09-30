@@ -10,6 +10,11 @@ export const CURRENT = 150;
 export const STILL = 1;
 /** The own cursor's arrow, world px right and down from its tip at full size: what a float keeps clear of obstacles. */
 export const ARROW = { w: 26, h: 40 };
+/**
+ * The water a float keeps between its arrow and either bank, world px, so it never looks to be over the land (Joe,
+ * 2026-09-30).
+ */
+export const BANK = 60;
 /** How far either side a float looks for open water round what blocks it, world px, and how finely. */
 const SEARCH = { reach: 600, step: 4 };
 
@@ -34,22 +39,28 @@ export const ASHORE: Current = { is: 'ashore' };
 export function flow(river: Overworld['river'], was: Current, p: Point, dt: number, stirred: boolean): { is: Current | { is: 'end' }; d: Point } {
 	if (!inOutline(p, river.mask) || (was.is === 'ashore' && river.decks.some((d) => inOutline(p, d)))) return { is: ASHORE, d: { x: 0, y: 0 } };
 	const floating = was.is === 'afloat' && was.still >= STILL && !stirred;
-	if (floating && p.y >= lineY(river.southEnd, p.x)) return { is: { is: 'end' }, d: { x: 0, y: 0 } };
+	// This frame's step reaches the end: the arrow is at the bottom edge, where the water it keeps below it runs out.
+	if (floating && p.y + CURRENT * dt >= lineY(river.southEnd, p.x)) return { is: { is: 'end' }, d: { x: 0, y: 0 } };
 	const moved = was.is === 'ashore' || stirred || (!floating && (p.x !== was.at.x || p.y !== was.at.y));
 	return { is: { is: 'afloat', at: p, still: moved ? 0 : was.still + dt }, d: floating ? carry(river, p, CURRENT * dt) : { x: 0, y: 0 } };
 }
 
 const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
-/** A floating cursor may be at `p`: its tip on the water, its arrow clear of everything standing in it. */
+/**
+ * A floating cursor may be at `p`: its arrow on the water with BANK world px of it either side, its corners' test, and
+ * clear of everything standing in it.
+ */
 const open = (river: Overworld['river'], p: Point) =>
-	inOutline(p, river.mask) && !river.obstacles.some((o) => overlaps(o, { ...p, ...ARROW }));
+	[p.x - BANK, p.x + ARROW.w + BANK].every((x) => [p.y, p.y + ARROW.h - 1].every((y) => inOutline({ x, y }, river.mask))) &&
+	!river.obstacles.some((o) => overlaps(o, { ...p, ...ARROW }));
 
 /**
  * The current's step of `s` world px from `p`: straight south, or, where a pier, a boat or the bank is in the way, toward
  * the nearest open water that far south on either side, diagonally where that is open and sideways where it isn't. So a
- * floating cursor drifts round what stands in the water and follows the banks, never carried through or ashore; with no
- * open way within reach it waits. An obstacle by a bank reaches the bank, so no float is pinched between them.
+ * floating cursor drifts round what stands in the water and follows the banks a little way out, never carried through or
+ * over the land; one left by a bank drifts out from it first. With no open way within reach it waits. An obstacle by a
+ * bank reaches the bank, so no float is pinched between them.
  */
 function carry(river: Overworld['river'], p: Point, s: number): Point {
 	const y = p.y + s, at = (d: Point) => open(river, { x: p.x + d.x, y: p.y + d.y });
