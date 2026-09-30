@@ -145,8 +145,8 @@ html.engine {
 			color: transparent;
 		}
 
-		/* Headings name what is painted under them without catching clicks meant for the props. */
-		& :is(h2, h3).at {
+		/* Headings, and a prop that only says its state, name what is painted under them without catching clicks meant for the props. */
+		& :is(h2, h3, .status).at {
 			pointer-events: none;
 		}
 

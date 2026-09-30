@@ -140,8 +140,8 @@ export class Projector {
 			v.removeAttribute('src');
 			v.load();
 		}
-		const button = this.foundry && this.layer.querySelector('[data-prop="screen"] > button');
-		if (button) button.textContent = `Screen: ${screenGist(title ?? undefined)}`;
+		const status = this.foundry && this.layer.querySelector('[data-prop="screen"] > p');
+		if (status) status.textContent = `Screen: ${screenGist(title ?? undefined)}`;
 	}
 
 	/** The video plays through its part of the reel, seeked back into step when it drifts from the room's time. */

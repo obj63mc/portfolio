@@ -85,11 +85,14 @@ test('sub-scenes: title with district, focusable h1, props in reading order, exi
 		const layer = main(html);
 		assert.match(layer, new RegExp(`<h1[^>]*tabindex="-1"[^>]*>${s.venue}</h1>`));
 		assert.deepEqual(texts(withoutDialogs(layer), 'h2'), []);
+		// A prop opens its card, unless it is an action (a Foundry poster) or only says its state (the Foundry screen).
+		const carded = s.props.filter((p) => !p.kind).length;
 		const buttons = opens(layer, 'button').filter((b) => b.includes('aria-haspopup="dialog"'));
-		assert.equal(buttons.length, s.props.length, s.id);
-		assert.equal(opens(layer, 'dialog').length, s.props.length, s.id);
+		assert.equal(buttons.length, carded, s.id);
+		assert.equal(opens(layer, 'dialog').length, carded, s.id);
 		// Spec: props left to right, or top to bottom in a scene taller than wide (the Moosylvania lobby).
-		const expected = [...s.props]
+		const expected = s.props
+			.filter((p) => p.kind !== 'status')
 			.sort(s.h > s.w ? (a, b) => a.rect.y - b.rect.y : (a, b) => a.rect.x - b.rect.x)
 			.map((p) => `${p.name}: ${p.gist}`);
 		assert.deepEqual(texts(withoutDialogs(layer), 'button').slice(0, expected.length), expected, s.id);
@@ -123,18 +126,27 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 
 test.todo('inventory: the ATM on the overworld, for PayPal and Venmo (buildout ticket 25)');
 
-test('clearance: the Universal titles are told only on the Foundry screen and under its posters', () => {
+test('clearance: the Universal titles are told only on the Foundry screen and its posters', () => {
 	const titles = /Fast Five|Snow White|Lorax/;
 	for (const file of files.filter((f) => f !== 'foundry.html')) assert.doesNotMatch(page(file), titles, file);
 	let foundry = page('foundry.html');
 	assert.match(foundry, /Universal Pictures Home Entertainment/);
-	// Each match is one prop's own block: it never runs across another prop's opening tag, so the order doesn't matter.
+	// Each prop's own block, a button or the screen's line, holds no other: the order doesn't matter.
 	for (const id of ['screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
-		const card = new RegExp(`<div class="prop[^>]*>(?:(?!<div class="prop)[\\s\\S])*?<dialog[^>]*aria-labelledby="card-${id}-title"[\\s\\S]*?</dialog>`);
-		assert.match(foundry, card, id);
-		foundry = foundry.replace(card, '');
+		const block = new RegExp(`<div class="prop[^>]*data-prop="${id}"[^>]*>[\\s\\S]*?</div>`);
+		assert.match(foundry, block, id);
+		foundry = foundry.replace(block, '');
 	}
 	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the marquee and the head included, the titles are not told');
+});
+
+test('the Foundry: a poster is a button with no card, and the screen only says its state (Joe, 2026-09-29)', () => {
+	const layer = main(page('foundry.html'));
+	for (const id of ['poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
+		const block = layer.match(new RegExp(`<div class="prop[^>]*data-prop="${id}"[^>]*>[\\s\\S]*?</div>`))![0];
+		assert.doesNotMatch(block, /<dialog|aria-haspopup/, id);
+	}
+	assert.doesNotMatch(layer.match(/<div class="prop[^>]*data-prop="screen"[^>]*>[\s\S]*?<\/div>/)![0], /<button|<dialog/);
 });
 
 test('the Join and Paused cards: on every page, outside the layer, closed until the engine opens them', () => {
@@ -161,7 +173,7 @@ const rectOf = (html: string, open: RegExp) => {
 	return { x: px('x'), y: px('y'), w: px('w'), h: px('h') };
 };
 // A prop's wrapper: the last `.prop` opening tag before its card's title.
-const propOpen = (id: string) => new RegExp(`<div class="prop[^>]*>(?=(?:(?!<div class="prop)[\\s\\S])*?card-${id}-title)`);
+const propOpen = (id: string) => new RegExp(`<div class="prop[^>]*data-prop="${id}"[^>]*>`);
 
 test('the layer: every prop, heading, door, exit and the signpost carries its world rect, so its hit target sits on its art', () => {
 	const index = main(page('index.html'));
@@ -201,21 +213,22 @@ test('the meeting TV: its card holds the video with controls, loaded only when p
 	assert.match(video, /src="[^"]*\/_app\/immutable\/assets\/fastfive-demo-full-1024x768\.[^"]*\.mp4"/);
 });
 
-test('the shared screen: button name carries its state, prerendered idle', () => {
-	assert.ok(texts(main(page('foundry.html')), 'button').includes(`Screen: ${screenGist()}`));
+test('the shared screen: its line carries its state, prerendered idle', () => {
+	assert.ok(texts(main(page('foundry.html')), 'p').includes(`Screen: ${screenGist()}`));
 	assert.equal(screenGist('fast-five'), 'now playing Fast Five');
 });
 
 test('cards: every card is labelled and closes natively', () => {
 	for (const file of files) {
 		const layer = main(page(file)), dialogs = opens(layer, 'dialog');
-		assert.ok(dialogs.length > 0);
+		// The Foundry has none (Joe, 2026-09-29): its posters play reels, and its screen only says what plays.
+		assert.ok(file === 'foundry.html' || dialogs.length > 0, file);
 		assert.ok(dialogs.every((d) => d.includes('aria-labelledby=')), file);
-		assert.equal(layer.match(/<form method="dialog">/g)?.length, dialogs.length, file);
+		assert.equal(layer.match(/<form method="dialog">/g)?.length ?? 0, dialogs.length, file);
 	}
 	// Card titles stay inside the page's heading hierarchy when the cards read inline without JavaScript.
 	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.length);
-	for (const s of subScenes) assert.equal(texts(page(`${s.id}.html`), 'h2').length, s.props.length, s.id);
+	for (const s of subScenes) assert.equal(texts(page(`${s.id}.html`), 'h2').length, s.props.filter((p) => !p.kind).length, s.id);
 	assert.match(page('index.html'), /<noscript>[\s\S]*dialog \{ display: block/);
 });
 

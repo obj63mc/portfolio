@@ -26,7 +26,13 @@ export interface Prop {
 	name: string;
 	/** Short line appended to the button name: "Diploma: BS Computer Science with Honors, 2005". */
 	gist: string;
-	/** Card paragraphs, the full content-inventory text. */
+	/**
+	 * What it is, when not a button opening its card: an `action`, a button whose click is all it does (a Foundry poster
+	 * starts its reel), or a `status`, no button at all, its name and state read as text in the layer (the Foundry screen).
+	 * Neither has a card (Joe, 2026-09-29, buildout ticket 17).
+	 */
+	kind?: 'action' | 'status';
+	/** Card paragraphs, the full content-inventory text; none for an `action` or a `status`. */
 	body: string[];
 	/** Links shown inside the card. An external link never leaves the card (spec: "Links, not buttons"). */
 	links?: Link[];

@@ -235,7 +235,8 @@ export class Engine {
 		// A new scene is a new room (ticket 13): one socket closes and the next opens, and a joined cursor is tagged "you".
 		this.net.join(scene.id);
 		if (this.cursor) this.art.tag();
-		this.targets = [...(overworld ? [scene.signpost.rect] : []), ...propsOf(scene).map((p) => p.rect)];
+		// A prop that only says its state (the Foundry screen) is nothing to aim at.
+		this.targets = [...(overworld ? [scene.signpost.rect] : []), ...propsOf(scene).filter((p) => p.kind !== 'status').map((p) => p.rect)];
 		for (const t of this.held.values()) t.bmp?.close();
 		this.held.clear();
 		this.props.show(scene, this.density);

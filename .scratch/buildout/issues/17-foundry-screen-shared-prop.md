@@ -47,3 +47,12 @@ Hands-on, for Joe:
 - Hibernation mid-reel: `wrangler dev` never hibernated a room in testing, so waking with the screen from the attachments is untested.
 - The poster click opens the poster's card, as every prop's does, so the visitor who starts a reel sees it behind the card until they close it.
 
+### No cards in the Foundry, 2026-09-29
+
+Joe's call after the first build: "We don't need the cards any more, the dialogs; it should just go to the video playing, as that is the content we need to present. I will move any text content for this scene into some other spot that becomes clickable later." A poster was opening its card over the reel it started.
+
+- **Posters** are `kind: 'action'` props: a button with no `aria-haspopup` and no dialog, named "Fast Five poster: play it on the screen". A click, a tap, Enter or Space starts the reel (`projector.ts`), grants the 3D glasses and plays the pop reaction, as before.
+- **The screen** is a `kind: 'status'` prop: no button, only its name and state as a line of text over it ("Screen: now playing The Lorax"), which the engine keeps current. It no longer holds the camera still, and a cursor can't hover it. The clip-path it had for its button went with the button.
+- **Text**: the posters' and screen's card paragraphs are gone from the page; `CASE_STUDY` still plays on the screen. Their accessible text waits on the prop Joe moves it to.
+- **Tests**: build-output (no dialog or haspopup in the Foundry, the screen's line, cards counted only for props that have one), screen.spec (a poster click opens no card). Checked by eye in Chrome with a real click on desktop and a real tap on a 390 x 844 phone: no card, the reel plays framed whole, the glasses are granted.
+

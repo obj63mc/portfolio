@@ -83,8 +83,10 @@ export const FOUNDRY: SubScene = {
 		...(Object.keys(SCREEN_TITLES) as ScreenTitle[]).map((id) => ({
 			id: `poster-${id}`,
 			name: `${SCREEN_TITLES[id]} poster`,
-			gist: 'Universal Pictures Home Entertainment',
-			body: [CASE_STUDY[id]],
+			gist: 'play it on the screen',
+			// No card: the reel on the screen is what a poster presents (Joe, 2026-09-29). Its text moves elsewhere later.
+			kind: 'action' as const,
+			body: [],
 			rect: posters[id],
 			cosmetic: 2 as const
 		})),
@@ -92,14 +94,10 @@ export const FOUNDRY: SubScene = {
 			id: 'screen',
 			name: 'Screen',
 			gist: screenGist(),
-			body: [
-				'The screen plays one reel at a time for everyone in the room. Click a poster to start one.',
-				...Object.entries(SCREEN_TITLES).map(([id, title]) => `${title}: ${CASE_STUDY[id as ScreenTitle]}`)
-			],
-			rect: { x: 1656, y: 85, w: 1016, h: 833 },
-			// Clipped where its lower-left corner reaches behind the front row's seat backs (spec: an irregular prop gets a clip-path).
-			clip: 'polygon(100% 0%, 0% 0%, 0% 91.16%, 0.31% 91.32%, 0.35% 93.27%, 0% 93.51%, 0% 95.55%, 1.24% 95.2%, 10.43% 100%, 15.47% 100%, 15.72% 99.87%, 16.1% 100%, 100% 100%)'
-			// No cosmetic: the 3D glasses are the posters' (spec: "Cosmetics"), the click that starts a reel.
+			// Nothing to click: the posters start its reels, and the engine keeps its state current (Joe, 2026-09-29).
+			kind: 'status',
+			body: [],
+			rect: { x: 1656, y: 85, w: 1016, h: 833 }
 		}
 	],
 	// The exit door on the left wall, beside the screen, under its green sign.

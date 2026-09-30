@@ -34,13 +34,13 @@ async function joinScene(page: Page) {
 	await expect(page.getByRole('dialog', { name: 'Join' })).toBeHidden();
 }
 
-/** A poster's click, which opens its card and asks for its title; the card is closed again. */
+/** A poster's click, which asks for its title and opens no card (Joe, 2026-09-29). */
 async function poster(page: Page, title: string) {
 	await page.locator(`[data-prop="poster-${title}"] > button`).evaluate((b: HTMLElement) => b.click());
-	await page.keyboard.press('Escape');
+	await expect(page.locator('dialog[open]')).toHaveCount(0);
 }
 
-const screenButton = (page: Page) => page.locator('[data-prop="screen"] > button');
+const screenStatus = (page: Page) => page.locator('[data-prop="screen"] > p');
 
 /** The layer's transform: the render scale and the camera's offset, CSS px. */
 const transform = (page: Page) => page.locator('main').evaluate((m) => ((t) => ({ s: t.a, x: t.e, y: t.f }))(new DOMMatrix(getComputedStyle(m).transform)));
@@ -101,13 +101,13 @@ test.describe('two browsers on wrangler dev', () => {
 
 	test('one poster click plays the title for both, and a second click during it does nothing for anyone', async () => {
 		await Promise.all([joinScene(a), joinScene(b)]);
-		for (const page of [a, b]) await expect(screenButton(page)).toHaveText('Screen: idle, pick a poster to start a reel');
+		for (const page of [a, b]) await expect(screenStatus(page)).toHaveText('Screen: idle, pick a poster to start a reel');
 		const idle = await screenLight(a);
 		await poster(a, 'lorax');
-		for (const page of [a, b]) await expect(screenButton(page)).toHaveText('Screen: now playing The Lorax');
+		for (const page of [a, b]) await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
 		await poster(b, 'fast-five');
 		await b.waitForTimeout(500);
-		for (const page of [a, b]) await expect(screenButton(page)).toHaveText('Screen: now playing The Lorax');
+		for (const page of [a, b]) await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
 		// The beam comes up on the blank screen, then the title card darkens it.
 		await expect.poll(() => screenLight(a), { timeout: 5000 }).toBeLessThan(idle / 2);
 	});
@@ -121,7 +121,7 @@ test.describe('two browsers on wrangler dev', () => {
 			})
 		);
 		await c.goto(`${base()}/foundry`);
-		await expect(screenButton(c)).toHaveText('Screen: now playing The Lorax');
+		await expect(screenStatus(c)).toHaveText('Screen: now playing The Lorax');
 		expect(hello!.screen!.title).toBe('lorax');
 		expect(hello!.now - hello!.screen!.at).toBeGreaterThan(500);
 		// Behind the Join card too, the camera frames the reel.
@@ -141,7 +141,7 @@ test.describe('without a room', () => {
 		await joinScene(page);
 		expect((await transform(page)).s).toBeCloseTo(0.6);
 		await poster(page, 'lorax');
-		await expect(screenButton(page)).toHaveText('Screen: now playing The Lorax');
+		await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
 		// Eased out to the reel's framing: the projector, its lens and the whole screen in the 390 px wide view.
 		await expect.poll(async () => (await transform(page)).s).toBeCloseTo(390 / REEL_FRAME.w, 3);
 		for (const p of [PROJECTOR_LENS, { x: 100, y: 1250 }, ...SCREEN_SURFACE]) {
@@ -149,7 +149,7 @@ test.describe('without a room', () => {
 			expect(at.x >= 0 && at.x <= 390 && at.y >= 0 && at.y <= 844, JSON.stringify(p)).toBe(true);
 		}
 		await page.clock.fastForward(45_000);
-		await expect(screenButton(page)).toHaveText('Screen: idle, pick a poster to start a reel');
+		await expect(screenStatus(page)).toHaveText('Screen: idle, pick a poster to start a reel');
 		await expect.poll(async () => (await transform(page)).s).toBe(0.6);
 	});
 });

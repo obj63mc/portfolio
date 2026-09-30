@@ -82,8 +82,8 @@ test('walk-behind scenery: outline inside its cut-out, front line left to right,
 				assert.ok(prop, `${s.id}: ${w.key} lists unknown prop ${id}`);
 				assert.ok(inPolygon(centre(prop.rect), w.outline), `${s.id}: ${id} does not stand on ${w.key}`);
 			}
-			// Every other prop's hit area, and the exit, is clear of it: a cursor hidden behind the scenery never hovers them.
-			for (const p of s.props.filter((p) => !w.props.includes(p.id)))
+			// Every other prop's hit area (a status has none), and the exit, is clear of it: a cursor hidden behind the scenery never hovers them.
+			for (const p of s.props.filter((p) => p.kind !== 'status' && !w.props.includes(p.id)))
 				assert.equal(shared(hitArea(p), w.outline), 0, `${s.id}: ${w.key} covers part of ${p.id}`);
 			assert.equal(shared(corners(s.exit), w.outline), 0, `${s.id}: ${w.key} covers part of the exit`);
 		}
