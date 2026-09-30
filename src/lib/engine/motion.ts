@@ -1,8 +1,10 @@
 // Prop motion and reactions (buildout ticket 15) as pure functions of time and state, for the props module and for tests:
-// ambient motion (the moose breathing and blinking, the rider on the park's lower straight, the marquee's bulbs chasing,
+// ambient motion (the moose breathing and blinking, the rider round the park's lake loop, the marquee's bulbs chasing,
 // a glint along the Side Project bottles), hover and click reactions, and what reduced motion leaves of them. Times are
 // ms. Ambient motion runs on server time, so every visitor in a room sees the rider at the same point. Carried over from
 // the rendering prototype's props.ts and the art workshop's drawRig (art/review.js).
+import { OVERWORLD } from '../scenes/overworld.ts';
+import { along, course } from './track.ts';
 
 /** A hover fades in and out over this long; under reduced motion it is a plain highlight, on and off at once. */
 export const HOVER_MS = 150;
@@ -10,8 +12,13 @@ export const HOVER_MS = 150;
 /** How long each click reaction runs: most props pop, the moose's antlers wobble, the MonsterCommerce eye blinks. */
 export const CLICK_MS = { pop: 300, wobble: 1200, blink: 250 } as const;
 
-/** The rider (art/manifest.json sceneLayouts): the rect its rig is fitted into, how far either way it rides, and one lap. */
-export const RIDER = { rect: { x: 2550, y: 2475, w: 120, h: 85 }, travelX: 110, lapMs: 12_000 };
+/**
+ * The rider on the Carondelet lake loop (buildout ticket 18): the size of the box its rig is fitted into, its wheels on
+ * the ground `drop` below the path's centreline, on the near half; its speed, world px/s; and where it rests under
+ * reduced motion, world px along the loop past the start line (art/manifest.json sceneLayouts places it there).
+ */
+export const RIDER = { w: 120, h: 85, drop: 12, speed: 200, rest: 100 };
+const LOOP = course(OVERWORLD.track);
 
 export const ease = (u: number) => u * u * (3 - 2 * u);
 
@@ -54,16 +61,14 @@ export function moose(t: number, h: number, since: number, rm: boolean): Record<
 }
 
 /**
- * The rider at server time `t`: how far it is from the middle of its straight (world px), the way it faces (1 east, -1
- * west), and how far it has ridden since the epoch, which turns its wheels. It rides out and back once a lap, easing
- * round at either end. Under reduced motion it rests mid-straight facing east.
+ * The rider at server time `t`: the box its rig is fitted into, the way it faces (1 east, -1 west), and how far it has
+ * ridden since the epoch, which turns its wheels. It rides the whole loop, anticlockwise on screen, at a steady speed.
+ * Under reduced motion it rests past the start line facing east.
  */
 export function rider(t: number, rm: boolean) {
-	if (rm) return { dx: 0, facing: 1, travelled: 0 };
-	const a = (2 * Math.PI * (t % RIDER.lapMs)) / RIDER.lapMs, q = Math.floor(a / (Math.PI / 2)), s = Math.abs(Math.sin(a));
-	// Each quarter lap rides travelX: out from the middle (s rising) or back to it (s falling).
-	const quarters = 4 * Math.floor(t / RIDER.lapMs) + q + (q % 2 ? 1 - s : s);
-	return { dx: RIDER.travelX * Math.sin(a), facing: Math.cos(a) >= 0 ? 1 : -1, travelled: RIDER.travelX * quarters };
+	const travelled = rm ? 0 : (t / 1000) * RIDER.speed, p = along(LOOP, RIDER.rest + travelled);
+	const at = { x: p.x - RIDER.w / 2, y: p.y + RIDER.drop - RIDER.h, w: RIDER.w, h: RIDER.h };
+	return { at, facing: p.dx < 0 ? -1 : 1, travelled };
 }
 
 /** Which third of the marquee's bulbs is lit, stepping every 150 ms; -1 under reduced motion, every bulb as painted. */

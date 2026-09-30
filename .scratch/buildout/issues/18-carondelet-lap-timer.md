@@ -4,9 +4,25 @@
 
 **Blocked by:** 04 (track geometry), 16 (the rune)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Crossing the start line and completing the loop shows a lap time; leaving the path cancels the lap
-- [ ] The top ten persists across reloads and merges across tabs keeping the fastest ten
-- [ ] Two browsers in the room see the rider at the same point on the track
-- [ ] The lap timer is a pure module stepped with a fake clock and tested (seam 2)
+- [x] Crossing the start line and completing the loop shows a lap time; leaving the path cancels the lap
+- [x] The top ten persists across reloads and merges across tabs keeping the fastest ten (ticket 16's rune module; this ticket built against an in-memory stand-in with the same `laps` and `lap()`, replaced at merge)
+- [x] Two browsers in the room see the rider at the same point on the track (the rider is a pure function of `net.serverNow()`, tested; a two-browser look stays hands-on)
+- [x] The lap timer is a pure module stepped with a fake clock and tested (seam 2)
+
+## Comments
+
+### Built, 2026-09-29
+
+Joe's direction for this ticket: fix the cyclist so it goes round the whole track, add a start/stop section, and make the timer forgiving of a cursor that strays a little off the track, above all for a thumb on a phone's joystick.
+
+- **The track** is the whole lake loop, `OVERWORLD.track` in `src/lib/scenes/overworld.ts`: its centreline as 47 points read on the plate and centred across the cream path by colour, anticlockwise on screen from the start line, about 5,270 world px round; the painted path's half-width (18); and the cut-outs of the scenery it runs behind. `tests/overworld-geometry.test.ts` holds it in the park, its start line under the track prop and behind each listed cut-out.
+- **The start/finish line** is the loop's first point, on the lower straight at x 2599 between the west tree and the park tree, where Joe's bike and the ride sign are. It is painted by the engine as a chequered band across the path (`props.ts` `startLine`), and the `track` prop's button is its 50 × 60 box, so clicking the line opens the Cycling course card. Its card gains a line telling a visitor to cross the line to time a lap (*for Joe to confirm the wording*). The line's box holds the camera while the cursor crosses it, as every prop's does (spec: Push suppression); a lap passes it in a moment.
+- **The timer** (`src/lib/engine/track.ts`, tested in `tests/track.test.ts` with a box course and on the real loop): a cursor is on the course within the painted half-width plus `CORRIDOR`, 70 world px, so 88 px from the centreline. Off it, a lap survives `GRACE`, one second; the cursor must rejoin within `REACH`, 600 world px of the path from where it left (the joystick's speed times the grace), so a detour is forgiven and a cut across the lake, whose far side is further round than that everywhere, is not. Either direction counts. A lap finishes when the cursor has gone the whole loop that way and crossed the line again; crossing back over the line starts a lap the other way instead, so dithering on the line never finishes one; each finish starts the next lap at once, flying laps as in a criterium. A weaving lap 75 px either side of the centreline at 600 px/s counts, and a cut across the lake is lost.
+- **A pause, an open card or a sub-scene loses a running lap**: the engine hands the timer a null position whenever the cursor isn't free, since a lap timed across a pause means nothing. The clock says "Lap lost" for a moment.
+- **On screen** (`src/lib/engine/laps.ts`): a clock top left, prerendered empty in the layout and hidden until a lap starts, shows the running time to the tenth, dimmed while the cursor is off the course within the grace; at the finish it shows "New best 0:39.8" or "Lap 0:42.3, best 0:39.8" for four seconds, and the polite live region announces the finish only, never the ticking clock. A new best is where ticket 22's beep goes (a comment marks it). Laps are recorded through `saved.lap(ms, at)` from ticket 16's module, which keeps the ten fastest.
+- **The rider** (`rider` in `src/lib/engine/motion.ts`) rides the whole loop at 200 world px/s on server time, 26 s a lap, facing the way it rides (mirrored heading west), its wheels turning by the distance ridden; under reduced motion it rests 100 px past the start line, where `sceneLayouts` now places it (`travelX` 0). `props.ts` moves its layer each frame, redraws where it was and where it is, and re-sorts the layers by base y, so the four cut-outs of the scenery the loop runs behind (the park sign, the park tree and two more trees, the master's own pixels) cover it there. The review note is `art/reviews/2026-09-29-overworld-track.md`; `2026-09-29-overworld-rider.md` is superseded.
+- **Checks**: `tests/track.test.ts` and the rider's cases in `tests/props.test.ts` (seam 2); `tests/laps.spec.ts` rides the drawn cursor once round the loop weaving across the path and sees a time and a new best, and sees the rider rest under reduced motion (seam 4).
+
+Hands-on: a lap with a thumb on a real phone's joystick, to judge the corridor and the grace; two browsers side by side to see the rider at the same point; Joe's workshop acceptance of the three new mattes and the start line.

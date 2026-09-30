@@ -125,6 +125,15 @@ export interface Overworld extends SceneBase {
 		southEndY: number;
 		arch: Point;
 	};
+	/** The Carondelet lake loop (buildout ticket 18): the lap timer's course, which the rider rides too. */
+	track: {
+		/** The centreline, a closed loop anticlockwise on screen, from the start/finish line on the lower straight. */
+		path: Point[];
+		/** The painted path's half-width. */
+		half: number;
+		/** Cut-outs of the scenery the loop runs behind, drawn over the rider as it passes behind them. */
+		cover: string[];
+	};
 }
 
 export interface SubScene extends SceneBase {

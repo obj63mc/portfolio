@@ -255,4 +255,24 @@ html.engine {
 		border-radius: 1rem;
 		background: rgb(255 255 255 / 0.85);
 	}
+
+	/* The lap clock, top left, clear of the count; it dims while the cursor is off the course and the lap can still be saved. */
+	& .lap {
+		position: fixed;
+		inset-block-start: 1rem;
+		inset-inline-start: 1rem;
+		margin: 0;
+		padding: 0.25rem 0.875rem;
+		border-radius: 1rem;
+		background: rgb(36 79 85 / 0.9);
+		color: #fff4d4;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+		pointer-events: none;
+
+		&.off {
+			opacity: 0.55;
+		}
+	}
 }

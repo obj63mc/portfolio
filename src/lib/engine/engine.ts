@@ -5,8 +5,9 @@
 // the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
 // the scene canvas (ticket 15) are props.ts. Cosmetics (ticket 16): a granting prop's card grants, the saved state
 // (saved.svelte.ts) keeps them, and the room hears what the cursor wears. The Foundry screen's reel (ticket 17) is
-// projector.ts, and the camera zooms out to frame it. Carried over from the rendering and pointer-lock prototypes' engines
-// (prototype/rendering-camera, prototype/pointer-lock) with the spec's rules; the layer's markup is never re-rendered here.
+// projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. Carried over from
+// the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
+// rules; the layer's markup is never re-rendered here.
 import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { propsOf } from '../scenes/index.ts';
@@ -19,6 +20,7 @@ import {
 	KEYS, TILE, centreOn, clamp, coast, fling, framing, glide, pan, rendering, steer, step, stick, tileRange, zoom, type Move, type View
 } from './camera.ts';
 import { Cursors, type Drawn } from './cursors.ts';
+import { Laps } from './laps.ts';
 
 export type Scene = Overworld | SubScene;
 
@@ -124,6 +126,8 @@ export class Engine {
 	private live: HTMLElement;
 	private props: Props;
 	private projector: Projector;
+	/** The Carondelet lap timer (ticket 18). */
+	private laps: Laps;
 	private raf = 0;
 	private last = 0;
 	private canvas: HTMLCanvasElement;
@@ -148,7 +152,8 @@ export class Engine {
 
 	/**
 	 * `joystick` is the touch joystick, its knob its first child; `cards` are the Join and Paused cards; `status` holds the
-	 * "N here" count and the polite live region. The canvas holding the pointer lock is the scene's, in the shared layout.
+	 * "N here" count, the polite live region and the lap clock. The canvas holding the pointer lock is the scene's, in the
+	 * shared layout.
 	 */
 	constructor(
 		canvas: HTMLCanvasElement,
@@ -156,7 +161,7 @@ export class Engine {
 		cursors: HTMLCanvasElement,
 		joystick: HTMLElement,
 		cards: Engine['cards'],
-		status: { here: HTMLElement; live: HTMLElement }
+		status: { here: HTMLElement; live: HTMLElement; lap: HTMLElement }
 	) {
 		const g = canvas.getContext('2d', { alpha: false }), cg = cursors.getContext('2d');
 		// Without a canvas the engine never starts and the page stays the plain document (spec: "if the canvas fails").
@@ -183,6 +188,7 @@ export class Engine {
 		});
 		this.props = new Props(layer);
 		this.projector = new Projector(layer, this.net);
+		this.laps = new Laps(status.lap, status.live);
 		document.documentElement.classList.add('engine');
 		this.bind();
 		this.resize();
@@ -621,6 +627,9 @@ export class Engine {
 		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
+		// The lap timer rides with the free cursor on the overworld; a pause, a card or a sub-scene loses a lap.
+		const at = free && 'districts' in scene && this.cursor;
+		this.laps.step(at ? { x: this.cam.x + at.x / this.view.s, y: this.cam.y + at.y / this.view.s } : null, now);
 		this.mark();
 		this.drawCursors(now);
 	};

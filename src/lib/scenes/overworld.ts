@@ -77,10 +77,13 @@ const districts: District[] = [
 						id: 'track',
 						name: 'Cycling course',
 						gist: 'the Carondelicious Criterium and Tuesday night training',
-						body: ['The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.'],
-						// The lower straight of the lake loop, west of the foreground tree.
-						rect: { x: 2300, y: 2515, w: 400, h: 65 },
-						// Painted in the plate; the rider riding it is ambient motion (motion.ts RIDER).
+						body: [
+							'The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.',
+							'Cross the chequered line to time a lap of the loop, either way round. Your ten best laps stay in this browser.'
+						],
+						// The start/finish line on the lower straight (`track` below), which props.ts paints across the path.
+						rect: { x: 2575, y: 2505, w: 50, h: 60 },
+						// The loop is painted in the plate; the rider riding it is ambient motion (motion.ts RIDER).
 						art: []
 					},
 					{
@@ -241,5 +244,24 @@ export const OVERWORLD: Overworld = {
 		southEndY: 1900,
 		// The lawn between the Arch's legs, south of the museum entrance.
 		arch: { x: 4780, y: 1330 }
+	},
+	track: {
+		// Read by eye on gridded crops of the plate every 100 px or so, each point then centred across the cream path
+		// (buildout ticket 18). Where the path runs behind the park sign and three trees it is interpolated from either side.
+		path: [
+			{ x: 2599, y: 2534 }, { x: 2699, y: 2543 }, { x: 2800, y: 2544 }, { x: 2900, y: 2546 }, { x: 3000, y: 2547 },
+			{ x: 3100, y: 2542 }, { x: 3200, y: 2529 }, { x: 3300, y: 2507 }, { x: 3401, y: 2484 }, { x: 3501, y: 2442 },
+			{ x: 3565, y: 2394 }, { x: 3598, y: 2349 }, { x: 3606, y: 2301 }, { x: 3574, y: 2246 }, { x: 3495, y: 2195 },
+			{ x: 3396, y: 2157 }, { x: 3297, y: 2128 }, { x: 3198, y: 2105 }, { x: 3099, y: 2085 }, { x: 2999, y: 2069 },
+			{ x: 2899, y: 2052 }, { x: 2799, y: 2035 }, { x: 2699, y: 2021 }, { x: 2600, y: 2007 }, { x: 2450, y: 2000 },
+			{ x: 2300, y: 1998 }, { x: 2148, y: 1994 }, { x: 2000, y: 1961 }, { x: 1800, y: 1947 }, { x: 1600, y: 1944 },
+			{ x: 1450, y: 1951 }, { x: 1301, y: 1978 }, { x: 1206, y: 2036 }, { x: 1165, y: 2110 }, { x: 1172, y: 2179 },
+			{ x: 1202, y: 2238 }, { x: 1261, y: 2299 }, { x: 1355, y: 2351 }, { x: 1431, y: 2379 }, { x: 1600, y: 2388 },
+			{ x: 1800, y: 2400 }, { x: 2000, y: 2428 }, { x: 2100, y: 2457 }, { x: 2199, y: 2478 }, { x: 2300, y: 2493 },
+			{ x: 2400, y: 2508 }, { x: 2499, y: 2523 }
+		],
+		// 25 to 57 px wide, 37 on the lower straight.
+		half: 18,
+		cover: ['park-sign', 'track-tree-west', 'park-tree', 'track-tree-east']
 	}
 };

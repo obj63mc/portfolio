@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES, artOf, propsOf } from '../src/lib/scenes/index.ts';
 import { CLICK_MS, HOVER_MS, RIDER, blink, chase, glint, hover, moose, pop, progress, rider } from '../src/lib/engine/motion.ts';
+import { course, locate } from '../src/lib/engine/track.ts';
 
 const generated = (path: string) => new URL(`../art/generated/${path}`, import.meta.url);
 const scenes = [OVERWORLD, ...Object.values(SUB_SCENES)];
@@ -21,30 +22,38 @@ test('every prop resolves to its cut-outs or a rig in its scene; only the track,
 		}
 });
 
-test('the rider is placed as the art manifest lays it out', () => {
+test('the rider rests where the art manifest lays it out, and rides the track from there', () => {
 	const { sceneLayouts } = JSON.parse(readFileSync(new URL('../art/manifest.json', import.meta.url), 'utf8'));
 	const layout = sceneLayouts.overworld.rigs.find((r: { name: string }) => r.name === 'rider');
-	assert.deepEqual({ rect: RIDER.rect, travelX: RIDER.travelX }, { rect: layout.rect, travelX: layout.travelX });
+	const rest = rider(0, true).at;
+	assert.deepEqual({ ...layout.rect }, { x: Math.round(rest.x), y: Math.round(rest.y), w: rest.w, h: rest.h });
+	assert.equal(layout.travelX, 0, 'it rides the loop in scene data, not a sweep');
 });
 
-test('the rider sweeps the straight on server time, facing the way it rides, its wheels turning without a jump', () => {
-	const at = (t: number) => rider(t, false);
-	const top = ((RIDER.travelX * 2 * Math.PI) / RIDER.lapMs) * 16; // the most it rides in a 16 ms frame
-	let last = at(0);
-	for (let t = 16; t < 3 * RIDER.lapMs; t += 16) {
-		const r = at(t), moved = Math.abs(r.dx - last.dx), rolled = r.travelled - last.travelled;
-		assert.ok(Math.abs(r.dx) <= RIDER.travelX);
-		assert.ok(rolled >= 0 && rolled <= top + 1e-6, `the wheels never jump, at ${t}`);
-		// Between two frames either side of a turn it rode out and back; otherwise it faces its way and rolls as far as it rides.
-		if (r.facing === last.facing) {
-			if (moved) assert.equal(r.facing, Math.sign(r.dx - last.dx), `faces its way at ${t}`);
-			assert.ok(Math.abs(rolled - moved) < 1e-6, `wheels roll as far as it rides at ${t}`);
-		}
+test('the rider rides the whole lake loop on server time at a steady speed, facing the way it rides, its wheels turning as far as it rides', () => {
+	const loop = course(OVERWORLD.track), lapMs = (loop.length / RIDER.speed) * 1000, frame = (RIDER.speed * 16) / 1000;
+	// Its wheels meet the ground `drop` below the centreline, at the middle of its box.
+	const wheels = (t: number) => {
+		const { at } = rider(t, false);
+		return { x: at.x + at.w / 2, y: at.y + at.h - RIDER.drop };
+	};
+	let last = rider(0, false), seen = new Set<number>();
+	for (let t = 16; t < 2 * lapMs; t += 16) {
+		const r = rider(t, false), p = wheels(t), q = wheels(t - 16);
+		assert.ok(locate(loop, p).d < 1e-6, `on the loop at ${t}`);
+		assert.ok(Math.hypot(p.x - q.x, p.y - q.y) <= frame + 1e-6, `no jump at ${t}`);
+		assert.ok(Math.abs(r.travelled - last.travelled - frame) < 1e-6, `the wheels roll as far as it rides at ${t}`);
+		if (Math.abs(p.x - q.x) > 0.5) assert.equal(r.facing, Math.sign(p.x - q.x), `faces its way at ${t}`);
+		seen.add(Math.floor(locate(loop, p).s / 500));
 		last = r;
 	}
+	assert.equal(seen.size, Math.ceil(loop.length / 500), 'all the way round');
+	const a = wheels(lapMs * 7 + 1234), b = wheels(1234);
+	assert.ok(Math.hypot(a.x - b.x, a.y - b.y) < 1e-6, 'a lap brings it back');
 	// Two visitors reading the same server time see it at the same point.
 	assert.deepEqual(rider(1_790_000_000_123, false), rider(1_790_000_000_123, false));
-	for (const t of [0, 5000, 1_790_000_000_123]) assert.deepEqual(rider(t, true), { dx: 0, facing: 1, travelled: 0 }, 'resting frame');
+	for (const t of [0, 5000, 1_790_000_000_123]) assert.deepEqual(rider(t, true), rider(0, true), 'resting frame under reduced motion');
+	assert.equal(rider(0, true).facing, 1);
 });
 
 test('hover fades in over 150 ms and out again; under reduced motion it is a plain highlight, on and off at once', () => {

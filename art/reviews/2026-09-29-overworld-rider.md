@@ -1,6 +1,6 @@
 # Overworld: the rider's travel on the park's lower straight
 
-**Verdict:** the rider rides the cream path of the lake loop's lower straight, x 2440 to 2780 (rect x 2550 ± 110 in `art/manifest.json`'s `sceneLayouts`), clear of the painted tree west of the straight and the foreground park tree at x 2784. `npm run art:validate` passes. Workshop acceptance in `art/review.html` is Joe's.
+**Superseded** by [the rider round the whole loop](2026-09-29-overworld-track.md) (buildout ticket 18). **Verdict:** the rider rides the cream path of the lake loop's lower straight, x 2440 to 2780 (rect x 2550 ± 110 in `art/manifest.json`'s `sceneLayouts`), clear of the painted tree west of the straight and the foreground park tree at x 2784. `npm run art:validate` passes. Workshop acceptance in `art/review.html` is Joe's.
 
 Buildout ticket 15 put the rider on the scene canvas, riding out and back on server time (`RIDER` in `src/lib/engine/motion.ts`, held to the manifest by `tests/props.test.ts`).
 

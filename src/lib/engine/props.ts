@@ -1,12 +1,14 @@
 // Props on the scene canvas (buildout ticket 15): each prop's cut-outs drawn over the background tiles in order of their
-// base y, with the scenery the overworld's plate doesn't paint (the signpost, the church door, the rider). The
+// base y, with the scenery the overworld's plate doesn't paint (the signpost, the church door, the rider and the
+// Carondelet start line) and the cut-outs of the scenery the lake loop runs behind, over the rider there. The
 // prerendered layer stays the hit target: this reads which props are hovered (the free mouse, the engine's `.hot` mark
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
 // their timing is in motion.ts. Carried over from the rendering prototype's canvas props (prototype/rendering-camera).
 import { POSTER_LAMPS, type ScreenTitle } from '../scenes/foundry.ts';
 import { artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
-import { CLICK_MS, RIDER, blink, chase, glint, hover, moose, pop, progress, rider, type Pose } from './motion.ts';
+import { CLICK_MS, blink, chase, glint, hover, moose, pop, progress, rider, type Pose } from './motion.ts';
+import { along, course } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
 interface Part {
@@ -45,6 +47,8 @@ const GLOW_PX = 18;
 const REACH = 2 * GLOW_PX;
 /** The Side Project bottles' glint: a slanted band this wide, world px. */
 const GLINT_W = 36;
+/** The Carondelet start line's checks: ivory and dark teal from the style contract (art/style.txt). */
+const LINE = { light: '#fff4d4', dark: '#244f55' };
 
 interface Cut {
 	id: string;
@@ -66,7 +70,7 @@ interface RigPart extends Part {
 /** Something drawn: a prop, or scenery the plate lacks. */
 interface Layer {
 	prop?: Prop;
-	/** Where it draws, for culling, drawing order (its base y) and a pop's centre; the rider's whole straight. */
+	/** Where it draws, for culling, drawing order (its base y) and a pop's centre; the rider's where it is now. */
 	box: Rect;
 	cuts: Cut[];
 	rig?: { name: 'moose' | 'rider'; parts: RigPart[]; at: Rect; bounds: Rect };
@@ -93,6 +97,8 @@ const union = (rs: Rect[]): Rect => {
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
 const posterOf = (p?: Prop) => (p?.id.startsWith('poster-') ? (p.id.slice('poster-'.length) as ScreenTitle) : null);
 const isBottle = (p?: Prop) => !!p?.id.startsWith('bottle-');
+/** Drawing order: by base y, nearest the camera last. */
+const byBase = (a: Layer, b: Layer) => a.box.y + a.box.h - (b.box.y + b.box.h);
 
 /** A cut-out at its world size in the session's density, so a frame never scales down 2000 px art. */
 function load(url: string, w: number, h: number) {
@@ -108,6 +114,8 @@ export class Props {
 	private arrived = false;
 	/** The Side Project bottle row's reach, which the glint sweeps. */
 	private row: Rect | null = null;
+	/** The overworld's lap start line: where it crosses the path's centreline, the way the path runs, the path's half-width. */
+	private line: { x: number; y: number; dx: number; dy: number; half: number } | null = null;
 	private t = 0;
 	private rm = false;
 	/** Where a poster's light or a bottle's glint is masked to its pixels (`shine`). */
@@ -139,29 +147,31 @@ export class Props {
 	show(scene: Overworld | SubScene, density: number) {
 		this.clear();
 		const gen = ++this.generation, overworld = 'districts' in scene;
-		const layer = (prop: Prop | undefined, art: string[], at: Rect): Layer => {
+		const layer = (prop: Prop | undefined, art: string[], at?: Rect): Layer => {
 			const world = (id: string) => WORLDS[`/art/generated/${scene.id}/${id}/asset.json`];
 			const cuts = art.filter(world).map((id) => ({ id, rect: world(id) }));
 			// A name with no cut-out of its own is a rig: the moose, the rider. (The marquee's and the sign's rig files only
 			// describe their bulbs and eye, which are cut-outs too.)
 			const name = art.find((id) => !world(id) && RIGS[`/art/generated/${scene.id}/${id}-rig.json`]) as 'moose' | 'rider' | undefined;
-			const rig = name && this.rig(scene.id, name, at);
-			return { prop, box: union([...cuts.map((c) => c.rect), ...(rig ? [at] : [])]), cuts, rig, hover: 0, clicked: -Infinity, drawn: '' };
+			const rig = name && at && this.rig(scene.id, name, at);
+			return { prop, box: union([...cuts.map((c) => c.rect), ...(rig ? [rig.at] : [])]), cuts, rig, hover: 0, clicked: -Infinity, drawn: '' };
 		};
 		this.layers = propsOf(scene).map((p) => layer(p, artOf(scene, p), p.rect)).filter((l) => l.cuts.length || l.rig);
-		// The plate paints none of these: the signpost, the church door and the rider riding the park's lower straight.
+		this.line = null;
+		// The plate paints none of these: the signpost, the church door, the rider riding the park's lake loop and the loop's
+		// start line. The loop runs behind the park sign and three trees, whose cut-outs, the plate's own pixels, cover the
+		// rider there: each layer's base y orders it against the rider's, which `step` moves.
 		if (overworld) {
-			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect));
-			const r = layer(undefined, ['rider'], RIDER.rect);
-			r.box = { ...r.box, x: r.box.x - RIDER.travelX, w: r.box.w + 2 * RIDER.travelX };
-			this.layers.push(r);
+			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect), layer(undefined, ['rider'], rider(this.t, this.rm).at));
+			this.layers.push(...scene.track.cover.map((id) => layer(undefined, [id])));
+			this.line = { ...along(course(scene.track), 0), half: scene.track.half };
 		}
 		for (const l of this.layers) {
 			const v = l.prop?.video;
 			const el = v && this.layer.querySelector<HTMLVideoElement>(`[data-prop="${l.prop!.id}"] video`);
 			if (el) l.video = { el, screen: v.screen };
 		}
-		this.layers.sort((a, b) => a.box.y + a.box.h - (b.box.y + b.box.h));
+		this.layers.sort(byBase);
 		const bottles = this.layers.filter((l) => isBottle(l.prop));
 		this.row = bottles.length ? union(bottles.map((l) => l.box)) : null;
 		// Every cut-out and rig part, at the size it is drawn.
@@ -200,20 +210,52 @@ export class Props {
 		const hovered = new Set([...this.layer.querySelectorAll(HOVERED)].map((b) => b.parentElement?.dataset.prop));
 		const changed: Rect[] = this.arrived ? [view] : [];
 		this.arrived = false;
+		let rode = false;
 		for (const l of this.layers) {
 			if (l.prop) l.hover = hover(l.hover, hovered.has(l.prop.id), dt, rm);
+			if (l.rig?.name === 'rider') {
+				// The rider moves along the loop: where it was is drawn again too, and its base y reorders it.
+				const was = l.box;
+				l.box = l.rig.at = rider(t, rm).at;
+				rode = l.box.x !== was.x || l.box.y !== was.y;
+				if (rode && overlaps(grow(was, REACH), view)) changed.push(grow(was, REACH));
+			}
 			if (!overlaps(grow(l.box, REACH), view)) continue;
 			const look = this.look(l);
 			if (look !== l.drawn) (l.drawn = look), changed.push(grow(l.box, REACH));
 		}
+		if (rode) this.layers.sort(byBase);
 		return changed.length ? union(changed) : null;
 	}
 
 	/** Every layer in `view`, bottom first, on a canvas scaled `k` device px per world px with the camera at `cam`. */
 	draw(g: CanvasRenderingContext2D, cam: Point, k: number, view: Rect) {
 		g.setTransform(k, 0, 0, k, -cam.x * k, -cam.y * k);
+		if (this.line) this.startLine(g, this.line);
 		for (const l of this.layers) if (overlaps(grow(l.box, REACH), view)) this.drawLayer(g, l, k);
 		g.setTransform(1, 0, 0, 1, 0, 0);
+	}
+
+	/**
+	 * The lap start line, chequered across the lake loop on the ground under everything: three checks along the path and
+	 * four across it, its sides upright, as a line due north-south across an east-west path looks from this camera.
+	 */
+	private startLine(g: CanvasRenderingContext2D, { x, y, dx, dy, half }: NonNullable<Props['line']>) {
+		// A check, or the band: `u` along the path from the line and `v` down from the centreline, `w` long and `h` high.
+		const quad = (u: number, v: number, w: number, h: number) => {
+			g.beginPath();
+			g.moveTo(x + dx * u, y + dy * u + v);
+			g.lineTo(x + dx * (u + w), y + dy * (u + w) + v);
+			g.lineTo(x + dx * (u + w), y + dy * (u + w) + v + h);
+			g.lineTo(x + dx * u, y + dy * u + v + h);
+			g.fill();
+		};
+		const check = half / 2;
+		// Light over the whole band first, so the dark checks meet it without hairline seams.
+		g.fillStyle = LINE.light;
+		quad(-1.5 * check, -half, 3 * check, 2 * half);
+		g.fillStyle = LINE.dark;
+		for (let c = 0; c < 3; c++) for (let r = c % 2; r < 4; r += 2) quad((c - 1.5) * check, -half + r * check, check, check);
 	}
 
 	/** What a layer draws now, as a key: equal keys draw the same pixels. */
@@ -275,17 +317,18 @@ export class Props {
 	/** A rig fitted into its rect as the art workshop fits it, each part turned and squashed about its pivot by its pose. */
 	private drawRig(g: CanvasRenderingContext2D, l: Layer) {
 		const { name, parts, at, bounds } = l.rig!, sc = Math.min(at.w / bounds.w, at.h / bounds.h);
-		let poses: Record<string, Pose>, dx = 0, facing = 1;
+		let poses: Record<string, Pose>, facing = 1;
 		if (name === 'moose') poses = moose(this.t, l.hover, this.t - l.clicked, this.rm);
 		else {
+			// `step` has put its rect where the rider is.
 			const r = rider(this.t, this.rm), wheel = { r: 0, sy: 1 };
-			({ dx, facing } = r);
+			facing = r.facing;
 			// A wheel turns by the distance ridden over its radius, both in world px.
 			wheel.r = r.travelled / ((parts.find((p) => p.key.endsWith('wheel'))?.w ?? 1) * sc * 0.5);
 			poses = { 'rear-wheel': wheel, 'front-wheel': wheel };
 		}
 		g.save();
-		g.translate(at.x + dx + (at.w - bounds.w * sc) / 2, at.y + at.h - bounds.h * sc);
+		g.translate(at.x + (at.w - bounds.w * sc) / 2, at.y + at.h - bounds.h * sc);
 		g.scale(sc, sc);
 		g.translate(-bounds.x, -bounds.y);
 		if (facing < 0) {

@@ -1,6 +1,7 @@
 // Seam 2: the overworld scene-data module as pure data. The art pass (buildout ticket 04) writes every
 // rect here; these checks are the spec rules a builder relies on, not the artwork's look.
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Point, Rect } from '../src/lib/scenes/types.ts';
@@ -87,4 +88,24 @@ test('river: deck spans the water, bridge cut-out covers the deck, south end ins
 	assert.ok(!inPolygon(arch, mask), 'reset point is on land');
 	assert.ok(inPolygon({ x: deck.x + deck.w / 2, y: deck.y + deck.h + 100 }, mask), 'water flows under the deck');
 	assert.ok(arch.y < southEndY);
+});
+
+test('track: a closed loop round the lake in the park, its start line under the track prop, behind each cut-out it lists', () => {
+	const { path, half, cover } = OVERWORLD.track;
+	const park = OVERWORLD.districts.find((d) => d.id === 'carondelet-park')!;
+	const track = props.find((p) => p.id === 'track')!;
+	assert.ok(path.length >= 20 && half > 0);
+	for (const [i, p] of path.entries()) {
+		const q = path[(i + 1) % path.length];
+		assert.ok(inside({ ...p, w: 0, h: 0 }, park.rect), `point ${i} in the park`);
+		assert.ok(Math.hypot(q.x - p.x, q.y - p.y) <= 250, `points ${i} and ${i + 1} close enough to follow the curves`);
+	}
+	assert.ok(inside({ ...path[0], w: 0, h: 0 }, track.rect), 'the start line is the track prop');
+	for (const id of cover) {
+		const world: Rect = JSON.parse(readFileSync(new URL(`../art/generated/overworld/${id}/asset.json`, import.meta.url), 'utf8')).world;
+		assert.ok(
+			path.some((p) => inside({ ...p, w: 0, h: 0 }, world)),
+			`the loop runs behind ${id}`
+		);
+	}
 });
