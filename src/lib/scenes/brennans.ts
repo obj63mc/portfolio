@@ -55,7 +55,7 @@ export const BRENNANS: SubScene = {
 		}
 	],
 	// Brennan's teal front door at the far left. The ATM left the room for the overworld, where Joe has yet to place it
-	// (Joe, 2026-09-28; buildout ticket 25).
+	// (Joe, 2026-09-28).
 	exit: { x: 0, y: 94, w: 378, h: 1148 },
 	depth: [{ rect: { x: 0, y: 0, w: 2845, h: 1600 }, horizonY: 1200, foregroundY: 1600 }],
 	foreground: [{ key: 'brennans-sofa', rect: { x: 2355, y: 1049, w: 490, h: 551 } }],

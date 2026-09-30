@@ -189,7 +189,7 @@ test("Brennan's: five brand boxes in a row on one humidor shelf, each grants the
 	assert.ok(room.exit.x + room.exit.w < boxes[0].rect.x);
 	// The lounge's coffee table is open to the rug on its right: stepping on from there is from in front.
 	faces(room.walkBehind.find((w) => w.key === 'brennans-lounge')!, 'right');
-	assert.ok(!room.props.some((p) => p.id === 'atm'), 'the ATM left Brennan’s for the overworld (buildout ticket 25)');
+	assert.ok(!room.props.some((p) => p.id === 'atm'), 'the ATM left Brennan’s for the overworld');
 });
 
 test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers over the doors, the statue, then the TV', () => {

@@ -117,7 +117,7 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 		'mc-sign', 'mc-eye', 'server-rack',
 		'chalkboard', 'bottle-bacardi', 'bottle-grey-goose', 'bottle-new-amsterdam', 'bottle-camarena', 'bottle-barefoot',
 		'bottle-bud-light', 'bottle-ej', 'bottle-pink-whitney', 'bottle-rumchata', 'bottle-soonhari', 'brewery-sign',
-		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it (ticket 25).
+		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it.
 		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo',
 		// The cycling course's line joined the ride sign's card, and the START FINISH sign is scenery: the lap timer is an
 		// Easter egg (Joe, 2026-09-29).
@@ -133,7 +133,7 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	for (const id of ['moose', 'moose-statue', 'bike', 'mc-eye']) assert.equal(allProps.find((p) => p.id === id)!.kind, 'action', id);
 });
 
-test.todo('inventory: the ATM on the overworld, for PayPal and Venmo (buildout ticket 25)');
+test.todo('inventory: the ATM on the overworld, for PayPal and Venmo');
 
 // The overworld's marquee scrolls them too (Joe, 2026-09-30), painted on the canvas, which has no markup.
 test('clearance: in the markup the Universal titles are told only on the Foundry screen and its posters', () => {
