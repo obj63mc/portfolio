@@ -27,7 +27,7 @@
 			"author": "ertfelda",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				0.32
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -43,7 +43,7 @@
 			"author": "plasterbrain",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				1.5
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -59,7 +59,7 @@
 			"author": "Fupicat",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				1.45
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -75,7 +75,7 @@
 			"author": "Ryding",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				0.8
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -155,7 +155,7 @@
 			"author": "bsumusictech",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				1.77
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -171,7 +171,7 @@
 			"author": "nomiqbomi",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				0.3
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -219,7 +219,7 @@
 			"author": "elliott.klein",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				0.6
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -235,7 +235,7 @@
 			"author": "Ezcah",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				1.05
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -251,7 +251,7 @@
 			"author": "Breviceps",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				0.48
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -267,7 +267,7 @@
 			"author": "WakuWakuWakuWaku",
 			"licence": "CC0",
 			"trim": [
-				0.0,
+				0,
 				1.8
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
@@ -303,6 +303,246 @@
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download",
 			"use": "Brennan's STG logo: a lighter's spark (Joe, 2026-09-30)"
+		},
+		{
+			"id": "bed-maplewood",
+			"kind": "bed",
+			"use": "Maplewood's bed: a small-town street, birds",
+			"status": "approved",
+			"file": "bed-maplewood-freesound-149936.mp3",
+			"source": "https://freesound.org/people/conleec/sounds/149936/",
+			"title": "AMB_Ext_Residential_Day_Stereo_001.wav",
+			"author": "conleec",
+			"licence": "CC0",
+			"trim": [
+				144,
+				178.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-central-west-end",
+			"kind": "bed",
+			"use": "the Central West End's bed: café patios",
+			"status": "approved",
+			"file": "bed-central-west-end-freesound-399346.mp3",
+			"source": "https://freesound.org/people/dobro2000/sounds/399346/",
+			"title": "Stadt-Landshut-Cafe-outside-Summer-2017.wav",
+			"author": "dobro2000",
+			"licence": "CC0",
+			"trim": [
+				216,
+				252.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-midtown",
+			"kind": "bed",
+			"use": "Midtown's bed: a campus on a breezy day",
+			"status": "approved",
+			"file": "bed-midtown-freesound-391480.mp3",
+			"source": "https://freesound.org/people/kvgarlic/sounds/391480/",
+			"title": "CollegeAtmosphereOnABreezyDayApril2017.wav",
+			"author": "kvgarlic",
+			"licence": "CC0",
+			"trim": [
+				2,
+				34
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-carondelet-park",
+			"kind": "bed",
+			"use": "Carondelet Park's bed: a park, birds",
+			"status": "approved",
+			"file": "bed-carondelet-park-freesound-366913.mp3",
+			"source": "https://freesound.org/people/Marissrar/sounds/366913/",
+			"title": "Park ambience.wav",
+			"author": "Marissrar",
+			"licence": "CC0",
+			"trim": [
+				83,
+				117.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-belleville",
+			"kind": "bed",
+			"use": "Belleville's bed: a quiet suburb, a distant train",
+			"status": "approved",
+			"file": "bed-belleville-freesound-347045.mp3",
+			"source": "https://freesound.org/people/johnaudiotech/sounds/347045/",
+			"title": "Distant train with birds",
+			"author": "johnaudiotech",
+			"licence": "CC0",
+			"trim": [
+				34,
+				66
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-river",
+			"kind": "bed",
+			"use": "the river and the Arch's bed: water, a barge going by",
+			"status": "approved",
+			"file": "bed-river-freesound-157369.mp3",
+			"source": "https://freesound.org/people/kvgarlic/sounds/157369/",
+			"title": "RiverBargeJune22012.wav",
+			"author": "kvgarlic",
+			"licence": "CC0",
+			"trim": [
+				9.5,
+				43
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-slu",
+			"kind": "bed",
+			"use": "the CS lab's bed: typing, chatter",
+			"status": "approved",
+			"file": "bed-slu-freesound-725718.mp3",
+			"source": "https://freesound.org/people/SduggySounds/sounds/725718/",
+			"title": "Typing Office chatter in background",
+			"author": "SduggySounds",
+			"licence": "CC0",
+			"trim": [
+				0.5,
+				33
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-foundry",
+			"kind": "bed",
+			"use": "the theatre's bed: an audience settling",
+			"status": "approved",
+			"file": "bed-foundry-freesound-453915.mp3",
+			"source": "https://freesound.org/people/kyles/sounds/453915/",
+			"title": "crowd int light theater audience settling down and waiting light chatter walla and eating.flac",
+			"author": "kyles",
+			"licence": "CC0",
+			"trim": [
+				113,
+				145
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-moosylvania",
+			"kind": "bed",
+			"use": "the Moosylvania lobby's bed: office murmur",
+			"status": "approved",
+			"file": "bed-moosylvania-freesound-579568.mp3",
+			"source": "https://freesound.org/people/leonelmail/sounds/579568/",
+			"title": "Office ambience - call center 3",
+			"author": "leonelmail",
+			"licence": "CC0",
+			"trim": [
+				5,
+				44.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-side-project",
+			"kind": "bed",
+			"use": "Side Project's bed: bar walla",
+			"status": "approved",
+			"file": "bed-side-project-freesound-237398.mp3",
+			"source": "https://freesound.org/people/squareal/sounds/237398/",
+			"title": "General Chatter In Bar",
+			"author": "squareal",
+			"licence": "CC0",
+			"trim": [
+				187,
+				219.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-brennans",
+			"kind": "bed",
+			"use": "Brennan's bed: a quiet bar",
+			"status": "approved",
+			"file": "bed-brennans-freesound-437461.mp3",
+			"source": "https://freesound.org/people/Anya_Media/sounds/437461/",
+			"title": "QUIET CAFE, CHATTER, MILK FROTHING MACHINE, atmos atmosphere wildtrack ambience.mp3",
+			"author": "Anya_Media",
+			"licence": "CC0",
+			"trim": [
+				56.5,
+				89.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "music-moosylvania",
+			"kind": "music",
+			"use": "the Moosylvania lobby's playlist: a lo-fi beat, ducking under the meeting TV",
+			"status": "approved",
+			"file": "music-moosylvania-freesound-722425.mp3",
+			"source": "https://freesound.org/people/Seth_Makes_Sounds/sounds/722425/",
+			"title": "Lofi Beat Loop Schmoop",
+			"author": "Seth_Makes_Sounds",
+			"licence": "CC0",
+			"trim": [
+				19,
+				109
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "theme",
+			"kind": "music",
+			"use": "the overworld's theme: Dixieland, jazzy and campy for the art",
+			"status": "approved",
+			"file": "theme-pixabay-203047.mp3",
+			"source": "https://pixabay.com/music/blues-everybody-needs-a-little-dixieland-master-track-203047/",
+			"title": "Everybody needs a little dixieland (Master Track)",
+			"author": "Billy_Ziogas",
+			"licence": "Pixabay Content License",
+			"trim": [
+				80,
+				176
+			],
+			"edits": "Downloaded from Pixabay by Joe; served only as this edited loop, never whole"
+		},
+		{
+			"id": "music-brennans",
+			"kind": "music",
+			"use": "Brennan's jazz",
+			"status": "approved",
+			"file": "music-brennans-pixabay-592657.mp3",
+			"source": "https://pixabay.com/music/traditional-jazz-jazz-bar-592657/",
+			"title": "Jazz Bar",
+			"author": "AurecTheme",
+			"licence": "Pixabay Content License",
+			"trim": [
+				16,
+				88.99
+			],
+			"edits": "Downloaded from Pixabay by Joe; served only as this edited loop, never whole"
+		},
+		{
+			"id": "music-side-project",
+			"kind": "music",
+			"use": "Side Project's music: a laid-back bossa nova",
+			"status": "approved",
+			"file": "music-side-project-pixabay-502969.mp3",
+			"source": "https://pixabay.com/music/bossa-nova-relaxing-and-coffee-502969/",
+			"title": "Relaxing and Coffee",
+			"author": "MagalyStudio",
+			"licence": "Pixabay Content License",
+			"trim": [
+				20,
+				102.581
+			],
+			"edits": "Downloaded from Pixabay by Joe; served only as this edited loop, never whole"
 		}
 	]
 }

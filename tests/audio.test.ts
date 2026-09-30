@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { ledger, parse } from '../scripts/audio.ts';
 import { ONE_SHOTS } from '../src/lib/sound.ts';
+import { BEDS, MUSIC } from '../src/lib/loops.ts';
 
 const root = new URL('../', import.meta.url);
 const read = (path: string) => readFileSync(new URL(path, root), 'utf8');
@@ -16,6 +17,16 @@ const served = existsSync(new URL('static/audio/', root)) ? readdirSync(new URL(
 test('every one-shot has exactly one manifest row, and every one-shot row is a sound the module plays', () => {
 	const shots = sounds.filter((s) => s.kind === 'one-shot').map((s) => s.id);
 	assert.deepEqual([...shots].sort(), [...ONE_SHOTS].sort());
+});
+
+test('every bed and every piece of music has exactly one manifest row of its kind, cut to its loop (ticket 21)', () => {
+	assert.deepEqual(sounds.filter((s) => s.kind === 'bed').map((s) => s.id).sort(), [...BEDS].sort());
+	assert.deepEqual(sounds.filter((s) => s.kind === 'music').map((s) => s.id).sort(), [...MUSIC].sort());
+	for (const s of sounds) if (s.kind !== 'one-shot' && s.file) assert.ok(s.trim, `${s.id} is cut to a loop`);
+});
+
+test("Joe's alternatives in audio/sources/alternatives are kept aside: every row's source sits directly in audio/sources", () => {
+	for (const s of sounds) assert.ok(!s.file?.includes('/'), s.id);
 });
 
 test('every sourced row has its source file in audio/, outside static/', () => {
@@ -44,4 +55,11 @@ test('a row off the licence ladder, or sourced without its source, author or lic
 		assert.throws(() => parse({ sounds: [{ ...row, ...bad }] }), JSON.stringify(bad));
 	assert.throws(() => parse({ sounds: [row, row] }), 'a repeated id');
 	assert.equal(parse({ sounds: [{ id: 'knock', kind: 'one-shot', use: 'a knock', status: 'provisional' }] })[0].file, undefined, 'not yet sourced');
+	// A loop is cut to its period, within the spec's range for its kind: beds 30 to 45 s, music 60 to 120.
+	const bed = { ...row, id: 'bed-x', kind: 'bed', trim: [10, 46] };
+	assert.equal(parse({ sounds: [bed] })[0].trim![1], 46);
+	for (const trim of [undefined, [10, 35], [10, 60]]) assert.throws(() => parse({ sounds: [{ ...bed, trim }] }), `bed ${trim}`);
+	const music = { ...row, id: 'theme', kind: 'music', trim: [0, 98] };
+	assert.equal(parse({ sounds: [music] })[0].kind, 'music');
+	for (const trim of [[0, 50], [0, 130]]) assert.throws(() => parse({ sounds: [{ ...music, trim }] }), `music ${trim}`);
 });

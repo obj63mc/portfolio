@@ -17,5 +17,20 @@
 	"chalk": "/audio/chalk.89d62746.mp3",
 	"creak": "/audio/creak.e794616a.mp3",
 	"cooler": "/audio/cooler.642dc647.mp3",
-	"lighter": "/audio/lighter.ba55876b.mp3"
+	"lighter": "/audio/lighter.ba55876b.mp3",
+	"bed-maplewood": "/audio/bed-maplewood.77505d9e.mp3",
+	"bed-central-west-end": "/audio/bed-central-west-end.1ebc1f13.mp3",
+	"bed-midtown": "/audio/bed-midtown.e7f7dffb.mp3",
+	"bed-carondelet-park": "/audio/bed-carondelet-park.e7d8caf5.mp3",
+	"bed-belleville": "/audio/bed-belleville.fcb0bd01.mp3",
+	"bed-river": "/audio/bed-river.5894c3b4.mp3",
+	"bed-slu": "/audio/bed-slu.8d3f9262.mp3",
+	"bed-foundry": "/audio/bed-foundry.5b5d57b7.mp3",
+	"bed-moosylvania": "/audio/bed-moosylvania.67ccd6c2.mp3",
+	"bed-side-project": "/audio/bed-side-project.82a42111.mp3",
+	"bed-brennans": "/audio/bed-brennans.4e10f441.mp3",
+	"music-moosylvania": "/audio/music-moosylvania.2a634ba9.mp3",
+	"theme": "/audio/theme.ddc9bea1.mp3",
+	"music-brennans": "/audio/music-brennans.f7f390da.mp3",
+	"music-side-project": "/audio/music-side-project.8cfa7cba.mp3"
 }

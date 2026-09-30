@@ -2,23 +2,26 @@
 // loading") and content-hashes it into static/audio/, writes the map of id to URL that the sound module imports
 // (src/lib/sound-files.json), and writes the ledger, docs/audio-sources.md, from the same rows, so the two never disagree.
 // Sources, and any licence certificates, live in audio/, outside static/. Run it after changing a row or a source, and
-// commit all three outputs. Beds and music (ticket 21) are rows of their own kind in the same manifest. Needs ffmpeg and
-// lame (Homebrew's).
+// commit all three outputs. Beds and music (ticket 21) are rows of their own kind in the same manifest, each cut to its
+// loop: the period its trim gives, plus the OVERLAP seconds past it that the next pass fades in over (loops.ts). Needs
+// ffmpeg and lame (Homebrew's). Audio in audio/sources/alternatives is Joe's, set aside for later, and no row names it.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { OVERLAP } from '../src/lib/loops.ts';
 
 /**
  * How each kind is encoded: channels, bitrate and level, a peak in dBFS or a loudness in LUFS; a one-shot must also be
- * shorter than `max` seconds. Every file is trimmed, levelled and re-encoded, never served as downloaded.
+ * shorter than `max` seconds, and a loop's period, its trim, within `loop` seconds. Every file is trimmed, levelled and
+ * re-encoded, never served as downloaded.
  */
 export const KINDS = {
 	'one-shot': { channels: 1, kbps: 96, level: { peak: -6 }, max: 2 },
-	bed: { channels: 2, kbps: 96, level: { lufs: -30 }, max: Infinity },
-	music: { channels: 2, kbps: 128, level: { lufs: -26 }, max: Infinity }
+	bed: { channels: 2, kbps: 96, level: { lufs: -30 }, loop: [30, 45] },
+	music: { channels: 2, kbps: 128, level: { lufs: -26 }, loop: [60, 120] }
 } as const;
 
 export type Kind = keyof typeof KINDS;
@@ -79,6 +82,9 @@ export function parse(json: unknown): Sound[] {
 		const trim = m.trim;
 		if (trim !== undefined && !(Array.isArray(trim) && trim.length === 2 && trim.every((t) => typeof t === 'number' && t >= 0) && trim[0] < trim[1]))
 			throw new Error(`${where}: trim must be [in, out] seconds`);
+		const k = KINDS[kind as Kind];
+		if ('loop' in k && !(Array.isArray(trim) && trim[1] - trim[0] >= k.loop[0] && trim[1] - trim[0] <= k.loop[1]))
+			throw new Error(`${where}: a ${kind} is cut to a loop of ${k.loop[0]} to ${k.loop[1]} s, its trim [start, start + period]`);
 		return {
 			...sound,
 			file,
@@ -94,8 +100,10 @@ export function parse(json: unknown): Sound[] {
 
 /** What encoding did to a sound, for its ledger row. */
 export function edits(s: Sound) {
-	const k = KINDS[s.kind], level = 'peak' in k.level ? `peak-normalised to ${k.level.peak} dBFS` : `loudness-matched to ${k.level.lufs} LUFS`;
-	const trim = s.trim ? `trimmed to ${s.trim[0]}–${s.trim[1]} s, ` : '';
+	const k = KINDS[s.kind];
+	const level = 'peak' in k.level ? `peak-normalised to ${k.level.peak} dBFS` : `loudness-matched to ${k.level.lufs} LUFS and limited to a true peak under −1 dBFS`;
+	const period = s.trim && +(s.trim[1] - s.trim[0]).toFixed(3);
+	const trim = !s.trim ? '' : 'loop' in k ? `cut to a ${period} s loop from ${s.trim[0]} s, with the ${OVERLAP} s past it that the next pass overlaps, ` : `trimmed to ${s.trim[0]}–${s.trim[1]} s, `;
 	const done = `${trim}${k.channels === 1 ? 'mono' : 'stereo'}, ${level}, faded in 3 ms and out 10 ms, ${k.kbps} kbps MP3 with a LAME header`;
 	return s.edits ? `${s.edits}; ${done}` : done;
 }
@@ -145,27 +153,43 @@ const run = (cmd: string, args: string[]) => execFileSync(cmd, args, { encoding:
  */
 function encode(src: string, s: Sound, tmp: string): Buffer {
 	const k = KINDS[s.kind];
+	// A loop keeps the OVERLAP seconds past its period, which the next pass fades in over.
+	const end = s.trim && ('loop' in k ? s.trim[1] + OVERLAP : s.trim[1]);
 	const shape = [
-		...(s.trim ? [`atrim=${s.trim[0]}:${s.trim[1]}`, 'asetpts=PTS-STARTPTS'] : []),
+		...(s.trim ? [`atrim=${s.trim[0]}:${end}`, 'asetpts=PTS-STARTPTS'] : []),
 		`aformat=sample_fmts=flt:channel_layouts=${k.channels === 1 ? 'mono' : 'stereo'}`
 	];
+	const measure = (filter: string) =>
+		spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', src, '-af', [...shape, filter].join(), '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
 	let level: string;
 	if ('peak' in k.level) {
 		// astats reports the peak on stderr, above full scale too, which a decoded MP3 can reach and volumedetect clamps.
-		const measure = 'astats=measure_perchannel=none:measure_overall=Peak_level';
-		const { stderr } = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', src, '-af', [...shape, measure].join(), '-f', 'null', '-'], { encoding: 'utf8' });
+		const stderr = measure('astats=measure_perchannel=none:measure_overall=Peak_level');
 		const peak = /Peak level dB: (-?[\d.]+)/.exec(stderr);
 		if (!peak) throw new Error(`${s.id}: couldn't measure its peak\n${stderr}`);
 		level = `volume=${(k.level.peak - Number(peak[1])).toFixed(2)}dB`;
-	} else level = `loudnorm=I=${k.level.lufs}:TP=-2:LRA=11`;
+	} else {
+		// Measured, then one gain for the whole cut: loudnorm's own one pass rides the level through the file, which would
+		// leave a loop's end at another level from its start, where the passes meet.
+		const stderr = measure('ebur128');
+		const lufs = /Integrated loudness:\s+I:\s+(-?[\d.]+) LUFS/.exec(stderr);
+		if (!lufs) throw new Error(`${s.id}: couldn't measure its loudness\n${stderr}`);
+		level = `volume=${(k.level.lufs - Number(lufs[1])).toFixed(2)}dB`;
+	}
 	// Short fades where it was cut, so nothing clicks; the fade out by way of the reversed sound, whatever its length.
 	const fades = ['afade=t=in:d=0.003', 'areverse', 'afade=t=in:d=0.01', 'areverse'];
+	// A loop's gain can lift a lone transient (a laugh, a clap) past full scale: a limiter holds it 2 dB under, which the
+	// MP3's own overshoot keeps under a true peak of −1 dBFS. It touches only those peaks, and its delay is compensated.
+	if ('loop' in k) level += ',alimiter=limit=0.794:level=false:latency=true';
 	const wav = join(tmp, `${s.id}.wav`), mp3 = join(tmp, `${s.id}.mp3`);
 	run('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', src, '-af', [...shape, level, ...fades].join(), '-ar', '44100', '-c:a', 'pcm_s16le', '-map_metadata', '-1', '-fflags', '+bitexact', wav]);
 	// No tags, so a source gives the same bytes, and the same hash, every run.
 	run('lame', ['--silent', '--cbr', '-b', String(k.kbps), '-m', k.channels === 1 ? 'm' : 'j', '-q', '2', '--noreplaygain', wav, mp3]);
 	const length = Number(run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp3]));
-	if (!(length < k.max)) throw new Error(`${s.id}: ${length.toFixed(2)} s long, a ${s.kind} must be under ${k.max} s (trim it)`);
+	if ('max' in k && !(length < k.max)) throw new Error(`${s.id}: ${length.toFixed(2)} s long, a ${s.kind} must be under ${k.max} s (trim it)`);
+	// A source that ends before the loop's overlap does gives a short file, and a loop that skips.
+	if (s.trim && 'loop' in k && Math.abs(length - (s.trim[1] - s.trim[0] + OVERLAP)) > 0.1)
+		throw new Error(`${s.id}: ${length.toFixed(2)} s long, not its ${s.trim[1] - s.trim[0]} s period and the ${OVERLAP} s overlap: the source ends too soon`);
 	return readFileSync(mp3);
 }
 

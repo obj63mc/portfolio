@@ -132,6 +132,11 @@ export interface Overworld extends SceneBase {
 		bridge: Cutout;
 		southEndY: number;
 		arch: Point;
+		/**
+		 * Where the river and the Arch's bed plays at full (buildout ticket 21), fading out over the strips beside it; each
+		 * district's bed plays over the district's rect.
+		 */
+		footprint: Rect;
 	};
 	/** The Carondelet lake loop (buildout ticket 18): the lap timer's course, which the rider rides too. */
 	track: {

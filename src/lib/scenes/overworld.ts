@@ -225,7 +225,10 @@ export const OVERWORLD: Overworld = {
 		// Passing under the Poplar Street bridge is the river's end.
 		southEndY: 1900,
 		// The lawn between the Arch's legs, south of the museum entrance.
-		arch: { x: 4780, y: 1330 }
+		arch: { x: 4780, y: 1330 },
+		// The Arch grounds and the water, top to bottom, between Midtown's east edge and Belleville's west, each 100 px or more
+		// clear, where their beds cross (buildout ticket 21).
+		footprint: { x: 4450, y: 0, w: 1250, h: 2700 }
 	},
 	track: {
 		// Read by eye on gridded crops of the plate every 100 px or so, each point then centred across the cream path

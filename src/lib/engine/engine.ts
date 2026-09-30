@@ -8,7 +8,8 @@
 // projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. Horizon scaling
 // and the scenery over the cursors (ticket 19): depth.ts follows each cursor's depth factor and its side of the
 // walk-behind scenery, scenery.ts holds the cut-outs drawn over it. The one-shots (ticket 22) are one-shots.ts, played by
-// the sound engine (sound.svelte.ts), which the Join press starts. Carried over from
+// the sound engine (sound.svelte.ts), which the Join press starts; the beds, the theme and the music (ticket 21, loops.ts)
+// follow the camera and the scene through it every frame. Carried over from
 // the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
 // rules; the layer's markup is never re-rendered here.
 import { earned, linkUsed } from '../analytics.svelte.ts';
@@ -16,11 +17,12 @@ import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
-import { propsOf } from '../scenes/index.ts';
+import { propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { blocked, type Side } from '../scenes/walk.ts';
 import { Net } from '../net/net.ts';
 import { SNAP, sample, visible } from '../net/peers.ts';
+import { playing } from '../net/screen.ts';
 import { follower } from './depth.ts';
 import { Scenery } from './scenery.ts';
 import { Props, clickedProp } from './props.ts';
@@ -314,6 +316,8 @@ export class Engine {
 	 */
 	close(to: URL): Promise<void> | null {
 		sound.play('door-open');
+		// The scene's beds fade as the iris closes, and the theme toward its level beyond the door (ticket 21).
+		sound.leave(sceneAt(to.pathname));
 		if (this.reducedMotion.matches || document.hidden) return null;
 		const now = performance.now(), el = document.activeElement;
 		const link = el instanceof HTMLAnchorElement && el.href === to.href && el.matches(':focus-visible') && this.layer.contains(el);
@@ -710,6 +714,9 @@ export class Engine {
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
 		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
 		this.shots.step(t);
+		// The beds follow the camera's centre, the theme and the music the scene, its screen and a prop's video (ticket 21).
+		const view = this.seen(), video = [...this.layer.querySelectorAll<HTMLVideoElement>('.prop video')].some((v) => !v.paused && !v.ended);
+		sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t), video });
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is

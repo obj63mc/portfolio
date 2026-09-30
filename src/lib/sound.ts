@@ -104,6 +104,9 @@ export function projectorCue(s: Screen, heard: number | null, now: number, lengt
 	return { at: s.at, offset: Math.max(0, now - s.at) / 1000 };
 }
 
-/** The buffers to let go at `now`: those the current scene doesn't `need` whose scene was left (`last`, ms) LINGER ago. */
-export const stale = (last: ReadonlyMap<SoundId, number>, need: ReadonlySet<SoundId>, now: number): SoundId[] =>
+/**
+ * The buffers to let go at `now`: those the current scene doesn't `need` whose scene was left, or which the camera moved
+ * away from (`last`, ms), LINGER ago. One-shots and loops alike (loops.ts).
+ */
+export const stale = <T>(last: ReadonlyMap<T, number>, need: ReadonlySet<T>, now: number): T[] =>
 	[...last].filter(([id, at]) => !need.has(id) && now - at >= LINGER).map(([id]) => id);

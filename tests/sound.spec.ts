@@ -1,18 +1,21 @@
-// Seam 4: the sound over the built site (buildout ticket 22): nothing under /audio/ is fetched before Join or while muted,
-// the Sound toggle's choice is kept, and the one-shots sound on their events and nowhere else. A spy follows each decoded
-// buffer back to the file it was fetched from and records every one that starts playing. The lock is refused, so the
-// OS pointer is the cursor. The parts that need a sourced file skip until `npm run audio` has encoded some.
+// Seam 4: the sound over the built site (buildouts ticket 22 and 21): nothing under /audio/ is fetched before Join or while
+// muted, the Sound toggle's choice is kept, the one-shots sound on their events and nowhere else, and the theme gives way
+// to a sub-scene's music and comes back where it left off. A spy follows each decoded buffer back to the file it was
+// fetched from and records every one that starts playing: one-shots by id, a loop's passes with the offset each starts
+// from. The lock is refused, so the OS pointer is the cursor. The parts that need a sourced file skip until
+// `npm run audio` has encoded some.
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
-import { clickSounds, needed, type SoundId } from '../src/lib/sound.ts';
+import { loopsFor } from '../src/lib/loops.ts';
+import { clickSounds, needed } from '../src/lib/sound.ts';
 
-const FILES: Partial<Record<SoundId, string>> = JSON.parse(readFileSync(new URL('../src/lib/sound-files.json', import.meta.url), 'utf8'));
-const sourced = (ids: Iterable<SoundId>) => [...ids].filter((id) => FILES[id]).sort();
+const FILES: unknown = JSON.parse(readFileSync(new URL('../src/lib/sound-files.json', import.meta.url), 'utf8'));
+const sourced = (ids: Iterable<string>) => [...ids].filter((id) => typeof FILES === 'object' && FILES !== null && id in FILES).sort();
 
 function spy() {
-	const from = new WeakMap<object, string>(), played: string[] = [];
-	(window as Window & { played?: string[] }).played = played;
+	const from = new WeakMap<object, string>(), played: string[] = [], passes: { id: string; offset: number }[] = [];
+	Object.assign(window, { played, passes });
 	const arrayBuffer = Response.prototype.arrayBuffer;
 	Response.prototype.arrayBuffer = async function () {
 		const data = await arrayBuffer.call(this);
@@ -27,8 +30,9 @@ function spy() {
 	} as typeof decode;
 	const start = AudioBufferSourceNode.prototype.start;
 	AudioBufferSourceNode.prototype.start = function (...args: Parameters<typeof start>) {
-		const url = this.buffer && from.get(this.buffer);
-		if (url) played.push(/\/audio\/([a-z-]+)\./.exec(url)![1]);
+		const url = this.buffer && from.get(this.buffer), id = url && /\/audio\/([a-z-]+)\./.exec(url)![1];
+		if (id && /^(bed-|music-|theme$)/.test(id)) passes.push({ id, offset: args[1] ?? 0 });
+		else if (id) played.push(id);
 		return start.apply(this, args);
 	};
 	// The lock refused, as some browsers do: the unlocked mouse carries on (spec: Gaps 6).
@@ -36,16 +40,18 @@ function spy() {
 }
 
 const played = (page: Page) => page.evaluate(() => [...((window as Window & { played?: string[] }).played ?? [])].sort());
+/** Every pass a loop has started, in order, with the offset it started from. */
+const passes = (page: Page) => page.evaluate(() => [...((window as Window & { passes?: { id: string; offset: number }[] }).passes ?? [])]);
 const toggle = (page: Page) => page.locator('.controls .sound');
 
-/** Every one-shot the page fetched, by id. */
+/** Every sound the page fetched, by id; `each` counts the fetches of each. */
 function fetched(page: Page) {
-	const ids = new Set<string>();
+	const each = new Map<string, number>();
 	page.on('request', (r) => {
 		const m = /\/audio\/([a-z-]+)\.[0-9a-f]{8}\.mp3$/.exec(new URL(r.url()).pathname);
-		if (m) ids.add(m[1]);
+		if (m) each.set(m[1], (each.get(m[1]) ?? 0) + 1);
 	});
-	return () => [...ids].sort();
+	return Object.assign(() => [...each.keys()].sort(), { each });
 }
 
 async function join(page: Page) {
@@ -64,7 +70,9 @@ test('nothing is fetched before Join or while muted; the toggle unmutes inside i
 	await page.waitForTimeout(500);
 	expect(ids()).toEqual([]);
 	await join(page);
-	await expect.poll(ids).toEqual(sourced(needed(SUB_SCENES.slu)));
+	// The lab's one-shots, its bed and the theme, 12 dB down there (ticket 21).
+	const slu = [...needed(SUB_SCENES.slu), ...loopsFor(SUB_SCENES.slu)];
+	await expect.poll(ids).toEqual(sourced(slu));
 
 	await toggle(page).click();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'false');
@@ -76,7 +84,7 @@ test('nothing is fetched before Join or while muted; the toggle unmutes inside i
 	expect(again()).toEqual([]);
 	await toggle(page).click();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
-	await expect.poll(again).toEqual(sourced(needed(SUB_SCENES.slu)));
+	await expect.poll(again).toEqual(sourced(slu));
 });
 
 test("a card's click sounds it and its prop's signature, its closing sounds; hover and another tab's cosmetic are silent", async ({ page }) => {
@@ -131,4 +139,30 @@ test("a video's own sound follows the toggle: muted while it is off, unmuted by 
 	await toggle(page).click();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
 	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(false);
+});
+
+test("Join starts the bed and the theme; in Brennan's the theme gives way to the jazz, and back out it resumes where it left off", async ({ page }) => {
+	test.skip(sourced(['theme', 'music-brennans', 'bed-maplewood']).length < 3, 'no beds or music sourced yet');
+	const ids = fetched(page);
+	await page.goto('/');
+	await page.waitForTimeout(300);
+	expect(ids(), 'nothing before Join').toEqual([]);
+	await join(page);
+	// Arriving at the welcome sign, Maplewood's bed and the theme start.
+	await expect.poll(async () => (await passes(page)).map((p) => p.id)).toEqual(expect.arrayContaining(['bed-maplewood', 'theme']));
+	await page.waitForTimeout(2000);
+	await page.evaluate(() => document.querySelector<HTMLAnchorElement>('main a[href="/brennans"]')!.click());
+	await expect(page).toHaveURL(/\/brennans$/);
+	await expect.poll(async () => (await passes(page)).map((p) => p.id)).toContain('music-brennans');
+	await page.waitForTimeout(2000);
+	const before = (await passes(page)).filter((p) => p.id === 'theme').length;
+	await page.goBack();
+	await expect(page).toHaveURL(/\/$/);
+	// Back on the overworld the theme starts again from the playhead it left: past its start, and short of where it would
+	// be had it played on through Brennan's.
+	await expect.poll(async () => (await passes(page)).filter((p) => p.id === 'theme').length).toBeGreaterThan(before);
+	const resumed = (await passes(page)).filter((p) => p.id === 'theme').at(-1)!;
+	expect(resumed.offset).toBeGreaterThan(1);
+	expect(resumed.offset).toBeLessThan(5);
+	expect(ids.each.get('theme'), 'the theme fetched once').toBe(1);
 });
