@@ -8,6 +8,9 @@
 			<style>
 				.prop > button, .prop form { display: none; }
 				.prop > dialog { display: block; position: static; border: 0; padding: 0; }
+				/* The document the engine would have taken (app.css), shown after all, on the page's own background. */
+				html { background: none !important; }
+				body > div { visibility: visible !important; }
 			</style>
 		</noscript>
 		%sveltekit.head%

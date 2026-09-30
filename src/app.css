@@ -61,6 +61,20 @@ body {
 	}
 }
 
+/*
+ * Until the engine takes the page, a scene's plain document stays hidden on the engine's night backdrop, so it never
+ * flashes up before the canvas (Joe, 2026-09-30). Without JavaScript the <noscript> style in app.html shows it; with no
+ * scene to show (an error page) or an engine that can't start, the layout marks `plain` and it shows. Sushi Stand, which
+ * never starts the engine, shows from its first paint.
+ */
+html:not(.engine, .plain):not(:has(.sushi)) {
+	background: #1d2b3a;
+
+	& body > div {
+		visibility: hidden;
+	}
+}
+
 /* Before the engine starts, and without JavaScript, the canvases stay out of the document. */
 canvas {
 	display: none;

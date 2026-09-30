@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="14 22 212 178">
+	<!-- A generic six-pack for Sushi Stand's happy hour (Joe, 2026-09-30), in the style contract's palette (art/style.txt):
+		green bottles with ivory neck labels and golden caps in a coral carrier, no brand. -->
+	<defs>
+		<path id="bottle" d="M-9 0h18v8c0 14 16 22 16 38v94h-50V46c0-16 16-24 16-38z" />
+	</defs>
+	<!-- The carrier's handle, behind the bottles, its grip cut out. -->
+	<path fill="#b85a3e" fill-rule="evenodd" d="M78 118V40a14 14 0 0 1 14-14h56a14 14 0 0 1 14 14v78zM100 38a8 8 0 0 0 0 16h40a8 8 0 0 0 0-16z" />
+	<!-- The back row, peeking between the front bottles. -->
+	<g fill="#4f7a3a">
+		<use href="#bottle" x="88" y="34" />
+		<use href="#bottle" x="152" y="34" />
+	</g>
+	<g fill="#ffd34f">
+		<rect x="79" y="28" width="18" height="8" rx="2" />
+		<rect x="143" y="28" width="18" height="8" rx="2" />
+	</g>
+	<!-- The front row: glass, a highlight, the label and the cap. -->
+	<g>
+		<use href="#bottle" x="56" y="52" fill="#719b50" />
+		<use href="#bottle" x="120" y="52" fill="#719b50" />
+		<use href="#bottle" x="184" y="52" fill="#719b50" />
+	</g>
+	<g fill="#fff4d4" opacity="0.45">
+		<rect x="37" y="104" width="6" height="30" rx="3" />
+		<rect x="101" y="104" width="6" height="30" rx="3" />
+		<rect x="165" y="104" width="6" height="30" rx="3" />
+	</g>
+	<g fill="#fff4d4">
+		<rect x="47" y="62" width="18" height="9" />
+		<rect x="111" y="62" width="18" height="9" />
+		<rect x="175" y="62" width="18" height="9" />
+	</g>
+	<g fill="#ffd34f">
+		<rect x="47" y="46" width="18" height="8" rx="2" />
+		<rect x="111" y="46" width="18" height="8" rx="2" />
+		<rect x="175" y="46" width="18" height="8" rx="2" />
+	</g>
+	<!-- The carrier's front, over the bottles' feet, its band and a golden seal with a mug on it. -->
+	<path fill="#df7554" d="M18 128h204v56a12 12 0 0 1-12 12H30a12 12 0 0 1-12-12z" />
+	<rect x="18" y="146" width="204" height="22" fill="#fff4d4" />
+	<circle cx="120" cy="157" r="17" fill="#ffd34f" stroke="#fff4d4" stroke-width="4" />
+	<g fill="#df7554">
+		<rect x="110" y="147" width="15" height="5" rx="2.5" />
+		<rect x="111" y="151" width="13" height="14" rx="1.5" />
+	</g>
+	<path fill="none" stroke="#df7554" stroke-width="3" d="M124 154h3a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-3" />
+</svg>

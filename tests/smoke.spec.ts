@@ -718,3 +718,28 @@ test.describe('without JavaScript', () => {
 		await expect(page.locator('main dialog').first()).toBeVisible();
 	});
 });
+
+test('the plain document never flashes before the engine takes the page, and shows without JavaScript', async ({ browser }) => {
+	const shown = (page: Page) => page.locator('body > div').evaluate((d) => getComputedStyle(d).visibility);
+	// The engine's chunk, the one that says 'No 2D canvas', held back until the test lets it go.
+	let release = () => {};
+	const held = new Promise<void>((done) => (release = done));
+	const context = await browser.newContext();
+	const page = await context.newPage();
+	await page.route('**/_app/immutable/**/*.js', async (route) => {
+		const response = await route.fetch(), body = await response.text();
+		if (body.includes('No 2D canvas')) await held;
+		await route.fulfill({ response, body });
+	});
+	await page.goto('/');
+	await expect.poll(() => shown(page)).toBe('hidden');
+	release();
+	await expect(page.locator('dialog.join')).toBeVisible();
+	expect(await shown(page)).toBe('visible');
+	await context.close();
+	const plain = await browser.newContext({ javaScriptEnabled: false });
+	const still = await plain.newPage();
+	await still.goto('/');
+	await expect(still.getByRole('heading', { level: 1 })).toBeVisible();
+	await plain.close();
+});

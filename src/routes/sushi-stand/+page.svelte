@@ -1,8 +1,8 @@
 <script lang="ts">
 	// Sushi Stand (Joe, 2026-09-30): Sushi Star, the 2018 International Sushi Day game made for Sapporo, rebuilt on the
-	// site's type, colours and buttons, behind the koi in Forest Park's Grand Basin. Its rules are src/lib/sushi/rules.ts;
-	// its art is the original's (src/lib/sushi/img), the stand's sign and the logo lettered here rather than in the
-	// pictures. The original's global leaderboard is the visitor's own top ten, kept like the Carondelet laps
+	// site's type, colours and buttons, behind the koi in Forest Park's Grand Basin, with no brand of its own: the
+	// happy hour's six-pack is drawn here (six-pack.svg). Its rules are src/lib/sushi/rules.ts; its other art is the
+	// original's (src/lib/sushi/img), the stand's sign and the logo lettered here rather than in the pictures. The original's global leaderboard is the visitor's own top ten, kept like the Carondelet laps
 	// (saved.svelte.ts). The engine steps away while this page is up (+layout.svelte), and its exit lands back at the koi.
 	import { onMount, tick } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
@@ -16,6 +16,7 @@
 	} from '$lib/sushi/rules';
 	import lunchVideo from '$lib/sushi/lunch.mp4';
 	import dinnerVideo from '$lib/sushi/dinner.mp4';
+	import sixPack from '$lib/sushi/six-pack.svg?no-inline';
 
 	const IMG = import.meta.glob<string>('/src/lib/sushi/img/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 	const img = (name: string) => IMG[`/src/lib/sushi/img/${name}.webp`];
@@ -53,9 +54,9 @@
 	} as const;
 
 	const BOOSTS = [
-		{ key: 'special', head: 'Sapporo Special', cost: dollars(BOOST_COST.special), body: 'Run a Sapporo happy hour. You discount the beer, but you bring in more customers.', art: 'sapporo-beer-cans' },
-		{ key: 'ads', head: 'Advertise your stand', cost: dollars(BOOST_COST.ads), body: 'Build awareness and foot traffic by taking out an ad.', art: 'advertise' },
-		{ key: 'discount', head: 'Buy 1, get 1 half off', cost: '−25% of dinner sales', body: 'More customers order with a discount on their second piece.', art: 'bogo' }
+		{ key: 'special', head: 'Happy hour special', cost: dollars(BOOST_COST.special), body: 'Run a beer happy hour. You discount the drinks, but you bring in more customers.', art: sixPack },
+		{ key: 'ads', head: 'Advertise your stand', cost: dollars(BOOST_COST.ads), body: 'Build awareness and foot traffic by taking out an ad.', art: img('advertise') },
+		{ key: 'discount', head: 'Buy 1, get 1 half off', cost: '−25% of dinner sales', body: 'More customers order with a discount on their second piece.', art: img('bogo') }
 	] as const satisfies readonly { key: keyof Boost; head: string; cost: string; body: string; art: string }[];
 
 	const reduced = new MediaQuery('prefers-reduced-motion: reduce');
@@ -438,7 +439,7 @@
 								<li class="card" class:on={boost[b.key]}>
 									<h3>{b.head}</h3>
 									<p class="price">{b.cost}</p>
-									<div class="art"><img src={img(b.art)} alt="" /></div>
+									<div class="art"><img src={b.art} alt="" /></div>
 									<p class="small">{b.body}</p>
 									<button type="button" class="alternate" aria-pressed={boost[b.key]} onclick={() => (boost[b.key] = !boost[b.key])}>
 										{boost[b.key] ? 'Added' : 'Add it'}
@@ -472,7 +473,7 @@
 							<caption>Expenses</caption>
 							<tbody>
 								<tr><th scope="row">Fish</th><td>{dollars(e.fish)}</td></tr>
-								{#if e.special}<tr><th scope="row">Sapporo Special</th><td>{dollars(e.special)}</td></tr>{/if}
+								{#if e.special}<tr><th scope="row">Happy hour special</th><td>{dollars(e.special)}</td></tr>{/if}
 								{#if e.ads}<tr><th scope="row">Advertising</th><td>{dollars(e.ads)}</td></tr>{/if}
 								{#if e.discount}<tr><th scope="row">Half-off discount</th><td>{dollars(e.discount)}</td></tr>{/if}
 							</tbody>
@@ -1048,12 +1049,12 @@
 			font-weight: 700;
 		}
 
+		/* A fixed box the picture is fitted into whole: a block, so the picture's 100 % height has a definite height to take. */
 		& .art {
-			display: grid;
-			place-items: center;
 			block-size: 7rem;
 
 			& img {
+				display: block;
 				inline-size: 100%;
 				block-size: 100%;
 				object-fit: contain;
@@ -1094,8 +1095,9 @@
 		}
 	}
 
+	/* Small beside their copy, which needs the room on a phone. */
 	.boosts .art {
-		block-size: 8rem;
+		block-size: 4.5rem;
 	}
 
 	.stepper {

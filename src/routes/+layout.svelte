@@ -23,6 +23,8 @@
 	let started: Engine | undefined;
 	/** A hop to another scene waiting for its iris to close, then going, its own navigation let through. */
 	let hop: 'closing' | 'going' | null = null;
+	/** The engine couldn't start, so every page stays the plain document. */
+	let failed = false;
 
 	// The engine loads once the page has mounted (afterNavigate's first call), out of the prerender and the first paint,
 	// and never re-renders the layer; each navigation hands it the new scene, in order. If it can't start (no canvas, the
@@ -33,10 +35,17 @@
 		pageView(to.url);
 		// Sushi Stand has no scene: the engine, if it is running, steps away until the next one (Joe, 2026-09-30).
 		const shown = sceneAt(to.url.pathname);
+		// A page with no scene, or an engine that can't start, is the plain document, shown (app.css).
+		document.documentElement.classList.toggle('plain', !shown || failed);
 		if (!shown) return void started?.suspend();
 		engine ??= import('$lib/engine/engine')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
-			.catch((err) => void console.error(err));
+			.catch((err) => {
+				failed = true;
+				document.documentElement.classList.add('plain');
+				console.error(err);
+				return undefined;
+			});
 		engine.then((e) => e?.show(shown, to.url.hash));
 	});
 	// A hop to another scene waits for the iris to close on the door (Joe, 2026-09-30); a fragment on the same scene pans.
