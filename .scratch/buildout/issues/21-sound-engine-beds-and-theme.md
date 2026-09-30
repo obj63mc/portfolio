@@ -53,3 +53,5 @@ Joe settled three more, 2026-09-30:
 - `music-brennans` (Brennan's jazz): AurecTheme, "Jazz Bar", https://pixabay.com/music/traditional-jazz-jazz-bar-592657/, Pixabay Content License: served only as an edited loop, never whole. Joe downloads Pixabay picks himself (the site refuses scripts) and saves each as `audio/sources/<id>-pixabay-<track id>.mp3`; the picker's Pixabay downloads list names them.
 
 The theme and Side Project's music have a third round of candidates in the picker, mostly Pixabay: ragtime and Dixieland for a jazzy, campy, St. Louis theme (Joplin wrote The Entertainer in St. Louis), and understated pop for the taproom.
+
+The theme, 2026-09-30: Joe chose Billy_Ziogas's "Everybody needs a little dixieland (Master Track)", https://pixabay.com/music/blues-everybody-needs-a-little-dixieland-master-track-203047/, Pixabay Content License (an edited loop only; the page marks it Content ID registered, which matters only for YouTube). It becomes `audio/sources/theme-pixabay-203047.mp3` once Joe downloads it. Side Project's music is on a fourth round: round three's pop was "too techno style beats", so the next is organic and played on real instruments.
