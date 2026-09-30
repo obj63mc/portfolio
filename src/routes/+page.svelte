@@ -29,7 +29,7 @@
 			<section id={v.id} aria-labelledby="{v.id}-heading">
 				<h3 id="{v.id}-heading" class="at" style={at(v.rect)}>{v.name}</h3>
 				{#each leftToRight(v.props) as prop (prop.id)}
-					<PropCard {prop} level={4} />
+					<PropCard {prop} level={4} where={v.name} />
 				{/each}
 				{#if v.door}
 					<!-- The whole building (ticket 05), or the part of it that is the way in; its props sit above it. -->

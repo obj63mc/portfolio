@@ -44,7 +44,7 @@
 {/if}
 
 <style>
-	/* Dark teal and ivory like the lap clock above it, gold for a new best and for the lap's own row. */
+	/* Night and ivory like the lap clock above it and the cards, gold for a new best and for the lap's own row. */
 	.board {
 		position: fixed;
 		inset-block-start: 3.5rem;
@@ -54,7 +54,7 @@
 		padding-block: 1rem 1.125rem;
 		padding-inline: 1.25rem;
 		border-radius: 1rem;
-		background: rgb(36 79 85 / 0.94);
+		background: rgb(29 43 58 / 0.94);
 		box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.25);
 		color: #fff4d4;
 		font-variant-numeric: tabular-nums;

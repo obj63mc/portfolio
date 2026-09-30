@@ -2,7 +2,7 @@
 // factor each depth region gives, and the drawn factor easing over 150 ms where the cursor crosses into another region.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { EASE, FAR, depth, factor, follower, type Depth } from '../src/lib/engine/depth.ts';
+import { EASE, FAR, depth, drawOrder, factor, follower, type Depth } from '../src/lib/engine/depth.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import type { DepthRegion } from '../src/lib/scenes/types.ts';
@@ -101,4 +101,13 @@ test('every scene has depth regions, and the overworld is covered by them everyw
 			const [r] = OVERWORLD.depth;
 			close(factor(OVERWORLD.depth, { x, y }), factor([{ ...r, rect: { x: 0, y: 0, w: OVERWORLD.w, h: OVERWORLD.h } }], { x, y }));
 		}
+});
+
+test('a cursor behind walk-behind scenery is drawn before every cursor in front of it, the furthest back first', () => {
+	const c = (id: string, ...behind: number[]) => ({ id, behind });
+	const order = (cs: ReturnType<typeof c>[]) => drawOrder(cs, (x) => x.behind).map((x) => x.id);
+	assert.deepEqual(order([c('peer'), c('own')]), ['peer', 'own'], 'nothing behind: peers, then the own cursor');
+	assert.deepEqual(order([c('peer'), c('own', 1)]), ['own', 'peer'], 'the own cursor behind a desk goes under a peer in front');
+	assert.deepEqual(order([c('a', 2), c('b', 0), c('own')]), ['b', 'a', 'own'], 'behind the back row, then the front row, then the rest');
+	assert.deepEqual(order([c('a', 1, 2), c('b', 2)]), ['a', 'b'], 'behind two rows goes by the furthest back');
 });

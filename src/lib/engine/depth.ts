@@ -74,3 +74,14 @@ export function follower(scene: { depth: DepthRegion[]; walkBehind?: WalkBehind[
 		}
 	};
 }
+
+/**
+ * The order cursors are drawn in (spec: "Foreground scenery", buildout ticket 19): a cursor behind walk-behind scenery
+ * before that scenery, and so before every cursor not behind it, those behind the scenery furthest back first; the rest
+ * after them, in their own order. `behind` gives each cursor's places, back to front, among the scene's walk-behind
+ * scenery. Each cursor is drawn with the scenery over it, so one drawn later lands on top.
+ */
+export function drawOrder<T>(cursors: readonly T[], behind: (c: T) => readonly number[]): T[] {
+	const back = (c: T) => Math.min(Infinity, ...behind(c));
+	return cursors.map((c) => ({ c, at: back(c) })).sort((a, b) => (a.at === b.at ? 0 : a.at - b.at)).map(({ c }) => c);
+}

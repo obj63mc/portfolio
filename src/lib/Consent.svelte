@@ -55,8 +55,8 @@
 <div class="consent" popover="manual" role="region" aria-labelledby="{uid}-ask" bind:this={el}>
 	<p id="{uid}-ask">Can I count visits with Google Analytics? No ads, no tracking elsewhere.</p>
 	<div class="choices">
-		<button type="button" aria-pressed={bar.pressed === 'granted'} disabled={bar.gpc} onclick={() => choose('granted')}>Allow</button>
-		<button type="button" aria-pressed={bar.pressed === 'denied'} disabled={bar.gpc} onclick={() => choose('denied')}>No thanks</button>
+		<button type="button" class="alternate" aria-pressed={bar.pressed === 'granted'} disabled={bar.gpc} onclick={() => choose('granted')}>Allow</button>
+		<button type="button" class="alternate" aria-pressed={bar.pressed === 'denied'} disabled={bar.gpc} onclick={() => choose('denied')}>No thanks</button>
 	</div>
 	{#if bar.gpc}
 		<p class="note">Your browser's Global Privacy Control is on, so Google Analytics stays off.</p>
@@ -64,20 +64,23 @@
 </div>
 
 <style>
-	/* A one-line card at the top of the screen, clear of the joystick and the toggles; inside the Join card it sets its own
-	   type, since the card's would carry over. */
+	/* A one-line card at the top of the screen, clear of the joystick and the toggles, on the cards' night board (src/app.css;
+	   Joe, 2026-09-30); inside the Join card it sets its own type, since the card's would carry over. */
 	.consent {
 		inset-block: 1rem auto;
 		inset-inline: 1rem;
 		margin-block: 0;
 		margin-inline: auto;
 		max-inline-size: 60rem;
-		padding-block: 0.75rem;
+		padding-block: 0.875rem;
 		padding-inline: 1.25rem;
-		border: 0;
-		border-radius: 1rem;
-		box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 0.3);
+		border: 2px solid rgb(255 244 212 / 0.3);
+		border-radius: 0.625rem;
+		background: var(--night);
+		color: var(--ivory);
+		box-shadow: 0 0 0 5px var(--night), 0 0.875rem 1.875rem rgb(0 0 0 / 0.3);
 		font-size: 1rem;
+		font-weight: 500;
 		text-align: center;
 
 		&:popover-open {
@@ -85,7 +88,7 @@
 			flex-wrap: wrap;
 			align-items: center;
 			justify-content: center;
-			gap: 0.5rem 1rem;
+			gap: 0.625rem 1rem;
 		}
 
 		& p {
@@ -94,33 +97,19 @@
 
 		& .choices {
 			display: flex;
-			gap: 0.5rem;
+			gap: 0.625rem;
 		}
 
-		/* Allow and No thanks are equal: the same size and weight, neither the default. The choice in force is filled. */
+		/* Allow and No thanks are equal: the same sky buttons, neither the default; the choice in force is ivory. */
 		& button {
-			min-inline-size: 7.5rem;
-			padding-block: 0.5rem;
-			padding-inline: 1rem;
-			border: 2px solid #1d2b3a;
-			border-radius: 0.5rem;
-			background: #fff;
-			color: #1d2b3a;
-			font-size: 1rem;
-
-			&[aria-pressed='true'] {
-				background: #1d2b3a;
-				color: #fff;
-			}
-
-			&:disabled {
-				opacity: 0.5;
-			}
+			min-inline-size: 8rem;
 		}
 
 		& .note {
 			flex-basis: 100%;
+			color: var(--gold);
 			font-size: 0.875rem;
+			font-weight: 400;
 		}
 	}
 </style>

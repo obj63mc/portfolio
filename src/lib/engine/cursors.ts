@@ -4,9 +4,10 @@
 // sheet (scripts/flags.ts). Only ids cross the wire; every client draws every cursor itself, and the sizes, the pop, the
 // hand and the tag are local drawing, never sent. So are the depth factor and the scenery over a cursor (ticket 19).
 import { COSMETICS, KNOWN } from '../cosmetics.ts';
-import type { CosmeticId } from '../scenes/types';
+import type { CosmeticId, Rect } from '../scenes/types';
 import SHEET from './flags.webp?no-inline';
 import FLAGS from './flags.json';
+import { drawOrder } from './depth.ts';
 import { BODY as COPY, loadFaces, settled } from './fonts.ts';
 import type { Cover } from './scenery.ts';
 
@@ -28,8 +29,7 @@ export interface Drawn {
 	behind?: Cover[];
 }
 
-type Box = { x: number; y: number; w: number; h: number };
-const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
 /** The arrow, 32 units tall with its tip at the origin; a unit is a world px at 1x. */
 const ARROW = new Path2D('M0 0V29L7 22L11.5 32L16 30L11.5 21H21Z');
@@ -247,7 +247,8 @@ export class Cursors {
 	}
 
 	/**
-	 * Peers first, then the own cursor over them, each at its size times its depth factor with the scenery that covers it
+	 * Peers first, then the own cursor over them, but a cursor behind walk-behind scenery under every cursor in front of it
+	 * (depth.ts `drawOrder`), each at its size times its depth factor with the scenery that covers it
 	 * (ticket 19): the walk-behind scenery it is behind, back to front, then the `foreground` scenery, which covers every
 	 * cursor. Then the own cursor's tag, a label never covered, and the iris between scenes (iris.ts) over all of it: black
 	 * but for a circle `r` device px round `x, y`. Redrawn only when a cursor, its badge, its cosmetic, its size, the
@@ -256,9 +257,11 @@ export class Cursors {
 	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null, foreground: Cover[] = []) {
 		const tag = own ? Math.max(0, Math.min(1, (this.tagAt + TAG + FADE - now) / FADE)) : 0;
 		const pop = (p: Drawn) => Math.min(1, (now - p.wornAt) / POP);
-		const all = [...peers.map((p) => ({ p, size: PEER * (p.d ?? 1), halo: false })), ...(own ? [{ p: own, size: OWN * (own.d ?? 1), halo: true }] : [])].map(
-			(c) => ({ ...c, over: [...(c.p.behind ?? []), ...foreground].filter((o) => overlaps(o, this.box(c.p, c.size))) })
-		);
+		// Peers, then the own cursor over them, except that one behind walk-behind scenery goes under those in front of it.
+		const all = drawOrder(
+			[...peers.map((p) => ({ p, size: PEER * (p.d ?? 1), halo: false })), ...(own ? [{ p: own, size: OWN * (own.d ?? 1), halo: true }] : [])],
+			(c) => (c.p.behind ?? []).flatMap((o) => o.at ?? [])
+		).map((c) => ({ ...c, over: [...(c.p.behind ?? []), ...foreground].filter((o) => overlaps(o, this.box(c.p, c.size))) }));
 		const key = [
 			tag, this.ready, settled.size, iris && [iris.x, iris.y, iris.r],
 			...all.flatMap(({ p, size, halo, over }) => [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand, size, halo, ...over.flatMap((o) => [o.key, o.x, o.y])])
@@ -279,7 +282,7 @@ export class Cursors {
 	}
 
 	/** A cursor's atlas cell at `size`, device px: everything it draws, its halo and its cosmetic included. */
-	private box(p: Drawn, size: number): Box {
+	private box(p: Drawn, size: number): Rect {
 		const k = size * this.scale;
 		return { x: p.x - PAD * k, y: p.y - PAD * k, w: CELL.w * k, h: CELL.h * k };
 	}

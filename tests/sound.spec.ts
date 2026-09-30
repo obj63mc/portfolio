@@ -116,3 +116,19 @@ test('a poster starts the reel, and the projector start plays for the room', asy
 	await expect.poll(() => played(page), { timeout: 3000 }).toContain('projector');
 	expect(await played(page)).not.toContain('card');
 });
+
+test("a video's own sound follows the toggle: muted while it is off, unmuted by its press", async ({ page }) => {
+	await page.goto('/moosylvania');
+	await join(page);
+	await toggle(page).click();
+	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'false');
+	const tv = page.locator('[data-prop="meeting-tv"] video');
+	await page.evaluate(() => document.querySelector<HTMLButtonElement>('[data-prop="meeting-tv"] > button')!.click());
+	await expect(page.locator('[data-prop="meeting-tv"] dialog')).toBeVisible();
+	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(true);
+	await page.keyboard.press('Escape');
+	await expect(page.locator('[data-prop="meeting-tv"] dialog')).toBeHidden();
+	await toggle(page).click();
+	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
+	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(false);
+});

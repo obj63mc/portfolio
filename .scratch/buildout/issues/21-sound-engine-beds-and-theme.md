@@ -27,3 +27,21 @@ Ticket 22's one-shots needed the engine, so part of this ticket is built (ticket
 - `npm run audio` (`scripts/audio.ts`) already has the `bed` (stereo 96 kbps, −30 LUFS) and `music` (stereo 128 kbps, −26 LUFS) kinds: a bed or a theme is one more row in `audio/sounds.json`, and the ledger follows. The loudness pass is one-pass `loudnorm`, untried on a real bed yet.
 
 Left for this ticket: the eleven beds, their crossfade gains as a pure function of camera centre, the 2 s overlapped loops, neighbouring-bed loading within 800 px and the sub-scene bed and music on door hover; the theme with its kept playhead, fading out in sub-scenes with music and 12 dB down in the others; the four music pieces and the lobby TV's duck; the scene-change fades; pause ducking to 30 percent; sourcing, encoding and ledger rows for all of them.
+
+
+### Joe's picks for the beds and music, 2026-09-30
+
+Joe chose these in the sound picker while reviewing ticket 22's one-shots; they wait for this ticket's encode (loop cut, loudness to the spec, the layered extra sound where a note calls for one). Loop windows are the sourcing pass's measured suggestions, in the original file's time.
+
+- `bed-maplewood` (Maplewood): conleec, "AMB_Ext_Residential_Day_Stereo_001.wav", https://freesound.org/people/conleec/sounds/149936/, CC0, loop 21 to 61 s.
+- `bed-cwe` (Central West End): dobro2000, "Stadt-Landshut-Cafe-outside-Summer-2017.wav", https://freesound.org/people/dobro2000/sounds/399346/, CC0, loop 93 to 133 s.
+- `bed-belleville` (Belleville): johnaudiotech, "Distant train with birds", https://freesound.org/people/johnaudiotech/sounds/347045/, CC0, loop 31 to 71 s.
+- `bed-river` (River and Arch): kvgarlic, "RiverBargeJune22012.wav", https://freesound.org/people/kvgarlic/sounds/157369/, CC0, loop 5 to 45 s.
+- `bed-slu` (SLU CS lab): SduggySounds, "Typing Office chatter in background", https://freesound.org/people/SduggySounds/sounds/725718/, CC0, loop 10 to 50 s.
+- `bed-foundry` (Foundry theatre): kyles, "crowd int light theater audience settling down and waiting light chatter walla and eating.flac", https://freesound.org/people/kyles/sounds/453915/, CC0, loop 56 to 96 s.
+- `bed-moosylvania` (Moosylvania lobby): leonelmail, "Office ambience - call center 3", https://freesound.org/people/leonelmail/sounds/579568/, CC0, loop 6 to 46 s.
+- `bed-side-project` (Side Project bar): squareal, "General Chatter In Bar", https://freesound.org/people/squareal/sounds/237398/, CC0, loop 13 to 53 s.
+- `bed-brennans` (Brennan's): Anya_Media, "QUIET CAFE, CHATTER, MILK FROTHING MACHINE, atmos atmosphere wildtrack ambience.mp3", https://freesound.org/people/Anya_Media/sounds/437461/, CC0, loop 62 to 102 s.
+- `music-moosylvania` (Moosylvania lobby playlist): Seth_Makes_Sounds, "Lofi Beat Loop Schmoop", https://freesound.org/people/Seth_Makes_Sounds/sounds/722425/, CC0, loop 0 to 135 s.
+
+Still open, with a third round of candidates being sourced: Carondelet Park ("something with like a lakefront sound"), Midtown (like kvgarlic's campus, 391480, "but less people talking"), the theme ("a bit more up beat... fun and campy like Cursor Camp"), Brennan's jazz (like Pixabay's traditional "Jazz Bar", 592657) and Side Project's music ("more poppy", like Pixabay's "In The Bar", 134219, "but subtler").

@@ -4,8 +4,7 @@
 // one-shots ahead of the hop. Hover is silent, and nothing a peer does sounds but the screen. The rules are sound.ts's;
 // sound.svelte.ts plays them. The grant's chime, the doors and the lap beep are played where they happen.
 import type { Net } from '../net/net.ts';
-import { SUB_SCENES, propsOf } from '../scenes/index.ts';
-import { OVERWORLD } from '../scenes/overworld.ts';
+import { propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, SubScene } from '../scenes/types';
 import { PROP_SOUNDS, clickSounds, projectorCue } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
@@ -60,7 +59,7 @@ export class OneShots {
 	over(el: Element | null) {
 		const door = el?.closest<HTMLAnchorElement>('a.door');
 		if (!door) return;
-		const path = new URL(door.href).pathname, to = path === '/' ? OVERWORLD : SUB_SCENES[path.slice(1)];
+		const to = sceneAt(new URL(door.href).pathname);
 		if (to) sound.preload(to);
 	}
 

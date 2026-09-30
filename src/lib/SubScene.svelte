@@ -13,6 +13,6 @@
 
 <h1 tabindex="-1">{scene.venue}</h1>
 {#each readingOrder(scene) as prop (prop.id)}
-	<PropCard {prop} level={2} />
+	<PropCard {prop} level={2} where={scene.venue} />
 {/each}
 <a class="door at" style={at(scene.exit)} href="/#{scene.id}">Back to {scene.district}</a>

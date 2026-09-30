@@ -41,3 +41,8 @@ Only Chromium is installed for Playwright; WebKit and Firefox weren't run.
 - [ ] GPC on (Brave, or Firefox's setting): no request to googletagmanager.com, and the icon's bar is disabled with its note.
 - [ ] Production CSP: gtag.js loads and `region1.google-analytics.com/g/collect` isn't blocked.
 
+
+### Review fixes, 2026-09-30
+
+- **A stored Allow now counts on later visits.** A European visitor who had clicked Allow was set up with the region default that denies EEA, UK and CH storage and never told otherwise. A stored grant is now `{ is: 'granted', chosen: true }`, and the tracker sends `consent update granted` right after setting up, before any event; an implied grant outside Europe's timezones still leaves the backstop standing.
+- **Tab order.** The page's copy of the bar now comes before `<main>`, so after Join it is first in tab order, ahead of the scene, as ticket 17 of the map asked.

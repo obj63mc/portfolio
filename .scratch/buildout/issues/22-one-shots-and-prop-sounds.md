@@ -38,3 +38,7 @@ Joe listened to three candidates per row in the sound picker (a claude.ai page w
 - **Round two, still provisional**: best lap (something that says completion or success, unlike the chime and fanfare), the mouse click, door open and a door close to match it, the server rack (a retro computer starting up) and a short quick pour.
 
 `npm run audio` re-encoded the set; the ledger marks each row approved or provisional.
+
+### Review fix: videos follow the Sound toggle, 2026-09-30
+
+Muting suspended the audio context, but the Foundry screen's video (its sound is the trailer cue) and the meeting TV's play outside it, so they stayed audible with Sound off. Both now register with the sound module: muted while the toggle is off or the tab is hidden, and unmuted only inside a press (the toggle or Resume), since a browser pauses a video unmuted without one. `tests/sound.spec.ts` checks the meeting TV.

@@ -220,7 +220,7 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 		await expect(card).toBeVisible();
 		const close = card.locator('form[method="dialog"] button');
 		await moveTo(await centre(close));
-		await expect(close).toHaveCSS('outline-style', 'solid'); // the hover mark under the lock
+		await expect(close).toHaveClass(/(^|\s)hot(\s|$)/); // the hover mark under the lock
 		await lockedClick(page);
 		await expect(card).toBeHidden();
 
@@ -615,13 +615,21 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		// carries the cursor down by the camera's height, so Join is tapped that far above the toggles.
 		await page.goto('/#midtown');
 		const toggles = (await page.locator('.controls').boundingBox())!, join = (await page.locator('dialog.join[open] button').boundingBox())!;
-		const at = { x: join.x + 8, y: toggles.y + toggles.height / 2 - (await camera(page)).y };
+		// The Join button's left end: the drag carries the cursor down level with the toggles, just right of them, and the
+		// joystick steers it left onto them.
+		const at = { x: join.x + 4, y: toggles.y + toggles.height / 2 - (await camera(page)).y };
 		expect(at.y > join.y && at.y < join.y + join.height, 'the Join tap on the button').toBe(true);
 		await page.touchscreen.tap(at.x, at.y);
 		const f = await finger(page), hub = await centre(page.locator('.joystick'));
 		await drag(page, f, { x: 320, y: 100 }, { x: 0, y: 35 }, 20);
 		await page.waitForTimeout(150);
 		await f.up();
+		for (let i = 0; i < 20 && (await tip(page))!.x > toggles.x + toggles.width - 8; i++) {
+			await f.down(hub);
+			await f.move({ x: hub.x - 18, y: hub.y }); // 30 percent of the stick: about 64 CSS px/s
+			await page.waitForTimeout(150);
+			await f.up();
+		}
 		const on = (await tip(page))!;
 		expect(on.y > toggles.y && on.y < toggles.y + toggles.height && on.x > toggles.x && on.x < toggles.x + toggles.width, 'the cursor sits on the toggles').toBe(true);
 		await page.waitForTimeout(100);

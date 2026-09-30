@@ -55,7 +55,7 @@ export const saved = {
 		return data.analytics;
 	},
 	/** The consent bar's Allow or No thanks. */
-	set analytics(choice: 'granted' | 'denied') {
+	set analytics(choice: NonNullable<Saved['analytics']>) {
 		if (choice !== data.analytics) save({ ...data, analytics: choice });
 	},
 	/** A granting prop's click: its cosmetic is worn; true the first time, when it is earned. */

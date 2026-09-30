@@ -18,34 +18,9 @@
 	<span>Sound</span>
 </button>
 
+<!-- Its tile, icon and hidden label are the controls' (src/app.css). -->
 <style>
-	button {
-		display: grid;
-		place-items: center;
-		padding: 0.4rem;
-	}
-
-	svg {
-		inline-size: 1.5rem;
-		block-size: 1.5rem;
-		fill: none;
-		stroke: currentColor;
-		stroke-width: 2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-
 	.speaker {
 		fill: currentColor;
-	}
-
-	/* Named "Sound" for assistive tech; the icon says it on screen. */
-	span {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 </style>

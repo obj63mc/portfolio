@@ -7,6 +7,7 @@ import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, 
 import { screenPlay } from '../analytics.svelte.ts';
 import type { Net } from '../net/net.ts';
 import { accepted, onQuad, reel, type Screen } from '../net/screen.ts';
+import { sound } from '../sound.svelte.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { VIDEOS } from '../videos.ts';
 import { BODY, HEADLINE, loadFaces, settled } from './fonts.ts';
@@ -97,6 +98,8 @@ export class Projector {
 		loadFaces(`800 1px ${HEADLINE}`, `500 1px ${BODY}`);
 		this.video.playsInline = true;
 		this.video.preload = 'auto';
+		// Its sound, the trailer cue the room hears, follows the Sound toggle and a hidden tab.
+		sound.media(this.video);
 		layer.addEventListener(
 			'click',
 			(e) => {
@@ -189,7 +192,7 @@ export class Projector {
 		this.start = 'ready';
 		v.pause();
 		if (title) {
-			v.muted = false;
+			v.muted = sound.muted;
 			v.src = VIDEOS[`/art/sources/videos/${SCREEN_VIDEOS[title].file}`];
 		} else if (v.hasAttribute('src')) {
 			v.removeAttribute('src');

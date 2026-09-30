@@ -25,7 +25,7 @@ test('consent at load: no id is off, GPC never loads, a stored choice stands, el
 	assert.deepEqual(initial({ id, gpc: false, timeZone: 'Europe/Paris' }), { is: 'asking' });
 	assert.deepEqual(initial({ id, gpc: false, timeZone: 'America/Chicago' }), { is: 'granted' });
 	for (const timeZone of ['Europe/Paris', 'America/Chicago']) {
-		assert.deepEqual(initial({ id, gpc: false, timeZone, stored: 'granted' }), { is: 'granted' }, timeZone);
+		assert.deepEqual(initial({ id, gpc: false, timeZone, stored: 'granted' }), { is: 'granted', chosen: true }, timeZone);
 		assert.deepEqual(initial({ id, gpc: false, timeZone, stored: 'denied' }), { is: 'denied' }, timeZone);
 	}
 	// Do Not Track is ignored: there is no input for it.
@@ -131,6 +131,14 @@ test('No thanks after gtag loaded sends consent update denied and nothing after 
 	assert.deepEqual(calls.at(-1), ['consent', 'update', { analytics_storage: 'granted' }]);
 	t.event('gold_cursor', {});
 	assert.deepEqual(events(calls).at(-1), ['gold_cursor', {}]);
+});
+
+test('a stored Allow grants storage over the European backstop on every later visit, before any event', () => {
+	const { t, calls } = tracked({ is: 'granted', chosen: true });
+	t.event('page_view', { page_location: 'https://barmadden.com/' });
+	assert.deepEqual(consents(calls).at(-1), ['update', { analytics_storage: 'granted' }]);
+	const update = calls.findIndex((c) => c[0] === 'consent' && c[1] === 'update'), first = calls.findIndex((c) => c[0] === 'event');
+	assert.ok(update >= 0 && update < first, 'the update precedes the first event');
 });
 
 test('stored denied, then Allow from the icon: set up and load then, no update for a denial never sent', () => {

@@ -24,7 +24,10 @@ export class Tracker {
 		this.consent = consent;
 		this.gtag = gtag;
 		this.load = load;
-		if (consent.is === 'granted') this.setUp();
+		if (consent.is !== 'granted') return;
+		this.setUp();
+		// A visitor who allowed it on an earlier visit is counted as they chose, wherever the backstop places them.
+		if (consent.chosen) this.gtag('consent', 'update', { analytics_storage: 'granted' });
 	}
 
 	get state(): Consent['is'] {

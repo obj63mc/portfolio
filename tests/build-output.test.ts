@@ -255,7 +255,7 @@ test('cards: every card is labelled and closes natively', () => {
 		// The Foundry has none (Joe, 2026-09-29): its posters play reels, and its screen only says what plays.
 		assert.ok(file === 'foundry.html' || dialogs.length > 0, file);
 		assert.ok(dialogs.every((d) => d.includes('aria-labelledby=')), file);
-		assert.equal(layer.match(/<form method="dialog">/g)?.length ?? 0, dialogs.length, file);
+		assert.equal(layer.match(/<form method="dialog"[\s>]/g)?.length ?? 0, dialogs.length, file);
 	}
 	// Card titles stay inside the page's heading hierarchy when the cards read inline without JavaScript.
 	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.length);

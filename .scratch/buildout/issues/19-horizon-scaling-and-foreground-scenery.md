@@ -68,3 +68,7 @@ Hands-on (Joe, desktop and phone):
 - After closing a card with its Close button, the cursor is wherever Close was, usually off the desk; coming back to the monitor from above goes behind it. That is the rule, but say if it feels wrong.
 - Foundry: a visitor seated for a reel glides into the second row from a poster, and the rows are walk-behind scenery, so whichever side the glide steps on from decides whether the row covers the seated cursor. Check that it reads as sitting in the row rather than as the cursor vanishing.
 - On a phone, tapping the lab's monitor opens its card even with the cursor behind the desk (a finger's tap is a direct activation), and the cursor lands on the monitor stepped from where it was.
+
+### Review fix: overlapping cursors, 2026-09-30
+
+The code review found that a cursor behind walk-behind scenery, drawn after an overlapping cursor in front of it, laid the desk's pixels over that cursor. Cursors are now drawn in `drawOrder` (`src/lib/engine/depth.ts`, tested in `tests/depth.test.ts`): those behind scenery first, behind the scenery furthest back first, then the rest in their usual order, peers before the own cursor.

@@ -12,7 +12,7 @@
 	import type { Engine } from '$lib/engine/engine';
 	import LapBoard from '$lib/LapBoard.svelte';
 	import SoundToggle from '$lib/SoundToggle.svelte';
-	import { SUB_SCENES } from '$lib/scenes';
+	import { sceneAt } from '$lib/scenes';
 	import { OVERWORLD } from '$lib/scenes/overworld';
 
 	let { children } = $props();
@@ -34,7 +34,7 @@
 		engine ??= import('$lib/engine/engine')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
 			.catch((err) => void console.error(err));
-		engine.then((e) => e?.show(SUB_SCENES[to.url.pathname.slice(1)] ?? OVERWORLD, to.url.hash));
+		engine.then((e) => e?.show(sceneAt(to.url.pathname) ?? OVERWORLD, to.url.hash));
 	});
 	// A hop to another scene waits for the iris to close on the door (Joe, 2026-09-30); a fragment on the same scene pans.
 	// It waits before it starts, called off and sent again once the iris is shut: a door's link by goto, the back or
@@ -60,6 +60,10 @@
 </script>
 
 <canvas class="scene" aria-hidden="true" bind:this={scene}></canvas>
+<!-- The consent bar on the page, after Join and when the icon reopens it: first in tab order, ahead of the scene (ticket 23). -->
+{#if GA_ID}
+	<Consent />
+{/if}
 <main bind:this={layer}>
 	{@render children()}
 </main>
@@ -74,12 +78,10 @@
 	<!-- It reopens the consent bar (ticket 23). A build with no GA, every one but production's, has no bar for it to open,
 		and keeps it disabled in its place. -->
 	<button type="button" class="analytics" disabled={!GA_ID} aria-expanded={GA_ID ? bar.open : undefined} onclick={() => bar.toggle()}>
-		Analytics settings
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5" /></svg>
+		<span>Analytics settings</span>
 	</button>
 </div>
-{#if GA_ID}
-	<Consent />
-{/if}
 <!-- The touch joystick (buildout ticket 10), shown after Join on a device with no mouse or trackpad. Hidden from assistive
 	tech: a keyboard steers with the keys. -->
 <div class="joystick" aria-hidden="true" bind:this={joystick}><div></div></div>
@@ -89,7 +91,7 @@
 	it over each prop card, so a locked cursor can reach the card's Close, and leaves these two above it, dimming the scene.
 -->
 <dialog class="gate join" aria-label="Join" bind:this={join}>
-	<button type="button">Join</button>
+	<button type="button" class="primary">Join</button>
 	<!-- The consent bar for a European visitor, over the card, operable before Join (ticket 23). -->
 	{#if GA_ID}
 		<Consent gate />
@@ -97,7 +99,7 @@
 </dialog>
 <dialog class="gate paused" aria-labelledby="paused-title" bind:this={paused}>
 	<p id="paused-title">Paused, click to resume</p>
-	<button type="button">Resume</button>
+	<button type="button" class="primary">Resume</button>
 	<p class="refused" hidden>The browser didn't take the mouse. Try again in a moment.</p>
 </dialog>
 <canvas class="cursors" popover="manual" aria-hidden="true" bind:this={cursors}></canvas>

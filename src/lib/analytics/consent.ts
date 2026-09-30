@@ -6,9 +6,10 @@ export type Choice = 'granted' | 'denied';
 
 /**
  * What analytics does this session: nothing at all in a build with no measurement ID; never loads under Global Privacy
- * Control; asks, with events held in memory until the visitor chooses; or runs on a choice, stored or implied.
+ * Control; asks, with events held in memory until the visitor chooses; or runs on a choice, stored or implied. A grant
+ * the visitor `chosen` overrides the European backstop; an implied one, outside Europe's timezones, leaves it standing.
  */
-export type Consent = { is: 'off' } | { is: 'gpc' } | { is: 'asking' } | { is: Choice };
+export type Consent = { is: 'off' } | { is: 'gpc' } | { is: 'asking' } | { is: 'denied' } | { is: 'granted'; chosen?: boolean };
 
 /**
  * The EEA, the UK and Switzerland, ISO 3166 codes: the region-denied `consent default` that keeps Google's own geolocation
@@ -35,7 +36,7 @@ export const european = (timeZone: string) => timeZone.startsWith('Europe/') || 
 export function initial(s: { id: string; gpc: boolean; timeZone: string; stored?: Choice }): Consent {
 	if (!s.id) return { is: 'off' };
 	if (s.gpc) return { is: 'gpc' };
-	if (s.stored) return { is: s.stored };
+	if (s.stored) return s.stored === 'granted' ? { is: 'granted', chosen: true } : { is: 'denied' };
 	return { is: european(s.timeZone) ? 'asking' : 'granted' };
 }
 

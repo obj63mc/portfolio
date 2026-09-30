@@ -6,7 +6,7 @@ import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import type { Side } from '../scenes/walk.ts';
 import { cutout } from './props.ts';
 
-/** A cut-out to draw over a cursor, in device px. */
+/** A cut-out to draw over a cursor, in device px; walk-behind scenery says where it stands, back to front (`at`). */
 export interface Cover {
 	key: string;
 	bmp: ImageBitmap;
@@ -14,6 +14,7 @@ export interface Cover {
 	y: number;
 	w: number;
 	h: number;
+	at?: number;
 }
 
 /** A cut-out and its world rect; no bitmap until it has arrived, and none for one that failed. */
@@ -53,7 +54,7 @@ export class Scenery {
 
 	/** The walk-behind scenery a cursor with `sides` is behind, back to front, through the camera. */
 	behind(sides: ReadonlyMap<string, Side>, cam: Point, k: number): Cover[] {
-		return sides.size ? this.units.flatMap((p) => (sides.get(p.key) === 'behind' ? cover(p, cam, k) : [])) : [];
+		return sides.size ? this.units.flatMap((p, at) => (sides.get(p.key) === 'behind' ? cover(p, cam, k).map((c) => ({ ...c, at })) : [])) : [];
 	}
 
 	destroy() {

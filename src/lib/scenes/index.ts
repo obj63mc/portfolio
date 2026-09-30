@@ -1,6 +1,7 @@
 import { BRENNANS } from './brennans.ts';
 import { FOUNDRY } from './foundry.ts';
 import { MOOSYLVANIA } from './moosylvania.ts';
+import { OVERWORLD } from './overworld.ts';
 import { SIDE_PROJECT } from './side-project.ts';
 import { SLU } from './slu.ts';
 import type { Overworld, Prop, Rect, SubScene } from './types';
@@ -9,6 +10,9 @@ import type { Overworld, Prop, Rect, SubScene } from './types';
 export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
 	[MOOSYLVANIA, SLU, FOUNDRY, SIDE_PROJECT, BRENNANS].map((s) => [s.id, s])
 );
+
+/** The scene a page path shows: the overworld at the root, a sub-scene at its slug; none for any other path. */
+export const sceneAt = (pathname: string): Overworld | SubScene | undefined => (pathname === '/' ? OVERWORLD : SUB_SCENES[pathname.slice(1)]);
 
 /** Props left to right, the spec's reading order for the overworld's venues and the wide sub-scenes. */
 export const leftToRight = (props: Prop[]): Prop[] => [...props].sort((a, b) => a.rect.x - b.rect.x);

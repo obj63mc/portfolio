@@ -12,6 +12,13 @@ import type { Overworld, SubScene } from './scenes/types';
 
 type Scene = Overworld | SubScene;
 
+declare global {
+	interface Navigator {
+		/** How the page's audio mixes with the visitor's own: iOS Safari 16.4 on, absent elsewhere. */
+		audioSession?: { type: string };
+	}
+}
+
 /** At most this many one-shots sound at once; a new one stops the oldest. */
 const VOICES = 8;
 
@@ -22,15 +29,27 @@ let master: GainNode | null = null;
 let joined = false;
 /** The scene the visitor is in. */
 let current: Scene | null = null;
-/** The choice this tab last acted on, so another tab's write that leaves it alone changes nothing here. */
-let heard = saved.sound;
-/** Decoded one-shots, or the signal of the fetch still bringing one. */
-const buffers = new Map<SoundId, AudioBuffer | AbortSignal>();
+/** The choice this tab last applied, so another tab's write that leaves it alone changes nothing here. */
+let applied = saved.sound;
+/** A one-shot's buffer: being fetched, under the signal that calls the fetch off, or decoded and ready to play. */
+type Buffer = { is: 'loading'; signal: AbortSignal } | { is: 'ready'; buffer: AudioBuffer };
+const buffers = new Map<SoundId, Buffer>();
 /** When each one-shot stopped being needed (performance ms): its scene left, or a door not taken. */
 const left = new Map<SoundId, number>();
 /** Aborted when the visitor mutes, which stops every fetch in flight. */
 let fetches = new AbortController();
 const voices: AudioBufferSourceNode[] = [];
+/**
+ * Videos that play with their own sound beside the context, the Foundry screen's and the meeting TV's: they follow the
+ * toggle and a hidden tab too. A browser pauses a video unmuted outside a press, so only a press unmutes them.
+ */
+const media = new Set<HTMLMediaElement>();
+
+/** The videos muted while the toggle is off or the tab hidden; `press` is a press, which may also unmute them. */
+function hush(press: boolean) {
+	const muted = !saved.sound || document.hidden;
+	for (const m of media) if (muted || press) m.muted = muted;
+}
 
 /** A one-shot's URL from the generated map (`npm run audio`); none until it is sourced, and then it is silent. */
 function url(id: SoundId) {
@@ -42,8 +61,7 @@ function url(id: SoundId) {
 function wake() {
 	if (!ctx) {
 		// iOS: an ambient session respects the silent switch and mixes with the visitor's own audio (Safari 16.4 on).
-		const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
-		if (session) session.type = 'ambient';
+		if (navigator.audioSession) navigator.audioSession.type = 'ambient';
 		ctx = new AudioContext();
 		master = ctx.createGain();
 		master.connect(ctx.destination);
@@ -58,14 +76,15 @@ function load(ids: Iterable<SoundId>) {
 	for (const id of ids) {
 		const u = url(id);
 		if (!u || buffers.has(id)) continue;
-		buffers.set(id, signal);
+		const loading: Buffer = { is: 'loading', signal };
+		buffers.set(id, loading);
 		fetch(u, { signal })
 			.then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${u}: ${r.status}`))))
 			.then((data) => c.decodeAudioData(data))
 			.then(
-				(b) => void (buffers.get(id) === signal && buffers.set(id, b)),
+				(buffer) => void (buffers.get(id) === loading && buffers.set(id, { is: 'ready', buffer })),
 				// Silence, and fetched again when a scene next needs it.
-				() => void (buffers.get(id) === signal && buffers.delete(id))
+				() => void (buffers.get(id) === loading && buffers.delete(id))
 			);
 	}
 }
@@ -83,13 +102,13 @@ function mute() {
 	for (const v of voices.splice(0)) v.stop();
 	fetches.abort();
 	fetches = new AbortController();
-	for (const [id, b] of buffers) if (b instanceof AbortSignal) buffers.delete(id);
+	for (const [id, b] of buffers) if (b.is === 'loading') buffers.delete(id);
 	ctx?.suspend().catch(() => {});
 }
 
 /** The toggle's choice, pressed here or written by another tab, applied once joined; a hidden tab stays suspended. */
 function apply() {
-	heard = saved.sound;
+	applied = saved.sound;
 	if (!joined) return;
 	if (!saved.sound) return mute();
 	if (document.hidden) return;
@@ -98,9 +117,17 @@ function apply() {
 }
 
 if (typeof window !== 'undefined') {
-	document.addEventListener('visibilitychange', () => { if (document.hidden) ctx?.suspend().catch(() => {}); });
+	document.addEventListener('visibilitychange', () => {
+		if (!document.hidden) return;
+		ctx?.suspend().catch(() => {});
+		hush(false);
+	});
 	// The saved state heard the event first: it listened from its module's load.
-	addEventListener('storage', (e) => { if (e.key === KEY && saved.sound !== heard) apply(); });
+	addEventListener('storage', (e) => {
+		if (e.key !== KEY || saved.sound === applied) return;
+		apply();
+		hush(false);
+	});
 }
 
 export const sound = {
@@ -112,11 +139,22 @@ export const sound = {
 	/** The Resume press: a context a hidden tab suspended, or iOS interrupted, resumes inside it. */
 	resume() {
 		if (joined && saved.sound) wake();
+		hush(true);
 	},
 	/** The Sound toggle's press: the choice flips and is saved, and the context follows it inside the press. */
 	toggle() {
 		saved.sound = !saved.sound;
 		apply();
+		hush(true);
+	},
+	/** Whether a video with its own sound starts muted: the toggle off, or the tab hidden. */
+	get muted() {
+		return !saved.sound || document.hidden;
+	},
+	/** A video with its own sound, which then follows the toggle and a hidden tab (`hush`). */
+	media(el: HTMLMediaElement) {
+		media.add(el);
+		if (this.muted) el.muted = true;
 	},
 	/** Each scene the engine shows: its one-shots load, and the last scene's are let go a minute later unless needed here. */
 	scene(scene: Scene) {
@@ -141,8 +179,8 @@ export const sound = {
 	 */
 	play(id: SoundId, offset = 0) {
 		const b = buffers.get(id);
-		if (!ctx || !master || ctx.state !== 'running' || !saved.sound || !(b instanceof AudioBuffer)) return false;
-		const v = new AudioBufferSourceNode(ctx, { buffer: b });
+		if (!ctx || !master || ctx.state !== 'running' || !saved.sound || b?.is !== 'ready') return false;
+		const v = new AudioBufferSourceNode(ctx, { buffer: b.buffer });
 		v.connect(master);
 		v.onended = () => {
 			const i = voices.indexOf(v);
@@ -156,6 +194,6 @@ export const sound = {
 	/** A one-shot's length, ms, once it is loaded. */
 	length(id: SoundId) {
 		const b = buffers.get(id);
-		return b instanceof AudioBuffer ? b.duration * 1000 : undefined;
+		return b?.is === 'ready' ? b.buffer.duration * 1000 : undefined;
 	}
 };
