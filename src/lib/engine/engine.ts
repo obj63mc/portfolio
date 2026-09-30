@@ -294,6 +294,8 @@ export class Engine {
 			'click',
 			(e) => {
 				if (!e.detail) return;
+				// Seated for the Foundry's reel, a pointer's click in the scene does nothing; the keyboard still reaches everything.
+				if (this.projector.seated && this.layer.contains(e.target as Node)) return void (e.preventDefault(), e.stopPropagation());
 				if (this.input.is === 'released') this.lock();
 				else if (this.gesture.is !== 'lifted') return;
 				e.preventDefault();
@@ -306,7 +308,7 @@ export class Engine {
 		addEventListener(
 			'pointermove',
 			(e) => {
-				if (e.pointerType !== 'mouse' || !this.cursor) return; // touch drags, below
+				if (e.pointerType !== 'mouse' || !this.cursor || this.projector.seated) return; // touch drags, below
 				// Locked, the mouse moves the drawn cursor 1:1, OS acceleration kept, held inside the viewport; unlocked, it
 				// follows the OS pointer. Before Join and while paused it stays put.
 				if (this.input.is === 'locked') this.steerTo({ x: this.cursor.x + e.movementX, y: this.cursor.y + e.movementY }, e.timeStamp);
@@ -369,7 +371,7 @@ export class Engine {
 			if (g.is === 'drag') this.gesture = { is: 'lifted', vel: up ? fling(g.moves, e.timeStamp) : null };
 			else {
 				this.gesture = { is: 'none' };
-				if (up && this.layer.contains((e.target as Element).closest('a, button'))) this.cursor = { x: e.clientX, y: e.clientY };
+				if (up && !this.projector.seated && this.layer.contains((e.target as Element).closest('a, button'))) this.cursor = { x: e.clientX, y: e.clientY };
 			}
 		};
 		addEventListener('pointerup', lift, opts);
@@ -600,7 +602,7 @@ export class Engine {
 		if (!free && (this.joy || this.gesture.is !== 'none')) (this.gesture = { is: 'none' }), this.letGo();
 		const c = free ? this.cursor : null, k = steer(this.keys, this.view.s, dt);
 		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 }, d = { x: k.x + j.x, y: k.y + j.y };
-		if (c && (d.x || d.y)) {
+		if (c && (d.x || d.y) && !this.projector.seated) {
 			this.steerTo({ x: c.x + d.x, y: c.y + d.y }, now);
 			this.inside = this.armed = true;
 		} else if (this.input.is === 'touch') this.inside = false; // on touch the camera follows only a steered cursor
@@ -631,6 +633,11 @@ export class Engine {
 		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
+		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is
+		// held there, whatever the input, until the reel ends; a drag or a fling is already off while the camera frames it.
+		const own = this.cursor, v = this.view;
+		const seat = own && this.projector.hold({ x: this.cam.x + own.x / v.s, y: this.cam.y + own.y / v.s }, now, this.reducedMotion.matches);
+		if (seat) this.cursor = { x: (seat.x - this.cam.x) * v.s, y: (seat.y - this.cam.y) * v.s };
 		// The lap timer rides with the free cursor on the overworld; a pause, a card or a sub-scene loses a lap.
 		const at = free && 'districts' in scene && this.cursor;
 		this.laps.step(at ? { x: this.cam.x + at.x / this.view.s, y: this.cam.y + at.y / this.view.s } : null, now);

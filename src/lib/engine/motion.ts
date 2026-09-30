@@ -3,6 +3,7 @@
 // a glint along the Side Project bottles), hover and click reactions, and what reduced motion leaves of them. Times are
 // ms. Ambient motion runs on server time, so every visitor in a room sees the rider at the same point. Carried over from
 // the rendering prototype's props.ts and the art workshop's drawRig (art/review.js).
+import type { Point } from '../scenes/types';
 import { LOOP, along } from './track.ts';
 
 /** A hover fades in and out over this long; under reduced motion it is a plain highlight, on and off at once. */
@@ -68,6 +69,15 @@ export function rider(t: number, rm: boolean) {
 	const at = { x: p.x - RIDER.w / 2, y: p.y + RIDER.drop - RIDER.h, w: RIDER.w, h: RIDER.h };
 	return { at, facing: p.dx < 0 ? -1 : 1, travelled };
 }
+
+/** How long the own cursor takes to glide to its Foundry seat after a poster's click, ms (Joe, 2026-09-29). */
+export const SIT_MS = 700;
+
+/** The own cursor on its way from `from` to its seat `to`, `since` ms after the poster's click; there at once under reduced motion. */
+export const sitting = (from: Point, to: Point, since: number, rm: boolean): Point => {
+	const u = rm ? 1 : ease(progress(since, SIT_MS));
+	return { x: from.x + (to.x - from.x) * u, y: from.y + (to.y - from.y) * u };
+};
 
 /** Which third of the marquee's bulbs is lit, stepping every 150 ms; -1 under reduced motion, every bulb as painted. */
 export const chase = (t: number, rm: boolean) => (rm ? -1 : Math.floor(t / 150) % 3);

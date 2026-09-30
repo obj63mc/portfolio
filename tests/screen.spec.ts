@@ -1,6 +1,7 @@
 // Seam 4 for the Foundry screen (buildout ticket 17): two browsers on `wrangler dev` serving the build see one poster
 // click play for both, a second click do nothing and a third visitor arrive mid-reel; against vite preview, which has no
-// /ws, the reel plays offline from the visitor's own click, framed whole on a phone, and ends. `npm run build` first.
+// /ws, the reel plays offline from the visitor's own click, framed whole on a phone, and ends; its clicker sits in the
+// second row first and steers nothing until it ends (Joe, 2026-09-29). `npm run build` first.
 // Playwright's Chromium has no H.264, so the video itself stays dark here: the reel's pixels are checked, not its frames.
 import { test, expect, type Browser, type Page } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
@@ -8,7 +9,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { createServer, type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE } from '../src/lib/scenes/foundry.ts';
+import { PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, seatOf } from '../src/lib/scenes/foundry.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
 const root = new URL('..', import.meta.url).pathname;
@@ -46,6 +47,29 @@ const screenStatus = (page: Page) => page.locator('[data-prop="screen"] > p');
 const transform = (page: Page) => page.locator('main').evaluate((m) => ((t) => ({ s: t.a, x: t.e, y: t.f }))(new DOMMatrix(getComputedStyle(m).transform)));
 /** Where a world point is on screen, CSS px. */
 const onScreen = async (page: Page, p: Point) => ((t) => ({ x: t.x + p.x * t.s, y: t.y + p.y * t.s }))(await transform(page));
+
+/** The drawn cursor's tip, CSS px: the top-left of the cursor canvas's opaque pixels, past the halo's glow (smoke.spec.ts). */
+const tip = (page: Page) =>
+	page.evaluate(() => {
+		const c = document.querySelector<HTMLCanvasElement>('canvas.cursors')!;
+		const { data, width } = c.getContext('2d')!.getImageData(0, 0, c.width, c.height);
+		let x0 = Infinity, y0 = Infinity;
+		for (let i = 3; i < data.length; i += 4) {
+			if (data[i] < 200) continue;
+			x0 = Math.min(x0, ((i - 3) / 4) % width);
+			y0 = Math.min(y0, Math.floor((i - 3) / 4 / width));
+		}
+		const k = c.width / innerWidth;
+		return { x: x0 / k, y: y0 / k };
+	});
+/** How far the drawn cursor's tip is from the offline visitor's seat, CSS px. */
+const fromSeat = async (page: Page) => {
+	const [t, s] = [await tip(page), await onScreen(page, seatOf(0))];
+	return Math.hypot(t.x - s.x, t.y - s.y);
+};
+/** How far the drawn cursor's tip has moved from `from`, CSS px. */
+const moved = async (page: Page, from: Point) => ((t) => Math.hypot(t.x - from.x, t.y - from.y))(await tip(page));
+const idleText = 'Screen: idle, pick a poster to start a reel';
 
 /** How bright the scene canvas is at the middle of the screen, 0 to 255: the idle screen is painted ivory. */
 const screenLight = async (page: Page) => {
@@ -153,3 +177,75 @@ test.describe('without a room', () => {
 		await expect.poll(async () => (await transform(page)).s).toBe(0.6);
 	});
 });
+
+test('offline, a poster click seats its clicker in the second row, then plays; nothing steers or clicks until it ends', async ({ page }) => {
+	await page.clock.install();
+	await page.addInitScript(refuseLock);
+	await page.goto('/foundry');
+	await joinScene(page);
+	const scale = (await transform(page)).s;
+	const lorax = (await page.locator('[data-prop="poster-lorax"] > button').boundingBox())!;
+	await page.mouse.move(lorax.x + lorax.width / 2, lorax.y + lorax.height / 2);
+	await page.mouse.click(lorax.x + lorax.width / 2, lorax.y + lorax.height / 2);
+	// The reel waits for the visitor to sit down.
+	await expect(screenStatus(page)).toHaveText(idleText);
+	await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+	await expect.poll(async () => (await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
+	expect(await fromSeat(page)).toBeLessThan(12);
+	const seated = await tip(page);
+	// The keys, the mouse and its clicks do nothing while the reel plays: the exit door stays shut.
+	await page.keyboard.down('ArrowRight');
+	await page.waitForTimeout(300);
+	await page.keyboard.up('ArrowRight');
+	await page.mouse.move(100, 100);
+	const exit = await onScreen(page, { x: 1277, y: 443 });
+	await page.mouse.click(exit.x, exit.y);
+	await page.waitForTimeout(100);
+	expect(await moved(page, seated)).toBeLessThan(1);
+	expect(new URL(page.url()).pathname).toBe('/foundry');
+	// When it ends the camera comes back to the session's scale and the keys steer again.
+	await page.clock.fastForward(45_000);
+	await expect(screenStatus(page)).toHaveText(idleText);
+	await expect.poll(async () => (await transform(page)).s).toBe(scale);
+	const back = await tip(page);
+	await page.keyboard.down('ArrowLeft');
+	await page.waitForTimeout(300);
+	await page.keyboard.up('ArrowLeft');
+	expect(back.x - (await tip(page)).x).toBeGreaterThan(50);
+});
+
+test.describe('a phone, with no mouse or trackpad', () => {
+	test.use({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+
+	test('offline, a tapped poster seats its clicker; a drag moves neither the camera nor the cursor until the reel ends', async ({ page }) => {
+		await page.clock.install();
+		await page.goto('/foundry');
+		await page.getByRole('button', { name: 'Join' }).tap();
+		// The Lorax poster's right edge, in view beside the exit door where a phone opens.
+		const at = await onScreen(page, { x: 1030, y: 300 });
+		await page.touchscreen.tap(at.x, at.y);
+		await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+		await expect.poll(async () => (await transform(page)).s).toBeCloseTo(390 / REEL_FRAME.w, 3);
+		expect(await fromSeat(page)).toBeLessThan(12);
+		const [seated, framed] = [await tip(page), await transform(page)];
+		const cdp = await page.context().newCDPSession(page);
+		const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x = 0, y = 0) =>
+			cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+		const drag = async () => {
+			await touch('touchStart', 200, 700);
+			for (let i = 1; i <= 6; i++) await touch('touchMove', 200 - 20 * i, 700), await page.waitForTimeout(16);
+			await touch('touchEnd');
+			await page.waitForTimeout(400);
+		};
+		await drag();
+		expect(await moved(page, seated)).toBeLessThan(1);
+		expect(await transform(page)).toEqual(framed);
+		await page.clock.fastForward(45_000);
+		await expect(screenStatus(page)).toHaveText(idleText);
+		await expect.poll(async () => (await transform(page)).s).toBeCloseTo(0.6);
+		const before = await transform(page);
+		await drag();
+		expect((await transform(page)).x).not.toBe(before.x);
+	});
+});
+

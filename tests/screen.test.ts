@@ -1,9 +1,10 @@
 // Seam 2 for the Foundry screen (buildout ticket 17): its reel as a pure function of server time, one test per title's
-// length, and the homography that maps the reel onto the screen's painted quad.
+// length, the homography that maps the reel onto the screen's painted quad, and the poster's clicker taking a seat.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { playing, reel, reelMs, onQuad } from '../src/lib/net/screen.ts';
-import { SCREEN_SURFACE } from '../src/lib/scenes/foundry.ts';
+import { SCREEN_SURFACE, SEATS, seatOf } from '../src/lib/scenes/foundry.ts';
+import { SIT_MS, sitting } from '../src/lib/engine/motion.ts';
 
 const at = 1_790_000_000_000;
 
@@ -56,4 +57,21 @@ test('the reel maps onto the screen quad: corners to corners, and the middle whe
 	const sub = (p: { x: number; y: number }, q: { x: number; y: number }) => ({ x: p.x - q.x, y: p.y - q.y });
 	const t = cross(sub(b, a), sub(d, b)) / cross(sub(c, a), sub(d, b));
 	near(map(0.5, 0.5), { x: a.x + (c.x - a.x) * t, y: a.y + (c.y - a.y) * t });
+});
+
+// Joe, 2026-09-29: a poster's click seats its clicker in the second row before the reel starts.
+test('a seat for each visitor in the room, spread along the row: consecutive ids never share one', () => {
+	const ids = Array.from({ length: SEATS.length }, (_, i) => i);
+	assert.equal(new Set(ids.map(seatOf)).size, SEATS.length);
+	assert.deepEqual(seatOf(SEATS.length + 2), seatOf(2), 'past the last seat the row starts again');
+});
+
+test('sitting: the own cursor glides to its seat over SIT_MS, easing in and out, and is there at once under reduced motion', () => {
+	const from = { x: 100, y: 100 }, to = { x: 300, y: 500 };
+	assert.deepEqual(sitting(from, to, 0, false), from);
+	assert.deepEqual(sitting(from, to, SIT_MS / 2, false), { x: 200, y: 300 });
+	assert.ok(sitting(from, to, SIT_MS / 4, false).x - from.x < (to.x - from.x) / 4, 'a slow start');
+	assert.deepEqual(sitting(from, to, SIT_MS, false), to);
+	assert.deepEqual(sitting(from, to, 5 * SIT_MS, false), to);
+	assert.deepEqual(sitting(from, to, 0, true), to);
 });

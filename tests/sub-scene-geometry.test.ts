@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readingOrder, SUB_SCENES } from '../src/lib/scenes/index.ts';
-import { POSTER_LAMPS, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
+import { POSTER_LAMPS, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SEATS, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
 import type { Point, Prop, Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
@@ -133,6 +133,15 @@ test('Foundry: posters left to right beside the screen, the beam from the ledge 
 	const f = REEL_FRAME, inFrame = (p: { x: number; y: number }) => p.x > f.x && p.x < f.x + f.w && p.y > f.y && p.y < f.y + f.h;
 	for (const p of [...SCREEN_SURFACE, PROJECTOR_LENS, { x: 100, y: 1250 }]) assert.ok(inFrame(p), JSON.stringify(p));
 	assert.ok(f.x >= 0 && f.y >= 0 && f.x + f.w <= foundry.w && f.y + f.h <= foundry.h);
+	// The seats a poster's clicker sits in are in the second row, each a seat's width from the next, and the cursor sitting
+	// there, 40 world px tall at its own 1.25x, is inside the frame the reel holds the camera on.
+	const middle = foundry.walkBehind.find((w) => w.key === 'foundry-row-middle')!;
+	for (const s of SEATS) {
+		assert.ok(inPolygon({ x: s.x, y: s.y + 10 }, middle.outline), `${JSON.stringify(s)} on the middle row`);
+		assert.ok(inFrame(s) && inFrame({ x: s.x + 26, y: s.y + 40 }), `${JSON.stringify(s)} in the frame`);
+	}
+	const byX = [...SEATS].sort((a, b) => a.x - b.x);
+	byX.forEach((s, i) => assert.ok(i === 0 || s.x - byX[i - 1].x > 150, `${JSON.stringify(s)} a seat from the last`));
 });
 
 test('Side Project: ten bottles in a row on one shelf, the sign on the cooler door grants the beer mug', () => {

@@ -2,17 +2,21 @@
 // the props and under the cursors. The projector's beam fans from its lens to the screen's four corners; the title card,
 // the title's demo video and its case study are drawn on a flat film, which is mapped onto the screen's painted quad (the
 // camera sees the right wall at an angle) through a mesh of triangles. The video plays in step with the room, with sound.
-import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, posterOf, screenGist, type ScreenTitle } from '../scenes/foundry.ts';
+// A poster's clicker first takes a seat in the second row, and watches from it with steering off until the reel ends.
+import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, posterOf, screenGist, seatOf, type ScreenTitle } from '../scenes/foundry.ts';
 import type { Net } from '../net/net.ts';
 import { onQuad, reel } from '../net/screen.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { VIDEOS } from '../videos.ts';
+import { SIT_MS, sitting } from './motion.ts';
 import { clickedProp } from './props.ts';
 
 /** The film the reel is drawn on before it is mapped onto the screen, px: 16:9, sharp at the screen's largest. */
 const FILM = { w: 1280, h: 720 };
 /** The mesh the film is mapped through, cells of two triangles; finer cells follow the perspective more closely. */
 const MESH = { cols: 8, rows: 6 };
+/** How long a seated visitor waits for a reel after asking for one, ms, before steering comes back (a socket that never plays). */
+const UNHEARD = 3000;
 /** How far the video may drift from the room's time, seconds, before it is seeked back into step. */
 const DRIFT = 0.5;
 /** The lamp's glow round the lens, world px. */
@@ -63,11 +67,17 @@ export class Projector {
 	/** What the last step showed, and what the lens holds, so a still reel is neither redrawn nor re-mapped. */
 	private drawn = '';
 	private mapped = '';
+	/**
+	 * The visitor's own seat, from their poster's click until the reel they sat down for ends (Joe, 2026-09-29): the cursor
+	 * glides there from where it was (`from`, world px, at the click's `at`, performance ms), and only once seated asks the
+	 * room for the title (`asked`). `seen` once a reel runs after it asked, the one it asked for or one already playing.
+	 */
+	private seat: { title: ScreenTitle; to: Point; from: Point | null; at: number; asked: number | null; seen: boolean } | null = null;
 	private listeners = new AbortController();
 	private layer: HTMLElement;
 	private net: Net;
 
-	/** `layer` is the prerendered layer: a poster's click there asks the room for its title. */
+	/** `layer` is the prerendered layer: a poster's click there seats its clicker, then asks the room for its title. */
 	constructor(layer: HTMLElement, net: Net) {
 		this.layer = layer;
 		this.net = net;
@@ -77,7 +87,7 @@ export class Projector {
 			'click',
 			(e) => {
 				const title = posterOf(clickedProp(e));
-				if (this.foundry && title) net.play(title);
+				if (this.foundry && title) this.seat ??= { title, to: seatOf(net.id), from: null, at: performance.now(), asked: null, seen: false };
 			},
 			{ signal: this.listeners.signal }
 		);
@@ -91,13 +101,33 @@ export class Projector {
 	show(scene: Overworld | SubScene) {
 		this.foundry = scene.id === 'foundry';
 		this.reel = null;
+		this.seat = null;
 		this.drawn = '';
 		this.load(null);
 	}
 
-	/** While a reel plays the camera frames the projector and the whole screen (Joe, 2026-09-29). */
+	/** While a reel plays, or its clicker sits down for it, the camera frames the projector and the whole screen (Joe, 2026-09-29). */
 	framing(): Rect | null {
-		return this.reel && REEL_FRAME;
+		return this.reel || this.seat ? REEL_FRAME : null;
+	}
+
+	/** The visitor is seated for a reel, or on the way to their seat: their steering is off. */
+	get seated() {
+		return !!this.seat;
+	}
+
+	/**
+	 * Where the own cursor is held `now` (performance ms), world px, given where it is (`at`): gliding to its seat, then on
+	 * it until the reel ends; null when the visitor steers. Seated, it asks the room for the title, which plays it if the
+	 * screen is idle (offline, here); if no reel runs within UNHEARD of asking, steering comes back.
+	 */
+	hold(at: Point, now: number, rm: boolean): Point | null {
+		const s = this.seat;
+		if (!s) return null;
+		s.from ??= at;
+		if (s.asked === null && (rm || now - s.at >= SIT_MS)) (s.asked = now), this.net.play(s.title);
+		if (s.asked !== null && ((s.seen ||= !!this.reel) ? !this.reel : now - s.asked > UNHEARD)) return (this.seat = null);
+		return sitting(s.from, s.to, now - s.at, rm);
 	}
 
 	/**

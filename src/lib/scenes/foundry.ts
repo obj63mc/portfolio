@@ -63,6 +63,23 @@ export const PROJECTOR_LENS: Point = { x: 381, y: 1047 };
  */
 export const REEL_FRAME: Rect = { x: 60, y: 50, w: 2646, h: 1240 };
 
+/**
+ * Where a poster's clicker sits for the reel (Joe, 2026-09-29): the second row's seats, where the cursor's tip rests on
+ * the headrest, as a head over the seat back, measured on the master. Best first, the middle of the row, then outward;
+ * the row's last seat, low by the aisle, is below the frame the reel holds the camera on.
+ */
+export const SEATS: Point[] = [
+	{ x: 1310, y: 1015 },
+	{ x: 1100, y: 922 },
+	{ x: 1520, y: 1113 },
+	{ x: 900, y: 832 },
+	{ x: 1770, y: 1230 },
+	{ x: 715, y: 752 }
+];
+
+/** A visitor's seat, by their id in the room (0 offline), so that visitors sitting at once spread along the row. */
+export const seatOf = (id: number) => SEATS[id % SEATS.length];
+
 /** The picture light over each poster. Painted switched off; hovering a poster lights it. */
 export const POSTER_LAMPS: Record<ScreenTitle, Point> = {
 	'fast-five': { x: 386, y: 201 },
