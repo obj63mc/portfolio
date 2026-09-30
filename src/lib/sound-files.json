@@ -32,5 +32,16 @@
 	"music-moosylvania": "/audio/music-moosylvania.2a634ba9.mp3",
 	"theme": "/audio/theme.b7611a2a.mp3",
 	"music-brennans": "/audio/music-brennans.f7f390da.mp3",
-	"music-side-project": "/audio/music-side-project.8cfa7cba.mp3"
+	"music-side-project": "/audio/music-side-project.8cfa7cba.mp3",
+	"splash": "/audio/splash.a8701900.mp3",
+	"tap": "/audio/tap.716c760c.mp3",
+	"register": "/audio/register.e339298a.mp3",
+	"profit": "/audio/profit.7bd8f853.mp3",
+	"loss": "/audio/loss.ecae34a1.mp3",
+	"service-bell": "/audio/service-bell.a29fa837.mp3",
+	"rain": "/audio/rain.465e5c17.mp3",
+	"bed-sushi-service": "/audio/bed-sushi-service.8096ed1d.mp3",
+	"bed-forest-park": "/audio/bed-forest-park.81a7a45b.mp3",
+	"music-sushi-stand": "/audio/music-sushi-stand.8755ebab.mp3",
+	"star": "/audio/star.625a9528.mp3"
 }

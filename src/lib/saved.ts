@@ -17,6 +17,13 @@ export interface Lap {
 	at: number;
 }
 
+/** A finished game of Sushi Stand: the stand's name, its five days' profit in whole dollars, and when, epoch ms. */
+export interface Stand {
+	name: string;
+	profit: number;
+	at: number;
+}
+
 export interface Saved {
 	v: typeof VERSION;
 	/** The cosmetic worn, 0 for none. */
@@ -26,12 +33,20 @@ export interface Saved {
 	/** The personal top ten on this version of the track, fastest first. */
 	laps: { track: number; best: Lap[] };
 	sound: boolean;
+	/** The personal Sushi Stand top ten, most profit first; absent until a game is finished. */
+	stands?: Stand[];
 	/** The analytics choice, absent until the visitor makes one. */
 	analytics?: 'granted' | 'denied';
 }
 
 const isObject = (m: unknown): m is Record<string, unknown> => typeof m === 'object' && m !== null && !Array.isArray(m);
 const isLap = (l: unknown): l is Lap => isObject(l) && typeof l.ms === 'number' && l.ms > 0 && Number.isFinite(l.ms) && Number.isFinite(l.at);
+
+const isStand = (s: unknown): s is Stand =>
+	isObject(s) && typeof s.name === 'string' && s.name.length <= NAME_MAX && Number.isInteger(s.profit) && Number.isFinite(s.at);
+
+/** A stand's name is at most this long, as the name field allows. */
+export const NAME_MAX = 24;
 
 /** Earned ids, sorted and without repeats. */
 const ids = (earned: number[]) => [...new Set(earned)].sort((a, b) => a - b);
@@ -42,6 +57,15 @@ const fastest = (laps: Lap[]) =>
 		.sort((a, b) => a.ms - b.ms)
 		.slice(0, 10)
 		.map(({ ms, at }) => ({ ms, at }));
+/** The ten most profitable, most first, the earlier of a tie first, without repeats. */
+const richest = (stands: Stand[]) =>
+	stands
+		.filter((s, i) => stands.findIndex((m) => m.at === s.at && m.name === s.name && m.profit === s.profit) === i)
+		.sort((a, b) => b.profit - a.profit || a.at - b.at)
+		.slice(0, 10)
+		.map(({ name, profit, at }) => ({ name, profit, at }));
+/** The stands field as stored: absent while there are none. */
+const standsField = (stands: Stand[]) => (stands.length ? { stands: richest(stands) } : {});
 /** The worn cosmetic if it is one this build knows and it was earned, else none. */
 const wearable = (worn: unknown, earned: number[]) => (isCosmetic(worn) && earned.includes(worn) ? worn : 0);
 
@@ -67,6 +91,7 @@ export function read(text: string | null): Saved {
 		earned,
 		laps: { track: TRACK, best: fastest(best) },
 		sound: typeof m.sound === 'boolean' ? m.sound : true,
+		...standsField(Array.isArray(m.stands) ? m.stands.filter(isStand) : []),
 		...(m.analytics === 'granted' || m.analytics === 'denied' ? { analytics: m.analytics } : {})
 	};
 }
@@ -82,6 +107,7 @@ export function merge(stored: Saved, mine: Saved): Saved {
 		...mine,
 		earned: ids([...stored.earned, ...mine.earned]),
 		laps: { track: TRACK, best: fastest([...stored.laps.best, ...mine.laps.best]) },
+		...standsField([...(stored.stands ?? []), ...(mine.stands ?? [])]),
 		...(analytics && { analytics })
 	};
 }
@@ -99,4 +125,10 @@ export function grant(s: Saved, id: CosmeticId) {
 export function addLap(s: Saved, lap: Lap) {
 	const all = s.laps.best, best = fastest([...all, lap]), entered = best.some((l) => l.ms === lap.ms && l.at === lap.at);
 	return { saved: entered ? { ...s, laps: { track: TRACK, best } } : s, entered, best: !all.length || lap.ms < all[0].ms };
+}
+
+/** A finished Sushi Stand game: whether it `entered` the top ten, and whether it is a personal `best`, more than every other. */
+export function addStand(s: Saved, stand: Stand) {
+	const all = s.stands ?? [], top = richest([...all, stand]), entered = top.some((t) => t.at === stand.at && t.name === stand.name);
+	return { saved: entered ? { ...s, stands: top } : s, entered, best: !all.length || stand.profit > all[0].profit };
 }

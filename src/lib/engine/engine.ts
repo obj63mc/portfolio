@@ -17,7 +17,7 @@ import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
-import { propsOf, sceneAt } from '../scenes/index.ts';
+import { GAME, propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { ASHORE, flow, type Current } from '../scenes/river.ts';
 import { blocked, type Side } from '../scenes/walk.ts';
@@ -41,9 +41,17 @@ export type Scene = Overworld | SubScene;
 /**
  * The visitor's input (spec: Input): the Join card up; joined with the pointer locked, with the unlocked mouse (a refused
  * lock), or by touch on a device with no mouse or trackpad; released, the lock let go by Esc in a card until the next
- * click takes it back; or paused, which re-locks on resume if the lock was held.
+ * click takes it back; paused, which re-locks on resume if the lock was held; or away at Sushi Stand, a page with no scene,
+ * the same on the way back.
  */
-type Input = { is: 'join' } | { is: 'locked' } | { is: 'unlocked' } | { is: 'touch' } | { is: 'released' } | { is: 'paused'; relock: boolean };
+type Input =
+	| { is: 'join' }
+	| { is: 'locked' }
+	| { is: 'unlocked' }
+	| { is: 'touch' }
+	| { is: 'released' }
+	| { is: 'paused'; relock: boolean }
+	| { is: 'away'; relock: boolean };
 
 /** A slider clicked by the locked cursor at `x`, CSS px: set to the value there, as a click on its track sets it. */
 const slide = (el: HTMLInputElement, x: number) => {
@@ -106,6 +114,8 @@ const placed = (el: Element | null) => (el?.matches('section') ? el.querySelecto
 
 export class Engine {
 	private scene: Scene | null = null;
+	/** Away at Sushi Stand (`suspend`), from this scene. */
+	private away: Scene | null = null;
 	private view: View;
 	/** The session's render scale, which the view's leaves only to frame the Foundry's reel (ticket 17). */
 	private base: number;
@@ -291,7 +301,13 @@ export class Engine {
 			if (target) this.panTo(target);
 			return;
 		}
-		const from = this.scene, overworld = 'districts' in scene;
+		// Back from Sushi Stand, the engine takes the page again and lands at the fish that led there (Joe, 2026-09-30).
+		const back = this.away, from = this.scene?.id ?? (back && GAME), overworld = 'districts' in scene;
+		if (back) {
+			this.away = null;
+			document.documentElement.classList.add('engine');
+			this.cursors.showPopover();
+		}
 		this.scene = scene;
 		// A new scene is a new room (ticket 13): one socket closes and the next opens, and a joined cursor is tagged "you".
 		this.net.join(scene.id);
@@ -311,7 +327,7 @@ export class Engine {
 		this.goal = null;
 		this.current = ASHORE;
 		this.washedAt = -Infinity;
-		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
+		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from} .door` : '.door');
 		this.shots.show(scene, !!door);
 		const at = door ?? target;
 		const box = at ? this.box(at) : overworld ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit;
@@ -323,6 +339,8 @@ export class Engine {
 		this.moveTo(centreOn(c, this.view, scene));
 		const landing = { x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
 		if (door || this.iris.is !== 'open') this.iris = this.reducedMotion.matches ? OPEN : { is: 'shut', at: landing, t0: performance.now(), landed: true };
+		// A locked cursor waits behind the Paused card, since only a click can take the lock back.
+		if (this.input.is === 'away') this.enter(this.input.relock ? { is: 'paused', relock: true } : { is: this.fine.matches ? 'unlocked' : 'touch' });
 		if (!door) return;
 		// Before Join there is no cursor. The unlocked mouse's cursor stays at the OS pointer, where its clicks land. Push
 		// waits for the cursor to move, so a door near the scene's edge doesn't carry the camera off it.
@@ -343,7 +361,9 @@ export class Engine {
 	 * for the hop to go; null under reduced motion or in a hidden tab, which draws nothing, and the hop goes at once.
 	 */
 	close(to: URL): Promise<void> | null {
-		sound.play('door-open');
+		if (!this.scene) return null;
+		// Into Sushi Stand the koi splashes (Joe, 2026-09-30).
+		sound.play(to.pathname === `/${GAME}` ? 'splash' : 'door-open');
 		// The scene's beds fade as the iris closes, and the theme toward its level beyond the door (ticket 21).
 		sound.leave(sceneAt(to.pathname));
 		if (this.reducedMotion.matches || document.hidden) return null;
@@ -354,6 +374,30 @@ export class Engine {
 		this.iris = closing(this.iris, { ...at }, now, this.view);
 		const left = this.iris.is === 'closing' ? this.iris.t0 + IRIS.close - now : 0;
 		return new Promise((done) => setTimeout(done, left));
+	}
+
+	/**
+	 * Out to Sushi Stand (Joe, 2026-09-30), a page of its own with no scene: the room left, the lock let go and the
+	 * canvases put away, nothing drawn and no input taken, until `show` brings the next scene.
+	 */
+	suspend() {
+		if (!this.scene) return;
+		const i = this.input;
+		this.away = this.scene;
+		this.scene = null;
+		this.net.leave();
+		this.keys.clear();
+		this.goal = null;
+		this.iris = OPEN;
+		this.enter({ is: 'away', relock: i.is === 'paused' ? i.relock : i.is === 'locked' || i.is === 'released' });
+		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+		this.cursors.hidePopover();
+		this.hot?.classList.remove('hot');
+		this.hot = null;
+		const html = document.documentElement;
+		html.classList.remove('engine');
+		delete html.dataset.iris;
+		this.layer.style.transform = '';
 	}
 
 	private bind() {

@@ -6,6 +6,12 @@ import type { District, Overworld, Rect } from './types';
 // The Old Courthouse and the Maplewood storefront row are scenery painted in the plate, not venues.
 const centre = (r: Rect) => r.x + r.w / 2;
 
+/**
+ * Sushi Stand (Joe, 2026-09-30): the game behind the koi in Forest Park's Grand Basin, a page of its own with no scene,
+ * at `/sushi-stand`; also the id of the venue whose door leads there.
+ */
+export const GAME = 'sushi-stand';
+
 // One ground plane, one horizon: the depth factor runs 0.85 at the treeline to 1.0 at the south edge in every
 // region, so crossing a region boundary never changes scale. The regions tile the whole world, sky included, so the
 // factor holds 0.85 above the treeline instead of falling back to 1 there.
@@ -56,6 +62,16 @@ const districts: District[] = [
 				props: []
 			}
 		]
+	},
+	{
+		// The park strip north of Maplewood, under its painted sign (Joe, 2026-09-30). A koi swims in the Grand Basin below the
+		// Art Museum and its statue; clicking it opens Sushi Stand, the game (routes/sushi-stand). The venue is the koi's
+		// swim, measured on a gridded crop of the master between the basin's fountains, its door the whole of it.
+		id: 'forest-park',
+		name: 'Forest Park',
+		rect: { x: 200, y: 250, w: 1650, h: 600 },
+		sign: { x: 1468, y: 694, w: 220, h: 58 },
+		venues: [{ id: GAME, name: 'Sushi Stand', rect: { x: 684, y: 486, w: 252, h: 68 }, door: `/${GAME}`, props: [] }]
 	},
 	{
 		id: 'central-west-end',

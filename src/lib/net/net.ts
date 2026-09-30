@@ -93,6 +93,14 @@ export class Net {
 		this.open();
 	}
 
+	/** Leaves the room for Sushi Stand, which has none: peers vanish, and no socket opens until the next join. */
+	leave() {
+		this.scene = null;
+		this.screen = null;
+		this.close();
+		this.link = { is: 'off' };
+	}
+
 	/**
 	 * A Foundry poster's click: the room plays the title for everyone if its screen is idle, and nothing changes here until
 	 * it echoes. Offline the screen's state machine runs here, from this click, until a `hello` overwrites it.

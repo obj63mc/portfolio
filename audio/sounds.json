@@ -543,6 +543,182 @@
 				102.581
 			],
 			"edits": "Downloaded from Pixabay by Joe; served only as this edited loop, never whole"
+		},
+		{
+			"id": "splash",
+			"kind": "one-shot",
+			"use": "Sushi Stand: the Grand Basin koi clicked, as the game opens (Joe, 2026-09-30)",
+			"status": "approved",
+			"file": "splash-freesound-398032.mp3",
+			"source": "https://freesound.org/people/swordofkings128/sounds/398032/",
+			"title": "Splash",
+			"author": "swordofkings128",
+			"licence": "CC0",
+			"trim": [
+				0,
+				1.0
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "tap",
+			"kind": "one-shot",
+			"use": "Sushi Stand: every button in the game, the fish market's pounds included (Joe, 2026-09-30)",
+			"status": "approved",
+			"file": "tap-freesound-686542.mp3",
+			"source": "https://freesound.org/people/Troube/sounds/686542/",
+			"title": "bop sound effect button",
+			"author": "Troube",
+			"licence": "CC0",
+			"trim": [
+				0,
+				0.166
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "register",
+			"kind": "one-shot",
+			"use": "Sushi Stand: a service's sales shown",
+			"status": "approved",
+			"file": "register-freesound-209578.mp3",
+			"source": "https://freesound.org/people/Zott820/sounds/209578/",
+			"title": "Cash Register Purchase",
+			"author": "Zott820",
+			"licence": "CC0",
+			"trim": [
+				0,
+				1.6
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "profit",
+			"kind": "one-shot",
+			"use": "Sushi Stand: a day that made a profit",
+			"status": "approved",
+			"file": "profit-freesound-456965.mp3",
+			"source": "https://freesound.org/people/FunWithSound/sounds/456965/",
+			"title": "Short Success Sound Glockenspiel Treasure Video Game.mp3",
+			"author": "FunWithSound",
+			"licence": "CC0",
+			"trim": [
+				0.05,
+				1.6
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "loss",
+			"kind": "one-shot",
+			"use": "Sushi Stand: a day that lost money",
+			"status": "approved",
+			"file": "loss-freesound-841370.mp3",
+			"source": "https://freesound.org/people/Paloma.SSSS/sounds/841370/",
+			"title": "Womp Womp on Muted Cornet",
+			"author": "Paloma.SSSS",
+			"licence": "CC0",
+			"trim": [
+				0.1,
+				1.7
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "service-bell",
+			"kind": "one-shot",
+			"use": "Sushi Stand: the doors opening for lunch or dinner",
+			"status": "approved",
+			"file": "service-bell-freesound-192761.mp3",
+			"source": "https://freesound.org/people/ryuuzan/sounds/192761/",
+			"title": "Ryuuzan_shop_door_bell00.wav",
+			"author": "ryuuzan",
+			"licence": "CC0",
+			"trim": [
+				0,
+				0.9
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "rain",
+			"kind": "one-shot",
+			"use": "Sushi Stand: storms in the day's outlook",
+			"status": "approved",
+			"file": "rain-freesound-581125.mp3",
+			"source": "https://freesound.org/people/Fission9/sounds/581125/",
+			"title": "Distant Thunder 4",
+			"author": "Fission9",
+			"licence": "CC0",
+			"trim": [
+				4.3,
+				6.2
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-sushi-service",
+			"kind": "bed",
+			"use": "Sushi Stand's bed: a busy restaurant, under a service and its sales",
+			"status": "approved",
+			"file": "bed-sushi-service-freesound-512367.mp3",
+			"source": "https://freesound.org/people/callyrobyn/sounds/512367/",
+			"title": "Restaurant Ambience 12.m4a",
+			"author": "callyrobyn",
+			"licence": "CC0",
+			"trim": [
+				0.5,
+				36.5
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-forest-park",
+			"kind": "bed",
+			"use": "Forest Park's bed: a summer park, a fountain, birds and people",
+			"status": "approved",
+			"file": "bed-forest-park-freesound-504965.mp3",
+			"source": "https://freesound.org/people/felix.blume/sounds/504965/",
+			"title": "Park during summer in Fribourg (Switzerland)",
+			"author": "felix.blume",
+			"licence": "CC0",
+			"trim": [
+				510,
+				546
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "music-sushi-stand",
+			"kind": "music",
+			"use": "Sushi Stand's music: a chill beat with an eastern Japanese colour",
+			"status": "approved",
+			"file": "music-sushi-stand-freesound-593849.mp3",
+			"source": "https://freesound.org/people/szegvari/sounds/593849/",
+			"title": "Japan dreams - Cinematic music east japan beat chill relax.wav",
+			"author": "szegvari",
+			"licence": "CC0",
+			"trim": [
+				0,
+				52
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "star",
+			"kind": "one-shot",
+			"use": "Sushi Stand: the final results, a video-game star power-up in the spirit of Mario's (Joe, 2026-09-30)",
+			"status": "approved",
+			"file": "star-freesound-220173.mp3",
+			"source": "https://freesound.org/people/GameAudio/sounds/220173/",
+			"title": "Spacey 1up/Power up",
+			"author": "GameAudio",
+			"licence": "CC0",
+			"trim": [
+				0,
+				0.9
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		}
 	]
 }

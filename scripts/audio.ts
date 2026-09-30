@@ -22,8 +22,9 @@ export const KINDS = {
 	'one-shot': { channels: 1, kbps: 96, level: { peak: -6 }, max: 2 },
 	bed: { channels: 2, kbps: 96, level: { lufs: -30 }, loop: [30, 45] },
 	// Music's loops are 60 to 120 s by the format rule, but the theme is "a 2 to 3 minute loop", and Joe would have it
-	// whatever loops best, longer included (2026-09-30): up to 3 minutes.
-	music: { channels: 2, kbps: 128, level: { lufs: -26 }, loop: [60, 180] }
+	// whatever loops best, longer included (2026-09-30): up to 3 minutes. Sushi Stand's pick, a 54 s loop, repeats every 52 s
+	// (Joe, 2026-09-30).
+	music: { channels: 2, kbps: 128, level: { lufs: -26 }, loop: [50, 180] }
 } as const;
 
 export type Kind = keyof typeof KINDS;

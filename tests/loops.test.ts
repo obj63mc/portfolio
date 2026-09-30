@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-	bedGain, BEDS, bedsOf, envelope, FADE, fadeOf, gains, leavingGains, LEVEL, loopsFor, loopsNeeded, MUSIC, NEAR, nextPass, OVERLAP, playhead, RESUME, SCENE_MUSIC, type LoopId
+	bedGain, BEDS, bedsOf, GAME_LOOPS, gameGains, envelope, FADE, fadeOf, gains, leavingGains, LEVEL, loopsFor, loopsNeeded, MUSIC, NEAR, nextPass, OVERLAP, playhead, RESUME, SCENE_MUSIC, type LoopId
 } from '../src/lib/loops.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
@@ -31,12 +31,13 @@ test('the fade out is an equal-power curve: gains at mirrored distances square t
 	}
 });
 
-test('every scene has its beds: the five districts and the river on the overworld, its own in a sub-scene', () => {
+test('every scene has its beds: the six districts and the river on the overworld, its own in a sub-scene; Sushi Stand its own', () => {
 	const ow = bedsOf(OVERWORLD).map((b) => b.id);
 	assert.deepEqual(ow.sort(), [...OVERWORLD.districts.map((d) => `bed-${d.id}`), 'bed-river'].sort());
 	for (const d of OVERWORLD.districts) assert.deepEqual(bedsOf(OVERWORLD).find((b) => b.id === `bed-${d.id}`)!.footprint, d.rect, d.id);
 	for (const s of Object.values(SUB_SCENES)) assert.deepEqual(bedsOf(s), [{ id: `bed-${s.id}`, footprint: { x: 0, y: 0, w: s.w, h: s.h } }], s.id);
-	assert.deepEqual([...new Set(SCENES.flatMap((s) => bedsOf(s).map((b) => b.id)))].sort(), [...BEDS].sort(), 'eleven beds, each somewhere');
+	const beds = [...SCENES.flatMap((s) => bedsOf(s).map((b) => b.id)), 'bed-sushi-service'];
+	assert.deepEqual([...new Set(beds)].sort(), [...BEDS].sort(), 'thirteen beds, each somewhere');
 });
 
 test("the river's footprint holds the Arch and the water off the bridge, clear of Midtown and Belleville", () => {
@@ -108,8 +109,14 @@ test('a scene’s gains name only its own loops, and every loop some scene plays
 		const ids = [...gains(s, { x: 10, y: 10 }, { screen: false, video: false }).keys()];
 		assert.ok(ids.every((id) => (BEDS as readonly string[]).includes(id) || (MUSIC as readonly string[]).includes(id)), s.id);
 	}
-	const all = new Set(SCENES.flatMap((s) => [...gains(s, { x: 10, y: 10 }, { screen: false, video: false }).keys()]));
+	const all = new Set([...SCENES.flatMap((s) => [...gains(s, { x: 10, y: 10 }, { screen: false, video: false }).keys()]), ...GAME_LOOPS]);
 	assert.deepEqual([...all].sort(), [...BEDS, ...MUSIC].sort());
+});
+
+test('Sushi Stand: its music at a bar’s level throughout, the restaurant’s bed only through a service, nothing else', () => {
+	assert.deepEqual([...gameGains(false)], [['music-sushi-stand', LEVEL.music], ['bed-sushi-service', 0]]);
+	assert.deepEqual([...gameGains(true)], [['music-sushi-stand', LEVEL.music], ['bed-sushi-service', 1]]);
+	assert.deepEqual([...GAME_LOOPS].sort(), [...gameGains(true).keys()].sort());
 });
 
 test('loading: the beds audible at the camera and those within 800 px of their fade zone, and the music or theme the scene plays', () => {

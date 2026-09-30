@@ -12,7 +12,8 @@ import type { Screen } from './net/screen.ts';
  */
 export const ONE_SHOTS = [
 	'card', 'chime', 'fanfare', 'best-lap', 'door-open', 'door-close', 'projector',
-	'knock', 'moose', 'bell', 'squelch', 'fan', 'click', 'marker', 'pour', 'chalk', 'creak', 'cooler', 'lighter'
+	'knock', 'moose', 'bell', 'squelch', 'fan', 'click', 'marker', 'pour', 'chalk', 'creak', 'cooler', 'lighter',
+	'splash', 'tap', 'register', 'profit', 'loss', 'service-bell', 'rain', 'star'
 ] as const;
 
 export type SoundId = (typeof ONE_SHOTS)[number];
@@ -72,8 +73,17 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
  */
 export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen'];
 
-/** What each scene hears beyond its props: the overworld's signpost and the lap timer's beep, the Foundry's projector start. */
-const EXTRAS: Readonly<Record<string, readonly SoundId[]>> = { overworld: ['knock', 'best-lap'], foundry: ['projector'] };
+/**
+ * What each scene hears beyond its props: the overworld's signpost, the lap timer's beep and the Grand Basin koi's splash
+ * into Sushi Stand, the Foundry's projector start.
+ */
+const EXTRAS: Readonly<Record<string, readonly SoundId[]>> = { overworld: ['knock', 'best-lap', 'splash'], foundry: ['projector'] };
+
+/**
+ * Sushi Stand's one-shots (Joe, 2026-09-30): every press's tap, the fish market's pounds included, the doors' bell as a
+ * service opens, the register on its sales, a day's profit or loss, the storm in an outlook, and the star at the end.
+ */
+export const GAME_SOUNDS: readonly SoundId[] = ['tap', 'service-bell', 'register', 'profit', 'loss', 'rain', 'star'];
 
 /** A scene's buffers are let go this long after the visitor leaves it, ms, unless the scene they are in needs them. */
 export const LINGER = 60_000;

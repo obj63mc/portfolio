@@ -1,6 +1,6 @@
 <script lang="ts">
 	// The site's type (Joe, 2026-09-30), self-hosted: Vite bundles each face's files from its @fontsource package, never
-	// fetched from Google. Headlines in Barlow Condensed ExtraBold, body copy in Montserrat at 400 and 500 (src/app.css).
+	// fetched from Google. Headlines in Barlow Condensed ExtraBold, body copy in Montserrat at 400, 500 and 700 (src/app.css).
 	import '@fontsource/barlow-condensed/800.css';
 	import '@fontsource/montserrat/400.css';
 	import '@fontsource/montserrat/500.css';
@@ -14,7 +14,6 @@
 	import LapBoard from '$lib/LapBoard.svelte';
 	import SoundToggle from '$lib/SoundToggle.svelte';
 	import { sceneAt } from '$lib/scenes';
-	import { OVERWORLD } from '$lib/scenes/overworld';
 
 	let { children } = $props();
 	let scene: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, join: HTMLDialogElement, paused: HTMLDialogElement;
@@ -32,10 +31,13 @@
 		if (!to) return;
 		// A scene entered, the first load included, counts for analytics (ticket 23); a fragment on the same scene doesn't.
 		pageView(to.url);
+		// Sushi Stand has no scene: the engine, if it is running, steps away until the next one (Joe, 2026-09-30).
+		const shown = sceneAt(to.url.pathname);
+		if (!shown) return void started?.suspend();
 		engine ??= import('$lib/engine/engine')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
 			.catch((err) => void console.error(err));
-		engine.then((e) => e?.show(sceneAt(to.url.pathname) ?? OVERWORLD, to.url.hash));
+		engine.then((e) => e?.show(shown, to.url.hash));
 	});
 	// A hop to another scene waits for the iris to close on the door (Joe, 2026-09-30); a fragment on the same scene pans.
 	// It waits before it starts, called off and sent again once the iris is shut: a door's link by goto, the back or

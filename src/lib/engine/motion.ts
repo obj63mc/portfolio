@@ -242,3 +242,28 @@ export function ripples(river: Overworld['river'], t: number, rm: boolean): Ripp
 	});
 	return out;
 }
+
+/**
+ * The koi in Forest Park's Grand Basin (Joe, 2026-09-30), whose click opens Sushi Stand: `len` world px nose to tail,
+ * seen from the map's raised camera, which squashes the water's depth to `fore` of its width; it laps an oval in its swim
+ * rect every `period` ms, a little faster and slower in turn, its tail beating every `beat` ms, and leaves a ring on the
+ * water every `ring` ms, each spreading for two of them. Under reduced motion it rests at the oval's front, facing west.
+ */
+export const KOI = { len: 72, fore: 0.55, period: 16_000, surge: 7_300, beat: 620, ring: 1_200 } as const;
+
+/** Where the koi is in its `swim` rect at `t`: its middle, its heading on the water, its tail's swing, and its rings. */
+export function koi(swim: Rect, t: number, rm: boolean) {
+	const cx = swim.x + swim.w / 2, cy = swim.y + swim.h / 2, rx = swim.w / 2 - KOI.len * 0.6, ry = swim.h / 2 - KOI.len * 0.23;
+	// Phases taken within one period in double precision, as `turned` explains.
+	const at = (t: number) => (rm ? Math.PI / 2 : 2 * Math.PI * ((t % KOI.period) / KOI.period) + 0.25 * Math.sin((2 * Math.PI * (t % KOI.surge)) / KOI.surge));
+	const place = (t: number) => ({ x: cx + rx * Math.cos(at(t)), y: cy + ry * Math.sin(at(t)) });
+	const a = at(t), heading = Math.atan2((ry * Math.cos(a)) / KOI.fore, -rx * Math.sin(a));
+	const wag = rm ? 0 : 0.3 * Math.sin((2 * Math.PI * (t % KOI.beat)) / KOI.beat);
+	const rings = rm
+		? []
+		: [0, 1].map((k) => {
+				const from = Math.floor(t / KOI.ring) * KOI.ring - k * KOI.ring, age = (t - from) / (2 * KOI.ring);
+				return { ...place(from), r: 6 + 22 * age, a: 0.45 * (1 - age) };
+			});
+	return { ...place(t), heading, wag, rings };
+}

@@ -7,10 +7,10 @@
 // the scene, eased so nothing pops, over passes that overlap (a bed's at equal power, music's at equal gain); paused,
 // all of them duck to 30 percent together. Nothing is fetched before Join or while muted, and a failed fetch is silence.
 import FILES from './sound-files.json';
-import { LEVEL, OVERLAP, envelope, fadeOf, gains, leavingGains, loopsFor, loopsNeeded, nextPass, playhead, type Fade, type LoopId } from './loops.ts';
+import { GAME_LOOPS, LEVEL, OVERLAP, envelope, fadeOf, gameGains, gains, leavingGains, loopsFor, loopsNeeded, nextPass, playhead, type Fade, type LoopId } from './loops.ts';
 import { KEY } from './saved.ts';
 import { saved } from './saved.svelte.ts';
-import { LINGER, needed, stale, type SoundId } from './sound.ts';
+import { GAME_SOUNDS, LINGER, needed, stale, type SoundId } from './sound.ts';
 import type { Overworld, Point, SubScene } from './scenes/types';
 
 type Scene = Overworld | SubScene;
@@ -43,6 +43,13 @@ let joined = false;
 /** The scene the visitor is in, and the camera's centre on it at the last frame (world px). */
 let current: Scene | null = null;
 let centre: Point = { x: 0, y: 0 };
+/**
+ * Sushi Stand (Joe, 2026-09-30), up without a scene or the engine's frames: whether a service is on, and the timer that
+ * steps its loops in their place.
+ */
+let game: { service: boolean; timer: ReturnType<typeof setInterval> } | null = null;
+/** How often the game steps its loops, ms: well inside a pass's scheduling lead. */
+const GAME_STEP = 250;
 /**
  * Between scenes: settled, the loops following the camera; leaving through a door as its iris closes, fading with it
  * (loops.ts `leavingGains`); or opening on the next scene, eased with its iris until `until` (context s).
@@ -191,7 +198,10 @@ function load(ids: Iterable<AudioId>) {
 }
 
 /** Everything the visitor's scene needs now: its one-shots, and the loops for the camera's place in it. */
-const need = (): ReadonlySet<AudioId> => (current ? new Set<AudioId>([...needed(current), ...loopsNeeded(current, centre)]) : new Set());
+const need = (): ReadonlySet<AudioId> =>
+	game ? new Set<AudioId>([...GAME_SOUNDS, ...GAME_LOOPS])
+	: current ? new Set<AudioId>([...needed(current), ...loopsNeeded(current, centre)])
+	: new Set();
 
 /** Lets go of the buffers the visitor's scene doesn't need that were left behind a minute ago. */
 function sweep() {
@@ -272,12 +282,33 @@ export const sound = {
 	 * here, and its loops fade in as the iris opens, the theme keeping its place.
 	 */
 	scene(scene: Scene) {
+		this.game(false);
 		const now = performance.now();
 		for (const id of need()) left.set(id, now);
 		current = scene;
 		passage = { is: 'opening', until: (ctx?.currentTime ?? 0) + 3 * EASE.opening };
 		if (joined && saved.sound) load(need());
 		setTimeout(sweep, LINGER);
+	},
+	/**
+	 * Sushi Stand up, or down: its sounds load, the last scene's are let go a minute later, and its loops fade in as the
+	 * page opens and step on a timer, since the engine draws no frames while it is up.
+	 */
+	game(on: boolean) {
+		if (on === !!game) return;
+		const now = performance.now();
+		for (const id of need()) left.set(id, now);
+		if (game) clearInterval(game.timer);
+		game = on ? { service: false, timer: setInterval(() => this.step({ centre, paused: false, screen: false }), GAME_STEP) } : null;
+		if (on) {
+			passage = { is: 'opening', until: (ctx?.currentTime ?? 0) + 3 * EASE.opening };
+			if (joined && saved.sound) load(need());
+		}
+		setTimeout(sweep, LINGER);
+	},
+	/** A Sushi Stand service on or over: the restaurant's bed comes up under the music, and goes. */
+	service(on: boolean) {
+		if (game) game.service = on;
 	},
 	/** A door to `scene` hovered or focused: its sounds load ahead of the hop, and go a minute later if it isn't taken. */
 	preload(scene: Scene) {
@@ -297,8 +328,8 @@ export const sound = {
 	step(frame: { centre: Point; paused: boolean; screen: boolean }) {
 		centre = frame.centre;
 		const scene = current;
-		if (!scene || !joined || !saved.sound) return;
-		const want = loopsNeeded(scene, centre), now = performance.now();
+		if ((!scene && !game) || !joined || !saved.sound) return;
+		const want = game ? GAME_LOOPS : loopsNeeded(scene!, centre), now = performance.now();
 		if ([...want].some((id) => !wanted.has(id)) || [...wanted].some((id) => !want.has(id))) {
 			for (const id of wanted) if (!want.has(id)) left.set(id, now);
 			for (const id of want) left.delete(id);
@@ -313,7 +344,7 @@ export const sound = {
 		const tc = passage.is === 'leaving' ? EASE.closing : passage.is === 'opening' ? EASE.opening : EASE.camera;
 		const level = frame.paused ? LEVEL.paused : 1;
 		if (level !== ambienceLevel) ambience.gain.setTargetAtTime((ambienceLevel = level), t, 0.1);
-		const s = { screen: frame.screen, video: [...media].some((m) => !m.paused && !m.ended) }, here = gains(scene, centre, s);
+		const s = { screen: frame.screen, video: [...media].some((m) => !m.paused && !m.ended) }, here = game ? gameGains(game.service) : gains(scene!, centre, s);
 		const target = passage.is === 'leaving' ? leavingGains(here, passage.to, s) : here;
 		for (const id of new Set<LoopId>([...target.keys(), ...loops.keys()])) {
 			// In hundredths, so a slow pan sets a new target when it is heard, not every frame.

@@ -1,6 +1,6 @@
 /*
  * The site's type (Joe, 2026-09-30), every face self-hosted: headlines in Barlow Condensed ExtraBold and body copy in
- * Montserrat at 400 or 500, from the @fontsource packages imported in +layout.svelte, and the Foundry marquee's
+ * Montserrat at 400, 500 or 700, from the @fontsource packages imported in +layout.svelte, and the Foundry marquee's
  * dot-matrix face, drawn on the canvas alone (engine/fonts.ts keeps the canvas's families in step with these). No other
  * weight is loaded, so none is faked by emboldening.
  */

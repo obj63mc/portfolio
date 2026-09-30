@@ -9,13 +9,16 @@ type Scene = Overworld | SubScene;
 /** The beds, by id: each district's, the river and the Arch's, and each sub-scene's; `bed-<district or scene id>`. */
 export const BEDS = [
 	'bed-maplewood', 'bed-central-west-end', 'bed-midtown', 'bed-carondelet-park', 'bed-belleville', 'bed-river',
-	'bed-slu', 'bed-foundry', 'bed-moosylvania', 'bed-side-project', 'bed-brennans'
+	'bed-slu', 'bed-foundry', 'bed-moosylvania', 'bed-side-project', 'bed-brennans', 'bed-forest-park', 'bed-sushi-service'
 ] as const;
 
 export type BedId = (typeof BEDS)[number];
 
-/** The music: the overworld's theme, and the three sub-scenes' own. The Foundry's is its screen's video, while it plays. */
-export const MUSIC = ['theme', 'music-brennans', 'music-side-project', 'music-moosylvania'] as const;
+/**
+ * The music: the overworld's theme, the three sub-scenes' own and Sushi Stand's. The Foundry's is its screen's video,
+ * while it plays.
+ */
+export const MUSIC = ['theme', 'music-brennans', 'music-side-project', 'music-moosylvania', 'music-sushi-stand'] as const;
 
 export type MusicId = (typeof MUSIC)[number];
 export type LoopId = BedId | MusicId;
@@ -91,6 +94,16 @@ export function gains(scene: Scene, centre: Point, s: Showing): Map<LoopId, numb
 	if (own) out.set(own, ownLevel(own) * (s.video ? LEVEL.duck : 1));
 	return out;
 }
+
+/** Sushi Stand's loops (Joe, 2026-09-30): its music throughout, and its restaurant's bed while a service is on. */
+export const GAME_LOOPS: ReadonlySet<LoopId> = new Set(['music-sushi-stand', 'bed-sushi-service']);
+
+/** Every loop's gain in Sushi Stand: its music at a bar's level, the restaurant under it only through a service. */
+export const gameGains = (service: boolean) =>
+	new Map<LoopId, number>([
+		['music-sushi-stand', LEVEL.music],
+		['bed-sushi-service', service ? 1 : 0]
+	]);
 
 /**
  * Leaving through a door for `to` as its iris closes (none: off the site): every loop playing, `from`, fades out with the

@@ -51,7 +51,7 @@ test('overworld: skip link, h1, signpost, then districts west to east with their
 	assert.match(hrefs(signpost(layer))[0], /\.pdf$/);
 	assert.match(hrefs(signpost(layer))[1], /^mailto:/);
 	// West to east by centre x on the accepted master: the park lake sits west of the West End row.
-	assert.deepEqual(hrefs(signpost(layer)).slice(4), ['#maplewood', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
+	assert.deepEqual(hrefs(signpost(layer)).slice(4), ['#maplewood', '#forest-park', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
 	assert.deepEqual(texts(layer, 'h2'), OVERWORLD.districts.map((d) => d.name));
 	assert.deepEqual(texts(layer, 'h3'), OVERWORLD.districts.flatMap((d) => d.venues.map((v) => v.name)));
 	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
@@ -320,7 +320,8 @@ test('fonts: every page preloads the latin faces it is set in, bundled with the 
 		assert.deepEqual(preloads.map((href) => href.replace(/^.*\/|\.[\w-]+\.woff2$/g, '')).sort(), [
 			'barlow-condensed-latin-800-normal',
 			'montserrat-latin-400-normal',
-			'montserrat-latin-500-normal'
+			'montserrat-latin-500-normal',
+			'montserrat-latin-700-normal'
 		], file);
 		for (const href of preloads) assert.ok(existsSync(new URL(`../build/${href.replace(/^(\.\/|\/)/, '')}`, import.meta.url)), href);
 	}

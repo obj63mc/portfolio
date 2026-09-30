@@ -6,11 +6,11 @@
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
 // their timing is in motion.ts. Carried over from the rendering prototype's canvas props (tag archive/prototype/rendering-camera).
 import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
-import { artOf, propsOf } from '../scenes/index.ts';
+import { GAME, artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { drawCourse } from './course-overlay.ts';
 import { MARQUEE, loadFaces, settled } from './fonts.ts';
-import { CLICK_MS, WATER, blink, chase, gaze, glint, hover, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
+import { CLICK_MS, KOI, WATER, blink, chase, gaze, glint, hover, koi, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
@@ -95,6 +95,8 @@ interface Layer {
 	video?: { el: HTMLVideoElement; screen: Rect };
 	/** The Foundry marquee's letter board: the canopy's face, its text, and how long one showing is once measured, world px. */
 	board?: { face: Point[]; text: string; period?: number };
+	/** The Grand Basin koi's swim, the door to Sushi Stand, which it lights while hovered. */
+	koi?: Rect;
 	/** Its hover level, 0 to 1, and when it was last clicked (server ms). */
 	hover: number;
 	clicked: number;
@@ -110,6 +112,14 @@ const HOVERED = [
 	"html:not([data-input='locked'], [data-input='touch']) .prop:not(.behind) > button:hover",
 	'.prop > button:is(.hot, :focus-visible)'
 ].join(', ');
+
+/** The Grand Basin koi's door hovered, as HOVERED reads a prop's button. */
+const KOI_HOVERED = [
+	`html:not([data-input='locked'], [data-input='touch']) #${GAME} .door:hover`,
+	`#${GAME} .door:is(.hot, :focus-visible)`
+].join(', ');
+/** The koi's kohaku colours from the style contract (art/style.txt): an ivory body with coral patches, a dark teal eye. */
+const KOI_INK = { body: '#fff4d4', patch: '#df7554', eye: '#244f55', shadow: 'rgb(36 79 85 / 0.22)', ring: '255 244 212' };
 
 const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 const grow = (r: Rect, d: number): Rect => ({ x: r.x - d, y: r.y - d, w: r.w + 2 * d, h: r.h + 2 * d });
@@ -213,6 +223,8 @@ export class Props {
 			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect), layer(undefined, ['rider'], rider(this.t, this.rm).at));
 			this.layers.push(...[...scene.track.cover, scene.track.sign].map((id) => layer(undefined, [id])));
 			this.layers.push({ ...layer(undefined, scene.marquee.art), board: { face: scene.marquee.face, text: scene.marquee.text } });
+			const swim = scene.districts.flatMap((d) => d.venues).find((v) => v.id === GAME)?.rect;
+			if (swim) this.layers.push({ box: swim, cuts: [], koi: swim, hover: 0, clicked: -Infinity, drawn: '' });
 			this.line = { ...along(LOOP, 0), half: LOOP.half };
 			const m = scene.river.mask, x = Math.min(...m.map((p) => p.x)), y = Math.min(...m.map((p) => p.y));
 			this.river = { is: scene.river, box: { x, y, w: Math.max(...m.map((p) => p.x)) - x, h: Math.max(...m.map((p) => p.y)) - y }, drawn: -1 };
@@ -271,6 +283,7 @@ export class Props {
 		let rode = false;
 		for (const l of this.layers) {
 			if (l.prop) l.hover = hover(l.hover, hovered.has(l.prop.id) || l.cuts.some((c) => hovered.has(c.id)), dt, rm);
+			else if (l.koi) l.hover = hover(l.hover, !!this.layer.querySelector(KOI_HOVERED), dt, rm);
 			if (l.rig?.name === 'rider') {
 				// The rider moves along the loop: where it was is drawn again too, and its base y reorders it.
 				const was = l.box;
@@ -363,7 +376,7 @@ export class Props {
 		// The eye looks only while it is in view, since `step` reads no layer out of it: to a tenth of a world px.
 		const looking = eye && gaze(eye.rect, this.own, rm);
 		const ambient =
-			l.rig && !rm ? t
+			(l.rig || l.koi) && !rm ? t
 			: l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}`
 			: isBottle(l.prop) ? glint(t, rm)
 			: v ? `${v.currentTime},${v.ended}`
@@ -400,6 +413,7 @@ export class Props {
 				} else this.drawCut(g, c);
 			}
 			if (l.rig) this.drawRig(g, l);
+			if (l.koi) this.drawKoi(g, l.koi);
 		};
 		// Hovered, a prop glows round its silhouette, which covers its painted original exactly; a poster's picture light
 		// lights it instead, but under reduced motion every hover is the plain glow. The glow is painted first and the prop
@@ -416,6 +430,82 @@ export class Props {
 		if (isBottle(l.prop)) this.glint(g, l);
 		if (poster && h && !rm) this.lamp(g, l.cuts[0], POSTER_LAMPS[poster], h);
 		if (l.video) this.screen(g, l.video.el, l.video.screen);
+		g.restore();
+	}
+
+	/** The Grand Basin koi: its rings on the water, its shadow, then the fish, its tail beating. */
+	private drawKoi(g: CanvasRenderingContext2D, swim: Rect) {
+		const k = koi(swim, this.t, this.rm), L = KOI.len / 60;
+		for (const r of k.rings) {
+			g.beginPath();
+			g.ellipse(r.x, r.y, r.r, r.r * KOI.fore, 0, 0, 2 * Math.PI);
+			g.strokeStyle = `rgb(${KOI_INK.ring} / ${r.a})`;
+			g.lineWidth = 1.5;
+			g.stroke();
+		}
+		g.save();
+		// On the water's plane: squashed to the camera, then turned to its heading, nose along +x, 60 units long.
+		g.translate(k.x, k.y);
+		g.scale(L, L * KOI.fore);
+		g.rotate(k.heading - 0.12 * k.wag);
+		const body = () => {
+			g.beginPath();
+			g.moveTo(26, 0);
+			g.bezierCurveTo(24, -9, 6, -11, -8, -8);
+			g.bezierCurveTo(-16, -6, -21, -3, -24, 0);
+			g.bezierCurveTo(-21, 3, -16, 6, -8, 8);
+			g.bezierCurveTo(6, 11, 24, 9, 26, 0);
+		};
+		const tail = () => {
+			g.save();
+			g.translate(-22, 0);
+			g.rotate(k.wag);
+			g.beginPath();
+			g.moveTo(2, 0);
+			g.quadraticCurveTo(-8, -4, -14, -11);
+			g.quadraticCurveTo(-10, 0, -14, 11);
+			g.quadraticCurveTo(-8, 4, 2, 0);
+			g.restore();
+		};
+		const fins = () => {
+			for (const side of [-1, 1]) {
+				g.beginPath();
+				g.ellipse(9, side * 10, 6, 2.6, side * 0.7 + k.wag * 0.5, 0, 2 * Math.PI);
+				g.fill();
+			}
+		};
+		g.fillStyle = KOI_INK.shadow;
+		g.save();
+		g.translate(3, 7);
+		body();
+		g.fill();
+		tail();
+		g.fill();
+		g.restore();
+		g.fillStyle = KOI_INK.body;
+		g.globalAlpha = 0.8;
+		fins();
+		tail();
+		g.fill();
+		g.globalAlpha = 1;
+		body();
+		g.fill();
+		g.save();
+		body();
+		g.clip();
+		g.fillStyle = KOI_INK.patch;
+		for (const [x, y, rx, ry] of [[19, 0, 6, 7], [4, -3, 8, 6], [-12, 3, 7, 5]]) {
+			g.beginPath();
+			g.ellipse(x, y, rx, ry, 0, 0, 2 * Math.PI);
+			g.fill();
+		}
+		g.restore();
+		g.fillStyle = KOI_INK.eye;
+		for (const side of [-1, 1]) {
+			g.beginPath();
+			g.arc(20, side * 4.5, 1.3, 0, 2 * Math.PI);
+			g.fill();
+		}
 		g.restore();
 	}
 

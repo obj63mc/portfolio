@@ -3,7 +3,7 @@
 // that plays them (sound.svelte.ts) only follows these.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { GLOBAL, LINGER, ONE_SHOTS, PROP_SOUNDS, SILENT, clickSounds, grantSound, needed, projectorCue, stale, type SoundId } from '../src/lib/sound.ts';
+import { GAME_SOUNDS, GLOBAL, LINGER, ONE_SHOTS, PROP_SOUNDS, SILENT, clickSounds, grantSound, needed, projectorCue, stale, type SoundId } from '../src/lib/sound.ts';
 import { SUB_SCENES, propsOf } from '../src/lib/scenes/index.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Prop } from '../src/lib/scenes/types.ts';
@@ -87,8 +87,9 @@ test('every scene loads the global one-shots, its props\' signatures and its own
 	assert.ok(needed(OVERWORLD).has('best-lap') && needed(OVERWORLD).has('knock'), 'the lap beep and the signpost');
 	assert.ok(needed(SUB_SCENES.foundry).has('projector'));
 	assert.ok(!needed(SUB_SCENES.slu).has('projector') && !needed(SUB_SCENES.slu).has('best-lap'));
-	const all = new Set(SCENES.flatMap((s) => [...needed(s)]));
-	assert.deepEqual([...all].sort(), [...ONE_SHOTS].sort(), 'every one-shot is heard somewhere');
+	assert.ok(needed(OVERWORLD).has('splash'), 'the Grand Basin koi, into Sushi Stand');
+	const all = new Set([...SCENES.flatMap((s) => [...needed(s)]), ...GAME_SOUNDS]);
+	assert.deepEqual([...all].sort(), [...ONE_SHOTS].sort(), 'every one-shot is heard somewhere, Sushi Stand included');
 });
 
 test("a scene's buffers are let go a minute after it is left, unless the scene the visitor is in needs them", () => {

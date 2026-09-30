@@ -2,7 +2,7 @@
 // state for the engine, the sound module, analytics and the UI to read and change through it. The rules are saved.ts's.
 // Every change is written at once, merged over what another tab may have stored since, and never on unload; where storage
 // throws (blocked site data, a private window) the session runs from memory, with no message.
-import { KEY, addLap, fresh, gold, grant, merge, read, type Lap, type Saved } from './saved.ts';
+import { KEY, addLap, addStand, fresh, gold, grant, merge, read, type Lap, type Saved, type Stand } from './saved.ts';
 import type { CosmeticId } from './scenes/types';
 
 function load() {
@@ -63,6 +63,16 @@ export const saved = {
 		const g = grant(data, id);
 		if (g.first || g.saved.worn !== data.worn) save(g.saved);
 		return g.first;
+	},
+	/** The Sushi Stand top ten, most profit first. */
+	get stands(): readonly Stand[] {
+		return data.stands ?? [];
+	},
+	/** Records a finished Sushi Stand game: written if it enters the top ten; true when it is a new personal best. */
+	stand(stand: Stand) {
+		const s = addStand(data, stand);
+		if (s.entered) save(s.saved);
+		return s.best;
 	},
 	/** Records a completed lap at epoch ms `at`: written if it enters the top ten; true when it is a new personal best. */
 	lap(ms: number, at: number) {

@@ -46,7 +46,7 @@ test('districts read west to east by centre x: on the accepted master the park l
 	assert.deepEqual([...centres].sort((a, b) => a - b), centres);
 	assert.deepEqual(
 		OVERWORLD.districts.map((d) => d.id),
-		['maplewood', 'carondelet-park', 'central-west-end', 'midtown', 'belleville']
+		['maplewood', 'forest-park', 'carondelet-park', 'central-west-end', 'midtown', 'belleville']
 	);
 	for (const d of OVERWORLD.districts) {
 		assert.ok(inside(d.sign, d.rect), `${d.id} sign over its district`);

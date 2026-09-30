@@ -11,12 +11,16 @@ The top-level St. Louis scene that visitors explore first. Laid out to honour re
 _Avoid_: map, main scene, home
 
 **District**:
-One of the five named areas of the overworld: Midtown, Belleville, Maplewood, Central West End, Carondelet Park.
+One of the six named areas of the overworld: Midtown, Belleville, Maplewood, Forest Park, Central West End, Carondelet Park.
 _Avoid_: area, section, region, location
 
 **Venue**:
 An enterable place inside a district, such as Saint Louis University, The Foundry, MonsterCommerce, Moosylvania, Side Project Cellar, Brennan's, or the park itself.
 _Avoid_: building, location, portal
+
+**Sushi Stand**:
+The game behind the koi swimming in Forest Park's Grand Basin: five days running a sushi stand, carried over from Sapporo's 2018 Sushi Star. It fills the whole window like a scene, but it is a page of its own with no scene or room; its scores are the visitor's own top ten, kept on the device like laps.
+_Avoid_: mini-game, Sushi Star, level
 
 **Sub-scene**:
 The interior scene a visitor enters through a venue, such as the CS lab inside Saint Louis University.
