@@ -635,12 +635,11 @@ export class Engine {
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is
 		// held there, whatever the input, for the reel's first 5 s; a drag or a fling is already off while the camera frames it.
-		const own = this.cursor, v = this.view;
-		const seat = own && this.projector.hold({ x: this.cam.x + own.x / v.s, y: this.cam.y + own.y / v.s }, now, this.reducedMotion.matches);
+		const own = this.own, v = this.view;
+		const seat = own && this.projector.hold(own, now, this.reducedMotion.matches);
 		if (seat) this.cursor = { x: (seat.x - this.cam.x) * v.s, y: (seat.y - this.cam.y) * v.s };
 		// The lap timer rides with the free cursor on the overworld; a pause, a card or a sub-scene loses a lap.
-		const at = free && 'districts' in scene && this.cursor;
-		this.laps.step(at ? { x: this.cam.x + at.x / this.view.s, y: this.cam.y + at.y / this.view.s } : null, now);
+		this.laps.step(free && 'districts' in scene ? this.own : null, now);
 		this.mark();
 		this.drawCursors(now);
 	};
@@ -654,21 +653,27 @@ export class Engine {
 		this.hot = hit;
 	}
 
+	/** The drawn cursor's world position; none before Join. */
+	private get own(): Point | null {
+		const c = this.cursor;
+		return c && { x: this.cam.x + c.x / this.view.s, y: this.cam.y + c.y / this.view.s };
+	}
+
 	/** The camera is framing the Foundry's reel, or easing to or from it. */
 	private get zooming() {
-		return !!this.projector.framing() || this.view.s !== this.base;
+		return !!this.projector.framing(this.own, this.cursor) || this.view.s !== this.base;
 	}
 
 	/**
-	 * While the Foundry's reel plays the camera eases out to frame the projector and the whole screen, whatever the device
-	 * (Joe, 2026-09-29), and back to the session's scale on the visitor's cursor when it ends; a cut under reduced motion.
+	 * While the Foundry's reel plays and the visitor sits in its seats, the camera eases out to frame the projector and the
+	 * whole screen, whatever the device (Joe, 2026-09-29), and back to the session's scale on the visitor's cursor when it
+	 * ends or they leave the seats; a cut under reduced motion.
 	 * The cursor keeps its world place, except the unlocked mouse's, which is the OS pointer's. It runs paused too, and
 	 * nothing else moves the camera meanwhile. True while it holds the camera.
 	 */
 	private reframe(dt: number) {
 		if (!this.zooming) return false;
-		const scene = this.scene!, v = this.view, c = this.cursor, r = this.projector.framing();
-		const world = c && { x: this.cam.x + c.x / v.s, y: this.cam.y + c.y / v.s };
+		const scene = this.scene!, v = this.view, world = this.own, r = this.projector.framing(world, this.cursor);
 		// A shot's centre as the clamp leaves it, so that an eased shot arrives exactly.
 		const clamped = (s: number, p: Point) => {
 			const cam = centreOn(p, { ...v, s }, scene);

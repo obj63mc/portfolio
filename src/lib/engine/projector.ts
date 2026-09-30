@@ -3,7 +3,7 @@
 // the title's demo video and its case study are drawn on a flat film, which is mapped onto the screen's painted quad (the
 // camera sees the right wall at an angle) through a mesh of triangles. The video plays in step with the room, with sound.
 // A poster's clicker first takes a seat in the second row, and watches from it with steering off for the reel's first 5 s.
-import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, posterOf, screenGist, seatOf, type ScreenTitle } from '../scenes/foundry.ts';
+import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, inSeats, posterOf, screenGist, seatOf, type ScreenTitle } from '../scenes/foundry.ts';
 import type { Net } from '../net/net.ts';
 import { onQuad, reel } from '../net/screen.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
@@ -79,6 +79,12 @@ export class Projector {
 	 * playing.
 	 */
 	private seat: { title: ScreenTitle; to: Point; from: Point | null; at: number; asked: number | null; seen: number | null } | null = null;
+	/**
+	 * Whether the own cursor was in the seats when it last moved on screen (`moved`, CSS px): a zoom alone never changes it,
+	 * since the unlocked mouse's cursor stays at the OS pointer as the view scales, which could carry it in and out.
+	 */
+	private inSeats = false;
+	private moved: Point | null = null;
 	private listeners = new AbortController();
 	private layer: HTMLElement;
 	private net: Net;
@@ -112,9 +118,14 @@ export class Projector {
 		this.load(null);
 	}
 
-	/** While a reel plays, or its clicker sits down for it, the camera frames the projector and the whole screen (Joe, 2026-09-29). */
-	framing(): Rect | null {
-		return this.reel || this.seat ? REEL_FRAME : null;
+	/**
+	 * What the camera frames: the projector and the whole screen while a reel plays and the visitor's own cursor is in the
+	 * seats, or while they sit down for one; else, and before Join, their own view (Joe, 2026-09-29). `own` is where the
+	 * cursor is, world px, and `at` where it is on screen, CSS px.
+	 */
+	framing(own: Point | null, at: Point | null): Rect | null {
+		if (own && at && (at.x !== this.moved?.x || at.y !== this.moved?.y)) (this.moved = at), (this.inSeats = inSeats(own));
+		return this.seat || (this.reel && own && this.inSeats) ? REEL_FRAME : null;
 	}
 
 	/** The visitor is seated for a reel, or on the way to their seat: their steering is off. */

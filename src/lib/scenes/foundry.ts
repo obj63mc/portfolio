@@ -1,4 +1,5 @@
 import type { Point, Rect, SubScene } from './types';
+import { inOutline } from './walk.ts';
 
 /** The three Universal Pictures Home Entertainment titles the shared screen can play (spec: "One shared prop"). */
 export const SCREEN_TITLES = {
@@ -188,3 +189,14 @@ export const FOUNDRY: SubScene = {
 		}
 	]
 };
+
+/** How far above or below a seat row a point still counts as in the seats, world px: the legroom between rows is under 90. */
+const LEGROOM = 45;
+
+/**
+ * Whether a point is in the seats, on one of the three seat rows or the legroom between them (Joe, 2026-09-29): while a
+ * reel plays, a visitor whose cursor is there sees the whole theatre, as someone sitting down at the movies does, and one
+ * anywhere else their own view.
+ */
+export const inSeats = (p: Point) =>
+	[0, -LEGROOM, LEGROOM].some((dy) => FOUNDRY.walkBehind.some((w) => w.key.startsWith('foundry-row-') && inOutline({ x: p.x, y: p.y + dy }, w.outline)));

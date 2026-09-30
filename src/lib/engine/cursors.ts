@@ -79,10 +79,20 @@ const DRAW: Record<CosmeticId, (g: CanvasRenderingContext2D) => void> = {
 		line(g, GOLD, 1.4, (p) => (p.moveTo(0, -7), p.lineTo(8, -5), p.lineTo(8, 0)));
 	},
 	2: (g) => {
-		// 3D glasses: a white frame, one red lens and one cyan.
-		shape(g, '#fff', (p) => p.rect(-8, -3, 17, 6));
-		shape(g, '#e8383d', (p) => p.rect(-6.5, -1.5, 6, 3));
-		shape(g, '#2fb5e8', (p) => p.rect(1.5, -1.5, 6, 3));
+		// A tub of popcorn (Joe, 2026-09-29): heaped with ivory puffs, outlined as one heap, over a red and white striped tub
+		// narrowing to its base.
+		shape(g, '#fff4d4', (p) => {
+			for (const [x, y] of [[1, -3], [4.5, -4], [8, -3], [2.6, -6.2], [6.4, -6.6]]) p.moveTo(x + 2.4, y), p.arc(x, y, 2.4, 0, 2 * Math.PI);
+		});
+		const tub = (p: Path2D) => (p.moveTo(-1, -2), p.lineTo(10, -2), p.lineTo(8, 7), p.lineTo(1, 7), p.closePath());
+		shape(g, '#fff', tub);
+		const inside = new Path2D();
+		tub(inside);
+		g.save();
+		g.clip(inside);
+		g.fillStyle = '#e8383d';
+		for (const x of [-0.5, 3, 6.5]) g.fillRect(x, -2, 2, 9);
+		g.restore();
 	},
 	3: (g) => {
 		// Monster ears: two purple pointed ears, pink inside, on a band.

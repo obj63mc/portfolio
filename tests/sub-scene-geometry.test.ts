@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readingOrder, SUB_SCENES } from '../src/lib/scenes/index.ts';
-import { POSTER_LAMPS, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SEATS, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
+import { POSTER_LAMPS, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SEATS, inSeats, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
 import type { Point, Prop, Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
@@ -142,6 +142,16 @@ test('Foundry: posters left to right beside the screen, the beam from the ledge 
 	}
 	const byX = [...SEATS].sort((a, b) => a.x - b.x);
 	byX.forEach((s, i) => assert.ok(i === 0 || s.x - byX[i - 1].x > 150, `${JSON.stringify(s)} a seat from the last`));
+	// The seats, whose reel zoom is a seated visitor's own (Joe, 2026-09-29): every seat, and the rows with the legroom
+	// between them as one block, so stepping from row to row never leaves them; not the posters, the exit door, the
+	// projector ledge or the floor before the screen.
+	for (const s of SEATS) assert.ok(inSeats(s), `${JSON.stringify(s)} in the seats`);
+	for (const x of [700, 1000, 1300, 1600, 1900]) {
+		const runs = Array.from({ length: 120 }, (_, i) => +inSeats({ x, y: 400 + 10 * i })).join('').match(/1+/g) ?? [];
+		assert.equal(runs.length, 1, `one block of seats at x ${x}`);
+	}
+	for (const p of [...posters.map(centre), centre(foundry.exit), { x: 300, y: 1300 }, { x: 2500, y: 1000 }])
+		assert.ok(!inSeats(p), `${JSON.stringify(p)} not in the seats`);
 });
 
 test('Side Project: ten bottles in a row on one shelf, the sign on the cooler door grants the beer mug', () => {

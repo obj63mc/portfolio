@@ -148,8 +148,9 @@ test.describe('two browsers on wrangler dev', () => {
 		await expect(screenStatus(c)).toHaveText('Screen: now playing The Lorax');
 		expect(hello!.screen!.title).toBe('lorax');
 		expect(hello!.now - hello!.screen!.at).toBeGreaterThan(500);
-		// Behind the Join card too, the camera frames the reel.
-		await expect.poll(async () => (await transform(c)).s).toBeLessThan(1);
+		// Arriving mid-reel, not in the seats, the visitor keeps the default view (Joe, 2026-09-29).
+		await c.waitForTimeout(1000);
+		expect((await transform(c)).s).toBeGreaterThan(1280 / REEL_FRAME.w + 0.01);
 		await c.context().close();
 	});
 });
@@ -212,6 +213,16 @@ test('offline, a poster click seats its clicker in the second row, then plays; n
 	await page.keyboard.up('ArrowLeft');
 	expect(up.x - (await tip(page)).x).toBeGreaterThan(20);
 	expect((await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
+	// Stepping out of the seats brings the visitor's own view back while it plays, and sitting down again frames it again.
+	await page.keyboard.down('ArrowUp');
+	await expect.poll(async () => (await transform(page)).s).toBeGreaterThan(1280 / REEL_FRAME.w + 0.01);
+	await page.keyboard.up('ArrowUp');
+	await expect.poll(async () => (await transform(page)).s).toBe(scale);
+	await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+	await page.keyboard.down('ArrowDown');
+	await expect.poll(async () => (await transform(page)).s).toBeLessThan(scale - 0.01);
+	await page.keyboard.up('ArrowDown');
+	await expect.poll(async () => (await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
 	// When it ends the camera comes back to the session's scale.
 	await page.clock.fastForward(45_000);
 	await expect(screenStatus(page)).toHaveText(idleText);

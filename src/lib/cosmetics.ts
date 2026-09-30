@@ -6,7 +6,7 @@ import type { CosmeticId } from './scenes/types';
  */
 export const COSMETICS = {
 	1: { name: 'graduation cap', anchor: 'head' },
-	2: { name: '3D glasses', anchor: 'face' },
+	2: { name: 'tub of popcorn', anchor: 'side' },
 	3: { name: 'monster ears', anchor: 'head' },
 	4: { name: 'antlers', anchor: 'head' },
 	5: { name: 'beer mug', anchor: 'side' },
