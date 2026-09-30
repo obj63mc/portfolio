@@ -93,21 +93,29 @@ test('river: deck spans the water, bridge cut-out covers the deck, south end ins
 test('track: a closed loop round the lake in the park, the start/finish sign at its start line, behind each cut-out it lists', () => {
 	const { path, half, cover } = OVERWORLD.track;
 	const park = OVERWORLD.districts.find((d) => d.id === 'carondelet-park')!;
-	const track = props.find((p) => p.id === 'track')!;
+	const world = (id: string): Rect => JSON.parse(readFileSync(new URL(`../art/generated/overworld/${id}/asset.json`, import.meta.url), 'utf8')).world;
 	assert.ok(path.length >= 20 && half > 0);
 	for (const [i, p] of path.entries()) {
 		const q = path[(i + 1) % path.length];
 		assert.ok(inside({ ...p, w: 0, h: 0 }, park.rect), `point ${i} in the park`);
 		assert.ok(Math.hypot(q.x - p.x, q.y - p.y) <= 250, `points ${i} and ${i + 1} close enough to follow the curves`);
 	}
-	// The start/finish sign stands on the lawn just south of the line, spanning it.
-	const [start] = path, sign = track.rect;
+	// The START FINISH sign, scenery, stands on the lawn just south of the line, spanning it.
+	const [start] = path, sign = world(OVERWORLD.track.sign);
 	assert.ok(sign.x < start.x && start.x < sign.x + sign.w && sign.y > start.y && sign.y - start.y < 60, 'the sign stands at the start line');
-	for (const id of cover) {
-		const world: Rect = JSON.parse(readFileSync(new URL(`../art/generated/overworld/${id}/asset.json`, import.meta.url), 'utf8')).world;
-		assert.ok(
-			path.some((p) => inside({ ...p, w: 0, h: 0 }, world)),
-			`the loop runs behind ${id}`
+	// Nothing clickable is on the track, whose lap timer is an Easter egg (Joe, 2026-09-29): no prop reaches the painted path.
+	const toPath = (p: Point) =>
+		Math.min(
+			...path.map((a, i) => {
+				const b = path[(i + 1) % path.length], dx = b.x - a.x, dy = b.y - a.y;
+				const u = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy)));
+				return Math.hypot(p.x - a.x - u * dx, p.y - a.y - u * dy);
+			})
 		);
+	for (const p of props) {
+		const { x, y, w, h } = p.rect, edge: Point[] = [];
+		for (let t = 0; t <= 1; t += 0.05) edge.push({ x: x + t * w, y }, { x: x + t * w, y: y + h }, { x, y: y + t * h }, { x: x + w, y: y + t * h });
+		assert.ok(Math.min(...edge.map(toPath)) > half, `${p.id} clear of the track`);
 	}
+	for (const id of cover) assert.ok(path.some((p) => inside({ ...p, w: 0, h: 0 }, world(id))), `the loop runs behind ${id}`);
 });

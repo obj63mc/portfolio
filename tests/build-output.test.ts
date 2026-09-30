@@ -111,7 +111,9 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 		'bottle-bud-light', 'bottle-ej', 'bottle-pink-whitney', 'bottle-rumchata', 'bottle-soonhari', 'brewery-sign',
 		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it (ticket 25).
 		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo',
-		'track', 'bike', 'ride-sign'
+		// The cycling course's line joined the ride sign's card, and the START FINISH sign is scenery: the lap timer is an
+		// Easter egg (Joe, 2026-09-29).
+		'bike', 'ride-sign'
 	];
 	for (const id of inventory) assert.ok(ids.has(id), id);
 	assert.equal(ids.size, allProps.length, 'prop ids are unique across scenes');

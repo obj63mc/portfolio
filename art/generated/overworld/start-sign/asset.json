@@ -1,7 +1,7 @@
 {
   "id": "start-sign",
   "scene": "overworld",
-  "kind": "prop",
+  "kind": "scenery",
   "file": "overworld/start-sign/image.webp",
   "world": {
     "x": 2544,

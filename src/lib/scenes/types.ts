@@ -139,6 +139,8 @@ export interface Overworld extends SceneBase {
 		half: number;
 		/** Cut-outs of the scenery the loop runs behind, drawn over the rider as it passes behind them. */
 		cover: string[];
+		/** The start/finish sign's cut-out, scenery beside the line that nothing clicks: the lap timer is an Easter egg. */
+		sign: string;
 	};
 }
 

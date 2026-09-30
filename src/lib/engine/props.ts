@@ -160,12 +160,13 @@ export class Props {
 		};
 		this.layers = propsOf(scene).map((p) => layer(p, artOf(scene, p), p.rect)).filter((l) => l.cuts.length || l.rig);
 		this.line = null;
-		// The plate paints none of these: the signpost, the church door, the rider riding the park's lake loop and the loop's
-		// start line. The loop runs behind the park sign and three trees, whose cut-outs, the plate's own pixels, cover the
-		// rider there: each layer's base y orders it against the rider's, which `step` moves.
+		// The plate paints none of these: the signpost, the church door, the rider riding the park's lake loop, the loop's
+		// start line and its START FINISH sign, scenery that nothing clicks. The loop runs behind the park sign and three
+		// trees, whose cut-outs, the plate's own pixels, cover the rider there: each layer's base y orders it against the
+		// rider's, which `step` moves.
 		if (overworld) {
 			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect), layer(undefined, ['rider'], rider(this.t, this.rm).at));
-			this.layers.push(...scene.track.cover.map((id) => layer(undefined, [id])));
+			this.layers.push(...[...scene.track.cover, scene.track.sign].map((id) => layer(undefined, [id])));
 			this.line = { ...along(LOOP, 0), half: LOOP.half };
 		}
 		for (const l of this.layers) {

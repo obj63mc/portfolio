@@ -17973,8 +17973,8 @@
         "overworld"
       ],
       "world": {
-        "x": 2350,
-        "y": 2585,
+        "x": 2012,
+        "y": 1884,
         "w": 100,
         "h": 57
       }
@@ -17992,8 +17992,8 @@
         "overworld"
       ],
       "world": {
-        "x": 2986,
-        "y": 2600,
+        "x": 1992,
+        "y": 1806,
         "w": 78,
         "h": 94
       }
@@ -18001,7 +18001,7 @@
     {
       "id": "start-sign",
       "scene": "overworld",
-      "kind": "prop",
+      "kind": "scenery",
       "size": "1024x1024",
       "references": [
         "art/generated/overworld/overworld/image.webp"

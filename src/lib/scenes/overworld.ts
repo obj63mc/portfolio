@@ -65,35 +65,24 @@ const districts: District[] = [
 	{
 		id: 'carondelet-park',
 		name: 'Carondelet Park',
-		rect: { x: 850, y: 1900, w: 2950, h: 800 },
+		// North to the gazebo's lawn, where Joe's bike and the ride sign stand (Joe, 2026-09-29).
+		rect: { x: 850, y: 1795, w: 2950, h: 905 },
 		sign: { x: 1430, y: 2400, w: 550, h: 140 },
 		venues: [
 			{
 				id: 'park',
 				name: 'Carondelet Park',
-				rect: { x: 900, y: 1950, w: 2800, h: 750 },
+				rect: { x: 900, y: 1800, w: 2800, h: 900 },
 				props: [
-					{
-						id: 'track',
-						name: 'Cycling course',
-						gist: 'the Carondelicious Criterium and Tuesday night training',
-						body: [
-							'The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.',
-							'Cross the chequered line by this sign to time a lap of the loop, either way round. Your ten best laps stay in this browser.'
-						],
-						// The start/finish sign on the lawn where a bench stood, just south of the start line on the lower straight
-						// (`track` below), which props.ts paints across the path (Joe, 2026-09-29; the manifest's world rect). The loop
-						// is painted in the plate; the rider riding it is ambient motion (motion.ts RIDER).
-						rect: { x: 2544, y: 2560, w: 110, h: 85 },
-						art: ['start-sign']
-					},
+					// Joe's bike parked in front of the notice board on the lawn west of the gazebo, north of the lake, clear of the
+					// lake loop: nothing on the track is clickable, since its lap timer is an Easter egg (Joe, 2026-09-29).
 					{
 						id: 'bike',
 						name: 'Joe’s bike',
 						gist: 'still riding, on Strava',
 						body: ['Joe raced criteriums and still rides. Follow along on Strava.'],
 						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
-						rect: { x: 2350, y: 2585, w: 100, h: 57 },
+						rect: { x: 2012, y: 1884, w: 100, h: 57 },
 						cosmetic: 7
 					},
 					{
@@ -102,9 +91,9 @@ const districts: District[] = [
 						gist: 'longest ride 160 miles',
 						body: [
 							'Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.',
-							'Raced criteriums, still rides.'
+							'Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.'
 						],
-						rect: { x: 2986, y: 2600, w: 78, h: 94 }
+						rect: { x: 1992, y: 1806, w: 78, h: 94 }
 					}
 				]
 			}
@@ -113,14 +102,14 @@ const districts: District[] = [
 	{
 		id: 'midtown',
 		name: 'Midtown',
-		rect: { x: 2150, y: 870, w: 2200, h: 1020 },
+		rect: { x: 2150, y: 870, w: 2200, h: 925 },
 		sign: { x: 2760, y: 1280, w: 400, h: 130 },
 		venues: [
 			{ id: 'slu', name: 'Saint Louis University', rect: { x: 2440, y: 890, w: 1240, h: 430 }, door: '/slu', props: [] },
 			{
 				id: 'foundry',
 				name: 'The Foundry',
-				rect: { x: 2200, y: 1380, w: 1900, h: 510 },
+				rect: { x: 2200, y: 1380, w: 1900, h: 415 },
 				door: '/foundry',
 				props: [
 					{
@@ -263,6 +252,8 @@ export const OVERWORLD: Overworld = {
 		],
 		// 25 to 57 px wide, 37 on the lower straight.
 		half: 18,
-		cover: ['park-sign', 'track-tree-west', 'park-tree', 'track-tree-east']
+		cover: ['park-sign', 'track-tree-west', 'park-tree', 'track-tree-east'],
+		// On the lawn where a bench stood, just south of the start line (Joe, 2026-09-29): scenery, not a prop.
+		sign: 'start-sign'
 	}
 };

@@ -112,9 +112,9 @@
           "name": "Carondelet Park",
           "rect": {
             "x": 850,
-            "y": 1900,
+            "y": 1795,
             "w": 2950,
-            "h": 800
+            "h": 905
           },
           "sign": {
             "x": 1430,
@@ -128,29 +128,11 @@
               "name": "Carondelet Park",
               "rect": {
                 "x": 900,
-                "y": 1950,
+                "y": 1800,
                 "w": 2800,
-                "h": 750
+                "h": 900
               },
               "props": [
-                {
-                  "id": "track",
-                  "name": "Cycling course",
-                  "gist": "the Carondelicious Criterium and Tuesday night training",
-                  "body": [
-                    "The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.",
-                    "Cross the chequered line by this sign to time a lap of the loop, either way round. Your ten best laps stay in this browser."
-                  ],
-                  "rect": {
-                    "x": 2544,
-                    "y": 2560,
-                    "w": 110,
-                    "h": 85
-                  },
-                  "art": [
-                    "start-sign"
-                  ]
-                },
                 {
                   "id": "bike",
                   "name": "Joe’s bike",
@@ -165,8 +147,8 @@
                     }
                   ],
                   "rect": {
-                    "x": 2350,
-                    "y": 2585,
+                    "x": 2012,
+                    "y": 1884,
                     "w": 100,
                     "h": 57
                   },
@@ -178,11 +160,11 @@
                   "gist": "longest ride 160 miles",
                   "body": [
                     "Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.",
-                    "Raced criteriums, still rides."
+                    "Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series."
                   ],
                   "rect": {
-                    "x": 2986,
-                    "y": 2600,
+                    "x": 1992,
+                    "y": 1806,
                     "w": 78,
                     "h": 94
                   }
@@ -228,7 +210,7 @@
             "x": 2150,
             "y": 870,
             "w": 2200,
-            "h": 1020
+            "h": 925
           },
           "sign": {
             "x": 2760,
@@ -256,7 +238,7 @@
                 "x": 2200,
                 "y": 1380,
                 "w": 1900,
-                "h": 510
+                "h": 415
               },
               "door": "/foundry",
               "props": [
@@ -1061,7 +1043,8 @@
           "track-tree-west",
           "park-tree",
           "track-tree-east"
-        ]
+        ],
+        "sign": "start-sign"
       },
       "arrival": {
         "x": 1835,
@@ -1108,24 +1091,6 @@
           "cosmetic": 4
         },
         {
-          "id": "track",
-          "name": "Cycling course",
-          "gist": "the Carondelicious Criterium and Tuesday night training",
-          "body": [
-            "The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.",
-            "Cross the chequered line by this sign to time a lap of the loop, either way round. Your ten best laps stay in this browser."
-          ],
-          "rect": {
-            "x": 2544,
-            "y": 2560,
-            "w": 110,
-            "h": 85
-          },
-          "art": [
-            "start-sign"
-          ]
-        },
-        {
           "id": "bike",
           "name": "Joe’s bike",
           "gist": "still riding, on Strava",
@@ -1139,8 +1104,8 @@
             }
           ],
           "rect": {
-            "x": 2350,
-            "y": 2585,
+            "x": 2012,
+            "y": 1884,
             "w": 100,
             "h": 57
           },
@@ -1152,11 +1117,11 @@
           "gist": "longest ride 160 miles",
           "body": [
             "Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.",
-            "Raced criteriums, still rides."
+            "Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series."
           ],
           "rect": {
-            "x": 2986,
-            "y": 2600,
+            "x": 1992,
+            "y": 1806,
             "w": 78,
             "h": 94
           }
@@ -1364,8 +1329,8 @@
           "asset": "bike",
           "kind": "prop",
           "rect": {
-            "x": 2350,
-            "y": 2585,
+            "x": 2012,
+            "y": 1884,
             "w": 100,
             "h": 57
           }
@@ -1375,8 +1340,8 @@
           "asset": "ride-sign",
           "kind": "prop",
           "rect": {
-            "x": 2986,
-            "y": 2600,
+            "x": 1992,
+            "y": 1806,
             "w": 78,
             "h": 94
           }
@@ -1384,7 +1349,7 @@
         {
           "id": "start-sign",
           "asset": "start-sign",
-          "kind": "prop",
+          "kind": "scenery",
           "rect": {
             "x": 2544,
             "y": 2560,
@@ -1502,8 +1467,8 @@
         {
           "id": "bike",
           "rect": {
-            "x": 2350,
-            "y": 2585,
+            "x": 2012,
+            "y": 1884,
             "w": 100,
             "h": 57
           }
@@ -1511,19 +1476,10 @@
         {
           "id": "ride-sign",
           "rect": {
-            "x": 2986,
-            "y": 2600,
+            "x": 1992,
+            "y": 1806,
             "w": 78,
             "h": 94
-          }
-        },
-        {
-          "id": "start-sign",
-          "rect": {
-            "x": 2544,
-            "y": 2560,
-            "w": 110,
-            "h": 85
           }
         },
         {
@@ -29300,8 +29256,8 @@
       "kind": "prop",
       "file": "overworld/bike/image.webp",
       "world": {
-        "x": 2350,
-        "y": 2585,
+        "x": 2012,
+        "y": 1884,
         "w": 100,
         "h": 57
       },
@@ -29325,8 +29281,8 @@
       "kind": "prop",
       "file": "overworld/ride-sign/image.webp",
       "world": {
-        "x": 2986,
-        "y": 2600,
+        "x": 1992,
+        "y": 1806,
         "w": 78,
         "h": 94
       },
@@ -29347,7 +29303,7 @@
     {
       "id": "start-sign",
       "scene": "overworld",
-      "kind": "prop",
+      "kind": "scenery",
       "file": "overworld/start-sign/image.webp",
       "world": {
         "x": 2544,
