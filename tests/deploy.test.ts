@@ -25,7 +25,7 @@ const upgrade = (url: string, origin?: string, env: { MULTIPLAYER?: string } = {
 
 test('socket: a foreign or missing Origin is forbidden', async () => {
 	for (const origin of ['https://evil.example', 'http://barmadden.com', 'https://www.barmadden.com', undefined])
-		assert.equal((await upgrade('https://barmadden.com/ws/overworld', origin)).status, 403, origin);
+		assert.equal((await upgrade('https://barmadden.com/ws/overworld', origin)).status, 403, String(origin));
 });
 
 test('socket: its own origin reaches a room in production, on a Preview and under wrangler dev, flagged by geolocation', async () => {
