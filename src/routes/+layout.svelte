@@ -9,6 +9,7 @@
 	import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
 	import type { Engine } from '$lib/engine/engine';
 	import LapBoard from '$lib/LapBoard.svelte';
+	import SoundToggle from '$lib/SoundToggle.svelte';
 	import { SUB_SCENES } from '$lib/scenes';
 	import { OVERWORLD } from '$lib/scenes/overworld';
 
@@ -65,7 +66,7 @@
 <p class="lap" aria-hidden="true" hidden bind:this={lap}></p>
 <LapBoard />
 <div class="controls">
-	<button type="button" aria-pressed="true">Sound</button>
+	<SoundToggle />
 	<button type="button">Analytics settings</button>
 </div>
 <!-- The touch joystick (buildout ticket 10), shown after Join on a device with no mouse or trackpad. Hidden from assistive

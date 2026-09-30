@@ -5,11 +5,14 @@
 // landing at the door and focus. Peers (ticket 13): the scene's room through net.ts, every cursor drawn by cursors.ts. The props on
 // the scene canvas (ticket 15) are props.ts. Cosmetics (ticket 16): a granting prop's card grants, the saved state
 // (saved.svelte.ts) keeps them, and the room hears what the cursor wears. The Foundry screen's reel (ticket 17) is
-// projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. Carried over from
+// projector.ts, and the camera zooms out to frame it. The Carondelet lap timer (ticket 18) is laps.ts. The one-shots
+// (ticket 22) are one-shots.ts, played by the sound engine (sound.svelte.ts), which the Join press starts. Carried over from
 // the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
 // rules; the layer's markup is never re-rendered here.
 import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
+import { grantSound } from '../sound.ts';
+import { sound } from '../sound.svelte.ts';
 import { propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { Net } from '../net/net.ts';
@@ -21,6 +24,7 @@ import {
 } from './camera.ts';
 import { Cursors, type Drawn } from './cursors.ts';
 import { Laps } from './laps.ts';
+import { OneShots } from './one-shots.ts';
 import { IRIS, OPEN, advance, closing, hole, type Iris } from './iris.ts';
 
 export type Scene = Overworld | SubScene;
@@ -129,6 +133,8 @@ export class Engine {
 	private projector: Projector;
 	/** The Carondelet lap timer (ticket 18). */
 	private laps: Laps;
+	/** The one-shots (ticket 22). */
+	private shots: OneShots;
 	/** The iris between scenes. */
 	private iris: Iris = OPEN;
 	private raf = 0;
@@ -192,6 +198,7 @@ export class Engine {
 		this.props = new Props(layer);
 		this.projector = new Projector(layer, this.net);
 		this.laps = new Laps(status.lap, status.live);
+		this.shots = new OneShots(layer, this.net);
 		document.documentElement.classList.add('engine');
 		this.bind();
 		this.resize();
@@ -209,6 +216,7 @@ export class Engine {
 		this.listeners.abort();
 		this.props.destroy();
 		this.projector.destroy();
+		this.shots.destroy();
 		this.raise.disconnect();
 		for (const t of this.held.values()) t.bmp?.close();
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
@@ -249,6 +257,7 @@ export class Engine {
 		this.projector.show(scene);
 		this.goal = null;
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
+		this.shots.show(scene, !!door);
 		const at = door ?? target;
 		const box = at ? this.box(at) : overworld ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit;
 		// Just inside a sub-scene's door is the floor in front of it, a cursor's height below the door on its wall, where a
@@ -279,6 +288,7 @@ export class Engine {
 	 * for the hop to go; null under reduced motion or in a hidden tab, which draws nothing, and the hop goes at once.
 	 */
 	close(to: URL): Promise<void> | null {
+		sound.play('door-open');
 		if (this.reducedMotion.matches || document.hidden) return null;
 		const now = performance.now(), el = document.activeElement;
 		const link = el instanceof HTMLAnchorElement && el.href === to.href && el.matches(':focus-visible') && this.layer.contains(el);
@@ -456,15 +466,17 @@ export class Engine {
 		// "Persistence"). The saved state heard the event first: it listened from its module's load.
 		addEventListener('storage', () => this.tellRoom(), opts);
 		// Opening a granting prop's card is the click that grants its cosmetic (spec: "Cosmetics"): earned and announced the
-		// first time, worn again every time. Ticket 22 plays the chime here, and the fanfare on the grant that turns it gold.
+		// first time, worn again every time, with the chime as it goes on, or the fanfare in its place when it turns gold.
 		this.layer.addEventListener(
 			'click',
 			(e) => {
 				const id = clickedProp(e);
 				const cos = id && this.scene && propsOf(this.scene).find((p) => p.id === id)?.cosmetic;
 				if (!cos) return;
-				const gold = saved.gold;
+				const gold = saved.gold, worn = saved.worn;
 				if (saved.grant(cos)) this.live.textContent = `You earned the ${COSMETICS[cos].name}${!gold && saved.gold ? ', and your cursor turned gold' : ''}`;
+				const cue = grantSound({ worn, gold }, { worn: saved.worn, gold: saved.gold });
+				if (cue) sound.play(cue);
 			},
 			opts
 		);
@@ -521,6 +533,7 @@ export class Engine {
 		const b = (e.currentTarget as Element).getBoundingClientRect(), fine = this.fine.matches;
 		this.cursor = e.detail ? { x: e.clientX, y: e.clientY } : { x: b.x + b.width / 2, y: b.y + b.height / 2 };
 		this.art.tag();
+		sound.join();
 		this.enter({ is: fine ? 'unlocked' : 'touch' });
 		if (fine) this.lock();
 	}
@@ -552,11 +565,12 @@ export class Engine {
 	}
 
 	/**
-	 * Re-locks with the cursor where it froze; the lock's arrival closes the card, a refusal keeps it up and says so. On
-	 * touch the Resume tap is where the sound engine (ticket 21) resumes audio.
+	 * Re-locks with the cursor where it froze; the lock's arrival closes the card, a refusal keeps it up and says so. The
+	 * press resumes audio a hidden tab suspended, on touch as on desktop.
 	 */
 	private resume() {
 		if (this.input.is !== 'paused') return;
+		sound.resume();
 		if (this.input.relock) this.lock();
 		else this.enter({ is: this.fine.matches ? 'unlocked' : 'touch' });
 	}
@@ -665,6 +679,7 @@ export class Engine {
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
 		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
+		this.shots.step(t);
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is
@@ -688,6 +703,7 @@ export class Engine {
 		this.hot?.classList.remove('hot');
 		hit?.classList.add('hot');
 		this.hot = hit;
+		this.shots.over(hit);
 	}
 
 	/** The drawn cursor's world position; none before Join. */

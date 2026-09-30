@@ -4,9 +4,26 @@
 
 **Blocked by:** 17 (screen cue), 18 (best-lap beep), 21 (engine and pool)
 
-**Status:** ready-for-agent
+**Status:** ready-for-human: built, with a provisional pick for every one-shot; the picks await Joe's approval (2026-09-30)
 
 - [ ] Every row of the one-shot table has a sourced, encoded file wired to its event, with a ledger row
 - [ ] Card open and close, grant, gold, best lap and doors sound on desktop and on a phone; hover is silent
 - [ ] The projector cue plays for every visitor in the theatre when the screen starts, and for a mid-sequence joiner from the right point
-- [ ] A cosmetic earned in another tab makes no sound here
+- [x] A cosmetic earned in another tab makes no sound here
+
+## Comments
+
+### Built with provisional picks, 2026-09-30
+
+Ticket 21 isn't built, so this ticket built the part of it the one-shots can't run without; ticket 21's comment says what that is and what is left.
+
+- **Rules** (`src/lib/sound.ts`, tested in `tests/sound.test.ts`): the twenty one-shot ids; `PROP_SOUNDS`, each prop's signature from the sound design table as a plain table keyed by prop id (one more row gives a prop a sound); `SILENT`, the props with none on purpose (the Side Project sign and the STG logo have no row, the meeting TV's sound is its video, the posters are heard through the screen, the screen is no button), and a test that every prop in scene data is in exactly one of the two. What a click, a grant and the screen sound like; the one-shots each scene loads; when a left scene's buffers go.
+- **Events**: every card's open (the click that opens it) and close (its `close` event, whatever closed it); a prop's signature with its card; a signpost link's knock; the chime as a cosmetic goes on, earned or worn again, and **the fanfare in place of the chime** on the grant that turns the cursor gold (one sound, not two stacked); the beep on a new personal best (`laps.ts`); the door opening as a hop leaves (`engine.close`, the back button included) and closing as it lands (`engine.show`); the projector start when the Foundry screen goes to playing, for everyone in the room since it follows the room's screen state, from `now - startedAt` for a visitor who arrives while it still sounds (`projectorCue`). A poster's click makes no sound of its own, so its clicker hears the projector once, with the room. Hover is silent, a cosmetic from another tab plays nothing, and nothing a peer does sounds but the screen. Not wired: the ATM (no prop yet, ticket 25) and the marquee (scenery now, nothing clicks it).
+- **Engine** (`src/lib/sound.svelte.ts`, plain Web Audio): the context made and resumed inside the Join press, `navigator.audioSession.type = 'ambient'` where there is one; a master gain (ticket 21's beds and music join it); a pool of at most eight voices, a new one stopping the oldest. On Join the scene's one-shots and the global ones load; a door hovered, focused or under the locked or steered cursor loads its scene's ahead of the hop, else they load on entry; a scene's buffers go a minute after it is left unless the scene the visitor is in needs them. Nothing is fetched before Join or while muted, and a failed fetch is silence.
+- **Sound toggle** (`src/lib/SoundToggle.svelte`): the speaker icon, struck through when off, named "Sound" by a hidden label, `aria-pressed` from the saved state, which gains a `sound` setter. Muting stops every voice, aborts the fetches in flight and suspends the context; unmuting resumes it inside the press and loads the scene. Another tab's toggle is followed here, except that a hidden tab stays suspended. A hidden tab suspends the context and the Resume press resumes it, on touch as on desktop, iOS's `interrupted` included.
+- **Files**: `npm run audio` (`scripts/audio.ts`, needs ffmpeg and lame) reads `audio/sounds.json`, trims, downmixes and levels each source in float (one-shots to a −6 dBFS peak), encodes it with lame (mono 96 kbps, a LAME header), content-hashes it into `static/audio/<id>.<hash>.mp3`, and writes `src/lib/sound-files.json` (id to URL, which the engine imports) and the ledger, `docs/audio-sources.md`, from the same rows. A row off the licence ladder is refused (CC-BY waits for a Credits card). Reruns give the same bytes. `/audio/*` is cached immutably (`static/_headers`). `tests/audio.test.ts` holds the manifest, the files served and the ledger to each other.
+- **Provisional picks**: every one-shot's first candidate from the sourcing pass, all CC0 Freesound, encoded from Freesound's high-quality preview MP3 (the original downloads need an account), each ledger row marked as awaiting Joe's approval. The encoded one-shots come to 254 KB.
+
+Checks: `tests/sound.test.ts`, `tests/audio.test.ts`, the build-output test (the toggle's markup, the cache rule) and `tests/sound.spec.ts` (Playwright over the build: nothing fetched before Join or while muted, the toggle kept across a reload and unmuting inside its press, a card's open, signature, chime and close, hover and another tab's cosmetic silent, a poster's reel playing the projector start). `npm run ci` passes.
+
+Hands-on, for Joe: approve or swap each pick; hear the gold fanfare, the best-lap beep and the doors; the projector start in two browsers in one Foundry room against `wrangler dev`, one joining mid-start; all of it on a phone, and the toggle on iOS with the silent switch.

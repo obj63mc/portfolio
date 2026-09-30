@@ -30,7 +30,8 @@ test('overworld: description and the shell around the layer', () => {
 	assert.ok(opens(html, 'canvas').every((c) => c.includes('aria-hidden="true"')));
 	assert.match(html, /role="status"[^>]*aria-live="polite"|aria-live="polite"[^>]*role="status"/);
 	assert.match(html, /class="presence"[^>]*>\d+ here</);
-	assert.match(html, /<div class="controls">\s*<button[^>]*aria-pressed="true"[^>]*>[^<]+<\/button>\s*<button[^>]*>[^<]+<\/button>/);
+	// The Sound toggle, on until the visitor turns it off, named by its hidden label beside the speaker icon (ticket 22).
+	assert.match(html, /<div class="controls">\s*<button[^>]*aria-pressed="true"[^>]*>\s*<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>\s*<span[^>]*>[^<]+<\/span>\s*<\/button>(?:<!---->)?\s*<button[^>]*>[^<]+<\/button>/);
 });
 
 test('overworld: skip link, h1, signpost, then districts west to east with their venues', () => {
@@ -273,5 +274,6 @@ test('headers: _headers sends frame-ancestors and the other page headers, never 
 	assert.match(headers, /X-Content-Type-Options: nosniff/);
 	assert.match(headers, /Referrer-Policy: strict-origin-when-cross-origin/);
 	assert.match(headers, /Permissions-Policy: camera=\(\), microphone=\(\), geolocation=\(\)/);
+	assert.match(headers, /^\/audio\/\*\n\s+Cache-Control: public, max-age=31536000, immutable$/m, 'the hashed sounds are cached for good');
 	assert.match(page('404.html'), /<h1>[^<]+<\/h1>/);
 });

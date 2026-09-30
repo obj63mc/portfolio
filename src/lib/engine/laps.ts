@@ -4,6 +4,7 @@
 // ticking clock.
 import { board, clock } from '../board.svelte.ts';
 import { saved } from '../saved.svelte.ts';
+import { sound } from '../sound.svelte.ts';
 import type { Point } from '../scenes/types';
 import { LOOP, ride, type Lap, type LapEvent } from './track.ts';
 
@@ -42,7 +43,8 @@ export class Laps {
 		}
 		if (e?.is === 'lap') {
 			const at = Date.now(), record = saved.lap(e.ms, at), best = saved.laps[0]?.ms ?? e.ms;
-			// Ticket 22's finish-line beep plays here, on a new personal best.
+			// The finish-line beep on a new personal best (ticket 22).
+			if (record) sound.play('best-lap');
 			board.lap = { ms: e.ms, at, best: record };
 			this.boardUntil = now + NOTE.board;
 			this.live.textContent = record ? `Lap ${said(e.ms)}, a new best` : `Lap ${said(e.ms)}. Best ${said(best)}`;

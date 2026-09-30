@@ -47,6 +47,10 @@ export const saved = {
 	get sound() {
 		return data.sound;
 	},
+	/** The Sound toggle's choice (sound.svelte.ts). */
+	set sound(on: boolean) {
+		if (on !== data.sound) save({ ...data, sound: on });
+	},
 	get analytics() {
 		return data.analytics;
 	},
