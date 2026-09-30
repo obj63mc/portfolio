@@ -634,7 +634,7 @@ export class Engine {
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is
-		// held there, whatever the input, until the reel ends; a drag or a fling is already off while the camera frames it.
+		// held there, whatever the input, for the reel's first 5 s; a drag or a fling is already off while the camera frames it.
 		const own = this.cursor, v = this.view;
 		const seat = own && this.projector.hold({ x: this.cam.x + own.x / v.s, y: this.cam.y + own.y / v.s }, now, this.reducedMotion.matches);
 		if (seat) this.cursor = { x: (seat.x - this.cam.x) * v.s, y: (seat.y - this.cam.y) * v.s };

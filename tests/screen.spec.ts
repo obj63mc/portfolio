@@ -178,7 +178,7 @@ test.describe('without a room', () => {
 	});
 });
 
-test('offline, a poster click seats its clicker in the second row, then plays; nothing steers or clicks until it ends', async ({ page }) => {
+test('offline, a poster click seats its clicker in the second row, then plays; nothing steers or clicks for its first 5 s', async ({ page }) => {
 	await page.clock.install();
 	await page.addInitScript(refuseLock);
 	await page.goto('/foundry');
@@ -193,7 +193,7 @@ test('offline, a poster click seats its clicker in the second row, then plays; n
 	await expect.poll(async () => (await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
 	expect(await fromSeat(page)).toBeLessThan(12);
 	const seated = await tip(page);
-	// The keys, the mouse and its clicks do nothing while the reel plays: the exit door stays shut.
+	// The keys, the mouse and its clicks do nothing as the reel starts: the exit door stays shut.
 	await page.keyboard.down('ArrowRight');
 	await page.waitForTimeout(300);
 	await page.keyboard.up('ArrowRight');
@@ -203,15 +203,19 @@ test('offline, a poster click seats its clicker in the second row, then plays; n
 	await page.waitForTimeout(100);
 	expect(await moved(page, seated)).toBeLessThan(1);
 	expect(new URL(page.url()).pathname).toBe('/foundry');
-	// When it ends the camera comes back to the session's scale and the keys steer again.
-	await page.clock.fastForward(45_000);
-	await expect(screenStatus(page)).toHaveText(idleText);
-	await expect.poll(async () => (await transform(page)).s).toBe(scale);
-	const back = await tip(page);
+	// Five seconds into the reel the keys steer again, so the visitor may leave while it plays, still framed (Joe, 2026-09-29).
+	await page.clock.fastForward(5_000);
+	await expect(screenStatus(page)).toHaveText('Screen: now playing The Lorax');
+	const up = await tip(page);
 	await page.keyboard.down('ArrowLeft');
 	await page.waitForTimeout(300);
 	await page.keyboard.up('ArrowLeft');
-	expect(back.x - (await tip(page)).x).toBeGreaterThan(50);
+	expect(up.x - (await tip(page)).x).toBeGreaterThan(20);
+	expect((await transform(page)).s).toBeCloseTo(1280 / REEL_FRAME.w, 3);
+	// When it ends the camera comes back to the session's scale.
+	await page.clock.fastForward(45_000);
+	await expect(screenStatus(page)).toHaveText(idleText);
+	await expect.poll(async () => (await transform(page)).s).toBe(scale);
 });
 
 test.describe('a phone, with no mouse or trackpad', () => {

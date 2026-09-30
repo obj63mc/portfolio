@@ -2,7 +2,7 @@
 // the props and under the cursors. The projector's beam fans from its lens to the screen's four corners; the title card,
 // the title's demo video and its case study are drawn on a flat film, which is mapped onto the screen's painted quad (the
 // camera sees the right wall at an angle) through a mesh of triangles. The video plays in step with the room, with sound.
-// A poster's clicker first takes a seat in the second row, and watches from it with steering off until the reel ends.
+// A poster's clicker first takes a seat in the second row, and watches from it with steering off for the reel's first 5 s.
 import { CASE_STUDY, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SCREEN_VIDEOS, posterOf, screenGist, seatOf, type ScreenTitle } from '../scenes/foundry.ts';
 import type { Net } from '../net/net.ts';
 import { onQuad, reel } from '../net/screen.ts';
@@ -17,6 +17,11 @@ const FILM = { w: 1280, h: 720 };
 const MESH = { cols: 8, rows: 6 };
 /** How long a seated visitor waits for a reel after asking for one, ms, before steering comes back (a socket that never plays). */
 const UNHEARD = 3000;
+/**
+ * How long after the reel starts a seated visitor's steering comes back, ms (Joe, 2026-09-29): sitting down and the film
+ * starting feel real, and after that they may get up and leave while it plays.
+ */
+const WATCH_MS = 5000;
 /** How far the video may drift from the room's time, seconds, before it is seeked back into step. */
 const DRIFT = 0.5;
 /** The lamp's glow round the lens, world px. */
@@ -70,9 +75,10 @@ export class Projector {
 	/**
 	 * The visitor's own seat, from their poster's click until the reel they sat down for ends (Joe, 2026-09-29): the cursor
 	 * glides there from where it was (`from`, world px, at the click's `at`, performance ms), and only once seated asks the
-	 * room for the title (`asked`). `seen` once a reel runs after it asked, the one it asked for or one already playing.
+	 * room for the title (`asked`). `seen` from when a reel first runs after it asked, the one it asked for or one already
+	 * playing.
 	 */
-	private seat: { title: ScreenTitle; to: Point; from: Point | null; at: number; asked: number | null; seen: boolean } | null = null;
+	private seat: { title: ScreenTitle; to: Point; from: Point | null; at: number; asked: number | null; seen: number | null } | null = null;
 	private listeners = new AbortController();
 	private layer: HTMLElement;
 	private net: Net;
@@ -87,7 +93,7 @@ export class Projector {
 			'click',
 			(e) => {
 				const title = posterOf(clickedProp(e));
-				if (this.foundry && title) this.seat ??= { title, to: seatOf(net.id), from: null, at: performance.now(), asked: null, seen: false };
+				if (this.foundry && title) this.seat ??= { title, to: seatOf(net.id), from: null, at: performance.now(), asked: null, seen: null };
 			},
 			{ signal: this.listeners.signal }
 		);
@@ -118,15 +124,17 @@ export class Projector {
 
 	/**
 	 * Where the own cursor is held `now` (performance ms), world px, given where it is (`at`): gliding to its seat, then on
-	 * it until the reel ends; null when the visitor steers. Seated, it asks the room for the title, which plays it if the
-	 * screen is idle (offline, here); if no reel runs within UNHEARD of asking, steering comes back.
+	 * it until WATCH_MS after the reel starts, or it ends; null when the visitor steers. Seated, it asks the room for the
+	 * title, which plays it if the screen is idle (offline, here); if no reel runs within UNHEARD of asking, steering comes
+	 * back.
 	 */
 	hold(at: Point, now: number, rm: boolean): Point | null {
 		const s = this.seat;
 		if (!s) return null;
 		s.from ??= at;
 		if (s.asked === null && (rm || now - s.at >= SIT_MS)) (s.asked = now), this.net.play(s.title);
-		if (s.asked !== null && ((s.seen ||= !!this.reel) ? !this.reel : now - s.asked > UNHEARD)) return (this.seat = null);
+		if (s.asked !== null && this.reel) s.seen ??= now;
+		if (s.seen !== null ? !this.reel || now - s.seen >= WATCH_MS : s.asked !== null && now - s.asked > UNHEARD) return (this.seat = null);
 		return sitting(s.from, s.to, now - s.at, rm);
 	}
 
