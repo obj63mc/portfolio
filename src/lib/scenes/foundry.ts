@@ -41,13 +41,13 @@ const posters: Record<ScreenTitle, Rect> = {
 
 /**
  * The screen's painted surface, clockwise from its top left. The timeline draws into this quad: the camera sees the right
- * wall at an angle, so it is not a rectangle, and its bottom edge falls more steeply than its top. The top edge was
- * re-measured for the reel (ticket 17): the ivory starts 3 px above where it was first traced.
+ * wall at an angle, so it is not a rectangle, and its bottom edge falls more steeply than its top. Each corner is the
+ * ivory's own edge, measured on the composite and the 4x master: the reel never draws past it (projector.ts).
  */
 export const SCREEN_SURFACE: Point[] = [
-	{ x: 1661, y: 87 },
-	{ x: 2666, y: 300 },
-	{ x: 2665, y: 913 },
+	{ x: 1661, y: 90 },
+	{ x: 2666, y: 303 },
+	{ x: 2665, y: 911 },
 	{ x: 1661, y: 571 }
 ];
 

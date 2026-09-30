@@ -25,10 +25,12 @@ const bounds = (ps: Point[], d = 0): Rect => {
 	const x = Math.min(...ps.map((p) => p.x)) - d, y = Math.min(...ps.map((p) => p.y)) - d;
 	return { x, y, w: Math.max(...ps.map((p) => p.x)) + d - x, h: Math.max(...ps.map((p) => p.y)) + d - y };
 };
-/** The film's edge past the painted surface, world px, so that no rim of the idle screen shows round the reel. */
-const BLEED = 2;
+/** How far inside the painted surface the film stops, world px, so that nothing of the reel ever draws past the screen. */
+const INSET = 1;
+/** The letterbox round the video on every side, a fraction of the film's height: the video always sits inside the screen. */
+const MARGIN = 0.04;
 /** The screen's box, which a new frame of the video redraws, and the beam's, which a change of light redraws. */
-const QUAD = bounds(SCREEN_SURFACE, BLEED + 1);
+const QUAD = bounds(SCREEN_SURFACE, 1);
 const BEAM = bounds([PROJECTOR_LENS, ...SCREEN_SURFACE], GLOW);
 
 /** Each triangle of the mesh: its corners on the film and on the screen, and the film's box round it. */
@@ -199,7 +201,7 @@ export class Projector {
 		const [tl, , br] = SCREEN_SURFACE, mid = { x: (tl.x + br.x) / 2, y: (tl.y + br.y) / 2 };
 		for (const p of SCREEN_SURFACE) {
 			const len = Math.hypot(p.x - mid.x, p.y - mid.y);
-			g.lineTo(p.x + ((p.x - mid.x) * BLEED) / len, p.y + ((p.y - mid.y) * BLEED) / len);
+			g.lineTo(p.x - ((p.x - mid.x) * INSET) / len, p.y - ((p.y - mid.y) * INSET) / len);
 		}
 		g.clip();
 		// Each triangle of film goes onto its triangle of screen by the one affine map that takes three corners to three,
@@ -234,7 +236,7 @@ export class Projector {
 		g.textBaseline = 'middle';
 		if (r.show === 'video') {
 			if (v.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !v.videoWidth) return;
-			const s = Math.min(w / v.videoWidth, h / v.videoHeight), vw = v.videoWidth * s, vh = v.videoHeight * s;
+			const m = 2 * MARGIN * h, s = Math.min((w - m) / v.videoWidth, (h - m) / v.videoHeight), vw = v.videoWidth * s, vh = v.videoHeight * s;
 			g.drawImage(v, (w - vw) / 2, (h - vh) / 2, vw, vh);
 		} else if (r.show === 'title') {
 			g.fillStyle = GOLD;
