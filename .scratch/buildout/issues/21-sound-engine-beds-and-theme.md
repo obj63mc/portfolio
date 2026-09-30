@@ -57,3 +57,20 @@ The theme and Side Project's music have a third round of candidates in the picke
 The theme, 2026-09-30: Joe chose Billy_Ziogas's "Everybody needs a little dixieland (Master Track)", https://pixabay.com/music/blues-everybody-needs-a-little-dixieland-master-track-203047/, Pixabay Content License (an edited loop only; the page marks it Content ID registered, which matters only for YouTube). It becomes `audio/sources/theme-pixabay-203047.mp3` once Joe downloads it. Side Project's music is on a fourth round: round three's pop was "too techno style beats", so the next is organic and played on real instruments.
 
 Side Project's music, 2026-09-30: Joe chose MagalyStudio's "Relaxing and Coffee", a laid-back bossa nova, https://pixabay.com/music/bossa-nova-relaxing-and-coffee-502969/, Pixabay Content License (an edited loop only; not marked AI or Content ID). It becomes `audio/sources/music-side-project-pixabay-502969.mp3`. Every bed and music row now has Joe's pick. He asked for a reference pool of 15 to 20 tracks like it, to consider for other places' music.
+
+### Pixabay downloads for Joe, 2026-09-30
+
+Pixabay refuses scripted downloads, so Joe downloads these himself. Save each MP3 in `audio/sources/` under the name given:
+
+- Theme: Billy_Ziogas, "Everybody needs a little dixieland (Master Track)", https://pixabay.com/music/blues-everybody-needs-a-little-dixieland-master-track-203047/ → `theme-pixabay-203047.mp3`
+- Brennan's jazz: AurecTheme, "Jazz Bar", https://pixabay.com/music/traditional-jazz-jazz-bar-592657/ → `music-brennans-pixabay-592657.mp3`
+- Side Project's music: MagalyStudio, "Relaxing and Coffee", https://pixabay.com/music/bossa-nova-relaxing-and-coffee-502969/ → `music-side-project-pixabay-502969.mp3`
+
+Starred for later, alternatives for other places' music (no place assigned yet; download only when one is):
+
+- funoro, "You're Gonna Like It Here", https://pixabay.com/music/bossa-nova-youx27re-gonna-like-it-here-469728/
+- andriih, "Bossa Nova Lounge Music", https://pixabay.com/music/bossa-nova-bossa-nova-lounge-music-599225/
+- andriih, "Bossa Nova - Bossa Nova Cafe", https://pixabay.com/music/bossa-nova-bossa-nova-bossa-nova-cafe-575813/
+- andriih, "Bossa Nova Morning Music", https://pixabay.com/music/bossa-nova-bossa-nova-morning-music-599227/
+- Denis-Pavlov-Music, "Samba Bossa Nova Brazilian Jazz Podcast Music", https://pixabay.com/music/bossa-nova-samba-bossa-nova-brazilian-jazz-podcast-music-520231/
+- alex-morgan, "Samba Jazz Cocktail Bar", https://pixabay.com/music/modern-jazz-samba-jazz-cocktail-bar-567546/ (marked AI-generated on Pixabay)
