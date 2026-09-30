@@ -19,7 +19,7 @@ import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
 import { propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
-import { flow, type Current } from '../scenes/river.ts';
+import { ASHORE, flow, type Current } from '../scenes/river.ts';
 import { blocked, type Side } from '../scenes/walk.ts';
 import { Net } from '../net/net.ts';
 import { SNAP, sample, visible } from '../net/peers.ts';
@@ -163,7 +163,9 @@ export class Engine {
 	/** The iris between scenes. */
 	private iris: Iris = OPEN;
 	/** The own cursor in or out of the river current (ticket 20), from its last free frame. */
-	private current: Current = 'ashore';
+	private current: Current = ASHORE;
+	/** The visitor moved the cursor since the current last looked (a mouse, a key, a drag or its fling), which stops a float. */
+	private stirred = false;
 	/** When the visitor was last washed out at the river's south end, performance.now() ms. */
 	private washedAt = -Infinity;
 	private raf = 0;
@@ -292,7 +294,7 @@ export class Engine {
 		this.marked = '';
 		this.peerFollow.clear();
 		this.goal = null;
-		this.current = 'ashore';
+		this.current = ASHORE;
 		this.washedAt = -Infinity;
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
 		this.shots.show(scene, !!door);
@@ -388,8 +390,9 @@ export class Engine {
 				if (this.input.is === 'locked') this.steerTo({ x: this.cursor.x + e.movementX, y: this.cursor.y + e.movementY }, e.timeStamp);
 				else if (this.input.is === 'unlocked') (this.cursor = { x: e.clientX, y: e.clientY }), (this.inside = true);
 				else return;
-				// A real move re-arms the push; a synthetic one (content moving under a still pointer) has no movement.
-				if (e.movementX || e.movementY) this.armed = true;
+				// A real move re-arms the push and stirs the river; a synthetic one (content moving under a still pointer) has
+				// no movement.
+				if (e.movementX || e.movementY) this.armed = this.stirred = true;
 			},
 			opts
 		);
@@ -479,7 +482,8 @@ export class Engine {
 		addEventListener('blur', () => { this.inside = false; this.pause(); }, opts);
 		document.addEventListener('visibilitychange', () => { if (document.hidden) this.pause(); }, opts);
 		// Modifiers pass through, so the browser's shortcuts never steer.
-		addEventListener('keydown', (e) => { if (Object.hasOwn(KEYS, e.code) && !e.metaKey && !e.ctrlKey && !e.altKey) this.keys.add(e.code); }, opts);
+		// A key's press stirs the river, however short: a tap between two frames steers nothing but still stops a float.
+		addEventListener('keydown', (e) => { if (Object.hasOwn(KEYS, e.code) && !e.metaKey && !e.ctrlKey && !e.altKey) this.keys.add(e.code), (this.stirred = true); }, opts);
 		addEventListener('keyup', (e) => this.keys.delete(e.code), opts);
 		// Keyboard focus centres the camera on a placed element; a click's focus (not :focus-visible), a card's contents, the
 		// focus a closing card hands back to its prop and the unplaced h1 don't.
@@ -649,6 +653,7 @@ export class Engine {
 		if (!this.scene || !this.cursor || this.zooming) return;
 		const next = pan(this.cam, this.cursor, d, this.view, this.scene, CARRY * this.view.s);
 		this.cursor = next.cursor;
+		this.stirred = true;
 		this.moveTo(next.cam);
 	}
 
@@ -699,9 +704,9 @@ export class Engine {
 		if (!free && (this.joy || this.gesture.is !== 'none')) (this.gesture = { is: 'none' }), this.letGo();
 		const c = free ? this.cursor : null, k = steer(this.keys, this.view.s, dt);
 		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 };
-		// The current carries the free cursor like steering does, so the camera follows it through the push band, but it
-		// doesn't bring an unlocked mouse that has left the window back in.
-		const drift = c ? this.drift(scene, dt, now) : 0, d = { x: k.x + j.x, y: k.y + j.y + drift };
+		// The current carries a free cursor left still like steering does, so the camera follows it through the push band,
+		// but it doesn't bring an unlocked mouse that has left the window back in. The keys and the joystick stop it.
+		const drift = c ? this.drift(scene, dt, now, !!(k.x || k.y || j.x || j.y)) : 0, d = { x: k.x + j.x, y: k.y + j.y + drift };
 		if (c && (d.x || d.y) && !this.projector.seated) {
 			this.steerTo({ x: c.x + d.x, y: c.y + d.y }, now);
 			this.armed = true;
@@ -754,15 +759,16 @@ export class Engine {
 	};
 
 	/**
-	 * The river current on the free own cursor this frame (ticket 20), CSS px south: afloat it drifts, and at the south
-	 * end the visitor is washed out to the Arch. The unlocked mouse's next move puts its cursor back at the OS pointer,
-	 * as ever, so for it the drift only carries a still mouse.
+	 * The river current on the free own cursor this frame (ticket 20), CSS px south: left still in the water for a second
+	 * it floats, until the visitor moves it (`steered` by the keys or joystick this frame, or `stirred` since the last);
+	 * floating to the south end, the visitor is washed out to the Arch (Joe, 2026-09-30).
 	 */
-	private drift(scene: Scene, dt: number, now: number) {
-		const at = this.own;
+	private drift(scene: Scene, dt: number, now: number, steered: boolean) {
+		const at = this.own, stirred = this.stirred || steered;
+		this.stirred = false;
 		if (!('river' in scene) || !at) return 0;
-		const f = flow(scene.river, this.current, at, dt);
-		if (f.is === 'end') return this.toArch(scene, now), 0;
+		const f = flow(scene.river, this.current, at, dt, stirred);
+		if (f.is.is === 'end') return this.toArch(scene, now), 0;
 		this.current = f.is;
 		return f.dy * this.view.s;
 	}
@@ -774,7 +780,7 @@ export class Engine {
 	 */
 	private toArch(scene: Overworld, now: number) {
 		const a = scene.river.arch;
-		this.current = 'ashore';
+		this.current = ASHORE;
 		this.washedAt = now;
 		this.goal = null;
 		this.armed = false;
@@ -964,7 +970,7 @@ export class Engine {
 		}
 		for (const id of this.peerFollow.keys()) if (!this.net.peers.has(id)) this.peerFollow.delete(id);
 		const own = c && {
-			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides, this.current === 'afloat')
+			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides, this.current.is === 'afloat')
 		};
 		const r = hole(this.iris, now, this.view), iris = this.iris;
 		const shade = r === null || iris.is === 'open' ? null : { x: iris.at.x * this.dpr, y: iris.at.y * this.dpr, r: r * this.dpr };
@@ -973,6 +979,6 @@ export class Engine {
 
 	/** What the cursor wears and whether it is in the river, to the room from Join on; the net client sends only a change. */
 	private tellRoom() {
-		if (this.cursor) this.net.presence({ cos: saved.worn, gold: saved.gold, river: this.current === 'afloat' });
+		if (this.cursor) this.net.presence({ cos: saved.worn, gold: saved.gold, river: this.current.is === 'afloat' });
 	}
 }

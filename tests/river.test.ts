@@ -1,9 +1,10 @@
 // Seam 2: the river current (buildout ticket 20) as a pure function of one cursor's successive positions and a fake clock:
-// in the river once it steps onto the water from a bank or off the deck, still in it under the deck, out on either bank,
-// and washed out only at the south end.
+// in the river once it steps onto the water from a bank or off the deck, still in it under the deck, out on either bank.
+// It floats only once it has been left still in the water for a second, anything the visitor does stops it, and only a
+// floating cursor is washed out at the south end (Joe, 2026-09-30).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CURRENT, flow, type Current } from '../src/lib/scenes/river.ts';
+import { ASHORE, CURRENT, STILL, flow, type Current } from '../src/lib/scenes/river.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Overworld, Point } from '../src/lib/scenes/types.ts';
 
@@ -17,84 +18,119 @@ const river: Overworld['river'] = {
 	footprint: { x: 800, y: 0, w: 800, h: 2000 }
 };
 
+type Step = { is: Current['is'] | 'end'; at: Point; dy: number };
+
 /**
- * A cursor stepped through `frames` of `dt` seconds from `from`, its own input moving it `input` world px a second, the
- * current carrying it south while afloat; its state and position after each frame.
+ * A cursor stepped through `frames` of `dt` seconds from `from`: `input` moves it that many world px a second, by the
+ * visitor's own hand when `steered` (keys, a mouse, the joystick) and by the camera's push otherwise; the current carries
+ * it south while it floats. Its state, position and drift after each frame, up to a wash-out.
  */
-function ride(from: Point, input: Point, frames: number, dt = 1 / 60, was: Current = 'ashore', r = river) {
-	const trail: { is: Current | 'end'; at: Point }[] = [];
+function ride(from: Point, frames: number, { input = { x: 0, y: 0 }, steered = true, dt = 1 / 16, was = ASHORE as Current, r = river } = {}) {
+	const trail: Step[] = [];
 	let at = from, is = was;
 	for (let i = 0; i < frames; i++) {
-		const f = flow(r, is, at, dt);
+		const moving = !!(input.x || input.y), f = flow(r, is, at, dt, steered && moving);
 		at = { x: at.x + input.x * dt, y: at.y + input.y * dt + f.dy };
-		trail.push({ is: f.is, at });
-		if (f.is === 'end') break;
+		trail.push({ is: f.is.is, at, dy: f.dy });
+		if (f.is.is === 'end') break;
 		is = f.is;
 	}
 	return trail;
 }
 
-test('stepping into the water from a bank drifts the cursor south at the current', () => {
-	const t = ride({ x: 980, y: 1000 }, { x: 600, y: 0 }, 60);
-	assert.equal(t[0].is, 'ashore');
-	const wet = t.findIndex((f) => f.is === 'afloat');
-	assert.ok(wet > 0, 'afloat once on the water');
-	// A second of frames, the first few on the bank: it has drifted south by the current times the time afloat.
-	const afloat = t.filter((f) => f.is === 'afloat').length / 60;
-	assert.ok(Math.abs(t.at(-1)!.at.y - (1000 + CURRENT * afloat)) < 1e-6);
+const afloat = (from: Point, still = 0): Current => ({ is: 'afloat', at: from, still });
+
+test('stepped into the water from a bank, the cursor floats only once it has been left still for a second', () => {
+	assert.equal(STILL, 1);
 	assert.equal(CURRENT, 150);
+	const wade = ride({ x: 980, y: 1000 }, 16, { input: { x: 160, y: 0 } });
+	assert.equal(wade[0].is, 'ashore');
+	assert.ok(wade.some((f) => f.is === 'afloat'), 'afloat once on the water');
+	assert.ok(wade.every((f) => f.dy === 0), 'no drift while it moves');
+	// Left there: a second without a drift, then the current carries it.
+	const left = ride(wade.at(-1)!.at, 32, { was: afloat(wade.at(-1)!.at) });
+	assert.deepEqual(left.map((f) => f.dy > 0), [...Array(16).fill(false), ...Array(16).fill(true)]);
+	assert.equal(left.at(-1)!.dy, CURRENT / 16);
 });
 
-test('paddling to either bank brings it ashore and stops the drift', () => {
+test('anything the visitor does stops the float, and it starts again only after another second still', () => {
+	const from = { x: 1200, y: 1000 };
+	const floating = ride(from, 40, { was: afloat(from, STILL) });
+	assert.ok(floating.every((f) => f.dy > 0));
+	// A step of the keys, the mouse or the joystick: the drift stops that frame.
+	const at = floating.at(-1)!.at, stirred = flow(river, afloat(at, 5), at, 1 / 16, true);
+	assert.deepEqual(stirred, { is: afloat(at), dy: 0 });
+	const again = ride(at, 20, { was: stirred.is });
+	assert.equal(again.findIndex((f) => f.dy > 0), 16);
+});
+
+test('carried by the camera’s push, the cursor isn’t left still, so it never starts to float', () => {
+	const t = ride({ x: 1200, y: 1000 }, 64, { input: { x: 0, y: 40 }, steered: false, was: afloat({ x: 1200, y: 1000 }) });
+	assert.ok(t.every((f) => f.is === 'afloat' && f.dy === 0));
+});
+
+test('once it floats, the camera’s push following the drift doesn’t stop it; only the visitor does', () => {
+	const from = { x: 1200, y: 1000 };
+	const t = ride(from, 32, { input: { x: 0, y: 60 }, steered: false, was: afloat(from, STILL) });
+	assert.ok(t.every((f) => f.dy > 0));
+});
+
+test('paddling to either bank brings it ashore', () => {
 	for (const input of [{ x: -600, y: 0 }, { x: 600, y: 0 }]) {
-		const t = ride({ x: 1200, y: 1000 }, input, 60, 1 / 60, 'afloat');
-		const out = t.findIndex((f) => f.is === 'ashore');
-		assert.ok(out > 0, 'ashore on the bank');
-		const y = t[out].at.y;
-		assert.ok(t.slice(out).every((f) => f.is === 'ashore' && f.at.y === y), 'no drift ashore');
+		const t = ride({ x: 1200, y: 1000 }, 16, { input, was: afloat({ x: 1200, y: 1000 }, STILL) });
+		assert.equal(t.at(-1)!.is, 'ashore');
+		assert.ok(t.every((f) => f.dy === 0));
 	}
+	// Floating onto a bank the river bends into brings it ashore too.
+	assert.equal(flow(river, afloat({ x: 1450, y: 1900 }, STILL), { x: 1450, y: 1900 }, 1 / 16, false).is.is, 'ashore');
 });
 
-test('walking across the deck never drifts, whichever way', () => {
+test('walking across the deck never puts the cursor in the river, whichever way', () => {
 	for (const [from, input] of [[{ x: 950, y: 440 }, { x: 600, y: 100 }], [{ x: 1450, y: 520 }, { x: -600, y: -100 }]] as const) {
-		const t = ride(from, input, 50);
+		const t = ride(from, 50, { input, dt: 1 / 60 });
 		assert.ok(t.every((f) => f.is === 'ashore'), JSON.stringify(t.find((f) => f.is !== 'ashore')));
 		assert.ok(t.some((f) => f.at.x > 1000 && f.at.x < 1400), 'it crossed the water');
 	}
+	// Standing still on it never floats.
+	assert.ok(ride({ x: 1200, y: 460 }, 64).every((f) => f.is === 'ashore' && f.dy === 0));
 });
 
 test('stepping off the deck onto the water, north or south of it, puts the cursor in the river', () => {
-	assert.equal(flow(river, 'ashore', { x: 1200, y: 460 }, 0.1).is, 'ashore', 'on the deck');
-	assert.equal(flow(river, 'ashore', { x: 1200, y: 420 }, 0.1).is, 'afloat', 'off its north edge');
-	assert.equal(flow(river, 'ashore', { x: 1200, y: 540 }, 0.1).is, 'afloat', 'off its south edge');
+	assert.equal(flow(river, ASHORE, { x: 1200, y: 460 }, 0.1, true).is.is, 'ashore', 'on the deck');
+	assert.equal(flow(river, ASHORE, { x: 1200, y: 420 }, 0.1, true).is.is, 'afloat', 'off its north edge');
+	assert.equal(flow(river, ASHORE, { x: 1200, y: 540 }, 0.1, true).is.is, 'afloat', 'off its south edge');
 	// What the deck's slope leaves open is water, though a rect round the deck would cover it.
-	assert.equal(flow(river, 'ashore', { x: 1050, y: 530 }, 0.1).is, 'afloat');
+	assert.equal(flow(river, ASHORE, { x: 1050, y: 530 }, 0.1, true).is.is, 'afloat');
 });
 
-test('drifting under the deck keeps the cursor in the river, and it comes out the other side still in it', () => {
-	const t = ride({ x: 1200, y: 300 }, { x: 0, y: 0 }, 120, 1 / 60, 'afloat');
+test('floating under the deck keeps the cursor in the river, and it comes out the other side still in it', () => {
+	const t = ride({ x: 1200, y: 300 }, 32, { was: afloat({ x: 1200, y: 300 }, STILL) });
 	assert.ok(t.every((f) => f.is === 'afloat'));
 	assert.ok(t.some((f) => f.at.y > 430 && f.at.y < 500), 'passed under the deck');
 	assert.ok(t.at(-1)!.at.y > 560, 'and out below it');
 });
 
-test('only the south end washes the cursor out, after the time the current takes to carry it there', () => {
-	const t = ride({ x: 1200, y: 1200 }, { x: 0, y: 0 }, 10_000, 1 / 16, 'afloat');
+test('only a floating cursor is washed out at the south end, after the time the current takes to carry it there', () => {
+	const t = ride({ x: 1200, y: 1200 }, 10_000, { was: afloat({ x: 1200, y: 1200 }, STILL) });
 	assert.equal(t.at(-1)!.is, 'end');
 	assert.ok(t.slice(0, -1).every((f) => f.is === 'afloat'));
 	// 600 px at 150 px/s: four seconds of 1/16 s frames, the last one reaching the line.
 	assert.equal(t.length, 4 * 16 + 1);
-	// Pushing north against it holds it off the end; a bank below the line still brings it ashore rather than washing it out.
-	assert.ok(ride({ x: 1200, y: 1200 }, { x: 0, y: -150 }, 400, 0.05, 'afloat').every((f) => f.is === 'afloat'));
-	assert.equal(flow(river, 'afloat', { x: 1450, y: 1900 }, 0.05).is, 'ashore');
 });
 
-test('stepping onto the water below the south end washes the cursor out at once', () => {
-	assert.equal(flow(river, 'ashore', { x: 1200, y: 1900 }, 0.05).is, 'end');
+test('moving about on the water at and past the south end washes nothing out; left still there a second, it does', () => {
+	const about = ride({ x: 1050, y: 1750 }, 160, { input: { x: 20, y: 10 } });
+	assert.ok(about.every((f) => f.is !== 'end'));
+	assert.ok(about.some((f) => f.at.y > river.southEndY && f.is === 'afloat'));
+	const below = { x: 1200, y: 1900 }, left = ride(below, 32, { was: afloat(below) });
+	assert.equal(left.at(-1)!.is, 'end');
+	assert.equal(left.length, 17);
 });
 
-test('no time, no drift: a paused frame carries nothing', () => {
-	assert.deepEqual(flow(river, 'afloat', { x: 1200, y: 1000 }, 0), { is: 'afloat', dy: 0 });
+test('no time, nothing: a paused frame neither drifts nor counts toward the second still', () => {
+	const at = { x: 1200, y: 1000 };
+	assert.deepEqual(flow(river, afloat(at, 0.5), at, 0, false), { is: afloat(at, 0.5), dy: 0 });
+	assert.deepEqual(flow(river, afloat(at, STILL), at, 0, false), { is: afloat(at, STILL), dy: 0 });
 });
 
 test('the overworld: the Eads deck is walkable across the water, and open water above and below its slope is river', () => {
@@ -103,13 +139,14 @@ test('the overworld: the Eads deck is walkable across the water, and open water 
 	const [nw, ne, se, sw] = r.deck;
 	for (let u = 0; u <= 1; u += 0.02) {
 		const p = { x: nw.x + (ne.x - nw.x) * u, y: (nw.y + sw.y) / 2 + ((ne.y + se.y) / 2 - (nw.y + sw.y) / 2) * u };
-		assert.equal(flow(r, 'ashore', p, 0.1).is, 'ashore', JSON.stringify(p));
+		assert.equal(flow(r, ASHORE, p, 0.1, true).is.is, 'ashore', JSON.stringify(p));
 	}
 	// Mid-river, north and south of the deck's band.
 	const mid = (nw.x + ne.x) / 2, top = (nw.y + ne.y) / 2, bottom = (sw.y + se.y) / 2;
-	assert.equal(flow(r, 'ashore', { x: mid, y: top - 40 }, 0.1).is, 'afloat');
-	assert.equal(flow(r, 'ashore', { x: mid, y: bottom + 40 }, 0.1).is, 'afloat');
+	assert.equal(flow(r, ASHORE, { x: mid, y: top - 40 }, 0.1, true).is.is, 'afloat');
+	assert.equal(flow(r, ASHORE, { x: mid, y: bottom + 40 }, 0.1, true).is.is, 'afloat');
 	// Under the deck, afloat stays afloat; the Arch reset point is ashore.
-	assert.equal(flow(r, 'afloat', { x: mid, y: (top + bottom) / 2 }, 0.1).is, 'afloat');
-	assert.equal(flow(r, 'afloat', r.arch, 0.1).is, 'ashore');
+	const under = { x: mid, y: (top + bottom) / 2 };
+	assert.equal(flow(r, afloat(under), under, 0.1, false).is.is, 'afloat');
+	assert.equal(flow(r, afloat(under), r.arch, 0.1, true).is.is, 'ashore');
 });

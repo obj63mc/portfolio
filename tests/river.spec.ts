@@ -1,7 +1,8 @@
-// Seam 4 for the river current (buildout ticket 20), over the built site: the drawn cursor stepped into the Mississippi
-// drifts south until it reaches a bank or the south end, which fades it back to the Arch with its "you" tag; the Eads deck
-// is crossed without drifting, and the bridge is drawn over a cursor under it but not over one on it. The browser refuses
-// the pointer lock here, so the drawn cursor follows the mouse until the keys steer it.
+// Seam 4 for the river current (buildout ticket 20), over the built site: the drawn cursor left still in the Mississippi
+// for a second floats south until the visitor moves it, reaches a bank or floats to the south end, which fades it back to
+// the Arch with its "you" tag; moving about near the south end never does (Joe, 2026-09-30). The Eads deck is crossed
+// without floating, and the bridge is drawn over a cursor under it but not over one on it. The browser refuses the
+// pointer lock here, so the drawn cursor follows the mouse until the keys steer it.
 import { test, expect, type Page } from '@playwright/test';
 import { factor } from '../src/lib/engine/depth.ts';
 import { lineY } from '../src/lib/scenes/walk.ts';
@@ -67,34 +68,67 @@ async function wade(page: Page) {
 	return { x: (5550 - c.x) * c.s, y: (1450 - c.y) * c.s };
 }
 
-test('stepping into the water drifts the cursor south; the keys paddle it to the bank, where it stops', async ({ page }) => {
-	const at = await wade(page);
-	// About 150 world px a second, 90 CSS px at the 0.6 render scale, with nothing steering.
+/** Where the cursor's tip is drawn, CSS px, `ms` apart. */
+async function travel(page: Page, at: Point, ms: number) {
 	const y0 = (await cursorAt(page, at))!.y;
-	await page.waitForTimeout(500);
-	const y1 = (await cursorAt(page, at))!.y;
-	expect(y1 - y0).toBeGreaterThan(20);
-	expect(y1 - y0).toBeLessThan(80);
-	// Paddled east with the keys to the east bank, it stops drifting.
+	await page.waitForTimeout(ms);
+	return (await cursorAt(page, at))!.y - y0;
+}
+
+test('left still in the water for a second the cursor floats south; the keys stop it and paddle it to the bank', async ({ page }) => {
+	const at = await wade(page);
+	expect(await travel(page, at, 600), 'still for less than a second').toBe(0);
+	// Then about 150 world px a second, 90 CSS px at the 0.6 render scale.
+	await expect.poll(() => travel(page, at, 300)).toBeGreaterThan(10);
+	expect(await travel(page, at, 500)).toBeLessThan(80);
+	// A tap of a key stops it where it is.
+	await page.keyboard.press('ArrowLeft');
+	const y = (await cursorAt(page, at))!.y;
+	expect(await travel(page, { x: at.x, y }, 600)).toBe(0);
+	// Paddled east with the keys to the east bank, it stays there.
 	await page.keyboard.down('ArrowRight');
 	await page.waitForTimeout(500);
 	await page.keyboard.up('ArrowRight');
-	const c = await camera(page), ashore = (await cursorAt(page, { x: at.x + 180, y: y1 }))!;
+	const c = await camera(page), ashore = (await cursorAt(page, { x: at.x + 180, y }))!;
 	expect(c.x + ashore.x / c.s, 'on the east bank').toBeGreaterThan(5760);
-	await page.waitForTimeout(500);
-	expect((await cursorAt(page, ashore))!.y).toBe(ashore.y);
+	expect(await travel(page, ashore, 1500)).toBe(0);
 });
 
-test('the drift stops while paused and carries on after Resume', async ({ page }) => {
+test('moving the mouse stops the float too', async ({ page }) => {
 	const at = await wade(page);
+	await expect.poll(() => travel(page, at, 300)).toBeGreaterThan(10);
+	const c = await camera(page), here = (await cursorAt(page, at))!;
+	await page.mouse.move(here.x + 5, here.y);
+	expect(await travel(page, { x: here.x + 5, y: here.y }, 600)).toBe(0);
+	expect(c).toEqual(await camera(page));
+});
+
+test('the float stops while paused and carries on after Resume', async ({ page }) => {
+	const at = await wade(page);
+	await expect.poll(() => travel(page, at, 300)).toBeGreaterThan(10);
 	await page.evaluate(() => dispatchEvent(new Event('blur')));
 	await expect(page.locator('dialog.paused')).toBeVisible();
-	const y0 = (await cursorAt(page, at))!.y;
-	await page.waitForTimeout(600);
-	expect((await cursorAt(page, at))!.y).toBe(y0);
-	await page.locator('dialog.paused button.primary').click();
+	expect(await travel(page, at, 600)).toBe(0);
+	// Resumed from the keyboard, so the mouse doesn't move the cursor.
+	await page.keyboard.press('Enter');
 	await expect(page.locator('dialog.paused')).toBeHidden();
-	await expect.poll(async () => (await cursorAt(page, at))!.y).toBeGreaterThan(y0 + 10);
+	await expect.poll(() => travel(page, at, 300)).toBeGreaterThan(10);
+});
+
+test('moving about on the water past the south end sends nobody back; left still there, the visitor is', async ({ page }) => {
+	await page.goto('/#belleville');
+	await join(page);
+	const c = await camera(page), black = () => page.evaluate(() => document.querySelector<HTMLCanvasElement>('canvas.cursors')!.getContext('2d')!.getImageData(0, 0, 1, 1).data[3]);
+	// Three seconds wandering either side of the line, never still for a second.
+	for (let i = 0; i < 30; i++) {
+		await point(page, { x: 5300 + 10 * i, y: 1860 + 60 * Math.abs(Math.sin(i / 3)) });
+		await page.waitForTimeout(100);
+		expect(await black()).toBe(0);
+	}
+	expect(await camera(page)).toEqual(c);
+	await point(page, { x: 5400, y: 1950 });
+	await page.waitForFunction(() => document.querySelector<HTMLCanvasElement>('canvas.cursors')!.getContext('2d')!.getImageData(0, 0, 1, 1).data[3] > 200, null, { timeout: 3000 });
+	await expect.poll(async () => ((c) => [Math.round(c.x + 640 / c.s), Math.round(c.y + 360 / c.s)])(await camera(page))).toEqual([arch.x, arch.y]);
 });
 
 test('the south end fades the visitor back to the Arch: the camera centred on it and the "you" tag shown', async ({ page }) => {
@@ -114,7 +148,7 @@ test('the south end fades the visitor back to the Arch: the camera centred on it
 	expect(await cursorAt(page, { x: 640 + 23 * 1.25 * s + 50, y: 360 }), 'the "you" tag').not.toBeNull();
 });
 
-test('the deck is crossed without drifting; under it, in the river, the bridge is drawn over the cursor', async ({ page }) => {
+test('the deck is crossed without floating, however long the cursor stays on it; under it, in the river, the bridge is drawn over the cursor', async ({ page }) => {
 	await page.goto('/#belleville');
 	await join(page);
 	// Steered north with the keys until the camera is at the top of the world, the deck in view.
@@ -127,7 +161,7 @@ test('the deck is crossed without drifting; under it, in the river, the bridge i
 	const c = await camera(page), screen = (p: Point) => ({ x: (p.x - c.x) * c.s, y: (p.y - c.y) * c.s });
 	for (let x = 5300; x <= 6000; x += 100) await point(page, { x, y: mid(x) });
 	const end = screen({ x: 6000, y: mid(6000) });
-	await page.waitForTimeout(500);
+	await page.waitForTimeout(1500);
 	const crossed = (await cursorAt(page, end))!;
 	expect(Math.hypot(crossed.x - end.x, crossed.y - end.y), 'where it was put').toBeLessThan(1.5);
 	// Back along the deck to just below its north edge mid-river: on the deck, it is drawn over the bridge.
