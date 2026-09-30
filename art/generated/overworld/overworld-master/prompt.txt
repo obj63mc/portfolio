@@ -1,3 +1,11 @@
+OVERWORLD MASTER DERIVATION, 2026-09-30 (round eighteen, upscaled 4x for the background)
+
+Round eighteen redrew the small pink house north of the Carondelet lake, east of the gazebo, whole: a big tree's crown had covered its right half and a small tree clipped its porch; the big tree now stands on the lawn east of the house and the small tree west of it, and the old trunk's stub is relaid as lawn (Joe, 2026-09-29; rounds/round-18.json).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (a logo too fine for the native master) are composited onto the 4x source at full resolution.
+
 OVERWORLD MASTER DERIVATION, 2026-09-30 (round seventeen, upscaled 4x for the background)
 
 Round seventeen removed the bench south of the Carondelet lake loop's start line, painted over with the lawn's own flat colour, to make room for a start/finish sign (Joe, 2026-09-29, buildout ticket 18; rounds/round-17.json).

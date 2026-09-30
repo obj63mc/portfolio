@@ -1,20 +1,46 @@
 {
- "round": 17,
- "base": "rounds/base-17.png",
- "tiles": [],
+ "round": 18,
+ "base": "rounds/base-18.png",
+ "tiles": [
+  {
+   "name": "house",
+   "rect": [
+    654,
+    430,
+    256,
+    256
+   ],
+   "loops": [],
+   "repaintPx": 6845,
+   "edit": true
+  }
+ ],
  "stamps": [],
  "paints": [
   {
    "rect": [
-    740,
-    753,
-    786,
-    779
+    782,
+    585,
+    791,
+    587
    ],
    "color": [
-    174,
-    206,
-    55
+    173,
+    201,
+    57
+   ]
+  },
+  {
+   "rect": [
+    782,
+    587,
+    791,
+    588
+   ],
+   "color": [
+    160,
+    192,
+    51
    ]
   }
  ],

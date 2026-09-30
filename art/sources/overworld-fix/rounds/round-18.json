@@ -1,0 +1,80 @@
+{
+ "round": 18,
+ "base": "rounds/base-18.png",
+ "note": "Joe (2026-09-29): north of the Carondelet lake, east of the gazebo, a big tree's crown covers the right half of a small pink house and a small tree clips its porch, so the house reads as cut off. The house is redrawn whole and the two trees stand beside it on the lawn.",
+ "tiles": {
+  "house": {
+   "rect": [
+    654,
+    430,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      721,
+      550
+     ],
+     [
+      738,
+      543
+     ],
+     [
+      756,
+      539
+     ],
+     [
+      760,
+      522
+     ],
+     [
+      820,
+      522
+     ],
+     [
+      842,
+      540
+     ],
+     [
+      843,
+      593
+     ],
+     [
+      820,
+      590
+     ],
+     [
+      800,
+      588
+     ],
+     [
+      788,
+      586
+     ],
+     [
+      770,
+      583
+     ],
+     [
+      750,
+      582
+     ],
+     [
+      721,
+      581
+     ]
+    ]
+   ],
+   "keep": "the road and its sidewalks above the outline, the red-brick blocks beyond it, the gazebo and its bushes at the left, the cream lake-loop footpath along the bottom of the outline, the lawn edge and the lake below, and every tree outside the outline",
+   "fixes": [
+    "Outline (north of the lake, east of the gazebo): a small pink two-storey house with a slate-grey hip roof, cream trim and a cream front porch, whose right half is hidden behind a big tree, with a small tree clipping its porch at the left. Draw the house whole at exactly the same position and size as its visible left half, as one symmetrical house: the full hip roof, the full front wall with its windows in two matching rows, and the full cream porch across the front with its steps and the little path from the porch down to the footpath. Then move the big tree to the lawn east of the house, clear of it with a gap of lawn between them, the same size and style as before (a broad round crown in layered greens over a brown trunk), its trunk standing on the lawn just above the footpath; move the small tree a little west so its crown stays clear of the porch. Where the big tree's crown used to cover the road and its sidewalk, draw the road and sidewalk continuing straight and unbroken, exactly as they run outside the outline. Everything else inside the outline is plain lawn in the lawn's own flat green."
+   ]
+  }
+ },
+ "lawnfillExtra": [[781, 583, 795, 589]],
+ "paints": [
+  {"rect": [782, 585, 791, 587], "color": [173, 201, 57]},
+  {"rect": [782, 587, 791, 588], "color": [160, 192, 51]}
+ ]
+}
