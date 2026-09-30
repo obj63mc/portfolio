@@ -52,15 +52,15 @@
 			"id": "best-lap",
 			"kind": "one-shot",
 			"use": "the finish-line beep on a new personal best lap",
-			"status": "provisional",
-			"file": "best-lap-freesound-680825.mp3",
-			"source": "https://freesound.org/people/stomachache/sounds/680825/",
-			"title": "Countdown Start",
-			"author": "stomachache",
+			"status": "approved",
+			"file": "best-lap-freesound-607207.mp3",
+			"source": "https://freesound.org/people/Fupicat/sounds/607207/",
+			"title": "Congrats",
+			"author": "Fupicat",
 			"licence": "CC0",
 			"trim": [
 				0.0,
-				1.1
+				1.45
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -68,15 +68,15 @@
 			"id": "door-open",
 			"kind": "one-shot",
 			"use": "a venue or exit door, as the hop leaves",
-			"status": "provisional",
-			"file": "door-open-freesound-398750.mp3",
-			"source": "https://freesound.org/people/Anthousai/sounds/398750/",
-			"title": "door - open 01.wav",
-			"author": "Anthousai",
+			"status": "approved",
+			"file": "door-freesound-125958.mp3",
+			"source": "https://freesound.org/people/Ryding/sounds/125958/",
+			"title": "Wooden door open-close",
+			"author": "Ryding",
 			"licence": "CC0",
 			"trim": [
 				0.0,
-				0.85
+				0.8
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -84,15 +84,15 @@
 			"id": "door-close",
 			"kind": "one-shot",
 			"use": "a venue or exit door, as the hop lands",
-			"status": "provisional",
-			"file": "door-close-freesound-117614.mp3",
-			"source": "https://freesound.org/people/soundmary/sounds/117614/",
-			"title": "Door close.wav",
-			"author": "soundmary",
+			"status": "approved",
+			"file": "door-freesound-125958.mp3",
+			"source": "https://freesound.org/people/Ryding/sounds/125958/",
+			"title": "Wooden door open-close",
+			"author": "Ryding",
 			"licence": "CC0",
 			"trim": [
-				0.0,
-				1.1
+				1.85,
+				2.75
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -180,15 +180,15 @@
 			"id": "fan",
 			"kind": "one-shot",
 			"use": "the server rack: a fan whir",
-			"status": "provisional",
-			"file": "fan-freesound-732705.mp3",
-			"source": "https://freesound.org/people/tt_runscript/sounds/732705/",
-			"title": "1U Rackmount Server Fan",
-			"author": "tt_runscript",
+			"status": "approved",
+			"file": "fan-freesound-52050.mp3",
+			"source": "https://freesound.org/people/guitarguy1985/sounds/52050/",
+			"title": "computerstartup.wav",
+			"author": "guitarguy1985",
 			"licence": "CC0",
 			"trim": [
-				0.9,
-				2.85
+				0.4,
+				2.35
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -196,15 +196,15 @@
 			"id": "click",
 			"kind": "one-shot",
 			"use": "a mouse click: every computer, the lobby loft's four and the lab workstation (Joe, 2026-09-30)",
-			"status": "provisional",
-			"file": "click-freesound-137084.mp3",
-			"source": "https://freesound.org/people/chaosportal/sounds/137084/",
-			"title": "Wood Pat 07",
-			"author": "chaosportal",
+			"status": "approved",
+			"file": "click-freesound-678248.mp3",
+			"source": "https://freesound.org/people/Pixeliota/sounds/678248/",
+			"title": "Mouse Click Sound.mp3",
+			"author": "Pixeliota",
 			"licence": "CC0",
 			"trim": [
-				0.0,
-				0.25
+				0.34,
+				0.6
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -228,15 +228,15 @@
 			"id": "pour",
 			"kind": "one-shot",
 			"use": "the Side Project bottles: a pour",
-			"status": "provisional",
-			"file": "pour-freesound-382911.mp3",
-			"source": "https://freesound.org/people/reasanka/sounds/382911/",
-			"title": "Pouring Drink Sound Effect by Rea.mp3",
-			"author": "reasanka",
+			"status": "approved",
+			"file": "pour-freesound-206016.mp3",
+			"source": "https://freesound.org/people/Ezcah/sounds/206016/",
+			"title": "Liquid Fill Glass",
+			"author": "Ezcah",
 			"licence": "CC0",
 			"trim": [
-				0.3,
-				2.05
+				0.0,
+				1.05
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},

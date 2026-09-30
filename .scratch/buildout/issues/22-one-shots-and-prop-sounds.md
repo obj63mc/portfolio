@@ -4,9 +4,9 @@
 
 **Blocked by:** 17 (screen cue), 18 (best-lap beep), 21 (engine and pool)
 
-**Status:** ready-for-human: built, with a provisional pick for every one-shot; the picks await Joe's approval (2026-09-30)
+**Status:** ready-for-human: built, and every one-shot is Joe's pick (2026-09-30); the hands-on listening on desktop, a phone and two browsers in one Foundry room remains
 
-- [ ] Every row of the one-shot table has a sourced, encoded file wired to its event, with a ledger row
+- [x] Every row of the one-shot table has a sourced, encoded file wired to its event, with a ledger row (the marquee is scenery now, so it has no click to sound; the ATM's waits for ticket 25)
 - [ ] Card open and close, grant, gold, best lap and doors sound on desktop and on a phone; hover is silent
 - [ ] The projector cue plays for every visitor in the theatre when the screen starts, and for a mid-sequence joiner from the right point
 - [x] A cosmetic earned in another tab makes no sound here
@@ -42,3 +42,7 @@ Joe listened to three candidates per row in the sound picker (a claude.ai page w
 ### Review fix: videos follow the Sound toggle, 2026-09-30
 
 Muting suspended the audio context, but the Foundry screen's video (its sound is the trailer cue) and the meeting TV's play outside it, so they stayed audible with Sound off. Both now register with the sound module: muted while the toggle is off or the tab is hidden, and unmuted only inside a press (the toggle or Resume), since a browser pauses a video unmuted without one. `tests/sound.spec.ts` checks the meeting TV.
+
+### Joe's picks, round two, 2026-09-30
+
+From four new candidates a row: best lap is Fupicat's "Congrats" jingle (607207), the mouse click Pixeliota's (678248), the doors one recording of Ryding's wooden door opening and shutting (125958, both rows cut from the one file), the server rack guitarguy1985's mid-90s PC starting up (52050, the switch and the spin-up) and the pour Ezcah's quick glass fill (206016). Every one-shot is now approved; `npm run audio` re-encoded them.
