@@ -6,10 +6,13 @@ import { propsOf } from './scenes/index.ts';
 import type { Overworld, Prop, SubScene } from './scenes/types';
 import type { Screen } from './net/screen.ts';
 
-/** Every one-shot, by id: its file is `static/audio/<id>.<hash>.mp3`. */
+/**
+ * Every one-shot, by id: its file is `static/audio/<id>.<hash>.mp3`. One card sound opens and closes every card, and one
+ * mouse click serves every computer (Joe, 2026-09-30, choosing the sounds).
+ */
 export const ONE_SHOTS = [
-	'card-open', 'card-close', 'chime', 'fanfare', 'best-lap', 'door-open', 'door-close', 'projector',
-	'knock', 'moose', 'bell', 'squelch', 'fan', 'desk-tap', 'paper', 'marker', 'keys', 'pour', 'chalk', 'creak'
+	'card', 'chime', 'fanfare', 'best-lap', 'door-open', 'door-close', 'projector',
+	'knock', 'moose', 'bell', 'squelch', 'fan', 'click', 'marker', 'pour', 'chalk', 'creak', 'cooler', 'lighter'
 ] as const;
 
 export type SoundId = (typeof ONE_SHOTS)[number];
@@ -18,7 +21,7 @@ export type SoundId = (typeof ONE_SHOTS)[number];
  * Heard wherever the visitor is, so loaded on Join in every scene: every card's open and close, the cosmetic chime, the
  * gold fanfare and the doors, which every scene has.
  */
-export const GLOBAL: readonly SoundId[] = ['card-open', 'card-close', 'chime', 'fanfare', 'door-open', 'door-close'];
+export const GLOBAL: readonly SoundId[] = ['card', 'chime', 'fanfare', 'door-open', 'door-close'];
 
 /**
  * Each prop's signature, by prop id, played with the card's sound on the click that opens its card; `signpost` is the
@@ -33,13 +36,12 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 	bike: 'bell',
 	'mc-sign': 'squelch',
 	'server-rack': 'fan',
-	'computer-frontend': 'desk-tap',
-	'computer-backend': 'desk-tap',
-	'computer-cms': 'desk-tap',
-	'computer-data': 'desk-tap',
-	diploma: 'paper',
+	'computer-frontend': 'click',
+	'computer-backend': 'click',
+	'computer-cms': 'click',
+	'computer-data': 'click',
 	whiteboard: 'marker',
-	workstation: 'keys',
+	workstation: 'click',
 	'bottle-bacardi': 'pour',
 	'bottle-grey-goose': 'pour',
 	'bottle-new-amsterdam': 'pour',
@@ -55,15 +57,18 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 	'humidor-macanudo': 'creak',
 	'humidor-partagas': 'creak',
 	'humidor-la-gloria-cubana': 'creak',
-	'humidor-punch': 'creak'
+	'humidor-punch': 'creak',
+	// No row in the sound design table; Joe gave them these (2026-09-30).
+	'brewery-sign': 'cooler',
+	'stg-logo': 'lighter'
 };
 
 /**
- * Props with no signature of their own, on purpose: the Side Project sign and the STG logo have no row in the table (their
- * cards sound), the meeting TV's sound is its video, the Foundry posters are heard through the screen's projector start,
- * which the whole room hears, and the screen is no button.
+ * Props with no signature of their own, on purpose: the diploma's paper is its card's own sound (Joe, 2026-09-30), the
+ * meeting TV's sound is its video, the Foundry posters are heard through the screen's projector start, which the whole
+ * room hears, and the screen is no button.
  */
-export const SILENT: readonly string[] = ['brewery-sign', 'stg-logo', 'meeting-tv', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen'];
+export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen'];
 
 /** What each scene hears beyond its props: the overworld's signpost and the lap timer's beep, the Foundry's projector start. */
 const EXTRAS: Readonly<Record<string, readonly SoundId[]>> = { overworld: ['knock', 'best-lap'], foundry: ['projector'] };
@@ -77,7 +82,7 @@ export const needed = (scene: Overworld | SubScene): ReadonlySet<SoundId> =>
 
 /** What a prop's click sounds like: its card opening, unless it has none, and its signature. Hover never sounds. */
 export const clickSounds = (prop: Prop | undefined): SoundId[] =>
-	prop ? [...(prop.kind ? [] : (['card-open'] as const)), ...(PROP_SOUNDS[prop.id] ? [PROP_SOUNDS[prop.id]] : [])] : [];
+	prop ? [...(prop.kind ? [] : (['card'] as const)), ...(PROP_SOUNDS[prop.id] ? [PROP_SOUNDS[prop.id]] : [])] : [];
 
 /**
  * A granting click's sound, from what the cursor wore and whether it was gold before and after: the chime as a cosmetic

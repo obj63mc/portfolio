@@ -36,7 +36,7 @@ export class OneShots {
 			opts
 		);
 		// A card closes by its Close button, Escape, or the lock let go in it; `close` doesn't bubble.
-		layer.addEventListener('close', (e) => { if ((e.target as Element).closest('.prop')) sound.play('card-close'); }, { ...opts, capture: true });
+		layer.addEventListener('close', (e) => { if ((e.target as Element).closest('.prop')) sound.play('card'); }, { ...opts, capture: true });
 		layer.addEventListener('pointerover', (e) => this.over(e.target as Element), opts);
 		layer.addEventListener('focusin', (e) => this.over(e.target as Element), opts);
 	}

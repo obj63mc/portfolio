@@ -27,3 +27,14 @@ Ticket 21 isn't built, so this ticket built the part of it the one-shots can't r
 Checks: `tests/sound.test.ts`, `tests/audio.test.ts`, the build-output test (the toggle's markup, the cache rule) and `tests/sound.spec.ts` (Playwright over the build: nothing fetched before Join or while muted, the toggle kept across a reload and unmuting inside its press, a card's open, signature, chime and close, hover and another tab's cosmetic silent, a poster's reel playing the projector start). `npm run ci` passes.
 
 Hands-on, for Joe: approve or swap each pick; hear the gold fanfare, the best-lap beep and the doors; the projector start in two browsers in one Foundry room against `wrangler dev`, one joining mid-start; all of it on a phone, and the toggle on iOS with the silent switch.
+
+### Joe's picks, round one, 2026-09-30
+
+Joe listened to three candidates per row in the sound picker (a claude.ai page whose picks Claude reads back) and chose:
+
+- **Approved**: the card (MTJohnson's sliding envelope, 444431), chime (243701), fanfare (397355), bell (bsumusictech's bike bell, 81875), squelch (578806), knock (Weak_Hero's knock on wood, 584941, trimmed to the one knock), marker (321137), moose (C-V's jaw-harp boing, 518645), projector (videofueralle's 8 mm projector switches and motor, 613832), chalk (447925) and creak (422975).
+- **One sound for several**: one card sound opens and closes every card, so `card-open` and `card-close` are now `card`. The diploma's paper is its card's own sound, so it has no signature of its own. One mouse click serves every computer, the lobby loft's four and the lab workstation, so `desk-tap` and `keys` are now `click`.
+- **Props the table left out**: the Side Project sign on the cooler door closes a fridge door (`cooler`, qubodup, 442999), and Brennan's STG logo strikes a lighter (`lighter`, Capt.Jack, 742836).
+- **Round two, still provisional**: best lap (something that says completion or success, unlike the chime and fanfare), the mouse click, door open and a door close to match it, the server rack (a retro computer starting up) and a short quick pour.
+
+`npm run audio` re-encoded the set; the ledger marks each row approved or provisional.

@@ -1,34 +1,18 @@
 {
 	"sounds": [
 		{
-			"id": "card-open",
+			"id": "card",
 			"kind": "one-shot",
-			"use": "every card opening, a soft paper or card slide",
-			"status": "provisional",
-			"file": "card-open-freesound-464302.mp3",
-			"source": "https://freesound.org/people/eyesonlegs/sounds/464302/",
-			"title": "PaperSlide.wav",
-			"author": "eyesonlegs",
+			"use": "every card opening and closing, one sound for both (Joe, 2026-09-30)",
+			"status": "approved",
+			"file": "card-freesound-444431.mp3",
+			"source": "https://freesound.org/people/MTJohnson/sounds/444431/",
+			"title": "Sliding Envelope.wav",
+			"author": "MTJohnson",
 			"licence": "CC0",
 			"trim": [
-				0.0,
-				1.5
-			],
-			"edits": "From Freesound's high-quality preview MP3, not the original download"
-		},
-		{
-			"id": "card-close",
-			"kind": "one-shot",
-			"use": "every card closing",
-			"status": "provisional",
-			"file": "card-close-freesound-817580.mp3",
-			"source": "https://freesound.org/people/SilverDubloons/sounds/817580/",
-			"title": "slideCard05",
-			"author": "SilverDubloons",
-			"licence": "CC0",
-			"trim": [
-				0.0,
-				0.39
+				0.28,
+				0.9
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -36,7 +20,7 @@
 			"id": "chime",
 			"kind": "one-shot",
 			"use": "a cosmetic going on the cursor",
-			"status": "provisional",
+			"status": "approved",
 			"file": "chime-freesound-243701.mp3",
 			"source": "https://freesound.org/people/ertfelda/sounds/243701/",
 			"title": "correct",
@@ -52,7 +36,7 @@
 			"id": "fanfare",
 			"kind": "one-shot",
 			"use": "the grant that turns the cursor gold, in place of the chime",
-			"status": "provisional",
+			"status": "approved",
 			"file": "fanfare-freesound-397355.mp3",
 			"source": "https://freesound.org/people/plasterbrain/sounds/397355/",
 			"title": "Tada Fanfare A",
@@ -116,15 +100,15 @@
 			"id": "projector",
 			"kind": "one-shot",
 			"use": "the Foundry screen starting a reel, heard by the whole room",
-			"status": "provisional",
-			"file": "projector-freesound-458569.mp3",
-			"source": "https://freesound.org/people/imagery2/sounds/458569/",
-			"title": "35mm-film-projector-start.mp3",
-			"author": "imagery2",
+			"status": "approved",
+			"file": "projector-freesound-613832.mp3",
+			"source": "https://freesound.org/people/videofueralle/sounds/613832/",
+			"title": "8mm_Projector_Close_Switches.wav",
+			"author": "videofueralle",
 			"licence": "CC0",
 			"trim": [
-				0.0,
-				1.95
+				0.35,
+				2.3
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -132,15 +116,15 @@
 			"id": "knock",
 			"kind": "one-shot",
 			"use": "wood knock: the welcome sign, the ride sign and the signpost",
-			"status": "provisional",
-			"file": "knock-freesound-629987.mp3",
-			"source": "https://freesound.org/people/Flem0527/sounds/629987/",
-			"title": "Knocking on Wood Door (1)",
-			"author": "Flem0527",
+			"status": "approved",
+			"file": "knock-freesound-584941.mp3",
+			"source": "https://freesound.org/people/Weak_Hero/sounds/584941/",
+			"title": "Knock_wood",
+			"author": "Weak_Hero",
 			"licence": "CC0",
 			"trim": [
-				0.1,
-				0.7
+				0.98,
+				1.4
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -148,15 +132,15 @@
 			"id": "moose",
 			"kind": "one-shot",
 			"use": "the moose and the lobby moose statue: an antler wobble or a low call",
-			"status": "provisional",
-			"file": "moose-freesound-540790.mp3",
-			"source": "https://freesound.org/people/magnuswaker/sounds/540790/",
-			"title": "Boing 2",
-			"author": "magnuswaker",
+			"status": "approved",
+			"file": "moose-freesound-518645.mp3",
+			"source": "https://freesound.org/people/C-V/sounds/518645/",
+			"title": "jews_harp_boing.wav",
+			"author": "C-V",
 			"licence": "CC0",
 			"trim": [
-				0.0,
-				0.8
+				0.15,
+				0.95
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -164,15 +148,15 @@
 			"id": "bell",
 			"kind": "one-shot",
 			"use": "Joe's bike: a bell ding",
-			"status": "provisional",
-			"file": "bell-freesound-378912.mp3",
-			"source": "https://freesound.org/people/13gkopeckak/sounds/378912/",
-			"title": "bell.wav",
-			"author": "13gkopeckak",
+			"status": "approved",
+			"file": "bell-freesound-81875.mp3",
+			"source": "https://freesound.org/people/bsumusictech/sounds/81875/",
+			"title": "Bike Bell.wav",
+			"author": "bsumusictech",
 			"licence": "CC0",
 			"trim": [
-				0.25,
-				1.5
+				0.0,
+				1.77
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -180,7 +164,7 @@
 			"id": "squelch",
 			"kind": "one-shot",
 			"use": "the MonsterCommerce eye: a blink squelch",
-			"status": "provisional",
+			"status": "approved",
 			"file": "squelch-freesound-578806.mp3",
 			"source": "https://freesound.org/people/nomiqbomi/sounds/578806/",
 			"title": "Squish 5",
@@ -209,11 +193,11 @@
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
 		{
-			"id": "desk-tap",
+			"id": "click",
 			"kind": "one-shot",
-			"use": "the lobby loft computers: a desk tap",
+			"use": "a mouse click: every computer, the lobby loft's four and the lab workstation (Joe, 2026-09-30)",
 			"status": "provisional",
-			"file": "desk-tap-freesound-137084.mp3",
+			"file": "click-freesound-137084.mp3",
 			"source": "https://freesound.org/people/chaosportal/sounds/137084/",
 			"title": "Wood Pat 07",
 			"author": "chaosportal",
@@ -225,50 +209,18 @@
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
 		{
-			"id": "paper",
-			"kind": "one-shot",
-			"use": "the diploma: paper",
-			"status": "provisional",
-			"file": "paper-freesound-353125.mp3",
-			"source": "https://freesound.org/people/BenjaminNelan/sounds/353125/",
-			"title": "Paper Rustle",
-			"author": "BenjaminNelan",
-			"licence": "CC0",
-			"trim": [
-				0.12,
-				1.13
-			],
-			"edits": "From Freesound's high-quality preview MP3, not the original download"
-		},
-		{
 			"id": "marker",
 			"kind": "one-shot",
 			"use": "the whiteboard: a marker squeak",
-			"status": "provisional",
-			"file": "marker-freesound-119153.mp3",
-			"source": "https://freesound.org/people/esperri/sounds/119153/",
-			"title": "Squeaking.aif",
-			"author": "esperri",
-			"licence": "CC0",
-			"trim": [
-				0.2,
-				1.4
-			],
-			"edits": "From Freesound's high-quality preview MP3, not the original download"
-		},
-		{
-			"id": "keys",
-			"kind": "one-shot",
-			"use": "the lab workstation: a keyboard clack",
-			"status": "provisional",
-			"file": "keys-freesound-447909.mp3",
-			"source": "https://freesound.org/people/Breviceps/sounds/447909/",
-			"title": "Keyboard typing",
-			"author": "Breviceps",
+			"status": "approved",
+			"file": "marker-freesound-321137.mp3",
+			"source": "https://freesound.org/people/elliott.klein/sounds/321137/",
+			"title": "Sharpie marker drawing circle 01.wav",
+			"author": "elliott.klein",
 			"licence": "CC0",
 			"trim": [
 				0.0,
-				1.2
+				0.6
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -292,15 +244,15 @@
 			"id": "chalk",
 			"kind": "one-shot",
 			"use": "the chalkboard: a chalk tap",
-			"status": "provisional",
-			"file": "chalk-freesound-258092.mp3",
-			"source": "https://freesound.org/people/joedeshon/sounds/258092/",
-			"title": "tap_on_chalkboard.wav",
-			"author": "joedeshon",
+			"status": "approved",
+			"file": "chalk-freesound-447925.mp3",
+			"source": "https://freesound.org/people/Breviceps/sounds/447925/",
+			"title": "Write/Draw with chalk on board",
+			"author": "Breviceps",
 			"licence": "CC0",
 			"trim": [
 				0.0,
-				0.09
+				0.48
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
@@ -308,7 +260,7 @@
 			"id": "creak",
 			"kind": "one-shot",
 			"use": "the humidors: a wooden lid creak",
-			"status": "provisional",
+			"status": "approved",
 			"file": "creak-freesound-422975.mp3",
 			"source": "https://freesound.org/people/WakuWakuWakuWaku/sounds/422975/",
 			"title": "SFXWoodenObjectOpen.wav",
@@ -319,6 +271,38 @@
 				1.8
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "cooler",
+			"kind": "one-shot",
+			"status": "approved",
+			"file": "cooler-freesound-442999.mp3",
+			"source": "https://freesound.org/people/qubodup/sounds/442999/",
+			"title": "Fridge Door Close",
+			"author": "qubodup",
+			"licence": "CC0",
+			"trim": [
+				0.14,
+				1.15
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download",
+			"use": "the Side Project sign on the cooler door: a fridge door closing (Joe, 2026-09-30)"
+		},
+		{
+			"id": "lighter",
+			"kind": "one-shot",
+			"status": "approved",
+			"file": "lighter-freesound-742836.mp3",
+			"source": "https://freesound.org/people/Capt.Jack/sounds/742836/",
+			"title": "Lighter Spark",
+			"author": "Capt.Jack",
+			"licence": "CC0",
+			"trim": [
+				0.4,
+				0.8
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download",
+			"use": "Brennan's STG logo: a lighter's spark (Joe, 2026-09-30)"
 		}
 	]
 }

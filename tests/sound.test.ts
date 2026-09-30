@@ -26,16 +26,17 @@ test('the sound design table, by prop', () => {
 		bike: 'bell',
 		'mc-sign': 'squelch',
 		'server-rack': 'fan',
-		'computer-frontend': 'desk-tap',
-		'computer-data': 'desk-tap',
-		diploma: 'paper',
+		'computer-frontend': 'click',
+		'computer-data': 'click',
 		whiteboard: 'marker',
-		workstation: 'keys',
+		workstation: 'click',
 		'bottle-bacardi': 'pour',
 		'bottle-soonhari': 'pour',
 		chalkboard: 'chalk',
 		'humidor-cohiba': 'creak',
-		'humidor-punch': 'creak'
+		'humidor-punch': 'creak',
+		'brewery-sign': 'cooler',
+		'stg-logo': 'lighter'
 	};
 	for (const [id, sound] of Object.entries(expect)) assert.equal(PROP_SOUNDS[id], sound, id);
 	for (const p of SUB_SCENES['side-project'].props.filter((p) => p.id.startsWith('bottle-'))) assert.equal(PROP_SOUNDS[p.id], 'pour', p.id);
@@ -43,11 +44,11 @@ test('the sound design table, by prop', () => {
 });
 
 test("a card's click sounds the card and the prop's signature; a card with no signature only the card", () => {
-	assert.deepEqual(clickSounds(prop('diploma')), ['card-open', 'paper']);
-	assert.deepEqual(clickSounds(prop('bike')), ['card-open', 'bell']);
-	assert.deepEqual(clickSounds(prop('brewery-sign')), ['card-open']);
-	assert.deepEqual(clickSounds(prop('stg-logo')), ['card-open']);
-	assert.deepEqual(clickSounds(prop('meeting-tv')), ['card-open'], 'its video is its sound');
+	assert.deepEqual(clickSounds(prop('bike')), ['card', 'bell']);
+	assert.deepEqual(clickSounds(prop('brewery-sign')), ['card', 'cooler']);
+	assert.deepEqual(clickSounds(prop('stg-logo')), ['card', 'lighter']);
+	assert.deepEqual(clickSounds(prop('diploma')), ['card'], "the card's own paper is its sound (Joe, 2026-09-30)");
+	assert.deepEqual(clickSounds(prop('meeting-tv')), ['card'], 'its video is its sound');
 });
 
 test("a Foundry poster's click is silent: the screen's projector start is heard by the whole room instead", () => {
@@ -81,7 +82,7 @@ test('every scene loads the global one-shots, its props\' signatures and its own
 		for (const id of GLOBAL) assert.ok(want.has(id), `${s.id}: ${id}`);
 		for (const p of propsOf(s)) if (PROP_SOUNDS[p.id]) assert.ok(want.has(PROP_SOUNDS[p.id]), `${s.id}: ${p.id}`);
 	}
-	assert.deepEqual([...needed(SUB_SCENES.slu)].sort(), [...GLOBAL, 'keys', 'marker', 'paper'].sort());
+	assert.deepEqual([...needed(SUB_SCENES.slu)].sort(), [...GLOBAL, 'click', 'marker'].sort());
 	assert.ok(needed(OVERWORLD).has('best-lap') && needed(OVERWORLD).has('knock'), 'the lap beep and the signpost');
 	assert.ok(needed(SUB_SCENES.foundry).has('projector'));
 	assert.ok(!needed(SUB_SCENES.slu).has('projector') && !needed(SUB_SCENES.slu).has('best-lap'));
@@ -91,13 +92,13 @@ test('every scene loads the global one-shots, its props\' signatures and its own
 
 test("a scene's buffers are let go a minute after it is left, unless the scene the visitor is in needs them", () => {
 	const last = new Map<SoundId, number>([
-		['paper', 0],
-		['keys', 0],
-		['card-open', 0],
+		['marker', 0],
+		['click', 0],
+		['card', 0],
 		['pour', 50_000]
 	]);
-	const here = new Set<SoundId>(['card-open', 'chime']);
+	const here = new Set<SoundId>(['card', 'chime']);
 	assert.deepEqual(stale(last, here, LINGER - 1), []);
-	assert.deepEqual(stale(last, here, LINGER).sort(), ['keys', 'paper']);
-	assert.deepEqual(stale(last, here, 50_000 + LINGER).sort(), ['keys', 'paper', 'pour']);
+	assert.deepEqual(stale(last, here, LINGER).sort(), ['click', 'marker']);
+	assert.deepEqual(stale(last, here, 50_000 + LINGER).sort(), ['click', 'marker', 'pour']);
 });

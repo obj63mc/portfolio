@@ -15,3 +15,9 @@ Until it is placed, PayPal and Venmo are on no scene.
 - [ ] The ATM painted in by a tile-map round, reinstalled, and judged in the harness with the phone frame
 - [ ] A measured prop matte with its rect in the overworld scene data, and the card from the content inventory; the build-output and overworld geometry tests pass
 - [ ] Review record with the round and current asset hashes
+
+## Comments
+
+### The ATM's sound, 2026-09-30
+
+Joe picked the ATM's receipt printer in the sound picker while choosing ticket 22's one-shots: twisterad3's "Thermal Receipt Print & Cut", https://freesound.org/people/twisterad3/sounds/413838/, CC0. It becomes a one-shot row (`receipt`) and the ATM's entry in `PROP_SOUNDS` in `src/lib/sound.ts` once the prop exists.

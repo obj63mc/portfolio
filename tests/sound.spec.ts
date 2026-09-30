@@ -80,7 +80,7 @@ test('nothing is fetched before Join or while muted; the toggle unmutes inside i
 });
 
 test("a card's click sounds it and its prop's signature, its closing sounds; hover and another tab's cosmetic are silent", async ({ page }) => {
-	test.skip(!sourced(['card-open', 'card-close']).length, 'no card sounds sourced yet');
+	test.skip(!sourced(['card']).length, 'no card sounds sourced yet');
 	await page.goto('/slu');
 	await join(page);
 	const diploma = page.locator('[data-prop="diploma"] > button');
@@ -95,7 +95,7 @@ test("a card's click sounds it and its prop's signature, its closing sounds; hov
 	await expect.poll(() => played(page)).toEqual(sourced([...clickSounds(SUB_SCENES.slu.props.find((p) => p.id === 'diploma')), 'chime']));
 	await page.keyboard.press('Escape');
 	await expect(page.locator('[data-prop="diploma"] dialog')).toBeHidden();
-	await expect.poll(() => played(page)).toEqual(sourced(['card-open', 'paper', 'chime', 'card-close']));
+	await expect.poll(() => played(page)).toEqual(sourced(['card', 'chime', 'card']));
 
 	const before = await played(page);
 	await page.evaluate(() => {
@@ -114,5 +114,5 @@ test('a poster starts the reel, and the projector start plays for the room', asy
 	await page.waitForTimeout(800); // decoded
 	await page.locator('[data-prop="poster-lorax"] > button').click();
 	await expect.poll(() => played(page), { timeout: 3000 }).toContain('projector');
-	expect(await played(page)).not.toContain('card-open');
+	expect(await played(page)).not.toContain('card');
 });
