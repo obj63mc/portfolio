@@ -4,10 +4,10 @@
 // (buildout ticket 22) play through a small pool of voices, their buffers fetched for the scene the visitor is in, or a
 // door they are about to take, and let go a minute after that scene is left (sound.ts). The beds, the theme and the
 // scenes' music (ticket 21) are loops (loops.ts): each a gain the engine's every frame sets from the camera's centre and
-// the scene, eased so nothing pops, over passes that overlap on equal-power curves; paused, all of them duck to 30
-// percent together. Nothing is fetched before Join or while muted, and a failed fetch is silence.
+// the scene, eased so nothing pops, over passes that overlap (a bed's at equal power, music's at equal gain); paused,
+// all of them duck to 30 percent together. Nothing is fetched before Join or while muted, and a failed fetch is silence.
 import FILES from './sound-files.json';
-import { LEVEL, OVERLAP, envelope, gains, loopsFor, needed as loopsNeeded, nextPass, playhead, type LoopId } from './loops.ts';
+import { LEVEL, OVERLAP, envelope, fadeOf, gains, leavingGains, loopsFor, loopsNeeded, nextPass, playhead, type Fade, type LoopId } from './loops.ts';
 import { KEY } from './saved.ts';
 import { saved } from './saved.svelte.ts';
 import { LINGER, needed, stale, type SoundId } from './sound.ts';
@@ -43,10 +43,11 @@ let joined = false;
 /** The scene the visitor is in, and the camera's centre on it at the last frame (world px). */
 let current: Scene | null = null;
 let centre: Point = { x: 0, y: 0 };
-/** Leaving for another scene through a door, the iris closing: its beds fade out and the theme goes to the next's level. */
-let leaving: { to: Scene | undefined } | null = null;
-/** The ease in force, and until when (context s): a scene's fade in lasts its iris's opening, then the camera's. */
-let ease: { tc: number; until: number } = { tc: EASE.camera, until: 0 };
+/**
+ * Between scenes: settled, the loops following the camera; leaving through a door as its iris closes, fading with it
+ * (loops.ts `leavingGains`); or opening on the next scene, eased with its iris until `until` (context s).
+ */
+let passage: { is: 'settled' } | { is: 'leaving'; to: Scene | undefined } | { is: 'opening'; until: number } = { is: 'settled' };
 /** The choice this tab last applied, so another tab's write that leaves it alone changes nothing here. */
 let applied = saved.sound;
 /** A buffer: being fetched, under the signal that calls the fetch off, or decoded and ready to play. */
@@ -56,8 +57,8 @@ const buffers = new Map<AudioId, Buffer>();
 const left = new Map<AudioId, number>();
 /** The loops the camera needed at the last frame, to see which it has just moved away from. */
 let wanted: ReadonlySet<LoopId> = new Set();
-/** The ambience's level, 1 or ducked for a pause, as last set. */
-let duck = 1;
+/** The ambience's gain, 1 or ducked for a pause, as last set. */
+let ambienceLevel = 1;
 /** Aborted when the visitor mutes, which stops every fetch in flight. */
 let fetches = new AbortController();
 const voices: AudioBufferSourceNode[] = [];
@@ -92,6 +93,8 @@ const ready = (id: AudioId) => {
 class Loop {
 	readonly gain: GainNode;
 	private c: AudioContext;
+	/** How its passes cross (loops.ts `fadeOf`). */
+	private fade: Fade;
 	/** Stopped where it was in its period (s); or playing its passes, the latest last. */
 	private run: { is: 'stopped'; at: number } | { is: 'playing'; passes: { at: number; offset: number; source: AudioBufferSourceNode }[] } = {
 		is: 'stopped',
@@ -99,10 +102,11 @@ class Loop {
 	};
 	private target = 0;
 	/** When its target went to 0, context s. */
-	private silent = 0;
+	private quietSince = 0;
 
-	constructor(c: AudioContext, out: AudioNode) {
+	constructor(c: AudioContext, out: AudioNode, fade: Fade) {
 		this.c = c;
+		this.fade = fade;
 		this.gain = new GainNode(c, { gain: 0 });
 		this.gain.connect(out);
 	}
@@ -111,7 +115,7 @@ class Loop {
 	step(buffer: AudioBuffer | null, target: number, tc: number, now: number) {
 		if (target !== this.target) {
 			this.gain.gain.setTargetAtTime(target, now, tc);
-			if (!target) this.silent = now;
+			if (!target) this.quietSince = now;
 			this.target = target;
 		}
 		const r = this.run;
@@ -119,17 +123,17 @@ class Loop {
 			if (target > 0 && buffer) this.run = { is: 'playing', passes: [this.pass(buffer, now + 0.02, r.at)] };
 			return;
 		}
-		const last = r.passes[r.passes.length - 1], P = last.source.buffer!.duration - OVERLAP;
+		const last = r.passes[r.passes.length - 1], P = period(last.source);
 		// Faded out (five time constants is under 1 percent), it stops and remembers where it was.
-		if (!target && now - this.silent > 5 * tc) return this.stop(now);
+		if (!target && now - this.quietSince > 5 * tc) return this.stop(now);
 		const next = nextPass(last.at, last.offset, P);
 		if (buffer && now > next - AHEAD) r.passes = [...r.passes.filter((p) => now < nextPass(p.at, p.offset, P) + OVERLAP), this.pass(buffer, next, 0)];
 	}
 
 	/** A pass of `buffer` starting at context time `at`, `offset` s in, faded in and out on its envelope. */
 	private pass(buffer: AudioBuffer, at: number, offset: number) {
-		const P = buffer.duration - OVERLAP, e = envelope(offset, P), g = new GainNode(this.c, { gain: e.in ? e.in.curve[0] : 1 });
-		if (e.in) g.gain.setValueCurveAtTime(e.in.curve, at, e.in.duration);
+		const e = envelope(offset, buffer.duration - OVERLAP, this.fade), g = new GainNode(this.c, { gain: e.in.curve[0] });
+		g.gain.setValueCurveAtTime(e.in.curve, at, e.in.duration);
 		g.gain.setValueCurveAtTime(e.out.curve, at + e.out.at, e.out.duration);
 		const source = new AudioBufferSourceNode(this.c, { buffer });
 		source.connect(g).connect(this.gain);
@@ -141,11 +145,14 @@ class Loop {
 	private stop(now: number) {
 		const r = this.run;
 		if (r.is !== 'playing') return;
-		const on = r.passes.filter((p) => p.at <= now).at(-1) ?? r.passes[0], P = on.source.buffer!.duration - OVERLAP;
+		const on = r.passes.filter((p) => p.at <= now).at(-1) ?? r.passes[0], P = period(on.source);
 		for (const p of r.passes) p.source.stop();
 		this.run = { is: 'stopped', at: now < on.at ? on.offset : playhead(on.at, on.offset, now, P) };
 	}
 }
+
+/** A loop's period, s: its file less the OVERLAP s past it that the next pass fades in over. */
+const period = (source: AudioBufferSourceNode) => source.buffer!.duration - OVERLAP;
 
 const loops = new Map<LoopId, Loop>();
 
@@ -258,8 +265,7 @@ export const sound = {
 	 * toward its level there, gone into a sub-scene with music of its own.
 	 */
 	leave(to: Scene | undefined) {
-		leaving = { to };
-		ease = { tc: EASE.closing, until: Infinity };
+		passage = { is: 'leaving', to };
 	},
 	/**
 	 * Each scene the engine shows: its sounds load, those the last scene needed are let go a minute later unless needed
@@ -269,8 +275,7 @@ export const sound = {
 		const now = performance.now();
 		for (const id of need()) left.set(id, now);
 		current = scene;
-		leaving = null;
-		ease = { tc: EASE.opening, until: (ctx?.currentTime ?? 0) + 3 * EASE.opening };
+		passage = { is: 'opening', until: (ctx?.currentTime ?? 0) + 3 * EASE.opening };
 		if (joined && saved.sound) load(need());
 		setTimeout(sweep, LINGER);
 	},
@@ -285,11 +290,11 @@ export const sound = {
 		setTimeout(sweep, LINGER);
 	},
 	/**
-	 * Every frame of the engine's loop: the camera's centre on the scene (world px), whether the visitor is paused, whether
-	 * the Foundry's screen is playing and whether a prop's video is. Beds near the camera load, those it moved away from go a
-	 * minute later, and every loop's gain follows (loops.ts `gains`).
+	 * Every frame of the engine's loop: the camera's centre on the scene (world px), whether the visitor is paused and
+	 * whether the Foundry's screen is playing; a prop's video playing is one of the videos this module follows. Beds near
+	 * the camera load, those it moved away from go a minute later, and every loop's gain follows (loops.ts `gains`).
 	 */
-	step(frame: { centre: Point; paused: boolean; screen: boolean; video: boolean }) {
+	step(frame: { centre: Point; paused: boolean; screen: boolean }) {
 		centre = frame.centre;
 		const scene = current;
 		if (!scene || !joined || !saved.sound) return;
@@ -303,22 +308,20 @@ export const sound = {
 		}
 		const c = ctx;
 		if (!c || !ambience || c.state !== 'running') return;
-		const t = c.currentTime, tc = t < ease.until || leaving ? ease.tc : EASE.camera;
-		if ((frame.paused ? LEVEL.paused : 1) !== duck) ambience.gain.setTargetAtTime((duck = frame.paused ? LEVEL.paused : 1), t, 0.1);
-		const s = { screen: frame.screen, video: frame.video }, target = gains(scene, centre, s);
-		if (leaving) {
-			// The beds and the scene's own music fade with the iris; the theme toward where it is going.
-			const theme = leaving.to ? (gains(leaving.to, { x: 0, y: 0 }, s).get('theme') ?? 0) : 0;
-			for (const id of target.keys()) target.set(id, 0);
-			target.set('theme', theme);
-		}
+		const t = c.currentTime;
+		if (passage.is === 'opening' && t >= passage.until) passage = { is: 'settled' };
+		const tc = passage.is === 'leaving' ? EASE.closing : passage.is === 'opening' ? EASE.opening : EASE.camera;
+		const level = frame.paused ? LEVEL.paused : 1;
+		if (level !== ambienceLevel) ambience.gain.setTargetAtTime((ambienceLevel = level), t, 0.1);
+		const s = { screen: frame.screen, video: [...media].some((m) => !m.paused && !m.ended) }, here = gains(scene, centre, s);
+		const target = passage.is === 'leaving' ? leavingGains(here, passage.to, s) : here;
 		for (const id of new Set<LoopId>([...target.keys(), ...loops.keys()])) {
 			// In hundredths, so a slow pan sets a new target when it is heard, not every frame.
 			const buffer = ready(id), g = Math.round((target.get(id) ?? 0) * 100) / 100;
 			let loop = loops.get(id);
 			if (!loop) {
 				if (!g || !buffer) continue;
-				loops.set(id, (loop = new Loop(c, ambience)));
+				loops.set(id, (loop = new Loop(c, ambience, fadeOf(id))));
 			}
 			loop.step(buffer, g, tc, t);
 		}

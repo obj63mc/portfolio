@@ -21,7 +21,10 @@ export type MusicId = (typeof MUSIC)[number];
 export type LoopId = BedId | MusicId;
 
 /** The sub-scenes with music of their own, which the theme gives way to. */
-export const SCENE_MUSIC: Readonly<Record<string, MusicId>> = { brennans: 'music-brennans', 'side-project': 'music-side-project', moosylvania: 'music-moosylvania' };
+export const SCENE_MUSIC: Readonly<Partial<Record<string, MusicId>>> = { brennans: 'music-brennans', 'side-project': 'music-side-project', moosylvania: 'music-moosylvania' };
+
+/** What a scene is showing that its music gives way to: the Foundry's screen playing a reel, a prop's video playing. */
+export type Showing = { screen: boolean; video: boolean };
 
 /** A bed fades from full at its footprint's edge to silence this far outside it, world px. */
 export const FADE = 400;
@@ -35,10 +38,14 @@ const dB = (x: number) => 10 ** (x / 20);
 /**
  * The levels, as gains over the beds at full. The files are loudness-matched, beds to about −30 LUFS and music to about −26
  * (spec: "Format"), so the theme 10 dB down sits about 6 dB under the beds, and 12 dB further down in the scenes without
- * music of their own; a sub-scene's own music 4 dB down is level with its room's bed, and ducks 12 dB under the meeting
- * TV's video. Paused, everything but the one-shots is at 30 percent.
+ * music of their own; a bar's own music 4 dB down is level with its room's bed, and the lobby's playlist, "a low
+ * playlist" (sound design), 6 dB under that. A scene's music ducks 12 dB under a prop's video, the meeting TV's. Paused,
+ * everything but the one-shots is at 30 percent.
  */
-export const LEVEL = { theme: dB(-10), themeUnder: dB(-22), music: dB(-4), ducked: dB(-16), paused: 0.3 } as const;
+export const LEVEL = { theme: dB(-10), themeUnder: dB(-22), music: dB(-4), lobby: dB(-10), duck: dB(-12), paused: 0.3 } as const;
+
+/** A sub-scene's own music at its level: the lobby's playlist low, a bar's level with its room. */
+const ownLevel = (id: MusicId) => (id === 'music-moosylvania' ? LEVEL.lobby : LEVEL.music);
 
 const isBed = (id: string): id is BedId => (BEDS as readonly string[]).includes(id);
 
@@ -56,9 +63,9 @@ export function bedGain(footprint: Rect, centre: Point) {
  * scenery strips between them only where neighbours overlap (spec: "Beds"); a sub-scene's own bed, the whole scene.
  */
 export function bedsOf(scene: Scene): { id: BedId; footprint: Rect }[] {
-	if (!('districts' in scene)) return isBed(`bed-${scene.id}`) ? [{ id: `bed-${scene.id}` as BedId, footprint: { x: 0, y: 0, w: scene.w, h: scene.h } }] : [];
-	const districts = scene.districts.flatMap((d) => (isBed(`bed-${d.id}`) ? [{ id: `bed-${d.id}` as BedId, footprint: d.rect }] : []));
-	return [...districts, { id: 'bed-river', footprint: scene.river.footprint }];
+	const bed = (id: string, footprint: Rect) => (isBed(id) ? [{ id, footprint }] : []);
+	if (!('districts' in scene)) return bed(`bed-${scene.id}`, { x: 0, y: 0, w: scene.w, h: scene.h });
+	return [...scene.districts.flatMap((d) => bed(`bed-${d.id}`, d.rect)), { id: 'bed-river', footprint: scene.river.footprint }];
 }
 
 /** The theme's level in a scene: under the beds on the overworld, further down without music, gone where there is some. */
@@ -73,11 +80,25 @@ function themeGain(scene: Scene, screen: boolean) {
  * own music, ducked while a prop's `video` plays; the theatre's `screen` playing is its music. Crowd noise never scales
  * with the room: nothing here knows of peers.
  */
-export function gains(scene: Scene, centre: Point, s: { screen: boolean; video: boolean }): Map<LoopId, number> {
-	const out = new Map<LoopId, number>(bedsOf(scene).map((b) => [b.id, bedGain(b.footprint, centre)]));
+export function gains(scene: Scene, centre: Point, s: Showing): Map<LoopId, number> {
+	// Neighbours' fades reach into each other's footprints, the strips between them being narrower than a fade, so where
+	// their power together passes one they are scaled back to it: an equal-power crossfade however many overlap.
+	const beds = bedsOf(scene).map((b) => [b.id, bedGain(b.footprint, centre)] as const);
+	const power = beds.reduce((sum, [, g]) => sum + g * g, 0), k = power > 1 ? 1 / Math.sqrt(power) : 1;
+	const out = new Map<LoopId, number>(beds.map(([id, g]) => [id, g * k]));
 	out.set('theme', themeGain(scene, s.screen));
 	const own = !('districts' in scene) && SCENE_MUSIC[scene.id];
-	if (own) out.set(own, s.video ? LEVEL.ducked : LEVEL.music);
+	if (own) out.set(own, ownLevel(own) * (s.video ? LEVEL.duck : 1));
+	return out;
+}
+
+/**
+ * Leaving through a door for `to` as its iris closes (none: off the site): every loop playing, `from`, fades out with the
+ * iris but the theme, which goes toward its level there, keeping its place for when it is heard again.
+ */
+export function leavingGains(from: ReadonlyMap<LoopId, number>, to: Scene | undefined, s: Showing): Map<LoopId, number> {
+	const out = new Map<LoopId, number>([...from.keys()].map((id) => [id, 0]));
+	out.set('theme', to ? themeGain(to, s.screen) : 0);
 	return out;
 }
 
@@ -91,7 +112,7 @@ const musicOf = (scene: Scene): MusicId[] => {
  * The loops to have loaded with the camera's centre at `centre`: the beds audible there and those within NEAR of their
  * fade zone, and the scene's music or the theme.
  */
-export const needed = (scene: Scene, centre: Point): ReadonlySet<LoopId> =>
+export const loopsNeeded = (scene: Scene, centre: Point): ReadonlySet<LoopId> =>
 	new Set<LoopId>([...bedsOf(scene).filter((b) => outside(centre, b.footprint) < FADE + NEAR).map((b) => b.id), ...musicOf(scene)]);
 
 /**
@@ -109,15 +130,26 @@ export const playhead = (at: number, offset: number, now: number, P: number) => 
 
 /** Points on each fade's curve. */
 const STEPS = 32;
+/** A loop resumed where it stopped fades in from silence over this long, s: nothing overlaps it, and it may be mid-phrase. */
+export const RESUME = 0.5;
 
 /**
- * A pass's gain envelope from `offset` s into a loop of period `P`, times relative to its start: in over the file's first
- * OVERLAP s (the rest of it for a pass resumed within it, none past it), out over the OVERLAP s past the period, which
- * the next pass fades in over. Sine in and cosine out: at every point of the overlap their squares sum to one, the equal
- * power two uncorrelated passes need (a bed's two stretches, and music cut where it repeats but isn't a copy of itself).
+ * How a loop's passes cross: a bed's two stretches are uncorrelated, so at equal power (sine in, cosine out, their squares
+ * summing to one); music cut where it nearly repeats is close to a copy of itself across the seam, so at equal gain (the
+ * two summing to one), which an equal-power cross would swell by up to 3 dB.
  */
-export function envelope(offset: number, P: number) {
-	const curve = (from: number, to: number, f: (x: number) => number) => Float32Array.from({ length: STEPS }, (_, i) => f(from + ((to - from) * i) / (STEPS - 1)));
-	const fadeIn = offset < OVERLAP ? { from: 0, duration: OVERLAP - offset, curve: curve(offset / OVERLAP, 1, (x) => Math.sin((x * Math.PI) / 2)) } : null;
-	return { in: fadeIn, out: { at: P - offset, duration: OVERLAP, curve: curve(0, 1, (x) => Math.cos((x * Math.PI) / 2)) } };
+export type Fade = 'power' | 'gain';
+
+export const fadeOf = (id: LoopId): Fade => (isBed(id) ? 'power' : 'gain');
+
+/**
+ * A pass's gain envelope from `offset` s into a loop of period `P`, times relative to its start: from the top, in over
+ * the file's first OVERLAP s, which the last pass fades out over; resumed partway, in from silence over RESUME s; out over
+ * the OVERLAP s past the period, which the next pass fades in over, on the loop's `fade`.
+ */
+export function envelope(offset: number, P: number, fade: Fade = 'power') {
+	const curve = (f: (x: number) => number) => Float32Array.from({ length: STEPS }, (_, i) => f(i / (STEPS - 1)));
+	const up = fade === 'power' ? (x: number) => Math.sin((x * Math.PI) / 2) : (x: number) => x;
+	const down = fade === 'power' ? (x: number) => Math.cos((x * Math.PI) / 2) : (x: number) => 1 - x;
+	return { in: { from: 0, duration: offset > 0 ? RESUME : OVERLAP, curve: curve(up) }, out: { at: P - offset, duration: OVERLAP, curve: curve(down) } };
 }

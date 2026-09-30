@@ -90,3 +90,16 @@ Joe downloaded the Pixabay tracks, 2026-09-30: `audio/sources/theme-pixabay-2030
 **For Joe to decide**: the layered extras the sourcing notes suggested are not mixed in, since he approved the beds as they are: a streetcar bell for the Central West End (freesound.org/s/675315), a bike freewheel for Carondelet Park (156996), a barge horn for the river (208714), a projector for the theatre (412145) and a clock for Brennan's (211192), each once a loop. Carondelet's chosen take is lively: its steadiest window still holds one event 10 dB over its median, which will recur every 34.5 s.
 
 **Hands-on, on desktop and a phone**: roam from Maplewood to Belleville with no gap or pop, and walk into the river to hear its bed come up; hop into Brennan's and back out, the theme returning where it left off; the theatre's theme giving way while a reel plays; the lobby's playlist ducking under the meeting TV; pause (30 percent), a hidden tab (silence) and Resume; the loops' seams, which every pass crosses at its period (the theme's every 96 s); iOS with the silent switch.
+
+### Review fixes, 2026-09-30
+
+The code review's Spec pass found four things, now fixed with tests in `tests/loops.test.ts`:
+
+- **Neighbouring beds at equal power.** The strips between districts are narrower than a bed's 400 px fade, so neighbours' fades reach into each other's footprints and the sum rose up to 3 dB where they met (Midtown and Carondelet Park touch). Where the beds' power together passes one, `gains` scales them back to it; inside any footprint it is exactly one.
+- **A loop coming back fades in.** A loop resumed where it stopped (the theme after more than a minute in a scene with music, then the back button; a bed whose buffer was dropped) came in mid-phrase at full level. A resumed pass now fades in from silence over half a second.
+- **Music crosses at equal gain.** The music's loop points are cut where it nearly repeats, so its passes are close to copies across the seam and an equal-power cross swelled them; beds keep equal power.
+- **The lobby's playlist is low**, 6 dB under a bar's music ("a low playlist in the Moosylvania lobby"), and still ducks 12 dB under the meeting TV.
+
+From the Standards pass: the handoff between scenes is one union (settled, leaving, opening) in place of a nullable and a sentinel time; the leaving rule is `leavingGains` in `loops.ts`, tested; the playing video is read from the videos the sound module already follows, not a DOM query each frame; smaller renames and a type guard for a manifest's trim.
+
+Open for Joe: the theme is a 96 s loop (48 bars, a clean phrase) where the ticket asks for 2 to 3 minutes and the format rule caps music at 120 s; 120 s would meet both but end mid-phrase (60 bars), and 64 bars (128 s) would keep the phrase but pass the cap.

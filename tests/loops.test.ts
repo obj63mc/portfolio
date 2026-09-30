@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-	BEDS, FADE, LEVEL, MUSIC, NEAR, OVERLAP, SCENE_MUSIC, bedGain, bedsOf, envelope, gains, loopsFor, needed, nextPass, playhead, type LoopId
+	bedGain, BEDS, bedsOf, envelope, FADE, fadeOf, gains, leavingGains, LEVEL, loopsFor, loopsNeeded, MUSIC, NEAR, nextPass, OVERLAP, playhead, RESUME, SCENE_MUSIC, type LoopId
 } from '../src/lib/loops.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
@@ -62,6 +62,21 @@ test('roaming the overworld west to east, some bed is always audible along the d
 	assert.equal(mid.get('bed-river'), 1, 'in the river’s footprint');
 });
 
+test("neighbouring beds cross at equal power: their power together never passes one, and is one inside any bed's footprint", () => {
+	const beds = bedsOf(OVERWORLD);
+	for (let y = 0; y <= OVERWORLD.h; y += 100)
+		for (let x = 0; x <= OVERWORLD.w; x += 50) {
+			const g = gains(OVERWORLD, { x, y }, { screen: false, video: false });
+			const power = [...g].filter(([id]) => id.startsWith('bed-')).reduce((sum, [, v]) => sum + v * v, 0);
+			assert.ok(power <= 1 + 1e-9, `${power} at ${x}, ${y}`);
+			if (beds.some((b) => bedGain(b.footprint, { x, y }) === 1)) near(power, 1, `inside a footprint at ${x}, ${y}`);
+		}
+	// Where Midtown's and Carondelet Park's footprints meet, neither is at full: they share the power.
+	const mt = OVERWORLD.districts.find((d) => d.id === 'midtown')!.rect, cp = OVERWORLD.districts.find((d) => d.id === 'carondelet-park')!.rect;
+	const g = gains(OVERWORLD, { x: Math.max(mt.x, cp.x) + 10, y: cp.y }, { screen: false, video: false });
+	for (const id of ['bed-midtown', 'bed-carondelet-park'] as const) assert.ok(g.get(id)! > 0.5 && g.get(id)! < 1, `${id}: ${g.get(id)}`);
+});
+
 test('the theme plays 6 dB under the beds on the overworld, 12 dB further down in the lab and the idle theatre, and not at all where a scene has music', () => {
 	const at = (scene: Parameters<typeof gains>[0], s = { screen: false, video: false }) => gains(scene, { x: 10, y: 10 }, s);
 	near(at(OVERWORLD).get('theme')!, LEVEL.theme, 'overworld');
@@ -72,8 +87,9 @@ test('the theme plays 6 dB under the beds on the overworld, 12 dB further down i
 	assert.equal(at(SUB_SCENES.foundry, { screen: true, video: false }).get('theme'), 0, 'the theatre while the screen plays');
 	for (const id of ['brennans', 'side-project', 'moosylvania']) {
 		assert.equal(at(SUB_SCENES[id]).get('theme'), 0, `${id}: the theme gives way`);
-		near(at(SUB_SCENES[id]).get(SCENE_MUSIC[id])!, LEVEL.music, `${id}: its own music`);
+		near(at(SUB_SCENES[id]).get(SCENE_MUSIC[id]!)!, id === 'moosylvania' ? LEVEL.lobby : LEVEL.music, `${id}: its own music`);
 	}
+	near(LEVEL.lobby, LEVEL.music * 10 ** (-6 / 20), 'the lobby’s playlist is low, 6 dB under a bar’s music');
 });
 
 test('paused, the beds, the theme and the music duck together to 30 percent', () => {
@@ -82,9 +98,9 @@ test('paused, the beds, the theme and the music duck together to 30 percent', ()
 
 test("the lobby's playlist ducks while the meeting TV's video plays; nothing else a scene hears depends on it", () => {
 	const quiet = gains(SUB_SCENES.moosylvania, { x: 10, y: 10 }, { screen: false, video: true });
-	near(quiet.get('music-moosylvania')!, LEVEL.ducked);
+	near(quiet.get('music-moosylvania')!, LEVEL.lobby * LEVEL.duck);
+	near(LEVEL.duck, 10 ** (-12 / 20), '12 dB under');
 	assert.equal(quiet.get('bed-moosylvania'), 1, 'the bed stays');
-	assert.ok(LEVEL.ducked < LEVEL.music);
 });
 
 test('a scene’s gains name only its own loops, and every loop some scene plays', () => {
@@ -97,7 +113,7 @@ test('a scene’s gains name only its own loops, and every loop some scene plays
 });
 
 test('loading: the beds audible at the camera and those within 800 px of their fade zone, and the music or theme the scene plays', () => {
-	const at = (x: number, y: number) => [...needed(OVERWORLD, { x, y })].sort();
+	const at = (x: number, y: number) => [...loopsNeeded(OVERWORLD, { x, y })].sort();
 	const mw = OVERWORLD.districts.find((d) => d.id === 'maplewood')!.rect;
 	const deep = at(mw.x + 100, mw.y + mw.h / 2);
 	assert.ok(deep.includes('bed-maplewood') && deep.includes('theme'));
@@ -107,8 +123,8 @@ test('loading: the beds audible at the camera and those within 800 px of their f
 	assert.ok(at(bv.x - (FADE + NEAR) + 1, y).includes('bed-belleville'));
 	assert.ok(!at(bv.x - (FADE + NEAR) - 1, y).includes('bed-belleville'));
 	for (const s of Object.values(SUB_SCENES)) {
-		const want = [...needed(s, { x: 5, y: 5 })].sort();
-		const expect: LoopId[] = [`bed-${s.id}` as LoopId, ...(SCENE_MUSIC[s.id] ? [SCENE_MUSIC[s.id]] : ['theme' as const])];
+		const want = [...loopsNeeded(s, { x: 5, y: 5 })].sort();
+		const own = SCENE_MUSIC[s.id], expect: LoopId[] = [`bed-${s.id}` as LoopId, ...(own ? [own] : ['theme' as const])];
 		assert.deepEqual(want, expect.sort(), s.id);
 		assert.deepEqual([...loopsFor(s)].sort(), expect.sort(), `${s.id}: a door hovered loads the same`);
 	}
@@ -133,9 +149,29 @@ test('each pass fades in over its first 2 s and out over the 2 s past its period
 		const o = e.out.curve[i], n = envelope(0, P).in!.curve[i];
 		near(o * o + n * n, 1, `point ${i}`, 1e-6); // the curves are Float32Arrays, as Web Audio takes them
 	}
-	assert.equal(envelope(OVERLAP, P).in, null, 'resumed past the fade in, no fade in');
-	const half = envelope(1, P);
-	near(half.in!.duration, 1, 'resumed halfway through the fade in: the rest of it');
-	near(half.in!.curve[0], Math.sin(Math.PI / 4), 'from where it was', 1e-6);
-	near(half.out.at, P - 1, 'its period is reached 1 s sooner');
+	// Resumed where it stopped, nothing overlaps it and it may come in mid-phrase: it fades in from silence, briefly.
+	for (const offset of [1, OVERLAP, 20]) {
+		const r = envelope(offset, P);
+		assert.equal(r.in?.curve[0], 0, `resumed at ${offset} s, from silence`);
+		near(r.in!.duration, RESUME, `resumed at ${offset} s, over ${RESUME} s`);
+		near(r.out.at, P - offset, `resumed at ${offset} s, its period is reached ${offset} s sooner`);
+	}
+});
+
+test("a bed's passes cross at equal power; music's, cut where it nearly repeats, at equal gain so the seam doesn't swell", () => {
+	assert.equal(fadeOf('bed-river'), 'power');
+	for (const id of MUSIC) assert.equal(fadeOf(id), 'gain', id);
+	const e = envelope(0, 36, 'gain');
+	for (let i = 0; i < e.out.curve.length; i++) near(e.out.curve[i] + e.in!.curve[i], 1, `point ${i}`, 1e-6);
+});
+
+test('leaving through a door, every loop fades with the iris but the theme, which goes toward its level where the visitor lands', () => {
+	const here = gains(OVERWORLD, { x: 1800, y: 1400 }, { screen: false, video: false });
+	const into = (to: Parameters<typeof leavingGains>[1], screen = false) => leavingGains(here, to, { screen, video: false });
+	for (const [id, g] of into(SUB_SCENES.slu)) if (id !== 'theme') assert.equal(g, 0, id);
+	assert.equal(into(SUB_SCENES.slu).get('theme'), LEVEL.themeUnder, 'into the lab, the theme carries on further down');
+	assert.equal(into(SUB_SCENES.brennans).get('theme'), 0, 'into a scene with music of its own, it goes');
+	assert.equal(into(SUB_SCENES.foundry, true).get('theme'), 0, 'into the theatre while its screen plays, it goes');
+	assert.equal(leavingGains(gains(SUB_SCENES.brennans, { x: 10, y: 10 }, { screen: false, video: false }), OVERWORLD, { screen: false, video: false }).get('theme'), LEVEL.theme, 'back out, it comes up under the beds');
+	assert.equal(into(undefined).get('theme'), 0, 'off the site: silence');
 });

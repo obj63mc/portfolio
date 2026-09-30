@@ -60,6 +60,9 @@ const text = (m: Record<string, unknown>, key: string, where: string) => {
 	return v;
 };
 const maybe = (m: Record<string, unknown>, key: string, where: string) => (m[key] === undefined ? undefined : text(m, key, where));
+/** Seconds in and out of a source, in order. */
+const isTrim = (v: unknown): v is [number, number] =>
+	Array.isArray(v) && v.length === 2 && v.every((t) => typeof t === 'number' && t >= 0) && v[0] < v[1];
 
 /** The manifest's JSON, each row checked: a bad row is an error naming it, never a file encoded from a guess. */
 export function parse(json: unknown): Sound[] {
@@ -80,10 +83,9 @@ export function parse(json: unknown): Sound[] {
 		const licence = text(m, 'licence', where);
 		if (!(LICENCES as readonly string[]).includes(licence)) throw new Error(`${where}: licence ${licence} is not on the ladder (${LICENCES.join(', ')})`);
 		const trim = m.trim;
-		if (trim !== undefined && !(Array.isArray(trim) && trim.length === 2 && trim.every((t) => typeof t === 'number' && t >= 0) && trim[0] < trim[1]))
-			throw new Error(`${where}: trim must be [in, out] seconds`);
+		if (trim !== undefined && !isTrim(trim)) throw new Error(`${where}: trim must be [in, out] seconds`);
 		const k = KINDS[kind as Kind];
-		if ('loop' in k && !(Array.isArray(trim) && trim[1] - trim[0] >= k.loop[0] && trim[1] - trim[0] <= k.loop[1]))
+		if ('loop' in k && !(trim && trim[1] - trim[0] >= k.loop[0] && trim[1] - trim[0] <= k.loop[1]))
 			throw new Error(`${where}: a ${kind} is cut to a loop of ${k.loop[0]} to ${k.loop[1]} s, its trim [start, start + period]`);
 		return {
 			...sound,
@@ -92,7 +94,7 @@ export function parse(json: unknown): Sound[] {
 			title: maybe(m, 'title', where),
 			author: text(m, 'author', where),
 			licence: licence as Licence,
-			...(trim ? { trim: trim as [number, number] } : {}),
+			...(trim ? { trim } : {}),
 			...(typeof m.edits === 'string' && m.edits ? { edits: m.edits } : {})
 		};
 	});

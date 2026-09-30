@@ -712,11 +712,10 @@ export class Engine {
 		this.walk(scene, now);
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
-		const t = this.net.serverNow(), moved = this.props.step(dt * 1000, t, this.seen(), this.reducedMotion.matches), lit = this.projector.step(t);
+		const t = this.net.serverNow(), view = this.seen(), moved = this.props.step(dt * 1000, t, view, this.reducedMotion.matches), lit = this.projector.step(t);
 		this.shots.step(t);
 		// The beds follow the camera's centre, the theme and the music the scene, its screen and a prop's video (ticket 21).
-		const view = this.seen(), video = [...this.layer.querySelectorAll<HTMLVideoElement>('.prop video')].some((v) => !v.paused && !v.ended);
-		sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t), video });
+		sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t) });
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is
