@@ -9,7 +9,7 @@
 // and the scenery over the cursors (ticket 19): depth.ts follows each cursor's depth factor and its side of the
 // walk-behind scenery, scenery.ts holds the cut-outs drawn over it. The one-shots (ticket 22) are one-shots.ts, played by
 // the sound engine (sound.svelte.ts), which the Join press starts; the beds, the theme and the music (ticket 21, loops.ts)
-// follow the camera and the scene through it every frame. Carried over from
+// follow the camera and the scene through it every frame. The river current (ticket 20) is river.ts. Carried over from
 // the rendering and pointer-lock prototypes' engines (prototype/rendering-camera, prototype/pointer-lock) with the spec's
 // rules; the layer's markup is never re-rendered here.
 import { earned, linkUsed } from '../analytics.svelte.ts';
@@ -19,6 +19,7 @@ import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
 import { propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
+import { flow, type Current } from '../scenes/river.ts';
 import { blocked, type Side } from '../scenes/walk.ts';
 import { Net } from '../net/net.ts';
 import { SNAP, sample, visible } from '../net/peers.ts';
@@ -71,6 +72,8 @@ const CONTROLS = '.controls:not(dialog *), .consent:popover-open';
 const CARRY = 40;
 /** A touch becomes a drag once it has gone this many CSS px, so a tap on a prop isn't eaten. */
 const DRAG = 6;
+/** Washed out at the river's south end, the view opens on the Arch out of black over this long, ms. */
+const WASH = 400;
 /** Behind the scene where no tile has arrived, or beyond a scene smaller than the view. */
 const BACKDROP = '#1d2b3a';
 
@@ -159,6 +162,10 @@ export class Engine {
 	private marked = '';
 	/** The iris between scenes. */
 	private iris: Iris = OPEN;
+	/** The own cursor in or out of the river current (ticket 20), from its last free frame. */
+	private current: Current = 'ashore';
+	/** When the visitor was last washed out at the river's south end, performance.now() ms. */
+	private washedAt = -Infinity;
 	private raf = 0;
 	private last = 0;
 	private canvas: HTMLCanvasElement;
@@ -285,6 +292,8 @@ export class Engine {
 		this.marked = '';
 		this.peerFollow.clear();
 		this.goal = null;
+		this.current = 'ashore';
+		this.washedAt = -Infinity;
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from.id} .door` : '.door');
 		this.shots.show(scene, !!door);
 		const at = door ?? target;
@@ -689,10 +698,14 @@ export class Engine {
 		const free = joined(this.input) && !document.querySelector('dialog[open]');
 		if (!free && (this.joy || this.gesture.is !== 'none')) (this.gesture = { is: 'none' }), this.letGo();
 		const c = free ? this.cursor : null, k = steer(this.keys, this.view.s, dt);
-		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 }, d = { x: k.x + j.x, y: k.y + j.y };
+		const j = this.joy ? stick(this.joy.pull, this.joy.r, this.view.s, dt) : { x: 0, y: 0 };
+		// The current carries the free cursor like steering does, so the camera follows it through the push band, but it
+		// doesn't bring an unlocked mouse that has left the window back in.
+		const drift = c ? this.drift(scene, dt, now) : 0, d = { x: k.x + j.x, y: k.y + j.y + drift };
 		if (c && (d.x || d.y) && !this.projector.seated) {
 			this.steerTo({ x: c.x + d.x, y: c.y + d.y }, now);
-			this.inside = this.armed = true;
+			this.armed = true;
+			if (this.input.is !== 'unlocked' || k.x || k.y) this.inside = true;
 		} else if (this.input.is === 'touch') this.inside = false; // on touch the camera follows only a steered cursor
 		const g = this.gesture;
 		if (g.is === 'lifted' && g.vel) {
@@ -739,6 +752,37 @@ export class Engine {
 		if (html.dataset.iris !== this.iris.is) html.dataset.iris = this.iris.is;
 		this.drawCursors(scene, now);
 	};
+
+	/**
+	 * The river current on the free own cursor this frame (ticket 20), CSS px south: afloat it drifts, and at the south
+	 * end the visitor is washed out to the Arch. The unlocked mouse's next move puts its cursor back at the OS pointer,
+	 * as ever, so for it the drift only carries a still mouse.
+	 */
+	private drift(scene: Scene, dt: number, now: number) {
+		const at = this.own;
+		if (!('river' in scene) || !at) return 0;
+		const f = flow(scene.river, this.current, at, dt);
+		if (f.is === 'end') return this.toArch(scene, now), 0;
+		this.current = f.is;
+		return f.dy * this.view.s;
+	}
+
+	/**
+	 * Washed out at `now`: the cursor at the Arch reset point, out of the river, the camera centred on it and the "you" tag
+	 * shown again, the view opening out of black over WASH ms (a cut under reduced motion). It is a jump: the cursor takes
+	 * the depth factor and the sides of where it lands (ticket 19), and peers snap to it.
+	 */
+	private toArch(scene: Overworld, now: number) {
+		const a = scene.river.arch;
+		this.current = 'ashore';
+		this.washedAt = now;
+		this.goal = null;
+		this.armed = false;
+		this.moveTo(centreOn(a, this.view, scene));
+		this.cursor = { x: (a.x - this.cam.x) * this.view.s, y: (a.y - this.cam.y) * this.view.s };
+		this.art.tag();
+		this.jumped = true;
+	}
 
 	/**
 	 * The own cursor's step through the scene (ticket 19), before anything reads what it is over: its depth factor, and
@@ -895,6 +939,8 @@ export class Engine {
 	 * it (ticket 19): peers are followed through the scene as the own cursor is, locally, from where they are drawn, a
 	 * peer's snap being a jump. With a prop card open no scenery is drawn: the cursor canvas is then over the card and its
 	 * backdrop, where a cut-out would paint the scenery undimmed over both, and the cursors are drawn over everything.
+	 * The bridge is drawn over a cursor in the river, own or peer, by the river bit a peer's presence carries, and the
+	 * wash-out's fade over everything (ticket 20).
 	 */
 	private drawCursors(scene: Scene, now: number) {
 		const c = this.cursor, cam = this.cam, s = this.view.s, k = s * this.dpr, gold = saved.gold;
@@ -904,7 +950,9 @@ export class Engine {
 			this.tellRoom();
 		}
 		const card = !!this.layer.querySelector('dialog[open]');
-		const behind = (sides: ReadonlyMap<string, Side>) => (card ? [] : this.scenery.behind(sides, cam, k));
+		const bridge = card ? [] : this.scenery.bridge(cam, k);
+		const fade = this.reducedMotion.matches ? 0 : Math.max(0, 1 - (now - this.washedAt) / WASH);
+		const behind = (sides: ReadonlyMap<string, Side>, afloat: boolean) => (card ? [] : [...(afloat ? bridge : []), ...this.scenery.behind(sides, cam, k)]);
 		const view = this.seen(), peers: Drawn[] = [];
 		for (const [id, p] of this.net.peers) {
 			const at = visible(p.snaps, view) && sample(p.snaps, now);
@@ -912,28 +960,19 @@ export class Engine {
 			let f = this.peerFollow.get(id);
 			if (!f) this.peerFollow.set(id, (f = follower(scene)));
 			const last = f.last, { d, sides } = f.step(at, now, !!last && Math.hypot(at.x - last.x, at.y - last.y) > SNAP);
-			peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt, d, behind: behind(sides) });
+			peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt, d, behind: behind(sides, p.river) });
 		}
 		for (const id of this.peerFollow.keys()) if (!this.net.peers.has(id)) this.peerFollow.delete(id);
 		const own = c && {
-			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides)
+			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides, this.current === 'afloat')
 		};
 		const r = hole(this.iris, now, this.view), iris = this.iris;
 		const shade = r === null || iris.is === 'open' ? null : { x: iris.at.x * this.dpr, y: iris.at.y * this.dpr, r: r * this.dpr };
-		this.art.draw(own, peers, now, shade, card ? [] : this.scenery.foreground(cam, k));
+		this.art.draw(own, peers, now, shade, card ? [] : this.scenery.foreground(cam, k), fade);
 	}
 
-	/** What the cursor wears, to the room from Join on; the net client sends only a change. */
+	/** What the cursor wears and whether it is in the river, to the room from Join on; the net client sends only a change. */
 	private tellRoom() {
-		if (this.cursor) this.net.presence({ cos: saved.worn, gold: saved.gold, river: false });
-	}
-
-	/**
-	 * Shows the "you" tag on the own cursor again: the Arch reset (ticket 20) calls this. The reset is a jump, so the cursor
-	 * takes the depth factor and the sides of where it lands (ticket 19).
-	 */
-	tagYou() {
-		this.art.tag();
-		this.jumped = true;
+		if (this.cursor) this.net.presence({ cos: saved.worn, gold: saved.gold, river: this.current === 'afloat' });
 	}
 }

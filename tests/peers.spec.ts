@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { factor } from '../src/lib/engine/depth.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
+import { lineY } from '../src/lib/scenes/walk.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
 const root = new URL('..', import.meta.url).pathname;
@@ -53,6 +54,20 @@ const opaque = (page: Page, box?: { x: number; y: number; w: number; h: number }
 			[x0, y0, x1, y1] = [Math.min(x0, px), Math.min(y0, py), Math.max(x1, px), Math.max(y1, py)];
 		}
 		return x1 < 0 ? null : { x: (x + x0) / k, y: (y + y0) / k, w: (x1 - x0 + 1) / k, h: (y1 - y0 + 1) / k };
+	}, box);
+
+/** How many of the opaque pixels in a CSS px box on the cursor canvas are pure white, the arrow's body (null for none). */
+const white = (page: Page, box: { x: number; y: number; w: number; h: number }) =>
+	page.evaluate((b) => {
+		const c = document.querySelector<HTMLCanvasElement>('canvas.cursors')!, k = c.width / innerWidth;
+		const { data } = c.getContext('2d')!.getImageData(Math.round(b.x * k), Math.round(b.y * k), Math.round(b.w * k), Math.round(b.h * k));
+		let seen = false, n = 0;
+		for (let i = 0; i < data.length; i += 4) {
+			if (data[i + 3] < 200) continue;
+			seen = true;
+			if (data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255) n++;
+		}
+		return seen ? n : null;
 	}, box);
 
 /** The render scale, off the layer's transform. */
@@ -208,6 +223,43 @@ test.describe('two browsers on wrangler dev', () => {
 		await a.evaluate(() => document.querySelector<HTMLButtonElement>('[data-prop="diploma"] > button')!.click());
 		await expect.poll(() => opaque(b, head)).not.toBeNull();
 		await a.keyboard.press('Escape');
+	});
+
+	test('a peer in the river is drawn under the bridge and one on the deck over it, for a late joiner too (ticket 20)', async ({ browser }) => {
+		test.setTimeout(60_000);
+		const { deck } = OVERWORLD.river, top = (x: number) => lineY([deck[0], deck[1]], x);
+		/** Joined off Belleville and steered north until the camera is at the top of the world, the Eads deck in view. */
+		const toBridge = async () => {
+			const page = await (await browser.newContext()).newPage();
+			await page.addInitScript(refuseLock);
+			await page.goto(`${base()}/#belleville`);
+			await joinScene(page);
+			await page.keyboard.down('ArrowUp');
+			await expect.poll(() => page.locator('main').evaluate((m) => new DOMMatrix(getComputedStyle(m).transform).f), { timeout: 10_000 }).toBe(0);
+			await page.keyboard.up('ArrowUp');
+			return page;
+		};
+		/** A world point on `page`'s screen, through its camera. */
+		const screen = (page: Page, p: Point) =>
+			page.locator('main').evaluate((m, p) => new DOMMatrix(getComputedStyle(m).transform).transformPoint(p), p).then(({ x, y }) => ({ x, y }));
+		const swimmer = await toBridge(), watcher = await toBridge();
+		// On the deck mid-river, just below its north edge: the watcher draws the swimmer over the bridge.
+		const at = { x: 5700, y: top(5700) + 10 }, s = await screen(swimmer, at), w = await screen(watcher, at);
+		const box = { x: w.x - 10, y: w.y - 10, w: 40, h: 40 };
+		await swimmer.mouse.move(s.x, s.y + 20);
+		await swimmer.mouse.move(s.x, s.y);
+		await expect.poll(() => white(watcher, box)).toBeGreaterThan(5);
+		// Off the deck's south edge into the water and back: in the river, under the bridge, which covers it.
+		const water = await screen(swimmer, { x: 5700, y: top(5700) + 120 });
+		await swimmer.mouse.move(water.x, water.y);
+		await swimmer.waitForTimeout(100);
+		await swimmer.mouse.move(s.x, s.y);
+		// Paused there, it stays in the river, still, for a visitor who arrives now.
+		await swimmer.evaluate(() => dispatchEvent(new Event('blur')));
+		await expect.poll(() => white(watcher, box)).toBe(0);
+		const late = await toBridge();
+		await expect.poll(() => white(late, box), { timeout: 5000 }).toBe(0);
+		for (const page of [swimmer, watcher, late]) await page.context().close();
 	});
 
 	test('a hidden tab stops sending at once and closes after a minute; shown again, it reconnects', async ({ browser }) => {

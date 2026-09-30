@@ -125,9 +125,10 @@ export interface Overworld extends SceneBase {
 	/** West to east by centre x: DOM order, tab order and reading order. */
 	districts: District[];
 	river: {
-		/** Water polygon. The deck rect is excluded by the engine, so walking across never drifts. */
+		/** Water polygon. The deck is excluded by the engine (`river.ts`), so walking across never drifts. */
 		mask: Point[];
-		deck: Rect;
+		/** The walkable deck, its outline clockwise from its north-west corner: it slopes, so a rect round it would cover open water. */
+		deck: Point[];
 		/** The bridge cut-out: drawn over a cursor in the river and under a cursor crossing the deck. */
 		bridge: Cutout;
 		southEndY: number;

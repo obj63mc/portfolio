@@ -250,11 +250,12 @@ export class Cursors {
 	 * Peers first, then the own cursor over them, but a cursor behind walk-behind scenery under every cursor in front of it
 	 * (depth.ts `drawOrder`), each at its size times its depth factor with the scenery that covers it
 	 * (ticket 19): the walk-behind scenery it is behind, back to front, then the `foreground` scenery, which covers every
-	 * cursor. Then the own cursor's tag, a label never covered, and the iris between scenes (iris.ts) over all of it: black
-	 * but for a circle `r` device px round `x, y`. Redrawn only when a cursor, its badge, its cosmetic, its size, the
-	 * scenery over it, the tag or the iris has changed.
+	 * cursor. Then the own cursor's tag, a label never covered, the river's wash-out `fade` (ticket 20), black at `fade`
+	 * opacity, and the iris between scenes (iris.ts) over all of it: black but for a circle `r` device px round `x, y`.
+	 * Redrawn only when a cursor, its badge, its cosmetic, its size, the scenery over it, the tag, the fade or the iris has
+	 * changed.
 	 */
-	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null, foreground: Cover[] = []) {
+	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null, foreground: Cover[] = [], fade = 0) {
 		const tag = own ? Math.max(0, Math.min(1, (this.tagAt + TAG + FADE - now) / FADE)) : 0;
 		const pop = (p: Drawn) => Math.min(1, (now - p.wornAt) / POP);
 		// Peers, then the own cursor over them, except that one behind walk-behind scenery goes under those in front of it.
@@ -263,7 +264,7 @@ export class Cursors {
 			(c) => (c.p.behind ?? []).flatMap((o) => o.at ?? [])
 		).map((c) => ({ ...c, over: [...(c.p.behind ?? []), ...foreground].filter((o) => overlaps(o, this.box(c.p, c.size))) }));
 		const key = [
-			tag, this.ready, settled.size, iris && [iris.x, iris.y, iris.r],
+			tag, this.ready, settled.size, fade, iris && [iris.x, iris.y, iris.r],
 			...all.flatMap(({ p, size, halo, over }) => [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand, size, halo, ...over.flatMap((o) => [o.key, o.x, o.y])])
 		].join();
 		if (key === this.key) return;
@@ -273,6 +274,10 @@ export class Cursors {
 		g.clearRect(0, 0, width, height);
 		for (const c of all) this.covered(c.p, c.size, c.halo, pop(c.p), c.over);
 		if (own && tag) this.you(own, tag);
+		if (fade) {
+			g.fillStyle = `rgb(0 0 0 / ${fade})`;
+			g.fillRect(0, 0, width, height);
+		}
 		if (!iris) return;
 		g.beginPath();
 		g.rect(0, 0, width, height);

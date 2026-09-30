@@ -1,5 +1,6 @@
 // Scenery over the cursors (buildout ticket 19): foreground scenery, drawn over every cursor, the visitor's own included,
-// and walk-behind scenery, drawn over the cursors behind it (walk.ts decides who is). Both are painted into the tiles
+// and walk-behind scenery, drawn over the cursors behind it (walk.ts decides who is); on the overworld, the bridge, drawn
+// over the cursors in the river (ticket 20: river.ts decides who is). All of it is painted into the tiles
 // already; their keyed cut-outs are loaded here for the overlay canvas, which draws them over a cursor's own pixels only
 // (cursors.ts), so a static copy never covers the scene canvas's props, their reactions or another cursor.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
@@ -29,6 +30,8 @@ export class Scenery {
 	private fore: Piece[] = [];
 	/** Walk-behind scenery, back to front, the order it is drawn in. */
 	private units: Piece[] = [];
+	/** The overworld's bridge; none in a sub-scene. */
+	private bridges: Piece[] = [];
 	/** Bumped on each scene, so a cut-out arriving for the last one is dropped. */
 	private generation = 0;
 
@@ -45,6 +48,7 @@ export class Scenery {
 		};
 		this.fore = scene.foreground.flatMap(load);
 		this.units = ('walkBehind' in scene ? scene.walkBehind : []).flatMap(load);
+		this.bridges = 'river' in scene ? load(scene.river.bridge) : [];
 	}
 
 	/** Foreground scenery through the camera at `cam`, `k` device px per world px. */
@@ -57,15 +61,24 @@ export class Scenery {
 		return sides.size ? this.units.flatMap((p, at) => (sides.get(p.key) === 'behind' ? cover(p, cam, k).map((c) => ({ ...c, at })) : [])) : [];
 	}
 
+	/**
+	 * The bridge over a cursor in the river, through the camera: behind everything else, so a cursor under it is drawn
+	 * before every cursor crossing it.
+	 */
+	bridge(cam: Point, k: number): Cover[] {
+		return this.bridges.flatMap((p) => cover(p, cam, k).map((c) => ({ ...c, at: -1 })));
+	}
+
 	destroy() {
 		this.clear();
 	}
 
 	private clear() {
 		this.generation++;
-		for (const p of [...this.fore, ...this.units]) p.bmp?.close();
+		for (const p of [...this.fore, ...this.units, ...this.bridges]) p.bmp?.close();
 		this.fore = [];
 		this.units = [];
+		this.bridges = [];
 	}
 }
 

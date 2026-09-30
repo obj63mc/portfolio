@@ -80,9 +80,8 @@
                   "id": "moose",
                   "name": "The moose",
                   "gist": "the Moosylvania mascot",
-                  "body": [
-                    "The Moosylvania moose."
-                  ],
+                  "kind": "action",
+                  "body": [],
                   "rect": {
                     "x": 1790,
                     "y": 1520,
@@ -136,16 +135,9 @@
                 {
                   "id": "bike",
                   "name": "Joe’s bike",
-                  "gist": "still riding, on Strava",
-                  "body": [
-                    "Joe raced criteriums and still rides. Follow along on Strava."
-                  ],
-                  "links": [
-                    {
-                      "label": "Strava",
-                      "href": "https://www.strava.com/athletes/8703625"
-                    }
-                  ],
+                  "gist": "still riding",
+                  "kind": "action",
+                  "body": [],
                   "rect": {
                     "x": 2012,
                     "y": 1884,
@@ -161,6 +153,12 @@
                   "body": [
                     "Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.",
                     "Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series."
+                  ],
+                  "links": [
+                    {
+                      "label": "Strava",
+                      "href": "https://www.strava.com/athletes/8703625"
+                    }
                   ],
                   "rect": {
                     "x": 1992,
@@ -291,11 +289,26 @@
                     "w": 581,
                     "h": 165
                   },
-                  "cosmetic": 3,
                   "art": [
                     "mc-sign",
                     "mc-eye"
                   ]
+                },
+                {
+                  "id": "mc-eye",
+                  "name": "The monster’s eye",
+                  "gist": "MonsterCommerce",
+                  "kind": "action",
+                  "body": [],
+                  "rect": {
+                    "x": 6007,
+                    "y": 1137,
+                    "w": 66,
+                    "h": 75
+                  },
+                  "clip": "ellipse(50% 50%)",
+                  "cosmetic": 3,
+                  "art": []
                 },
                 {
                   "id": "server-rack",
@@ -812,12 +825,24 @@
             "y": 250
           }
         ],
-        "deck": {
-          "x": 4880,
-          "y": 340,
-          "w": 1550,
-          "h": 310
-        },
+        "deck": [
+          {
+            "x": 4880,
+            "y": 361
+          },
+          {
+            "x": 6430,
+            "y": 567
+          },
+          {
+            "x": 6430,
+            "y": 642
+          },
+          {
+            "x": 4880,
+            "y": 436
+          }
+        ],
         "bridge": {
           "key": "eads-bridge",
           "rect": {
@@ -1101,9 +1126,8 @@
           "id": "moose",
           "name": "The moose",
           "gist": "the Moosylvania mascot",
-          "body": [
-            "The Moosylvania moose."
-          ],
+          "kind": "action",
+          "body": [],
           "rect": {
             "x": 1790,
             "y": 1520,
@@ -1115,16 +1139,9 @@
         {
           "id": "bike",
           "name": "Joe’s bike",
-          "gist": "still riding, on Strava",
-          "body": [
-            "Joe raced criteriums and still rides. Follow along on Strava."
-          ],
-          "links": [
-            {
-              "label": "Strava",
-              "href": "https://www.strava.com/athletes/8703625"
-            }
-          ],
+          "gist": "still riding",
+          "kind": "action",
+          "body": [],
           "rect": {
             "x": 2012,
             "y": 1884,
@@ -1140,6 +1157,12 @@
           "body": [
             "Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.",
             "Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series."
+          ],
+          "links": [
+            {
+              "label": "Strava",
+              "href": "https://www.strava.com/athletes/8703625"
+            }
           ],
           "rect": {
             "x": 1992,
@@ -1162,11 +1185,26 @@
             "w": 581,
             "h": 165
           },
-          "cosmetic": 3,
           "art": [
             "mc-sign",
             "mc-eye"
           ]
+        },
+        {
+          "id": "mc-eye",
+          "name": "The monster’s eye",
+          "gist": "MonsterCommerce",
+          "kind": "action",
+          "body": [],
+          "rect": {
+            "x": 6007,
+            "y": 1137,
+            "w": 66,
+            "h": 75
+          },
+          "clip": "ellipse(50% 50%)",
+          "cosmetic": 3,
+          "art": []
         },
         {
           "id": "server-rack",
@@ -1587,10 +1625,9 @@
         {
           "id": "moose-statue",
           "name": "Moose statue",
-          "gist": "about Moosylvania",
-          "body": [
-            "Moosylvania, 7303 Marietta Avenue, Maplewood."
-          ],
+          "gist": "the Moosylvania mascot",
+          "kind": "action",
+          "body": [],
           "rect": {
             "x": 1623,
             "y": 2549,
@@ -1599,7 +1636,8 @@
           },
           "art": [
             "moosylvania-statue"
-          ]
+          ],
+          "cosmetic": 4
         },
         {
           "id": "meeting-tv",

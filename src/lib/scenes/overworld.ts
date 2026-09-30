@@ -232,10 +232,10 @@ export const OVERWORLD: Overworld = {
 			{ x: 5998, y: 700 }, { x: 6000, y: 650 }, { x: 6150, y: 600 }, { x: 6300, y: 550 }, { x: 6320, y: 500 },
 			{ x: 6300, y: 450 }, { x: 6200, y: 400 }, { x: 6080, y: 350 }, { x: 6030, y: 300 }, { x: 6000, y: 250 }
 		],
-		// The Eads deck slopes from (4880, 370) to (6430, 580); the walkable rect spans the water and reaches the east
-		// bank at every row it covers, so stepping off its east edge lands on grass. Being a rect round a sloped deck, it
-		// also covers open water above and below the deck band (widest at its west end), where no drift applies.
-		deck: { x: 4880, y: 340, w: 1550, h: 310 },
+		// The Eads deck, road and parapet face, from the bridge cut-out's registration matte (its top edge and the girders'
+		// underside) between x 4880, on the west abutment, and 6430, on the east bank's grass, so stepping off either end
+		// lands ashore. Off its north or south edge is open water (buildout ticket 20).
+		deck: [{ x: 4880, y: 361 }, { x: 6430, y: 567 }, { x: 6430, y: 642 }, { x: 4880, y: 436 }],
 		bridge: { key: 'eads-bridge', rect: { x: 4715, y: 339, w: 2035, h: 434 } },
 		// Passing under the Poplar Street bridge is the river's end.
 		southEndY: 1900,
