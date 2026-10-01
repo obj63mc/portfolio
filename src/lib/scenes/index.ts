@@ -1,3 +1,4 @@
+import { BREAD_CO } from './bread-co.ts';
 import { BRENNANS } from './brennans.ts';
 import { FOUNDRY } from './foundry.ts';
 import { MOOSYLVANIA } from './moosylvania.ts';
@@ -10,7 +11,7 @@ export { GAME } from './overworld.ts';
 
 /** Every sub-scene by its flat URL slug, which is also the overworld venue id its exit link targets. */
 export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
-	[MOOSYLVANIA, SLU, FOUNDRY, SIDE_PROJECT, BRENNANS].map((s) => [s.id, s])
+	[MOOSYLVANIA, SLU, FOUNDRY, SIDE_PROJECT, BRENNANS, BREAD_CO].map((s) => [s.id, s])
 );
 
 /** The scene a page path shows: the overworld at the root, a sub-scene at its slug; none for any other path. */

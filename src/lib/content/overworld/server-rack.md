@@ -1,3 +1,3 @@
 # Some MonsterCommerce History
 
-Checkout these CRAZY old webpages and software platforms I helped build.
+Checkout these CRAZY old web pages and software platforms I helped build.

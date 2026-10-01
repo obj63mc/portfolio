@@ -1,0 +1,20 @@
+{
+  "sourceSha256": "af5bafaa23fe47ffdfeb249f1498483dee28bac0206884978ae51282350f6dfb",
+  "run": "art/runs/bread-co-master/2026-10-01T19-05-53.000Z-upscale-4x",
+  "provider": "derived",
+  "derivation": {
+    "operation": "real-esrgan-4x",
+    "base": "art/sources/bread-co-fix/stitched.png (native 1672 x 941, tile-map round 0)",
+    "baseSha256": "fe8cb056ad92d241fcf7bb25ff7a6799a5ce0004d9c3c497d02ec14ac00c195b",
+    "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
+    "script": "scripts/art/overworld/install-master.sh",
+    "decals": [
+      {
+        "file": "art/sources/bread-co-fix/scan-qr.svg",
+        "sha256": "4a6a943a4d9f2d68eea12b575e284975b9f252e4dda339f690b87c50aa059e28"
+      }
+    ],
+    "decalsSha256": "ebf4e74779eb102ce7ddbc750aa5d60f7cbf48b28768e1289899e51ceac22076"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

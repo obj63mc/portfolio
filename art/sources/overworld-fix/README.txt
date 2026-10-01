@@ -6,7 +6,11 @@ decals.json                 logos, lettering and props too fine for the native m
                             install-master.sh: the SLU logomark (slu-logomark.svg, supplied by Joe, TM removed) on
                             McDonnell Douglas Hall's central parapet, placed in native px and sheared to the wall's slope;
                             the FOREST PARK sign's face and lettering (forest-park-sign.svg) and Forest Park's three
-                            picnic tables (picnic-tables.svg), drawn in native px (viewBox = master coordinates)
+                            picnic tables (picnic-tables.svg), drawn in native px (viewBox = master coordinates); the
+                            St. Louis Bread Co. east of Ted Drewes (bread-co-building.png, the building as Codex drew it
+                            for round twenty, cut out at the attempt's own resolution and laid over the same cut-out placed
+                            on the native master) with its parapet raised and Joe's logo set in it (scripts/art/overworld/bread-co-sign.py, from bread-co-building-drawn.png and bread-co-logo.webp; formerly a separate sign sheared to
+                            the parapet's slope)
 rounds/round-N.json         every round's spec: tiles, masks, deterministic ops and the fix list sent to the model
 rounds/base-N.png           the master before round N, kept aside by prepare (only the last round's is kept)
 tilemap.json, tiles/        the last round's working set: t-<name>.png (crop), -marked.png (repaint areas in red),

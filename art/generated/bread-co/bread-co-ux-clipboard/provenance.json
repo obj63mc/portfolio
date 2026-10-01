@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "1caf45d4d66499c96a037e9a92233f2281ac40cc5517ebb9eb9da4a46265902e",
+  "run": "art/runs/bread-co-ux-clipboard/2026-10-01T19-27-59.396Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "bread-co-master",
+    "referenceSha256": "6e5a287f6f8d66f0912bfbd8fd15f94b951018b14bb7ca9e3411b8e1e35c39de",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

@@ -28,5 +28,15 @@
     "height": 25,
     "shear": 0,
     "note": "The three Forest Park picnic tables north-west of the FOREST PARK sign, 2026-09-30: at 13 native px each came out of the 4x upscale a blob, so round nineteen paints them over with the lawn's own colour and they are drawn here instead, in the map's bench colours (orange-brown wood, dark brown rim, a soft shadow on the lawn). Drawn in native px (its viewBox is the master's own coordinates), each table modelled in its own units and projected to the map's elevated camera, so it is placed unsheared at its viewBox centre."
+  },
+  {
+    "file": "bread-co-building.png",
+    "center": [
+      393.46,
+      494.73
+    ],
+    "height": 42.04,
+    "shear": 0,
+    "note": "The St. Louis Bread Co. east of Ted Drewes, 2026-10-01: the building as Codex drew it (round twenty's attempt a, art/runs/overworld-fix-r20-breadcoa; the cut-out is bread-co-building-drawn.png), composited at the drawing's own resolution over the same cut-out that round twenty placed on the native master by hand, where its windows, patio and shrubs came out of the 4x upscale as blobs. scripts/art/overworld/bread-co-sign.py then raises its parapet by 34 of the drawing's px (4.9 native, 16.6 world), brick let in above the canopy with the roof and coping riding up whole, paints out the two blank olive panels, and sets the Saint Louis Bread Co. logo Joe supplied (bread-co-logo.webp; Panera's trademark, shown as the client's own sign) into the front wall on a sage board between the coping and the canopy, sheared to the wall's slope. So the decal stands 4.9 native px taller than its native twin underneath. Its centre and height are in native px."
   }
 ]

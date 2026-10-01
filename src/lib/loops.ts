@@ -64,7 +64,8 @@ export function bedGain(footprint: Rect, centre: Point) {
 
 /**
  * A scene's beds and where each is heard at full: on the overworld each district's rect and the river's footprint, the
- * scenery strips between them only where neighbours overlap (spec: "Beds"); a sub-scene's own bed, the whole scene.
+ * scenery strips between them only where neighbours overlap (spec: "Beds"); a sub-scene's own bed, the whole scene, or
+ * none where none is sourced yet (the Bread Co. café, 2026-10-01).
  */
 export function bedsOf(scene: Scene): { id: BedId; footprint: Rect }[] {
 	const bed = (id: string, footprint: Rect) => (isBed(id) ? [{ id, footprint }] : []);

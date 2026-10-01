@@ -1,86 +1,22 @@
 {
- "round": 19,
- "base": "rounds/base-19.png",
+ "round": 21,
+ "base": "rounds/base-21.png",
  "tiles": [
   {
-   "name": "landing",
+   "name": "breadcolot",
    "rect": [
-    1140,
-    60,
+    254,
+    372,
     256,
     256
    ],
    "loops": [],
-   "repaintPx": 1262,
-   "edit": true
-  },
-  {
-   "name": "warehouse",
-   "rect": [
-    1590,
-    170,
-    256,
-    256
-   ],
-   "loops": [],
-   "repaintPx": 1312,
-   "edit": true
-  },
-  {
-   "name": "storefronts",
-   "rect": [
-    185,
-    212,
-    320,
-    128
-   ],
-   "loops": [],
-   "repaintPx": 23386,
+   "repaintPx": 968,
    "edit": true
   }
  ],
  "stamps": [],
- "paints": [
-  {
-   "rect": [
-    240,
-    179,
-    259,
-    192
-   ],
-   "color": [
-    192,
-    208,
-    56
-   ]
-  },
-  {
-   "rect": [
-    258,
-    176,
-    277,
-    189
-   ],
-   "color": [
-    192,
-    208,
-    56
-   ]
-  },
-  {
-   "rect": [
-    273,
-    186,
-    294,
-    197
-   ],
-   "color": [
-    190,
-    207,
-    57
-   ]
-  }
- ],
+ "paints": [],
  "restore": [],
  "blurThreshold": 28,
  "bridges": [],

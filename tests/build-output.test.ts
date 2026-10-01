@@ -118,8 +118,10 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 		'mc-sign', 'mc-eye', 'server-rack',
 		'bottle-bud-light', 'bottle-sapporo', 'bottle-anchor', 'bottle-soonhari', 'bottle-bacardi', 'bottle-grey-goose',
 		'bottle-ej', 'bottle-camarena', 'bottle-rumchata', 'bottle-pink-whitney', 'bottle-new-amsterdam', 'brewery-sign',
-		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it.
 		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo',
+		// The ATM that left Brennan's stands in the Bread Co. café, for PayPal; Venmo has the stand on the counter there, and
+		// the usability testing the laptop (Joe, 2026-10-01).
+		'atm', 'venmo-stand', 'ux-laptop',
 		// The cycling course's line joined the ride sign's card, and the START FINISH sign is scenery: the lap timer is an
 		// Easter egg (Joe, 2026-09-29).
 		'bike', 'ride-sign'
@@ -133,8 +135,6 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	// Easter eggs: their click is the grant, with no card (Joe, 2026-09-30).
 	for (const id of ['moose', 'moose-statue', 'bike', 'mc-eye']) assert.equal(allProps.find((p) => p.id === id)!.kind, 'action', id);
 });
-
-test.todo('inventory: the ATM on the overworld, for PayPal and Venmo');
 
 // The overworld's marquee scrolls them too (Joe, 2026-09-30), painted on the canvas, which has no markup.
 test('clearance: in the markup the Universal titles are told only on the Foundry screen and its posters', () => {
@@ -441,11 +441,11 @@ test('caching: every hashed file of the build is kept for good, the icons a day,
 	for (const path of ['/', '/moosylvania', '/sushi-stand', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
 });
 
-test("the bottles of the sites Joe built: each card shows its screenshots in a window, a hashed file each, named and fetched when shown (Joe, 2026-10-01)", () => {
-	const layer = main(page('side-project.html'));
-	const built = SUB_SCENES['side-project'].props.filter((p) => p.screens);
-	assert.deepEqual(built.map((p) => p.id), ['bottle-bacardi', 'bottle-grey-goose']);
+test("the bottles of the sites Joe built, MonsterCommerce's server rack and the café's ATM and stand: each card shows its screenshots in a window, a hashed file each, named and fetched when shown (Joe, 2026-10-01)", () => {
+	const built = allProps.filter((p) => p.screens);
+	assert.deepEqual(built.map((p) => p.id).sort(), ['atm', 'bottle-bacardi', 'bottle-grey-goose', 'server-rack', 'venmo-stand']);
 	for (const p of built) {
+		const layer = main(page(overworldProps.includes(p) ? 'index.html' : `${subScenes.find((s) => s.props.includes(p))!.id}.html`));
 		const card = layer.match(new RegExp(`<dialog[^>]*aria-labelledby="card-${p.id}-title"[\\s\\S]*?</dialog>`))![0];
 		const images = opens(card, 'img');
 		assert.equal(images.length, p.screens!.length, p.id);

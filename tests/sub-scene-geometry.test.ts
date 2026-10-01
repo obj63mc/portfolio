@@ -192,7 +192,31 @@ test("Brennan's: five brand boxes in a row on one humidor shelf, each grants the
 	assert.ok(room.exit.x + room.exit.w < boxes[0].rect.x);
 	// The lounge's coffee table is open to the rug on its right: stepping on from there is from in front.
 	faces(room.walkBehind.find((w) => w.key === 'brennans-lounge')!, 'right');
-	assert.ok(!room.props.some((p) => p.id === 'atm'), 'the ATM left Brennan’s for the overworld');
+	assert.ok(!room.props.some((p) => p.id === 'atm'), 'the ATM left Brennan’s, for the Bread Co. café');
+});
+
+test('Bread Co.: the ATM by the door, the stand on the counter, the usability test on its table below, none of them on a unit', () => {
+	const cafe = SUB_SCENES['bread-co'];
+	assert.deepEqual(readingOrder(cafe).map((p) => p.id), ['atm', 'ux-laptop', 'venmo-stand']);
+	const rect = (id: string) => cafe.props.find((p) => p.id === id)!.rect;
+	const atm = rect('atm'), stand = rect('venmo-stand'), laptop = rect('ux-laptop');
+	const counter = cafe.walkBehind.find((w) => w.key === 'bread-co-counter')!, table = cafe.walkBehind.find((w) => w.key === 'bread-co-table-laptop')!;
+	// The ATM stands on the floor against the back wall, between the door and the counter, clear of both.
+	assert.ok(atm.x > cafe.exit.x + cafe.exit.w && atm.x + atm.w < counter.rect.x);
+	assert.ok(Math.abs(atm.y + atm.h - cafe.depth[0].horizonY) < 40, 'its foot at the wall’s foot');
+	// The stand stands on the counter, within its span, its base on the counter's top; a hit target of 48 CSS px on a
+	// phone, which draws the world at 0.6, is 80 world px.
+	assert.ok(stand.x > counter.rect.x && stand.x + stand.w < counter.rect.x + counter.rect.w);
+	assert.ok(stand.y + stand.h > counter.rect.y && stand.y + stand.h < lowestFront(counter));
+	for (const r of [atm, stand, laptop]) assert.ok(r.w >= 80 && r.h >= 80, JSON.stringify(r));
+	// The laptop, cup and clipboard lie on the table below the counter, inside its set's box and above its feet.
+	assert.ok(laptop.y > lowestFront(counter) && inside(laptop, table.rect) && laptop.y + laptop.h < lowestFront(table));
+	// No prop stands on a unit: each outline is notched round its prop, so no cursor over a prop is ever behind anything
+	// (the general test holds every prop's hit area clear of every outline).
+	for (const w of cafe.walkBehind) assert.deepEqual(w.props, [], w.key);
+	for (const p of [centre(stand), centre(laptop), centre(atm)]) for (const w of cafe.walkBehind) assert.ok(!inPolygon(p, w.outline), w.key);
+	// A cursor at the counter's front and one on the carpet between the table's chairs are on their units all the same.
+	assert.ok(inPolygon({ x: 1790, y: 850 }, counter.outline) && inPolygon({ x: 1700, y: 1400 }, table.outline));
 });
 
 test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers over the doors, the statue, then the TV and its remote', () => {

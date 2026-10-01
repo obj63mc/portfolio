@@ -94,7 +94,7 @@ def signpost():
 	# The board: dark teal, its lower edge in shade, the header's lettering on it.
 	box(d, 0, 0, w, board, TEAL_SHADE, r=10)
 	box(d, 0, 0, w, board - 5, INK, r=10)
-	lettering(d, 'EXPLORE ST. LOUIS', w / 2, HEADER / 2 + 3, 22, IVORY, spacing=0.12)
+	lettering(d, 'EXPLORE BARMADDEN', w / 2, HEADER / 2 + 3, 22, IVORY, spacing=0.12)
 	fills = [(IVORY, IVORY_SHADE), (GOLD, GOLD_SHADE), (SKY, SKY_SHADE)]
 	# One size for all six: the largest at which the longest line clears its plaque's edges by 9 px a side.
 	unit = ImageFont.truetype(str(FONT), 100)

@@ -1,0 +1,11 @@
+{
+  "sourceSha256": "6b212115f7d5f7e2e0489587a4ebe116570f9e6e692a2f2e76a3a81e4c48f7bb",
+  "run": "art/runs/bread-co-counter/2026-10-01T19-28-03.148Z",
+  "provider": "derived",
+  "derivation": {
+    "asset": "bread-co-master",
+    "referenceSha256": "6e5a287f6f8d66f0912bfbd8fd15f94b951018b14bb7ca9e3411b8e1e35c39de",
+    "operation": "masked-composition-crop"
+  },
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

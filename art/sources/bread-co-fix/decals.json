@@ -1,0 +1,12 @@
+[
+  {
+    "file": "scan-qr.svg",
+    "center": [
+      1052.0,
+      373.0
+    ],
+    "height": 56.08,
+    "shear": 0,
+    "note": "The scan-to-pay stand's QR pattern on its card, 2026-10-01: the master's 46 px code, about 2 px a module, came out of the 4x upscale as blobs, so the card's white under it is redrawn with square modules: the three finder squares, timing lines and a seeded field of a 21 x 21 symbol. A pattern, not a code: it has no format information or error correction, and OpenCV's QR detector decodes nothing from it. Drawn in native px (its viewBox is the master's own coordinates) by rounds/qr-decal.py; the card faces the viewer squarely (the painted code's top edge is level), so it is placed unsheared at its viewBox centre."
+  }
+]

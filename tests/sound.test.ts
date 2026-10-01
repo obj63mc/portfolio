@@ -31,6 +31,7 @@ test('the sound design table, by prop', () => {
 		'computer-data': 'click',
 		whiteboard: 'marker',
 		workstation: 'click',
+		'ux-laptop': 'click',
 		'bottle-bacardi': 'pour',
 		'bottle-soonhari': 'pour',
 		'humidor-cohiba': 'creak',

@@ -26,7 +26,7 @@ Before generating, editing, placing or reviewing assets, read [the art workflow]
 
 ### Design decisions
 
-- Build one connected overworld and five interiors. Maplewood is an overworld district: its church entrance, welcome board, signpost and moose belong there. SLU means **McDonnell Douglas Hall**.
+- Build one connected overworld and six interiors (the sixth, the St. Louis Bread Co. café, Joe added on 2026-10-01). Maplewood is an overworld district: its church entrance, welcome board, signpost and moose belong there. SLU means **McDonnell Douglas Hall**.
 - Use actual-location photographs for architecture, furniture and room arrangement, and satellite imagery for relative geography. Keep the highway west of the Arch grounds, Eads Bridge north and the Poplar crossing south. The illustrated map compresses distances; interiors interpret references rather than certify floor plans. Record sources and distinguish verified details from invented portfolio fixtures.
 - Use the original daytime illustration for the bright cyan, green, cream and coral palette. Restrict brown to local wood, brick and upholstery. Cursor Camp informs connected paths and coherent composition; follow this project's illustration style.
 - Establish a complete scene composition before separating its layers. Props share its camera, perspective, scale and lighting. Monitors sit on existing desks, brand bottles stand on the back-bar shelves, chairs meet the floor and cinema seats face the screen.

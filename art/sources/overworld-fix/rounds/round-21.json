@@ -1,0 +1,61 @@
+{
+ "round": 21,
+ "base": "rounds/base-21.png",
+ "note": "Joe (2026-10-01), on the St. Louis Bread Co. east of Ted Drewes: the paving round its lot wants cleaning up. On the left it is cut out beside the canopy, with a white cut-out round the building; on the front right a little path runs up to the bushes, to be filled with grass. Drawn by hand, scripts/art/overworld/bread-co-lot.py (tiles/t-breadcolot-model.png): the lawn west of the building is carried to the patio and the building's own edge, down to one straight edge that runs with the front wall to the patio's corner, the paving below it relaid flat; the lawn east of it is carried to the side wall and the corner bush, over the path, to one straight edge from the bushes to the lawn's own corner. The building's cream outline is the decal's and is recoloured there (scripts/art/overworld/bread-co-sign.py).",
+ "tiles": {
+  "breadcolot": {
+   "rect": [
+    254,
+    372,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      353,
+      486
+     ],
+     [
+      374,
+      486
+     ],
+     [
+      374,
+      509
+     ],
+     [
+      353,
+      509
+     ]
+    ],
+    [
+     [
+      411,
+      493
+     ],
+     [
+      426,
+      493
+     ],
+     [
+      426,
+      513
+     ],
+     [
+      418,
+      522
+     ],
+     [
+      411,
+      522
+     ]
+    ]
+   ],
+   "keep": "Ted Drewes and its grey lot at the left, the trees, the road and its sidewalks, the paving in front of the building, and the building itself",
+   "fixes": [
+    "Drawn by hand, not by a model (scripts/art/overworld/bread-co-lot.py): lawn up to the building's west end and patio and to its east wall and corner bush, with straight edges to the paving."
+   ]
+  }
+ }
+}

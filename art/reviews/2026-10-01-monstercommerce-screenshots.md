@@ -63,3 +63,38 @@ Removed all added titles, version labels and outer framing from all nine compari
 | `art/sources/screenshots/monstercommerce/homepages/monstercommerce-2005-12-01.png` | `e7868dfae387c7d85a350fdd156a6d78f3ac291ba973eb54116d0f3ba537d21e` |
 | `art/sources/screenshots/monstercommerce/homepages/monstercommerce-2008-07-04.png` | `e6e01f31ed753fb982965e5b6255c8d7a57c36cf14b253da9309ceef6556042f` |
 | `art/sources/screenshots/monstercommerce/homepages/network-solutions-2010-06-02.png` | `cecbb3f2d57455d17b95b4f8d6cc079ab03d95365e53e9d4b6d62ea94b4e8280` |
+
+## Delivery copies for the server rack's card
+
+Added October 1, 2026. The Belleville server rack (`server-rack` in `src/lib/scenes/overworld.ts`) shows 23 of these in its card's window (`src/lib/Screens.svelte`), which builds in only the `.webp` files directly inside `art/sources/screenshots/monstercommerce/`. Each is a WebP copy of one original PNG at its native pixel size (none is wider than 954 px), numbered in the order the card goes through them: the four homepages, then the application's features as 3.x and 4.x pairs, the Network Solutions header editor after its pair, MonsterMarketplace, and the two Network Solutions pages. The originals, the README, the gallery and the manifests are unchanged; every PNG above still has its listed hash.
+
+- Format, per image, the smaller of two encodings: lossless (`cwebp -lossless -z 9`) for the four clean browser replays where it is smaller, lossy (`cwebp -q 90 -m 6 -sharp_yuv`) for the other 19, most of them crops of period JPEGs. Lossy copies were compared with their originals at 3x on small text (4.x inventory and header editor, the 2008 and 2010 homepages): no visible difference. 1,800,088 bytes in all.
+- Individual `v3` and `v4` crops, not the side-by-side comparisons: the window is the image's full width, about 280 CSS px on a phone, where a 805 to 1164 px comparison is unreadable and a 366 to 660 px crop is not.
+- Left out: the customer-records pair (the 3.x figure is a 620 x 100 strip, which `SOURCES.md` ranks below the other seven), the six `*-application-context.png` crops (the same screens as their focused crops, smaller on a phone), and the comparison PNGs.
+- Seen in Chrome at 1440 x 900 and at 390 x 844: every slide loads, long pages scroll in the window, and each name fits the phone's bar in two lines. On the desktop the 366 to 500 px application crops are drawn at about twice their size and are soft.
+
+| Delivery copy | Original | Pixels | WebP | Bytes | SHA-256 |
+|---|---|---|---|---|---|
+| `01-monstercommerce-homepage-2004.webp` | `homepages/monstercommerce-2004-02-06.png` | 740 × 1442 | lossless | 188332 | `582e6b4e7e3580e61a8708dfb7265521d841ac8654a12a6b92bb10d2a241d328` |
+| `02-monstercommerce-homepage-2005.webp` | `homepages/monstercommerce-2005-12-01.png` | 768 × 1057 | lossless | 171152 | `60e73a8e38db05c332c6c8e99da30ace65cd84d4f1c281b27aa05a226431558c` |
+| `03-monstercommerce-homepage-2008.webp` | `homepages/monstercommerce-2008-07-04.png` | 780 × 1238 | lossy | 190018 | `5ba6e89ae2810901db2fc4d472b45319788f44072f65a553eac8a8e9c997d932` |
+| `04-network-solutions-homepage-2010.webp` | `homepages/network-solutions-2010-06-02.png` | 940 × 1176 | lossy | 144160 | `e74d90a5495f07d281fd49b02b5f56bec5eff0f02ee08ff251c844d20fbbdabd` |
+| `05-orders-v3.webp` | `functionality/application/01-orders/v3.png` | 659 × 367 | lossy | 54662 | `f8f4d4366e9254ee5163a0fff541405554d273f2d66e325c07bccc05e8927bf2` |
+| `06-orders-v4.webp` | `functionality/application/01-orders/v4.png` | 481 × 472 | lossy | 37930 | `155c5d01095a4c2ad0f22e42984c7c9c69138b4c504b24eb3d5ad493d490da3d` |
+| `07-product-list-v3.webp` | `functionality/application/02-product-list/v3.png` | 405 × 528 | lossy | 37278 | `e3c65f435050ca044f5802ba0817d6b897c6b955174a71d18683bd522ee4d6cc` |
+| `08-product-list-v4.webp` | `functionality/application/02-product-list/v4.png` | 382 × 441 | lossy | 25902 | `7b86474a18fdaa7778d59e78dfc1621e2f654a25db3e7070fe5c4e56d07c24d8` |
+| `09-product-editor-v3.webp` | `functionality/application/03-product-editor/v3.png` | 660 × 500 | lossy | 54394 | `98fb014affd67670db6ae9a7bd6c7909e28bd5f37fbfd3b6a78fc70dc91b9c9a` |
+| `10-product-editor-v4.webp` | `functionality/application/03-product-editor/v4.png` | 469 × 500 | lossy | 33732 | `30bd9f5419376b6b7f814140c0c942b8d27e51da4585e6f2c9e68d02815a6c52` |
+| `11-inventory-v3.webp` | `functionality/application/04-inventory/v3.png` | 431 × 485 | lossy | 51938 | `8c9d20a001bf262b4804784e7e6e65cf0af53127883450fb597395cd8fa4d972` |
+| `12-inventory-v4.webp` | `functionality/application/04-inventory/v4.png` | 481 × 512 | lossy | 59370 | `ef1d9f567c052b3318854f5489d947068be6b2080d07c51755a1520cf9711241` |
+| `13-categories-v3.webp` | `functionality/application/05-categories/v3.png` | 415 × 420 | lossy | 40420 | `8010fd98cbc0908e73df11579b6c59404a2b10708a6e7496995e1aa15f50e53e` |
+| `14-categories-v4.webp` | `functionality/application/05-categories/v4.png` | 366 × 372 | lossy | 19584 | `5dcabc4f0d182d5725a053be353ba88ca935e0d30439d4f7e6d5f8b9038f5ec6` |
+| `15-header-html-v3.webp` | `functionality/application/06-header-html/v3.png` | 575 × 276 | lossy | 9274 | `8288b6656b03ab53510093ebebd8b420ae1a96df85d0cb5ddfed6f209b9b3510` |
+| `16-header-html-v4.webp` | `functionality/application/06-header-html/v4.png` | 440 × 210 | lossy | 21620 | `6f4ea87a10728b6d4bff375f83068838b078e0434cd90d723119aa159664da2a` |
+| `17-header-html-network-solutions.webp` | `functionality/application/06-header-html/network-solutions.png` | 954 × 565 | lossy | 37620 | `bbbadbe7f6ccdcb0843a2c8e62af9cf60af3d5c5cd435ad44af38e3093554a21` |
+| `18-custom-payments-v3.webp` | `functionality/application/07-custom-payments/v3.png` | 498 × 446 | lossy | 28012 | `a3e3ade6b53e48c95902ec11f9055506efd059c970fae5152e8d57eb35c7b307` |
+| `19-custom-payments-v4.webp` | `functionality/application/07-custom-payments/v4.png` | 380 × 441 | lossy | 30058 | `38db19b37a85fe8c9ab139b04bc616c5a6c17c1a0f2e59a008e7c4773cf09eda` |
+| `20-monstermarketplace-portal-2005.webp` | `functionality/monstermarketplace/portal-2005-06-01.png` | 759 × 1673 | lossy | 272836 | `9412e3fa8283f2eb60e9d0f52cf4cddac4f4a7f8e40f028ef2ca6c50cbb97de1` |
+| `21-monstermarketplace-product-2005.webp` | `functionality/monstermarketplace/handbag-product-2005-04-05.png` | 759 × 971 | lossless | 116842 | `e4eeb93b4d2c7b569e46d76288047cd601489ee024f54186b4c88cd76564d709` |
+| `22-network-solutions-registration-2010.webp` | `functionality/network-solutions/registration-public-private-2010-11-27.png` | 940 × 1350 | lossless | 91694 | `bd2c938abd84dd67e2fe1837b86d2e622afa8fbb8e853ec7d9a9384b51e7b918` |
+| `23-network-solutions-account-manager-2011.webp` | `functionality/network-solutions/account-domain-management-2011-04-30.png` | 597 × 852 | lossy | 83260 | `5b781d97d6811f5b300c612131df1dc415a441e5689589b0ad44a1aca5f36006` |

@@ -1,0 +1,25 @@
+{
+  "id": "bread-co-master",
+  "scene": "bread-co",
+  "kind": "reference",
+  "file": "bread-co/bread-co-master/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 2845,
+    "h": 1600
+  },
+  "source": {
+    "w": 6688,
+    "h": 3764,
+    "sha256": "af5bafaa23fe47ffdfeb249f1498483dee28bac0206884978ae51282350f6dfb"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 6688,
+    "h": 3764
+  },
+  "width": 6688,
+  "height": 3764
+}

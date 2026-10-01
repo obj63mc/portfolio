@@ -44,6 +44,7 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 	'computer-data': 'click',
 	whiteboard: 'marker',
 	workstation: 'click',
+	'ux-laptop': 'click',
 	'bottle-bud-light': 'pour',
 	'bottle-sapporo': 'pour',
 	'bottle-anchor': 'pour',
@@ -68,9 +69,10 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 /**
  * Props with no signature of their own, on purpose: the diploma's paper is its card's own sound (Joe, 2026-09-30), the
  * meeting TV plays muted and is no button, its remote's card is its sound, the Foundry posters are heard through the
- * screen's projector start, which the whole room hears, and the screen is no button.
+ * screen's projector start, which the whole room hears, and the screen is no button. Bread Co.'s ATM and scan-to-pay
+ * stand have none yet (2026-10-01): no new audio was sourced for the café, so their card is their sound.
  */
-export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'tv-remote', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen'];
+export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'tv-remote', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen', 'atm', 'venmo-stand'];
 
 /**
  * What each scene hears beyond its props: the overworld's signpost, the lap timer's beep and the Grand Basin koi's splash

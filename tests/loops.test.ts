@@ -25,6 +25,10 @@ test("a bed's gain is full inside its footprint and on its edge, and falls to no
 	near(bedGain(box, { x: 1500 + 120, y: 1400 + 160 }), Math.cos((200 / FADE) * (Math.PI / 2)), 'off a corner');
 });
 
+// The sub-scenes with no bed of their own: the Bread Co. café (2026-10-01), for which no audio was sourced, so it hears
+// the theme alone, low.
+const BEDLESS = ['bread-co'];
+
 test('the fade out is an equal-power curve: gains at mirrored distances square to one', () => {
 	for (const d of [0, 50, 133, 200, 300, 400]) {
 		const g = bedGain(box, { x: 1500 + d, y: 1200 }), h = bedGain(box, { x: 1500 + FADE - d, y: 1200 });
@@ -36,7 +40,8 @@ test('every scene has its beds: the six districts and the river on the overworld
 	const ow = bedsOf(OVERWORLD).map((b) => b.id);
 	assert.deepEqual(ow.sort(), [...OVERWORLD.districts.map((d) => `bed-${d.id}`), 'bed-river'].sort());
 	for (const d of OVERWORLD.districts) assert.deepEqual(bedsOf(OVERWORLD).find((b) => b.id === `bed-${d.id}`)!.footprint, d.rect, d.id);
-	for (const s of Object.values(SUB_SCENES)) assert.deepEqual(bedsOf(s), [{ id: `bed-${s.id}`, footprint: { x: 0, y: 0, w: s.w, h: s.h } }], s.id);
+	for (const s of Object.values(SUB_SCENES))
+		assert.deepEqual(bedsOf(s), BEDLESS.includes(s.id) ? [] : [{ id: `bed-${s.id}`, footprint: { x: 0, y: 0, w: s.w, h: s.h } }], s.id);
 	const beds = [...SCENES.flatMap((s) => bedsOf(s).map((b) => b.id)), 'bed-sushi-service'];
 	assert.deepEqual([...new Set(beds)].sort(), [...BEDS].sort(), 'thirteen beds, each somewhere');
 });
@@ -86,6 +91,7 @@ test('the theme plays 6 dB under the beds on the overworld, 12 dB further down i
 	near(at(SUB_SCENES.slu).get('theme')!, LEVEL.themeUnder, 'the lab');
 	near(LEVEL.themeUnder, LEVEL.theme * 10 ** (-12 / 20), '12 dB further down');
 	near(at(SUB_SCENES.foundry).get('theme')!, LEVEL.themeUnder, 'the theatre, screen idle');
+	near(at(SUB_SCENES['bread-co']).get('theme')!, LEVEL.themeUnder, 'the café, which has no music or bed of its own');
 	assert.equal(at(SUB_SCENES.foundry, { screen: true, video: false }).get('theme'), 0, 'the theatre while the screen plays');
 	for (const id of ['brennans', 'side-project', 'moosylvania']) {
 		assert.equal(at(SUB_SCENES[id]).get('theme'), 0, `${id}: the theme gives way`);
@@ -132,7 +138,7 @@ test('loading: the beds audible at the camera and those within 800 px of their f
 	assert.ok(!at(bv.x - (FADE + NEAR) - 1, y).includes('bed-belleville'));
 	for (const s of Object.values(SUB_SCENES)) {
 		const want = [...loopsNeeded(s, { x: 5, y: 5 })].sort();
-		const own = SCENE_MUSIC[s.id], expect: LoopId[] = [`bed-${s.id}` as LoopId, ...(own ? [own] : ['theme' as const])];
+		const own = SCENE_MUSIC[s.id], expect: LoopId[] = [...(BEDLESS.includes(s.id) ? [] : [`bed-${s.id}` as LoopId]), ...(own ? [own] : ['theme' as const])];
 		assert.deepEqual(want, expect.sort(), s.id);
 		assert.deepEqual([...loopsFor(s)].sort(), expect.sort(), `${s.id}: a door hovered loads the same`);
 	}

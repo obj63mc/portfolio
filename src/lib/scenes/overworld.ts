@@ -55,6 +55,15 @@ const districts: District[] = [
 				rect: { x: 210, y: 1070, w: 600, h: 240 },
 				door: '/side-project',
 				props: []
+			},
+			{
+				// St. Louis Bread Co. (Joe, 2026-10-01), east of Ted Drewes, the white building with the yellow awning: the
+				// building with its patio and shrubs, measured on the installed master (overworld rounds twenty and twenty-one).
+				id: 'bread-co',
+				name: 'St. Louis Bread Co.',
+				rect: { x: 1225, y: 1615, w: 229, h: 138 },
+				door: '/bread-co',
+				props: []
 			}
 		]
 	},
@@ -162,7 +171,34 @@ const districts: District[] = [
 						id: 'server-rack',
 						name: 'Server rack',
 						gist: 'the e-commerce platform, Shopify before Shopify',
-						rect: { x: 6351, y: 1406, w: 121, h: 174 }
+						rect: { x: 6351, y: 1406, w: 121, h: 174 },
+						// The sites and the software as they were (Joe, 2026-10-01), files in art/sources/screenshots/monstercommerce in
+						// the order the card goes through them: the homepages, then what the platform and the sites did.
+						screens: [
+							{ name: 'Homepage, 2004', file: 'monstercommerce/01-monstercommerce-homepage-2004.webp' },
+							{ name: 'Homepage, 2005', file: 'monstercommerce/02-monstercommerce-homepage-2005.webp' },
+							{ name: 'Homepage, 2008', file: 'monstercommerce/03-monstercommerce-homepage-2008.webp' },
+							{ name: 'Network Solutions, 2010', file: 'monstercommerce/04-network-solutions-homepage-2010.webp' },
+							{ name: 'Orders list, version 3', file: 'monstercommerce/05-orders-v3.webp' },
+							{ name: 'Orders list, version 4', file: 'monstercommerce/06-orders-v4.webp' },
+							{ name: 'Product list, version 3', file: 'monstercommerce/07-product-list-v3.webp' },
+							{ name: 'Product list, version 4', file: 'monstercommerce/08-product-list-v4.webp' },
+							{ name: 'Edit product, version 3', file: 'monstercommerce/09-product-editor-v3.webp' },
+							{ name: 'Edit product, version 4', file: 'monstercommerce/10-product-editor-v4.webp' },
+							{ name: 'Inventory, version 3', file: 'monstercommerce/11-inventory-v3.webp' },
+							{ name: 'Inventory, version 4', file: 'monstercommerce/12-inventory-v4.webp' },
+							{ name: 'Categories, version 3', file: 'monstercommerce/13-categories-v3.webp' },
+							{ name: 'Categories, version 4', file: 'monstercommerce/14-categories-v4.webp' },
+							{ name: 'Store header, version 3', file: 'monstercommerce/15-header-html-v3.webp' },
+							{ name: 'Store header, version 4', file: 'monstercommerce/16-header-html-v4.webp' },
+							{ name: 'Store header, version 7', file: 'monstercommerce/17-header-html-network-solutions.webp' },
+							{ name: 'Payments, version 3', file: 'monstercommerce/18-custom-payments-v3.webp' },
+							{ name: 'Payments, version 4', file: 'monstercommerce/19-custom-payments-v4.webp' },
+							{ name: 'Marketplace, 2005', file: 'monstercommerce/20-monstermarketplace-portal-2005.webp' },
+							{ name: 'Marketplace listing, 2005', file: 'monstercommerce/21-monstermarketplace-product-2005.webp' },
+							{ name: 'Registration, 2010', file: 'monstercommerce/22-network-solutions-registration-2010.webp' },
+							{ name: 'Manage domain, 2011', file: 'monstercommerce/23-network-solutions-account-manager-2011.webp' }
+						]
 					}
 				]
 			}

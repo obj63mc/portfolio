@@ -1,3 +1,3 @@
-# Diploma
+# Bachelor of Science in Computer Science
 
-Bachelor of Science in Computer Science with Honors, Saint Louis University, 2005.
+Started Fall 2021 and graduated with honors from Saint Louis University Spring 2005.

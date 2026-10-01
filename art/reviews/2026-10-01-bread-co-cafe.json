@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-01",
+  "scene": "bread-co",
+  "native": {
+    "art/sources/bread-co-fix/stitched.png": "fe8cb056ad92d241fcf7bb25ff7a6799a5ce0004d9c3c497d02ec14ac00c195b",
+    "art/sources/bread-co-fix/scan-qr.svg": "4a6a943a4d9f2d68eea12b575e284975b9f252e4dda339f690b87c50aa059e28",
+    "art/sources/bread-co-fix/decals.json": "ebf4e74779eb102ce7ddbc750aa5d60f7cbf48b28768e1289899e51ceac22076",
+    "art/sources/bread-co-fix/rounds/mattes.py": "cc98da682ecdba4f3cd980826aa22a62e699c7d91618a73b1c31402bb87992a1",
+    "art/sources/bread-co-fix/rounds/qr-decal.py": "a8f98432947eb96763d9780545590a5747edd9358593a6372bec3827332453b4"
+  },
+  "assets": {
+    "bread-co-atm": {
+      "image.webp": "a6446f31214d1f05ab9182be36c292ec4f1e7555f2dac432147cbd8c9bf1ee84",
+      "size": "465x1058",
+      "1.25.webp": "dfa216aa440e67b730361fc50fd8646002b12ae9d40a63caff41a41cb2df6c0d",
+      "2.webp": "03e2268f8c06fa5bf167427fe0791b270e2940f7a804c37664d65efb312e3d37",
+      "world": {
+        "x": 428.37,
+        "y": 488.0,
+        "w": 197.81,
+        "h": 449.73
+      }
+    },
+    "bread-co-counter": {
+      "image.webp": "d67f2ee8ef2e2ba5e9f691bd9cb1b6e56ac17d6c52fad81729d3a546376945d8",
+      "size": "3290x1013",
+      "1.25.webp": "d9dd328d9aa91a496d5ebfcf2b5154ee93c0882352918cbbb5b13da7ad79e872",
+      "2.webp": "81336c88891f03c6d48da1d7be969b9c46fc98fff76f715aa6dae0a29f5b8fa8",
+      "world": {
+        "x": 683.18,
+        "y": 539.01,
+        "w": 1399.53,
+        "h": 430.61
+      }
+    },
+    "bread-co-master": {
+      "image.webp": "6e5a287f6f8d66f0912bfbd8fd15f94b951018b14bb7ca9e3411b8e1e35c39de",
+      "size": "6688x3764"
+    },
+    "bread-co-table-laptop": {
+      "image.webp": "b1f75b50c3854be74a2242f2a1bf6a008a2451cedd5e83309b6b14dd05f38bbf",
+      "size": "2207x1340",
+      "1.25.webp": "ef540b47e522bfd621e7b0f8984501a49ff3b2c463df4e9ace31f8f01c287b24",
+      "2.webp": "a5caaa389c7f52a3f3111413ad7fe7b18d9493e16ca70de6b8de01c031b9a8a7",
+      "world": {
+        "x": 1251.5,
+        "y": 1004.04,
+        "w": 938.84,
+        "h": 569.61
+      }
+    },
+    "bread-co-table-left": {
+      "image.webp": "7d9ea2fc29daba054846122b16491ae92f052dfb2c80e3cc4de4d1472fbb2c12",
+      "size": "1566x956",
+      "1.25.webp": "5c1b5de6c029e9281a362682dd0b7d42cb165da88fcafd12882d7b2bc2f24c9d",
+      "2.webp": "178a67b7486c78127ae17b2286d6f3ce2e7fb1edcc931b00bf24a840bc16e209",
+      "world": {
+        "x": 346.7,
+        "y": 983.64,
+        "w": 666.16,
+        "h": 406.38
+      }
+    },
+    "bread-co-ux-clipboard": {
+      "image.webp": "a34c357d7ba685dc152c3922a0086ec050e212142855062264bcd0acb285b2af",
+      "size": "443x235",
+      "1.25.webp": "a6e11023894a70cbda2d5fcecc927904b4559751daea7a62776fd85bf66b835c",
+      "2.webp": "91408ae69fa13c581dc56136666a6c147000a1df7db92708a53052c6ded82c82",
+      "world": {
+        "x": 1724.1,
+        "y": 1162.6,
+        "w": 188.45,
+        "h": 99.89
+      }
+    },
+    "bread-co-ux-cup": {
+      "image.webp": "803345710379e1121f9eee1e197161f5c01e88c29c8d3833fa3ec0499a822e70",
+      "size": "224x162",
+      "1.25.webp": "2730e8c7bae1af7ddf47e34ad8a27d6b5d9a8c315d2af3e433350ae601609a66",
+      "2.webp": "096611f7e280559f1d0de9d4bc7d57ac8dada22ee9afce148a15859913d17f86",
+      "world": {
+        "x": 1730.06,
+        "y": 1091.18,
+        "w": 95.29,
+        "h": 68.86
+      }
+    },
+    "bread-co-ux-laptop": {
+      "image.webp": "132a122298840f7e1b602bb72a5178211b44458d37da3ec2cd2fc744571d5d54",
+      "size": "676x521",
+      "1.25.webp": "d925bc4bb4f18a178663bdc9ede1c0421f41dfe08b6e4653dfc7fa62c606a838",
+      "2.webp": "d7c0c3ac7b731e917dbe1e32327e42a44ece0a31a69cb71cda2c6eae9e128920",
+      "world": {
+        "x": 1468.02,
+        "y": 1004.04,
+        "w": 287.57,
+        "h": 221.47
+      }
+    },
+    "bread-co-venmo-stand": {
+      "image.webp": "d3fb8eb6fe76829b6dd53abe9df8e134626ff2d0f88ab305a2c03b98bf247145",
+      "size": "320x385",
+      "1.25.webp": "1ebef3b728ec93fa0ce35c9845fa4c4be238415fadd12e063feff8ca4f5b0256",
+      "2.webp": "ea51637273434138fa95ff8159a89fea5c40c71d4849169d521360779bf10bbf",
+      "world": {
+        "x": 1721.98,
+        "y": 540.71,
+        "w": 136.13,
+        "h": 163.66
+      }
+    },
+    "bread-co": {
+      "image.webp": "987a8a08eab5b5cc44508970912820bc9f79eea8bfbf0483158e9bd5878ccea4",
+      "size": "5690x3200",
+      "tiles": 48
+    }
+  },
+  "composite": {
+    "art/generated/bread-co/composite.webp": "5eb5c8b97fc0711e27f8a9ccfed136b94f3f8a0e8bdcd35e5c4fd6df8c54c3e2"
+  }
+}

@@ -1209,6 +1209,58 @@
           ]
         }
       ]
+    },
+    {
+      "location": "bread-co",
+      "name": "St. Louis Bread Co.",
+      "address": "6607 Chippewa St, St. Louis, MO, USA",
+      "maps": "https://www.google.com/maps/search/St.+Louis+Bread+Co+6607+Chippewa+St",
+      "selectedPhotos": [
+        {
+          "localFile": "art/references/local/places/st-louis-bread-co/01-dining-room.jpg",
+          "source": "https://img02.restaurantguru.com/ca23-Cafe-St-Louis-Bread-Co-interior-1.jpg",
+          "authors": [
+            {
+              "displayName": "Visitor photograph on Restaurant Guru's listing for St. Louis Bread Co., 6607 Chippewa St (photographer not credited there)",
+              "uri": "https://restaurantguru.com/St-Louis-Bread-St-Louis-13"
+            }
+          ],
+          "note": "The dining room toward the order counter, cropped from the listing's collage (its lower panel, right of the site's mascot overlay): terracotta-orange and golden-yellow walls, the wood-fronted counter with its dark top and glass pastry case, wire bread racks and menu-board panels behind it, round wood-top tables on black pedestals, wooden chairs with brown seats, a tall-backed booth, black track lights on a pale tile ceiling, a magenta drum pendant, tan checkerboard tile by the counter and dark carpet in the dining area."
+        },
+        {
+          "localFile": "art/references/local/places/st-louis-bread-co/02-counter-kitchen.jpg",
+          "source": "https://img02.restaurantguru.com/ca4d-St-Louis-Bread-Co-interior-1.jpg",
+          "authors": [
+            {
+              "displayName": "Visitor photograph on Restaurant Guru's listing for St. Louis Bread Co., 6607 Chippewa St (photographer not credited there)",
+              "uri": "https://restaurantguru.com/St-Louis-Bread-St-Louis-13"
+            }
+          ],
+          "note": "The counter's end and the bakery behind it, cropped from the listing's collage (its upper left panel): reddish wood panels under a dark overhanging top, stainless ovens, bread racks, quarry-tile floor."
+        },
+        {
+          "localFile": "art/references/local/places/st-louis-bread-co/03-laptop-table.jpg",
+          "source": "https://img.restaurantguru.com/r855-St-Louis-Bread-Co-design-2022-11-8.jpg",
+          "authors": [
+            {
+              "displayName": "Visitor photograph on Restaurant Guru's listing for St. Louis Bread Co., 6607 Chippewa St (photographer not credited there)",
+              "uri": "https://restaurantguru.com/St-Louis-Bread-St-Louis-13"
+            }
+          ],
+          "note": "A customer's table, 2022, cropped above the site's mascot overlay: an open laptop, a notebook and a drink on a wood table, the booth divider upholstered in an olive fabric patterned with circles under an orange wall, the menu boards in the distance."
+        },
+        {
+          "localFile": "art/references/local/places/st-louis-bread-co/exterior-street-view.png",
+          "authors": [
+            {
+              "displayName": "Google Street View screenshot of the café's corner, supplied by Joe Madden, 2026-10-01"
+            }
+          ],
+          "note": "The exterior at 6607 Chippewa St, a Google Street View screenshot supplied by Joe on 2026-10-01: a local reference only, never committed or shipped. The overworld's Bread Co. east of Ted Drewes is drawn after it (overworld round twenty, art/reviews/2026-10-01-overworld-bread-co.md): the one-storey tan brick corner building with a flat roof, the dark standing-seam canopy wrapping the corner, arched windows, olive sign panels on the parapet, the patio with green umbrellas behind wooden screens and the pink shrubs along the front. Not used for the interior."
+        }
+      ],
+      "note": "Local reference only, for the café interior scene (bread-co, 2026-10-01). No Google Places key was used for this location: the three interior photographs are visitor photos from a restaurant listing, 648 to 750 px wide, enough for furniture, colours and arrangement.",
+      "checked": "2026-10-01"
     }
   ],
   "slu": {

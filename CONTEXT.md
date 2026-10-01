@@ -15,7 +15,7 @@ One of the six named areas of the overworld: Midtown, Belleville, Maplewood, For
 _Avoid_: area, section, region, location
 
 **Venue**:
-An enterable place inside a district, such as Saint Louis University, The Foundry, MonsterCommerce, Moosylvania, Side Project Cellar, Brennan's, or the park itself.
+An enterable place inside a district, such as Saint Louis University, The Foundry, MonsterCommerce, Moosylvania, Side Project Cellar, St. Louis Bread Co., Brennan's, or the park itself.
 _Avoid_: building, location, portal
 
 **Sushi Stand**:

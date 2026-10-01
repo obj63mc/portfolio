@@ -1,9 +1,9 @@
 # Scene fix tools
 
-Tools for repairing a scene's master after it is accepted: built for the overworld, and used the same way for the five
+Tools for repairing a scene's master after it is accepted: built for the overworld, and used the same way for the six
 interiors. Every tool takes the scene from `SCENE=<id>` (`overworld` when unset; `moosylvania`, `slu`, `foundry`,
-`side-project`, `brennans`). The data lives in `art/sources/<scene>-fix/`: `stitched.png` is the editable native master
-(1983 × 793 for the [overworld](../../../art/sources/overworld-fix/), 1672 × 941 for the SLU lab, the Foundry theatre, the Side Project bar and Brennan's, 887 × 1774 for the Moosylvania lobby),
+`side-project`, `brennans`, `bread-co`). The data lives in `art/sources/<scene>-fix/`: `stitched.png` is the editable native master
+(1983 × 793 for the [overworld](../../../art/sources/overworld-fix/), 1672 × 941 for the SLU lab, the Foundry theatre, the Side Project bar, Brennan's and the Bread Co. café, 887 × 1774 for the Moosylvania lobby),
 `rounds/round-N.json` the round specs, `tiles/` and `tilemap.json` the current round's working set. Each scene's background
 is its `stitched.png` upscaled 4×; see [the art workflow](../../../art/README.md), "Filling the map and sharpening it" and
 "Interiors". Every command runs from any directory.
@@ -17,6 +17,8 @@ is its `stitched.png` upscaled 4×; see [the art workflow](../../../art/README.m
 | `lot-stripes.py` | Round fifteen's hand-drawn tile: relays the Maplewood parking lot as flat asphalt with straight, evenly spaced stall lines (`tiles/t-lot-model.png`) |
 | `lobby-railings-floor.py` | The Moosylvania lobby's round five, drawn by construction: paints the old railing infill out of the native master, relays the stair treads' back edges and the two office floors beneath the loft as that round's tiles (`tiles/t-<name>-model.png`), and writes the railings' balusters and sub-rails as the lobby's decals (`loft-railing.svg`, `stairs-left-railings.svg`, `stairs-right-railings.svg`) |
 | `signs.py` | The overworld's two Maplewood signs, drawn by construction: the welcome board with the site's badge and the directory board of six lettered district plaques that replaced the fingerpost. Writes `art/sources/welcome.png` and `art/sources/signpost.png`; then `npm run art -- process welcome --force` and `process signpost --force`. Its plaque box is `OVERWORLD.signpost.rect`, held to it by `tests/overworld-geometry.test.ts`. |
+| `bread-co-sign.py` | The overworld Bread Co.'s raised parapet and sign, by construction on Codex's cut-out of the building (`bread-co-building-drawn.png`): lets brick in above the canopy, paints out the blank olive panels and sets the logo Joe supplied (`bread-co-logo.webp`) into the front wall. Last, it recolours the cut-out's cream outline to the ground under it in the native master. Writes the decal `bread-co-building.png` and prints its height and centre for `decals.json`; then `install-master.sh`. |
+| `bread-co-lot.py` | Round twenty-one's hand-drawn tile (`tiles/t-breadcolot-model.png`): relays the ground round the Bread Co., lawn to the patio and the building on the west with one straight edge to the paving, and lawn over the path on the east. |
 | `sync-geometry.py` | Copies the re-derived extractions' world rects into `src/lib/scenes/overworld.ts` (install-master runs it for the overworld) |
 | `assembly/` | The earlier regional-edit scripts (`assemble.py`, `assemble2.py` with `regions.json`, `bridge-restore.py`, `paste-mc.py`) and `rivermask.py`, which traced the river polygon; kept as a record, their inputs are gone |
 

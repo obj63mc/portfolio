@@ -29,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 SCENE = os.environ.get('SCENE', 'overworld')
 D = f'{ROOT}/art/sources/{SCENE}-fix'; T = f'{D}/tiles'  # the data; this file is the tool
-SIZE = Image.open(f'{D}/stitched.png').size  # the native master: 1983 x 793 for the overworld, 1672 x 941 for SLU, the Foundry, Side Project and Brennan's, 887 x 1774 for the Moosylvania lobby
+SIZE = Image.open(f'{D}/stitched.png').size  # the native master: 1983 x 793 for the overworld, 1672 x 941 for SLU, the Foundry, Side Project, Brennan's and Bread Co., 887 x 1774 for the Moosylvania lobby
 BASE, MARKED = f'{D}/base.png', f'{D}/marked.png'
 def magick(*args): subprocess.run(['magick', '-define', 'png:exclude-chunks=date,time', *[str(a) for a in args]], check=True)  # no timestamps: a re-slice is byte-identical
 
