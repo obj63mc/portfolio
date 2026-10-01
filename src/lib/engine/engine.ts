@@ -204,10 +204,7 @@ export class Engine {
 	private listeners = new AbortController();
 	/** Lifts the cursor canvas over each prop card as it opens. */
 	private raise = new MutationObserver((records) => {
-		if (records.some((r) => r.target instanceof HTMLDialogElement && r.target.open && !this.isGate(r.target))) {
-			this.cursors.hidePopover();
-			this.cursors.showPopover();
-		}
+		if (records.some((r) => r.target instanceof HTMLDialogElement && r.target.open && !this.isGate(r.target))) this.lift();
 	});
 
 	/**
@@ -258,9 +255,7 @@ export class Engine {
 		cursors.showPopover();
 		this.raise.observe(document.body, { subtree: true, attributeFilter: ['open'] });
 		// And over a card's video gone full screen, which enters the top layer over it.
-		document.addEventListener('fullscreenchange', () => document.fullscreenElement && (this.cursors.hidePopover(), this.cursors.showPopover()), {
-			signal: this.listeners.signal
-		});
+		document.addEventListener('fullscreenchange', () => document.fullscreenElement && this.lift(), { signal: this.listeners.signal });
 		this.enter(this.input);
 		this.raf = requestAnimationFrame(this.tick);
 	}
@@ -605,6 +600,18 @@ export class Engine {
 
 	private isGate(card: HTMLDialogElement) {
 		return card === this.cards.join || card === this.cards.paused;
+	}
+
+	/**
+	 * The cursor canvas to the top of the top layer, over a prop card or its video gone full screen, where the mouse's
+	 * drawn cursor reaches the card's controls. Not on touch (Joe, 2026-09-30): a card's controls are the finger's and
+	 * the cursor holds still while it is open, so it stays under the card and its backdrop, dimmed with the scene, and
+	 * never sits on the video being watched. Nor away at Sushi Stand, whose own card it is put away under.
+	 */
+	private lift() {
+		if (this.input.is === 'touch' || !this.scene) return;
+		this.cursors.hidePopover();
+		this.cursors.showPopover();
 	}
 
 	/** The Paused card's note that the browser refused the lock. */
@@ -1044,7 +1051,8 @@ export class Engine {
 	 * tab, pops in. Every cursor shrinks toward its depth region's horizon, and the scenery that covers it is drawn over
 	 * it (ticket 19): peers are followed through the scene as the own cursor is, locally, from where they are drawn, a
 	 * peer's snap being a jump. With a prop card open no scenery is drawn: the cursor canvas is then over the card and its
-	 * backdrop, where a cut-out would paint the scenery undimmed over both, and the cursors are drawn over everything.
+	 * backdrop (on touch under them, `lift`), where a cut-out would paint the scenery undimmed over both, and the cursors
+	 * are drawn over everything.
 	 * The bridge is drawn over a cursor in the river, own or peer, by the river bit a peer's presence carries, and the
 	 * wash-out's fade over everything (ticket 20).
 	 */

@@ -2,7 +2,8 @@
 // state for the engine, the sound module, analytics and the UI to read and change through it. The rules are saved.ts's.
 // Every change is written at once, merged over what another tab may have stored since, and never on unload; where storage
 // throws (blocked site data, a private window) the session runs from memory, with no message.
-import { KEY, addLap, addStand, fresh, gold, grant, merge, read, type Lap, type Saved, type Stand } from './saved.ts';
+import { KEY, addLap, addStand, fresh, gold, grant, keepGame, merge, read, type Lap, type Saved, type Stand } from './saved.ts';
+import type { Game } from './sushi/game.ts';
 import type { CosmeticId } from './scenes/types';
 
 function load() {
@@ -73,6 +74,14 @@ export const saved = {
 		const s = addStand(data, stand);
 		if (s.entered) save(s.saved);
 		return s.best;
+	},
+	/** The Sushi Stand game left unfinished, if there is one, to carry on from. */
+	get game(): Game | null {
+		return data.sushi ?? null;
+	},
+	/** A game in progress as it now stands, kept at every change; null once it is finished or started over. */
+	set game(game: Game | null) {
+		if (game || data.sushi) save(keepGame(data, game));
 	},
 	/** Records a completed lap at epoch ms `at`: written if it enters the top ten; true when it is a new personal best. */
 	lap(ms: number, at: number) {

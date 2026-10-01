@@ -3,6 +3,7 @@
 // the storage itself.
 import { KNOWN, isCosmetic } from './cosmetics.ts';
 import type { CosmeticId } from './scenes/types';
+import { NAME_MAX, readGame, type Game } from './sushi/game.ts';
 
 /** The one localStorage key. */
 export const KEY = 'stl-portfolio';
@@ -35,6 +36,8 @@ export interface Saved {
 	sound: boolean;
 	/** The personal Sushi Stand top ten, most profit first; absent until a game is finished. */
 	stands?: Stand[];
+	/** The game of Sushi Stand left unfinished (sushi/game.ts); absent with none in progress. */
+	sushi?: Game;
 	/** The analytics choice, absent until the visitor makes one. */
 	analytics?: 'granted' | 'denied';
 }
@@ -44,9 +47,6 @@ const isLap = (l: unknown): l is Lap => isObject(l) && typeof l.ms === 'number' 
 
 const isStand = (s: unknown): s is Stand =>
 	isObject(s) && typeof s.name === 'string' && s.name.length <= NAME_MAX && Number.isInteger(s.profit) && Number.isFinite(s.at);
-
-/** A stand's name is at most this long, as the name field allows. */
-export const NAME_MAX = 24;
 
 /** Earned ids, sorted and without repeats. */
 const ids = (earned: number[]) => [...new Set(earned)].sort((a, b) => a - b);
@@ -85,6 +85,7 @@ export function read(text: string | null): Saved {
 	if (!isObject(m) || (typeof m.v === 'number' && m.v > VERSION)) return fresh();
 	const earned = ids(Array.isArray(m.earned) ? m.earned.filter((id: unknown): id is number => typeof id === 'number' && Number.isInteger(id) && id > 0) : []);
 	const laps = m.laps, best = isObject(laps) && laps.track === TRACK && Array.isArray(laps.best) ? laps.best.filter(isLap) : [];
+	const sushi = readGame(m.sushi);
 	return {
 		v: VERSION,
 		worn: wearable(m.worn, earned),
@@ -92,14 +93,15 @@ export function read(text: string | null): Saved {
 		laps: { track: TRACK, best: fastest(best) },
 		sound: typeof m.sound === 'boolean' ? m.sound : true,
 		...standsField(Array.isArray(m.stands) ? m.stands.filter(isStand) : []),
+		...(sushi && { sushi }),
 		...(m.analytics === 'granted' || m.analytics === 'denied' ? { analytics: m.analytics } : {})
 	};
 }
 
 /**
  * What a write stores: this tab's state `mine` merged with what is `stored` now, which another tab may have written
- * since this one read it. Earned is a union and laps keep the fastest ten; worn and sound are this tab's, the last
- * writer's, and so is the analytics choice once this tab has one.
+ * since this one read it. Earned is a union and laps keep the fastest ten; worn, sound and the Sushi Stand game in
+ * progress (or none) are this tab's, the last writer's, and so is the analytics choice once this tab has one.
  */
 export function merge(stored: Saved, mine: Saved): Saved {
 	const analytics = mine.analytics ?? stored.analytics;
@@ -125,6 +127,12 @@ export function grant(s: Saved, id: CosmeticId) {
 export function addLap(s: Saved, lap: Lap) {
 	const all = s.laps.best, best = fastest([...all, lap]), entered = best.some((l) => l.ms === lap.ms && l.at === lap.at);
 	return { saved: entered ? { ...s, laps: { track: TRACK, best } } : s, entered, best: !all.length || lap.ms < all[0].ms };
+}
+
+/** The Sushi Stand game in progress as it now stands, or none once it is finished or started over. */
+export function keepGame(s: Saved, game: Game | null): Saved {
+	const { sushi: _, ...rest } = s;
+	return game ? { ...rest, sushi: game } : rest;
 }
 
 /** A finished Sushi Stand game: whether it `entered` the top ten, and whether it is a personal `best`, more than every other. */

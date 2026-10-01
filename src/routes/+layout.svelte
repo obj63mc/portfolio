@@ -103,6 +103,7 @@
 	The Join and Paused cards (buildout ticket 09): the engine opens them with showModal(), so a page without it, or without
 	JavaScript, never shows them. The cursor canvas is a manual popover, in the top layer with the cards: the engine raises
 	it over each prop card, so a locked cursor can reach the card's Close, and leaves these two above it, dimming the scene.
+	On touch a prop card stays above it too, its controls the finger's.
 -->
 <dialog class="gate join" aria-labelledby="join-title" bind:this={join}>
 	<!-- The daylight window (Joe, 2026-09-30): the skyline art is in art/sources/brand/. -->

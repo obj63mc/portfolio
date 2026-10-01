@@ -1,8 +1,10 @@
-// Sushi Stand's rules (src/lib/sushi/rules.ts) and its saved top ten (saved.ts), with fixed dice.
+// Sushi Stand's rules (src/lib/sushi/rules.ts), its saved top ten and its game left unfinished (saved.ts, sushi/game.ts),
+// with fixed dice.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addStand, merge, read, type Saved } from '../src/lib/saved.ts';
-import { conditions, dinner, dollars, lunch, market, priceRate, profit, serve, total, variety, type Item } from '../src/lib/sushi/rules.ts';
+import { addStand, keepGame, merge, read, type Saved } from '../src/lib/saved.ts';
+import { readGame, type Game } from '../src/lib/sushi/game.ts';
+import { FISH, conditions, dinner, dollars, lunch, market, priceRate, profit, serve, total, variety, type Item } from '../src/lib/sushi/rules.ts';
 
 /** Dice that roll `xs` in turn, over and over. */
 const dice = (...xs: number[]) => {
@@ -83,4 +85,73 @@ test('the stand top ten: most profit first, ten at most, absent until the first 
 	const other = { ...none, stands: [{ name: 'Other tab', profit: 5000, at: 50 }] };
 	assert.equal(merge(other, s).stands?.[0].name, 'Other tab');
 	assert.deepEqual(read(JSON.stringify({ v: 1, stands: [{ name: 'x'.repeat(25), profit: 1, at: 1 }, { name: 'ok', profit: 1.5, at: 1 }] })).stands, undefined);
+});
+
+/** A game left on day 2, pricing dinner: day 1 finished, tuna on the menu, lunch sold. */
+const game = (o: Partial<Game> = {}): Game => ({
+	name: 'Maki Moves',
+	dayNo: 2,
+	step: { is: 'price', meal: 'dinner' },
+	today: { weather: 'nice', happening: 'review', isd: false },
+	prices: market(dice(0.5)),
+	order: Object.fromEntries(FISH.map((f) => [f.id, f.id === 'tuna' ? { lbs: 2, price: 2.5 } : { lbs: 0, price: 0 }])) as Game['order'],
+	items: [tuna({ left: 12, price: 2.5, golden: 1.3 })],
+	mix: 5 / 6,
+	spent: 26,
+	sold: { lunch: [{ id: 'tuna', pieces: 48, sales: 120 }], dinner: [] },
+	boosting: true,
+	boost: { special: true, ads: false, discount: false },
+	days: [{ spent: 24, lunch: [{ id: 'tuna', pieces: 30, sales: 60 }], dinner: [{ id: 'tuna', pieces: 27, sales: 54 }], boost: { special: false, ads: false, discount: false }, left: 3 }],
+	...o
+});
+const stored = (g: unknown) => JSON.parse(JSON.stringify(g)) as unknown;
+
+test('a game left unfinished reads back as it was kept, at any of a day\'s steps, with nothing else carried', () => {
+	assert.deepEqual(readGame(stored(game())), game());
+	const day1 = { days: [], dayNo: 1 };
+	for (const g of [
+		game({ ...day1, step: { is: 'outlook' }, items: [] }),
+		game({ ...day1, step: { is: 'market' }, items: [], boosting: null }),
+		game({ step: { is: 'sales', meal: 'lunch' } }),
+		game({ step: { is: 'boost' } }),
+		game({ dayNo: 1, step: { is: 'day' } })
+	])
+		assert.deepEqual(readGame(stored(g)), g, g.step.is);
+	assert.deepEqual(readGame({ ...game(), extra: 1, step: { is: 'boost', meal: 'lunch' } }), game({ step: { is: 'boost' } }));
+});
+
+test('a kept game out of shape, or that does not add up, is no game', () => {
+	const bad: [string, unknown][] = [
+		['not an object', 'game'],
+		['no name', game({ name: '  ' })],
+		['a name too long', game({ name: 'x'.repeat(25) })],
+		['a sixth day', game({ dayNo: 6 })],
+		['half a day', { ...game(), dayNo: 1.5 }],
+		['a step the game has not', { ...game(), step: { is: 'service', meal: 'lunch' } }],
+		['a price step with no meal', { ...game(), step: { is: 'price' } }],
+		['a fish with no market price', { ...game(), prices: { tuna: 12 } }],
+		['pounds below nothing', { ...game(), order: { ...game().order, tuna: { lbs: -1, price: 2 } } }],
+		['a fish the market has not', { ...game(), items: [{ ...tuna(), id: 'cod' }] }],
+		['a mix that is no number', game({ mix: NaN })],
+		['unknown weather', { ...game(), today: { weather: 'snow', happening: 'review', isd: false } }],
+		['a boost half answered', { ...game(), boost: { special: true } }],
+		['past the market with no menu', game({ items: [] })],
+		['a day short', game({ days: [] })],
+		['results with no day behind them', game({ step: { is: 'day' } })],
+		['a day out of shape', { ...game(), days: [{ spent: 1 }] }]
+	];
+	for (const [what, g] of bad) assert.equal(readGame(stored(g)), null, what);
+});
+
+test('the kept game: stored with the rest, a bad one dropped alone, this tab\'s the one a write stores, gone once cleared', () => {
+	const none = read(null);
+	assert.equal('sushi' in none, false);
+	const kept = keepGame({ ...none, sound: false }, game());
+	assert.deepEqual(read(JSON.stringify(kept)), kept);
+	assert.deepEqual(read(JSON.stringify({ ...kept, sushi: { ...game(), dayNo: 9 } })), { ...none, sound: false });
+	// Another tab's write of something else leaves this tab's game as it is; this tab's clearing clears it there.
+	const later = keepGame(kept, game({ step: { is: 'boost' } }));
+	assert.deepEqual(merge(kept, later).sushi?.step, { is: 'boost' });
+	assert.equal('sushi' in merge(kept, keepGame(later, null)), false);
+	assert.equal('sushi' in keepGame(none, null), false);
 });

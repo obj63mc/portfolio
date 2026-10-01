@@ -18,7 +18,7 @@ const brands = [
 ] as const;
 type Brand = (typeof brands)[number][0];
 const builtSite = new Set(['bacardi', 'grey-goose']);
-// A bottle plays its brand's homepage (art/sources/videos/beer and liquor), and its card's only copy is its line, under
+// A bottle plays its brand's homepage (art/sources/videos/beer and liquor, `npm run videos`), and its card's only copy is its line, under
 // the video. `link`, where the site is still up, adds a See More link to it under the line.
 // TODO Joe: the spirits' lines (placeholders), and Bacardi's and Grey Goose's photos or videos.
 const homepage: Partial<Record<Brand, { file: string; line: string; link?: string }>> = {

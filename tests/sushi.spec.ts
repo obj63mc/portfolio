@@ -1,6 +1,7 @@
 // Sushi Stand (Joe, 2026-09-30) over the built site: the Grand Basin koi's door opens the game, the engine stepping away
 // while it is up and taking the page back at the koi; and a whole game, five days under reduced motion, lands in the
-// visitor's own top ten. The browser refuses the pointer lock here, so the drawn cursor follows the mouse.
+// visitor's own top ten; a game left unfinished carries on after a reload, until Start over drops it. The browser
+// refuses the pointer lock here, so the drawn cursor follows the mouse.
 import { test, expect, type Page } from '@playwright/test';
 
 test.beforeEach(({ page }) =>
@@ -68,8 +69,64 @@ test('five days of Sushi Stand, then the stand heads the top ten, kept on the de
 	await expect(page.getByRole('heading', { name: 'Congrats!' })).toBeVisible();
 	await page.getByRole('button', { name: 'Your top 10' }).click();
 	await expect(page.locator('.top li.this')).toContainText('MakiMoves');
-	const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('stl-portfolio') ?? '{}').stands);
-	expect(stored).toHaveLength(1);
-	expect(stored[0].name).toBe('MakiMoves');
+	const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('stl-portfolio') ?? '{}'));
+	expect(stored.stands).toHaveLength(1);
+	expect(stored.stands[0].name).toBe('MakiMoves');
+	expect(stored.sushi, 'a finished game is no longer kept').toBeUndefined();
+	await context.close();
+});
+
+test('a game left unfinished carries on where it was left; Start over asks first, then drops it', async ({ browser }) => {
+	const context = await browser.newContext({ reducedMotion: 'reduce' });
+	const page = await context.newPage();
+	const at = (step: string) => expect(page.locator('.sushi')).toHaveAttribute('data-step', step);
+	/** The step's gold button: on to the next. */
+	const next = () => page.locator('.board .cta .primary').click();
+	const kept = () => page.evaluate(() => JSON.parse(localStorage.getItem('stl-portfolio') ?? '{}').sushi);
+	await page.goto('/sushi-stand');
+	await at('how');
+	await expect(page.locator('.restart')).toHaveCount(0);
+	await next();
+	await page.locator('#stand-name').fill('Maki Moves');
+	await next();
+	await at('outlook');
+	await expect(page.locator('.restart')).toBeVisible();
+	await next();
+	await at('market');
+	// The first fish's pounds, kept as they are ordered, before the step is left.
+	const fish = page.locator('.cards .card').first();
+	for (let i = 0; i < 2; i++) await fish.locator('.stepper .round').last().click();
+	await expect.poll(async () => Object.values<{ lbs: number }>((await kept()).order)[0].lbs).toBe(2);
+	await page.reload();
+	await at('market');
+	await expect(page.locator('.tracker strong')).toHaveText('Maki Moves');
+	await expect(fish.locator('.stepper input')).toHaveValue('2');
+	await next();
+	await at('price');
+	await next();
+	await at('sales');
+	const sales = await page.locator('.board .result').textContent();
+	await page.reload();
+	await at('sales');
+	await expect(page.locator('.board .result')).toHaveText(sales!);
+
+	const card = page.locator('.restart-card');
+	await page.locator('.restart').click();
+	await expect(card).toBeVisible();
+	await card.locator('button.secondary').click();
+	await expect(card).toBeHidden();
+	await at('sales');
+	expect(await kept()).toBeTruthy();
+	// Esc keeps the game too, whatever the card was last answered.
+	await page.locator('.restart').click();
+	await page.keyboard.press('Escape');
+	await at('sales');
+	await page.locator('.restart').click();
+	await card.locator('button.primary').click();
+	await at('name');
+	await expect(page.locator('.restart')).toHaveCount(0);
+	expect(await kept()).toBeUndefined();
+	await page.reload();
+	await at('how');
 	await context.close();
 });

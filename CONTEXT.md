@@ -19,7 +19,7 @@ An enterable place inside a district, such as Saint Louis University, The Foundr
 _Avoid_: building, location, portal
 
 **Sushi Stand**:
-The game behind the koi swimming in Forest Park's Grand Basin: five days running a sushi stand, carried over from Sapporo's 2018 Sushi Star. It fills the whole window like a scene, but it is a page of its own with no scene or room; its scores are the visitor's own top ten, kept on the device like laps.
+The game behind the koi swimming in Forest Park's Grand Basin: five days running a sushi stand, carried over from Sapporo's 2018 Sushi Star. It fills the whole window like a scene, but it is a page of its own with no scene or room; its scores are the visitor's own top ten, kept on the device like laps, and so is a game left unfinished, which carries on from where it was left.
 _Avoid_: mini-game, Sushi Star, level
 
 **Sub-scene**:

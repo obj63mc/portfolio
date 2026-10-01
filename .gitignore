@@ -149,6 +149,9 @@ build/
 # wrangler dev state
 .wrangler/
 
+# The video sources: kept in the R2 bucket behind the media host, and fetched from it (npm run videos pull; art/README.md)
+art/sources/videos/
+
 # Playwright smoke output, and the consent smoke's build with a test GA ID (playwright.config.ts)
 test-results/
 .smoke/

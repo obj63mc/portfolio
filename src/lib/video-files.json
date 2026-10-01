@@ -1,0 +1,27 @@
+{
+	"host": "https://media.barmadden.com",
+	"bucket": "barmadden-media",
+	"files": {
+		"anchor-brewing-homepage-2026-09-30.mp4": "videos/beer/anchor-brewing-homepage-2026-09-30.044e41cc.mp4",
+		"bud-light-homepage-2026-09-30.mp4": "videos/beer/bud-light-homepage-2026-09-30.9b7a8418.mp4",
+		"camarena-home-margarita-2026-09-30.mp4": "videos/liquor/camarena-home-margarita-2026-09-30.e57cabee.mp4",
+		"cohiba-homepage-2026-09-30.mp4": "videos/cigar/cohiba-homepage-2026-09-30.e6b3b626.mp4",
+		"ej-brandy-home-collection-vsop-2026-09-30.mp4": "videos/liquor/ej-brandy-home-collection-vsop-2026-09-30.d8380587.mp4",
+		"fastfive-demo-full-1024x768.mp4": "videos/universal/fastfive-demo-full-1024x768.4a9f5f0a.mp4",
+		"la-gloria-cubana-homepage-2026-09-30.mp4": "videos/cigar/la-gloria-cubana-homepage-2026-09-30.08bb3c1d.mp4",
+		"lorax-demo-tour-1280x800.mp4": "videos/universal/lorax-demo-tour-1280x800.d0238caa.mp4",
+		"macanudo-homepage-2026-09-30.mp4": "videos/cigar/macanudo-homepage-2026-09-30.ac4a0d9d.mp4",
+		"moosylvania-2019-home-work-cigar-world-2026-09-30.mp4": "videos/moosylvania/moosylvania-2019-home-work-cigar-world-2026-09-30.c69e7b21.mp4",
+		"moosylvania-2022-home-work-cigar-world-2026-09-30.mp4": "videos/moosylvania/moosylvania-2022-home-work-cigar-world-2026-09-30.78368a43.mp4",
+		"moosylvania-2024-home-work-cigar-world-2026-09-30.mp4": "videos/moosylvania/moosylvania-2024-home-work-cigar-world-2026-09-30.ab69d1bc.mp4",
+		"new-amsterdam-home-find-your-wins-2026-09-30.mp4": "videos/liquor/new-amsterdam-home-find-your-wins-2026-09-30.ce0f164a.mp4",
+		"partagas-homepage-2026-09-30.mp4": "videos/cigar/partagas-homepage-2026-09-30.93aaf8c0.mp4",
+		"paypal-credit-ux-2026-09-30.mp4": "videos/paypal/paypal-credit-ux-2026-09-30.d8314f67.mp4",
+		"pink-whitney-home-products-750ml-2026-09-30.mp4": "videos/liquor/pink-whitney-home-products-750ml-2026-09-30.b246f691.mp4",
+		"punch-homepage-2026-09-30.mp4": "videos/cigar/punch-homepage-2026-09-30.24958a7a.mp4",
+		"rumchata-home-peppermint-bark-2026-09-30.mp4": "videos/liquor/rumchata-home-peppermint-bark-2026-09-30.2f94e823.mp4",
+		"sapporo-homepage-2026-09-30.mp4": "videos/beer/sapporo-homepage-2026-09-30.1e8cbe47.mp4",
+		"soonhari-homepage-2026-09-30-4k.mp4": "videos/beer/soonhari-homepage-2026-09-30-4k.7263b74a.mp4",
+		"swath-demo-tour-1280x800.mp4": "videos/universal/swath-demo-tour-1280x800.f866075e.mp4"
+	}
+}

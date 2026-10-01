@@ -51,8 +51,8 @@ export interface Prop {
 	 */
 	art?: string[];
 	/**
-	 * A video its card plays, a file in art/sources/videos/universal, beer or liquor (`VIDEOS`), drawn onto `screen` in the scene while
-	 * it plays; with no screen it plays in the card alone.
+	 * A video its card plays, a file in a folder of art/sources/videos, all of which `npm run videos` puts on the media
+	 * host (`VIDEOS`), drawn onto `screen` in the scene while it plays; with no screen it plays in the card alone.
 	 */
 	video?: { file: string; screen?: Rect; captions?: string };
 }

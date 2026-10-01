@@ -16,6 +16,12 @@ in Svelte and TypeScript as Sushi Stand, behind a koi swimming in Forest Park's 
   original "Sushi" script with STAND set in the headline face. No image model edit was needed.
 - Top ten: the visitor's own, in `saved.ts` (`stands`), shown like the lap board. No global board, share links, sweeps
   or official rules.
+- A game left unfinished: kept in `saved.ts` (`sushi`, its shape and read rule in `src/lib/sushi/game.ts`) at every
+  change from the first day's outlook on, and carried on from its step when the page next opens; a service's film is
+  kept as its sales. Finishing the five days drops it. Start over, the round arrow in the header while a day is under
+  way, asks first, then drops it for a new game from its name (Joe, 2026-09-30).
+- The skyline stands still on a phone: a layer hung from the top at the large viewport's height, its foot at the small
+  viewport's, the pavement running on below when the toolbars go; the stand beside the board is hung the same way.
 - The koi: drawn on the scene canvas (`props.ts` `drawKoi`, `motion.ts` `koi`), in the new Forest Park district's one
   venue, whose door is `/sushi-stand`. The engine `suspend`s on that page (room left, lock let go, canvases away) and
   `show` lands back at the koi, a locked cursor behind the Paused card.

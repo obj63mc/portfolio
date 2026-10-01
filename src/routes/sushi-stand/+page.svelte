@@ -4,12 +4,15 @@
 	// happy hour's six-pack is drawn here (six-pack.svg). Its rules are src/lib/sushi/rules.ts; its other art is the
 	// original's (src/lib/sushi/img), the stand's sign and the logo lettered here rather than in the pictures. The original's global leaderboard is the visitor's own top ten, kept like the Carondelet laps
 	// (saved.svelte.ts). The engine steps away while this page is up (+layout.svelte), and its exit lands back at the koi.
-	import { onMount, tick } from 'svelte';
+	// A game left unfinished is kept with them (sushi/game.ts) and carried on from where it was left; Start over, in the
+	// header, drops it for a new one.
+	import { onMount, tick, untrack } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
 	import { saved } from '$lib/saved.svelte';
 	import { sound } from '$lib/sound.svelte';
-	import { NAME_MAX, type Stand } from '$lib/saved';
+	import type { Stand } from '$lib/saved';
 	import { GAME } from '$lib/scenes';
+	import { NAME_MAX, type Game, type Kept, type Meal } from '$lib/sushi/game';
 	import {
 		BOOST_COST, DAYS, FISH, PIECES_PER_LB, conditions, dinner, dollars, expenses, lunch, market, pieceCost, profit, total,
 		type Boost, type Conditions, type Day, type FishId, type Item, type Sold
@@ -21,20 +24,11 @@
 	const IMG = import.meta.glob<string>('/src/lib/sushi/img/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 	const img = (name: string) => IMG[`/src/lib/sushi/img/${name}.webp`];
 
-	type Meal = 'lunch' | 'dinner';
-	/** Where the game is: the how-to and the name, then each day's steps, then the five days' results and the top ten. */
-	type Step =
-		| { is: 'how' }
-		| { is: 'name' }
-		| { is: 'outlook' }
-		| { is: 'market' }
-		| { is: 'price'; meal: Meal }
-		| { is: 'service'; meal: Meal }
-		| { is: 'sales'; meal: Meal }
-		| { is: 'boost' }
-		| { is: 'day' }
-		| { is: 'final' }
-		| { is: 'board' };
+	/**
+	 * Where the game is: the how-to and the name, then each day's steps (those a game can be left at, and a service's
+	 * film), then the five days' results and the top ten.
+	 */
+	type Step = { is: 'how' } | { is: 'name' } | Kept | { is: 'service'; meal: Meal } | { is: 'final' } | { is: 'board' };
 
 	/** The tracker's six steps of a day, by the step each lights. */
 	const STAGES = ['Fish market', 'Price lunch', 'Lunch service', 'Boost sales', 'Price dinner', 'Dinner service'];
@@ -82,18 +76,45 @@
 	/** This game's entry in the top ten, once finished, and whether it was a new best. */
 	let finished = $state<{ stand: Stand; best: boolean } | null>(null);
 	let heading = $state<HTMLElement>();
+	/** Start over's card, asking first: a game in progress is five days' work. */
+	let restart = $state<HTMLDialogElement>();
 	/** The sound engine told of a press on this page, which it needs once when no Join came first. */
 	let woke = false;
 
+	/** The step a game is kept at: none outside a day's steps, and a service's film as its sales, made as it started. */
+	const kept = (s: Step): Kept | null =>
+		s.is === 'how' || s.is === 'name' || s.is === 'final' || s.is === 'board' ? null : s.is === 'service' ? { is: 'sales', meal: s.meal } : s;
+	/** A day is under way: the game is kept as it stands, and can be started over. */
+	const playing = $derived(!!kept(step));
 	const night = $derived(step.is === 'boost' || step.is === 'day' || ((step.is === 'price' || step.is === 'service' || step.is === 'sales') && step.meal === 'dinner'));
 	const bought = $derived(FISH.reduce((s, f) => s + prices[f.id] * order[f.id].lbs, 0));
 	const standName = $derived(name.trim() || 'Sushi Stand');
 	const fishOf = (id: FishId) => FISH.find((f) => f.id === id)!;
 
 	// Its music plays while the page is up, the restaurant's bed under a service and its sales (sound.svelte.ts `game`).
+	// A game left unfinished carries on from its step, once the page has mounted: the prerendered page opens on the how-to.
 	onMount(() => {
 		sound.game(true);
+		// A copy: the page changes its own, and what is stored changes only by a write.
+		if (saved.game) resume(structuredClone(saved.game));
 		return () => sound.game(false);
+	});
+
+	/** Picks a kept game up where it was left, with none of the step's sounds but a service's bed. */
+	function resume(g: Game) {
+		({ name, dayNo, today, prices, order, items, mix, spent, sold, boosting, boost } = g);
+		days = g.days.map((day) => ({ day, profit: profit(day) }));
+		step = g.step;
+		sound.service(g.step.is === 'sales');
+	}
+
+	// The game is kept as it stands at every change, a pound ordered or a price set included, never on the way out
+	// (saved.svelte.ts).
+	$effect(() => {
+		const at = kept(step);
+		if (!at) return;
+		const game: Game = $state.snapshot({ name, dayNo, step: at, today, prices, order, items, mix, spent, sold, boosting, boost, days: days.map((d) => d.day) });
+		untrack(() => (saved.game = game));
 	});
 
 	/**
@@ -116,7 +137,15 @@
 		heading?.focus();
 	}
 
+	/** Start over's card, its answer cleared: Esc leaves the last one standing. */
+	function openRestart() {
+		if (!restart) return;
+		restart.returnValue = '';
+		restart.showModal();
+	}
+
 	function newGame() {
+		saved.game = null;
 		name = '';
 		dayNo = 1;
 		days = [];
@@ -174,6 +203,7 @@
 			dayNo++;
 			return openDay();
 		}
+		saved.game = null;
 		const stand = { name: standName, profit: days.reduce((s, d) => s + d.profit, 0), at: Date.now() };
 		finished = { stand, best: saved.stand(stand) };
 		void go({ is: 'final' });
@@ -266,11 +296,26 @@
 				<span>{step.is === 'final' || step.is === 'board' ? 'Final results' : `Day ${dayNo} / ${DAYS}`}</span>
 			</p>
 		{/if}
+		{#if playing}
+			<button type="button" class="restart" aria-haspopup="dialog" onclick={openRestart}>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5M4.5 4.5v4h4" /></svg>
+				<span>Start over</span>
+			</button>
+		{/if}
 		<a class="exit" href="/#{GAME}">
 			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
 			<span>Back to Forest Park</span>
 		</a>
 	</header>
+	<!-- Start over asks first, then drops the kept game for a new one, from its name. -->
+	<dialog class="restart-card" aria-labelledby="restart-title" bind:this={restart} onclose={(e) => e.currentTarget.returnValue === 'restart' && newGame()}>
+		<h2 id="restart-title">Start over?</h2>
+		<p>{standName} closes for good, and you open a new stand on day&nbsp;1.</p>
+		<form method="dialog">
+			<button class="primary" value="restart">Start over</button>
+			<button class="secondary" value="">Keep playing</button>
+		</form>
+	</dialog>
 
 	{#if step.is === 'service'}
 		{@const meal = step.meal}
@@ -556,19 +601,44 @@
 	 */
 	.sushi {
 		--board-pad: clamp(1.25rem, 0.8rem + 2vw, 2.25rem);
+		--skyline: url('$lib/sushi/img/day-bg.webp');
+		--pavement: #424242;
+		/* What a phone's toolbars take when they show: the large viewport less the small. */
+		--toolbars: calc(100lvh - 100svh);
 		position: fixed;
 		inset: 0;
 		z-index: 0;
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
-		background: url('$lib/sushi/img/day-bg.webp') center bottom / max(100%, 1000px) auto no-repeat fixed, var(--sky);
+		background: var(--sky);
 		color: var(--ivory);
 		font-family: var(--body);
 		animation: open 0.6s ease-out;
 
+		/*
+		 * The skyline stands still (Joe, 2026-09-30): the page itself is as tall as the window is at the moment, which a
+		 * phone's toolbars change as it scrolls, so the skyline is a layer of its own, hung from the top at the large
+		 * viewport's height with its foot at the small viewport's, where it shows whole with the toolbars up; when they
+		 * go, its pavement runs on below it.
+		 */
+		&::before {
+			content: '';
+			position: fixed;
+			inset-block-start: 0;
+			inset-inline: 0;
+			z-index: -1;
+			block-size: 100lvh;
+			background:
+				var(--skyline) center bottom var(--toolbars) / max(100%, 1000px) auto no-repeat,
+				linear-gradient(var(--pavement), var(--pavement)) bottom / 100% calc(var(--toolbars) + 1px) no-repeat;
+			pointer-events: none;
+		}
+
 		&.night {
-			background: url('$lib/sushi/img/night-bg.webp') center bottom / max(100%, 1000px) auto no-repeat fixed, #56626a;
+			--skyline: url('$lib/sushi/img/night-bg.webp');
+			--pavement: #282828;
+			background: #56626a;
 		}
 
 		@media (prefers-reduced-motion: reduce) {
@@ -657,16 +727,21 @@
 		}
 	}
 
-	.exit {
+	/* The header's two round buttons, at its end: Start over while a day is under way, and the way out. */
+	:is(.exit, .restart) {
 		display: grid;
 		place-items: center;
 		flex: none;
 		margin-inline-start: auto;
 		inline-size: 2.75rem;
 		block-size: 2.75rem;
+		padding: 0;
+		border: 0;
 		border-radius: 50%;
+		background: none;
 		color: var(--ivory);
 		box-shadow: inset 0 0 0 2px rgb(255 244 212 / 0.5);
+		cursor: pointer;
 
 		&:hover {
 			background: var(--ivory);
@@ -685,6 +760,7 @@
 			stroke: currentColor;
 			stroke-width: 2.4;
 			stroke-linecap: round;
+			stroke-linejoin: round;
 		}
 
 		& span {
@@ -694,6 +770,48 @@
 			overflow: hidden;
 			clip-path: inset(50%);
 			white-space: nowrap;
+		}
+	}
+
+	.restart + .exit {
+		margin-inline-start: 0;
+	}
+
+	/* Start over's card: a night board like the game's, over the dimmed page. */
+	.restart-card {
+		box-sizing: border-box;
+		padding: var(--board-pad);
+		border: 2px solid rgb(255 244 212 / 0.3);
+		border-radius: 0.75rem;
+		background: var(--night);
+		color: var(--ivory);
+		box-shadow: 0 0 0 7px var(--night), 0 1.375rem 2.75rem rgb(0 0 0 / 0.3);
+
+		& h2 {
+			margin-block: 0 0.5rem;
+			color: var(--gold);
+			font-size: 2rem;
+			letter-spacing: 0.03em;
+			text-transform: uppercase;
+		}
+
+		& p {
+			margin-block: 0 1.5rem;
+			line-height: 1.55;
+		}
+
+		& form {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1rem 1.25rem;
+			align-items: center;
+		}
+
+		/* Both at the card's size, as a prop card's buttons are. */
+		& .primary {
+			padding-block: 0.5rem 0.55rem;
+			padding-inline: 1.375rem;
+			font-size: 1.1875rem;
 		}
 	}
 
@@ -715,17 +833,24 @@
 	}
 
 	/* The stand at its sign on the skyline's pavement, beside the board on a wide window; the name step shows it on the board. */
-	/* Its feet halfway down the skyline's pavement, the bottom 78 of the picture's 1000 × 687 px, whatever the board scrolls. */
+	/*
+	 * Its feet halfway down the skyline's pavement, the bottom 78 of the picture's 1000 × 687 px, whatever the board scrolls:
+	 * hung from the top at the small viewport's height, as the skyline is, so it stands still with it.
+	 */
 	.side {
 		display: none;
 		position: fixed;
-		inset-block-end: calc(max(100vw, 1000px) * 0.039);
+		inset-block-start: 0;
 		inset-inline-start: max(1rem, (100vw - 76rem) / 2 + 1rem);
+		box-sizing: border-box;
 		inline-size: 19rem;
+		block-size: 100svh;
+		padding-block-end: calc(max(100vw, 1000px) * 0.039);
+		align-content: end;
 		pointer-events: none;
 
 		@media (width >= 64rem) {
-			display: block;
+			display: grid;
 		}
 	}
 

@@ -256,7 +256,14 @@ const player = (card: string) => {
 test("the meeting TV: its card holds the video with the site's controls, loaded only when played", () => {
 	const tv = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-meeting-tv-title"[\s\S]*?<\/dialog>/)![0];
 	const video = player(tv);
-	assert.match(video, /src="[^"]*\/_app\/immutable\/assets\/fastfive-demo-full-1024x768\.[^"]*\.mp4"/);
+	assert.match(video, /src="\/media\/videos\/universal\/fastfive-demo-full-1024x768\.[0-9a-f]{8}\.mp4"/);
+});
+
+// The videos are on the media host (Joe, 2026-09-30), not in the build: a local build names its own /media, and the
+// only films built in are Sushi Stand's two short services.
+test('videos: none of the cards\' or the screen\'s is in the build', () => {
+	const films = readdirSync(new URL('../build/_app/immutable/assets/', import.meta.url)).filter((f) => f.endsWith('.mp4'));
+	assert.deepEqual(films.map((f) => f.split('.')[0]).sort(), ['dinner', 'lunch']);
 });
 
 test("the bottles: each card holds its brand's homepage video with the site's controls, loaded only when played", () => {
@@ -269,7 +276,7 @@ test("the bottles: each card holds its brand's homepage video with the site's co
 	]) {
 		const card = bar.match(new RegExp(`<dialog[^>]*aria-labelledby="card-bottle-${id}-title"[\\s\\S]*?</dialog>`))![0];
 		const video = player(card);
-		assert.match(video, new RegExp(`src="[^"]*/_app/immutable/assets/${file}\\.[^"]*\\.mp4"`), id);
+		assert.match(video, new RegExp(`src="/media/videos/(beer|liquor)/${file}\\.[0-9a-f]{8}\\.mp4"`), id);
 		// A video card closes by its round X, not a Close at the foot.
 		assert.ok(/<form method="dialog" class="x[\s"]/.test(card) && !card.includes('>Close</button>'), id);
 	}
@@ -294,12 +301,13 @@ test('cards: every card is labelled and closes natively', () => {
 	assert.match(page('index.html'), /<noscript>[\s\S]*dialog \{ display: block/);
 });
 
-test('headers: one CSP per page, allowing self, the GA hosts and the socket, with every inline script hashed', () => {
+test('headers: one CSP per page, allowing self, the GA hosts, the socket and the media host, with every inline script hashed', () => {
 	const expected: Record<string, string[]> = {
 		'default-src': ["'self'"],
 		'script-src': ["'self'", 'https://www.googletagmanager.com'],
 		'connect-src': ["'self'", 'wss://barmadden.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com'],
-		'img-src': ["'self'", 'https://*.google-analytics.com', 'https://*.googletagmanager.com']
+		'img-src': ["'self'", 'https://*.google-analytics.com', 'https://*.googletagmanager.com'],
+		'media-src': ["'self'", 'https://media.barmadden.com']
 	};
 	for (const file of files) {
 		const html = page(file);

@@ -141,6 +141,19 @@ const centre = async (l: Locator) => {
 	const b = (await l.boundingBox())!;
 	return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
 };
+/**
+ * The cursor canvas, counting from here on, as `data-lifts`, each time it is put back on top of the top layer: over a
+ * prop card as it opens. A modal card leaves the canvas inert, so hit testing can't tell which of the two is on top.
+ */
+const lifts = async (page: Page) => {
+	const canvas = page.locator('canvas.cursors');
+	await canvas.evaluate((c: HTMLElement) =>
+		c.addEventListener('beforetoggle', (e) => {
+			if ((e as ToggleEvent).newState === 'open') c.dataset.lifts = String(Number(c.dataset.lifts ?? 0) + 1);
+		})
+	);
+	return canvas;
+};
 /** The viewport's centre, CSS px. */
 const middle = (page: Page) => ({ x: page.viewportSize()!.width / 2, y: page.viewportSize()!.height / 2 });
 /** Just inside a sub-scene's exit door (ticket 11): a cursor's height, 40 world px at the render scale, below its middle. */
@@ -305,9 +318,12 @@ test("a card's video: the locked cursor over it shows the site's controls, marks
 		at = p;
 	};
 	// Opened by a click, which unlike keyboard focus doesn't glide the camera, carrying the locked cursor with it.
+	const canvas = await lifts(page);
 	await page.locator('[data-prop="bottle-anchor"] > button').evaluate((b: HTMLElement) => b.click());
 	const card = page.locator('[data-prop="bottle-anchor"] dialog'), player = card.locator('.player');
 	await expect(card).toBeVisible();
+	// The cursor canvas goes over the card, for the drawn cursor to reach into it.
+	await expect(canvas).toHaveAttribute('data-lifts', '1');
 	const mute = player.getByRole('button', { name: 'Mute' });
 	await moveTo(await centre(mute));
 	await expect(player).toHaveClass(/(^|\s)hot(\s|$)/);
@@ -317,6 +333,12 @@ test("a card's video: the locked cursor over it shows the site's controls, marks
 	const box = (await player.boundingBox())!;
 	await moveTo({ x: box.x + box.width / 2, y: box.y - 40 });
 	await expect(player).not.toHaveClass(/(^|\s)hot(\s|$)/);
+	// Closed, a video that plays in its card alone stops and lets go of its download: nothing of it is held, and it
+	// starts over the next time its card opens.
+	const video = card.locator('video'), state = () => video.evaluate((v: HTMLVideoElement) => ({ paused: v.paused, held: v.readyState, at: v.currentTime }));
+	await expect.poll(async () => (await state()).held).toBeGreaterThan(0);
+	await card.evaluate((d: HTMLDialogElement) => d.close());
+	await expect.poll(state).toEqual({ paused: true, held: 0, at: 0 });
 });
 
 test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {
@@ -542,10 +564,13 @@ test.describe('a phone, with no mouse or trackpad', () => {
 
 		// A tap on a prop moves the cursor there and opens its card; a tap on Close closes it.
 		const welcome = page.locator('[data-prop="welcome"] > button'), card = page.locator('[data-prop="welcome"] dialog');
-		const at = await centre(welcome);
+		const at = await centre(welcome), canvas = await lifts(page);
 		await page.touchscreen.tap(at.x, at.y);
 		await expect(card).toBeVisible();
 		await expect.poll(() => off(page, at)).toBeLessThan(5);
+		// The cursor holds still there while the card is open, and the card stays over it: on touch the cursor canvas is not
+		// put over a card, so it never sits on a card's video.
+		await expect(canvas).not.toHaveAttribute('data-lifts');
 		const close = await centre(card.locator('form[method="dialog"] button'));
 		await page.touchscreen.tap(close.x, close.y);
 		await expect(card).toBeHidden();

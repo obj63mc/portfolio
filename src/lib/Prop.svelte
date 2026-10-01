@@ -27,9 +27,19 @@
 		cardOpen(prop.id);
 	}
 
-	// A video with no screen in the scene (a Side Project bottle's) plays in its card alone, so it stops when the card closes.
+	// A video with no screen in the scene (a Side Project bottle's) plays in its card alone, so it stops when the card closes
+	// and lets go of its download (Joe, 2026-09-30). Served whole by the site's own host, which answers no byte range, a
+	// paused video held its connection half read, and a few of them left the next card's video waiting behind them; from
+	// the media host (videos.ts) it still has no call to go on downloading. Loaded with no source it drops what it held;
+	// given its source back, with `preload="none"`, it fetches nothing until it next plays, from the start. (Chrome loads a
+	// played video again at once if its source is left in place.)
 	function close() {
-		if (!prop.video?.screen) dialog?.querySelector('video')?.pause();
+		const video = dialog?.querySelector('video'), src = video?.getAttribute('src');
+		if (prop.video?.screen || !video || !src) return;
+		video.pause();
+		video.removeAttribute('src');
+		video.load();
+		video.setAttribute('src', src);
 	}
 </script>
 
