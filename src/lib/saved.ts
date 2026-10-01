@@ -3,6 +3,7 @@
 // the storage itself.
 import { KNOWN, isCosmetic } from './cosmetics.ts';
 import type { CosmeticId } from './scenes/types';
+import { isCatch, type Catch, type Lure } from './big-muddy/rules.ts';
 import { NAME_MAX, readGame, type Game } from './sushi/game.ts';
 
 /** The one localStorage key. */
@@ -38,6 +39,10 @@ export interface Saved {
 	stands?: Stand[];
 	/** The game of Sushi Stand left unfinished (sushi/game.ts); absent with none in progress. */
 	sushi?: Game;
+	/** The personal Big Muddy top ten, heaviest first; absent until a fish is caught. */
+	catches?: Catch[];
+	/** The Big Muddy lure earned (big-muddy/rules.ts); absent on the first. */
+	lure?: Exclude<Lure, 1>;
 	/** The analytics choice, absent until the visitor makes one. */
 	analytics?: 'granted' | 'denied';
 }
@@ -66,6 +71,15 @@ const richest = (stands: Stand[]) =>
 		.map(({ name, profit, at }) => ({ name, profit, at }));
 /** The stands field as stored: absent while there are none. */
 const standsField = (stands: Stand[]) => (stands.length ? { stands: richest(stands) } : {});
+/** The ten heaviest catches, heaviest first, then the deeper, then the earlier, without repeats. */
+const heaviest = (catches: Catch[]) =>
+	catches
+		.filter((c, i) => catches.findIndex((m) => m.at === c.at && m.fish === c.fish && m.lb === c.lb) === i)
+		.sort((a, b) => b.lb - a.lb || b.depth - a.depth || a.at - b.at)
+		.slice(0, 10)
+		.map(({ fish, lb, depth, at }) => ({ fish, lb, depth, at }));
+/** The catches field as stored: absent while there are none. */
+const catchesField = (catches: Catch[]) => (catches.length ? { catches: heaviest(catches) } : {});
 /** The worn cosmetic if it is one this build knows and it was earned, else none. */
 const wearable = (worn: unknown, earned: number[]) => (isCosmetic(worn) && earned.includes(worn) ? worn : 0);
 
@@ -94,14 +108,17 @@ export function read(text: string | null): Saved {
 		sound: typeof m.sound === 'boolean' ? m.sound : true,
 		...standsField(Array.isArray(m.stands) ? m.stands.filter(isStand) : []),
 		...(sushi && { sushi }),
+		...catchesField(Array.isArray(m.catches) ? m.catches.filter(isCatch) : []),
+		...(m.lure === 2 || m.lure === 3 || m.lure === 4 ? { lure: m.lure } : {}),
 		...(m.analytics === 'granted' || m.analytics === 'denied' ? { analytics: m.analytics } : {})
 	};
 }
 
 /**
  * What a write stores: this tab's state `mine` merged with what is `stored` now, which another tab may have written
- * since this one read it. Earned is a union and laps keep the fastest ten; worn, sound and the Sushi Stand game in
- * progress (or none) are this tab's, the last writer's, and so is the analytics choice once this tab has one.
+ * since this one read it. Earned is a union, laps keep the fastest ten, stands the richest and catches the heaviest;
+ * worn, sound, the Sushi Stand game in progress (or none) and the Big Muddy lure are this tab's, the last writer's, and
+ * so is the analytics choice once this tab has one.
  */
 export function merge(stored: Saved, mine: Saved): Saved {
 	const analytics = mine.analytics ?? stored.analytics;
@@ -110,6 +127,7 @@ export function merge(stored: Saved, mine: Saved): Saved {
 		earned: ids([...stored.earned, ...mine.earned]),
 		laps: { track: TRACK, best: fastest([...stored.laps.best, ...mine.laps.best]) },
 		...standsField([...(stored.stands ?? []), ...(mine.stands ?? [])]),
+		...catchesField([...(stored.catches ?? []), ...(mine.catches ?? [])]),
 		...(analytics && { analytics })
 	};
 }
@@ -139,4 +157,16 @@ export function keepGame(s: Saved, game: Game | null): Saved {
 export function addStand(s: Saved, stand: Stand) {
 	const all = s.stands ?? [], top = richest([...all, stand]), entered = top.some((t) => t.at === stand.at && t.name === stand.name);
 	return { saved: entered ? { ...s, stands: top } : s, entered, best: !all.length || stand.profit > all[0].profit };
+}
+
+/** A Big Muddy catch: whether it `entered` the top ten, and whether it is a personal `best`, heavier than every other. */
+export function addCatch(s: Saved, c: Catch) {
+	const all = s.catches ?? [], top = heaviest([...all, c]), entered = top.some((t) => t.at === c.at && t.fish === c.fish && t.lb === c.lb);
+	return { saved: entered ? { ...s, catches: top } : s, entered, best: !all.length || c.lb > all[0].lb };
+}
+
+/** The Big Muddy lure now held: stored from the second up, the first being where everyone starts. */
+export function keepLure(s: Saved, lure: Lure): Saved {
+	const { lure: _, ...rest } = s;
+	return lure === 1 ? rest : { ...rest, lure };
 }

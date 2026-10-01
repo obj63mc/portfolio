@@ -2,7 +2,8 @@
 // state for the engine, the sound module, analytics and the UI to read and change through it. The rules are saved.ts's.
 // Every change is written at once, merged over what another tab may have stored since, and never on unload; where storage
 // throws (blocked site data, a private window) the session runs from memory, with no message.
-import { KEY, addLap, addStand, fresh, gold, grant, keepGame, merge, read, type Lap, type Saved, type Stand } from './saved.ts';
+import { KEY, addCatch, addLap, addStand, fresh, gold, grant, keepGame, keepLure, merge, read, type Lap, type Saved, type Stand } from './saved.ts';
+import type { Catch, Lure } from './big-muddy/rules.ts';
 import type { Game } from './sushi/game.ts';
 import type { CosmeticId } from './scenes/types';
 
@@ -82,6 +83,23 @@ export const saved = {
 	/** A game in progress as it now stands, kept at every change; null once it is finished or started over. */
 	set game(game: Game | null) {
 		if (game || data.sushi) save(keepGame(data, game));
+	},
+	/** The Big Muddy top ten, heaviest first. */
+	get catches(): readonly Catch[] {
+		return data.catches ?? [];
+	},
+	/** Records a Big Muddy catch: written if it enters the top ten; true when it is a new personal best. */
+	caught(c: Catch) {
+		const a = addCatch(data, c);
+		if (a.entered) save(a.saved);
+		return a.best;
+	},
+	/** The Big Muddy lure held, the first until a catch earns the next. */
+	get lure(): Lure {
+		return data.lure ?? 1;
+	},
+	set lure(lure: Lure) {
+		if (lure !== (data.lure ?? 1)) save(keepLure(data, lure));
 	},
 	/** Records a completed lap at epoch ms `at`: written if it enters the top ten; true when it is a new personal best. */
 	lap(ms: number, at: number) {
