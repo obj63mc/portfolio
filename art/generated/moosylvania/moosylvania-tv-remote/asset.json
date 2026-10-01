@@ -1,0 +1,25 @@
+{
+  "id": "moosylvania-tv-remote",
+  "scene": "moosylvania",
+  "kind": "prop",
+  "file": "moosylvania/moosylvania-tv-remote/image.webp",
+  "world": {
+    "x": 1000,
+    "y": 4262,
+    "w": 100.4,
+    "h": 58.3
+  },
+  "source": {
+    "w": 1000,
+    "h": 580,
+    "sha256": "8fa14841e0296787165912057e9664d7444f15b7bc2566ab2adf54112f81a5e3"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1000,
+    "h": 580
+  },
+  "width": 1000,
+  "height": 580
+}

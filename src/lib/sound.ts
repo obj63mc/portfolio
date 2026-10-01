@@ -12,7 +12,7 @@ import type { Screen } from './net/screen.ts';
  */
 export const ONE_SHOTS = [
 	'card', 'chime', 'fanfare', 'best-lap', 'door-open', 'door-close', 'projector',
-	'knock', 'moose', 'bell', 'squelch', 'fan', 'click', 'marker', 'pour', 'chalk', 'creak', 'cooler', 'lighter',
+	'knock', 'moose', 'bell', 'squelch', 'fan', 'click', 'marker', 'pour', 'creak', 'cooler', 'lighter',
 	'splash', 'tap', 'register', 'profit', 'loss', 'service-bell', 'rain', 'star'
 ] as const;
 
@@ -55,7 +55,6 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 	'bottle-rumchata': 'pour',
 	'bottle-pink-whitney': 'pour',
 	'bottle-new-amsterdam': 'pour',
-	chalkboard: 'chalk',
 	'humidor-cohiba': 'creak',
 	'humidor-macanudo': 'creak',
 	'humidor-partagas': 'creak',
@@ -68,10 +67,10 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 
 /**
  * Props with no signature of their own, on purpose: the diploma's paper is its card's own sound (Joe, 2026-09-30), the
- * meeting TV's sound is its video, the Foundry posters are heard through the screen's projector start, which the whole
- * room hears, and the screen is no button.
+ * meeting TV plays muted and is no button, its remote's card is its sound, the Foundry posters are heard through the
+ * screen's projector start, which the whole room hears, and the screen is no button.
  */
-export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen'];
+export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'tv-remote', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen'];
 
 /**
  * What each scene hears beyond its props: the overworld's signpost, the lap timer's beep and the Grand Basin koi's splash

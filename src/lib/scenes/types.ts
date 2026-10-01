@@ -29,14 +29,10 @@ export interface Prop {
 	/**
 	 * What it is, when not a button opening its card: an `action`, a button whose click is all it does (a Foundry poster
 	 * starts its reel), or a `status`, no button at all, its name and state read as text in the layer (the Foundry screen).
-	 * Neither has a card (Joe, 2026-09-29, buildout ticket 17).
+	 * Neither has a card (Joe, 2026-09-29, buildout ticket 17). A card is its media, a `video`, `logos` or `screens`, over its copy:
+	 * the Markdown file named for the prop in its scene's folder of src/lib/content (Joe, 2026-10-01).
 	 */
 	kind?: 'action' | 'status';
-	/**
-	 * Card paragraphs, the full content-inventory text; none for an `action` or a `status`. A video card's is one short line,
-	 * shown under its video.
-	 */
-	body: string[];
 	/** Links shown inside the card. An external link never leaves the card (spec: "Links, not buttons"). */
 	links?: Link[];
 	rect: Rect;
@@ -52,9 +48,27 @@ export interface Prop {
 	art?: string[];
 	/**
 	 * A video its card plays, a file in a folder of art/sources/videos, all of which `npm run videos` puts on the media
-	 * host (`VIDEOS`), drawn onto `screen` in the scene while it plays; with no screen it plays in the card alone.
+	 * host (`VIDEOS`), drawn onto `screen` in the scene while it plays; with no screen it plays in the card alone. A
+	 * `status` prop has no card: its video plays by itself on its screen, muted, whenever it is in view.
 	 */
 	video?: { file: string; screen?: Rect; captions?: string };
+	/**
+	 * Logos shown across its card, over its copy (the Moosylvania loft's computers, each the technologies of its stack; Joe,
+	 * 2026-10-01): a file in src/lib/logos and the name written under it.
+	 */
+	logos?: { name: string; file: string }[];
+	/**
+	 * Screenshots shown in its card, over its copy, in a browser window that scrolls each and goes from one to the next
+	 * (the Side Project bottles of the sites Joe built; Joe, 2026-10-01): a file in a folder of art/sources/screenshots,
+	 * `<folder>/<file>.webp`, and what it shows, which names it in the window and to a reader that can't see it.
+	 */
+	screens?: { name: string; file: string }[];
+	/**
+	 * A remote control: the id of the prop it tunes, a `status` prop whose `video` is the first of the channels it shows
+	 * (the Moosylvania lobby's TV; Joe, 2026-10-01). Its card is the remote in hand, held by one visitor of the room at a
+	 * time, and its cut-out is off the table meanwhile.
+	 */
+	tunes?: string;
 }
 
 export interface Venue {
@@ -107,6 +121,12 @@ export interface WalkBehind extends Cutout {
 	 * first). Only stepping on between the two lines from the floor below, from a stair's side, goes underneath.
 	 */
 	landing?: Point[];
+	/**
+	 * A desk (Joe, 2026-10-01): a cursor goes behind it only when it steps on from directly behind, down over its back
+	 * edge. From either side, from the front, where its chair is, or appearing on it, the cursor stays on top and can use
+	 * what stands on it; `front` then decides nothing.
+	 */
+	desk?: true;
 	/** Ids of the props standing on it. */
 	props: string[];
 }
@@ -127,7 +147,8 @@ interface SceneBase {
 }
 
 export interface Overworld extends SceneBase {
-	signpost: { rect: Rect; contacts: Link[] };
+	/** The directory board's plaques, a link to each district: two to a row, in the districts' order. */
+	signpost: { rect: Rect };
 	/** West to east by centre x: DOM order, tab order and reading order. */
 	districts: District[];
 	river: {

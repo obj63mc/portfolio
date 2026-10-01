@@ -147,27 +147,28 @@ test('a poster starts the reel, and the projector start plays for the room', asy
 	expect(await played(page)).not.toContain('card');
 });
 
+// A card's video, a Side Project bottle's: the lobby TV plays muted and has no card (tv.spec.ts).
 test("a video's own sound follows the toggle: muted while it is off, unmuted by its press", async ({ page }) => {
-	await page.goto('/moosylvania');
+	await page.goto('/side-project');
 	await join(page);
 	await toggle(page).click();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'false');
-	const tv = page.locator('[data-prop="meeting-tv"] video');
-	await page.evaluate(() => document.querySelector<HTMLButtonElement>('[data-prop="meeting-tv"] > button')!.click());
-	await expect(page.locator('[data-prop="meeting-tv"] dialog')).toBeVisible();
-	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(true);
+	const video = page.locator('[data-prop="bottle-sapporo"] video');
+	await page.evaluate(() => document.querySelector<HTMLButtonElement>('[data-prop="bottle-sapporo"] > button')!.click());
+	await expect(page.locator('[data-prop="bottle-sapporo"] dialog')).toBeVisible();
+	expect(await video.evaluate((v: HTMLVideoElement) => v.muted)).toBe(true);
 	await page.keyboard.press('Escape');
-	await expect(page.locator('[data-prop="meeting-tv"] dialog')).toBeHidden();
+	await expect(page.locator('[data-prop="bottle-sapporo"] dialog')).toBeHidden();
 	await toggle(page).click();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
-	expect(await tv.evaluate((v: HTMLVideoElement) => v.muted)).toBe(false);
+	expect(await video.evaluate((v: HTMLVideoElement) => v.muted)).toBe(false);
 });
 
-test("paused, the card's own Sound toggle mutes, and the meeting TV holds until Resume", async ({ page }) => {
-	await page.goto('/moosylvania');
+test("paused, the card's own Sound toggle mutes, and a card's video holds until Resume", async ({ page }) => {
+	await page.goto('/side-project');
 	await join(page);
-	const tv = page.locator('[data-prop="meeting-tv"] video'), playing = () => tv.evaluate((v: HTMLVideoElement) => !v.paused);
-	await page.locator('[data-prop="meeting-tv"] > button').focus();
+	const tv = page.locator('[data-prop="bottle-sapporo"] video'), playing = () => tv.evaluate((v: HTMLVideoElement) => !v.paused);
+	await page.locator('[data-prop="bottle-sapporo"] > button').focus();
 	await page.keyboard.press('Enter');
 	await expect.poll(playing).toBe(true);
 	await page.evaluate(() => dispatchEvent(new Event('blur')));

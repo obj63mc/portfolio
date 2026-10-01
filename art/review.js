@@ -12,7 +12,9 @@ const frontY = (f,x) => {if(x<=f[0].x)return f[0].y;for(let i=1;i<f.length;i++)i
 // Mirrors src/lib/scenes/walk.ts (buildout ticket 19). The side is read where the cursor stepped from, its last position
 // outside the outline (or where it appeared, after a jump): a front line through the front feet lies on the outline's
 // lower edge, so the first point inside is always above it. A staircase's landing: stepping on from on or above it, or
-// within LANDING_REACH world px of travel after leaving that floor, is in front too.
+// within LANDING_REACH world px of travel after leaving that floor, is in front too. A desk: behind only when stepped on
+// from directly behind it, down over its back edge; from either side or the front, in front.
+const fromBehind = (f,p,poly) => {let back=Infinity;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.x>f.x)!==(b.x>f.x))back=Math.min(back,a.y+(b.y-a.y)*(f.x-a.x)/(b.x-a.x));}return back!==Infinity&&f.y<back&&p.y-f.y>Math.abs(p.x-f.x);};
 const LANDING_REACH = 800;
 let sinceLanding = {};
 function stepTo(p) {
@@ -21,7 +23,7 @@ function stepTo(p) {
     if(w.landing)sinceLanding[w.key]=p.y<=frontY(w.landing,p.x)?0:(sinceLanding[w.key]??Infinity)+moved;
     if(!inside(p,w.outline)){delete walk[w.key];continue;}
     const f=stepped&&!inside(stepped,w.outline)?stepped:p;
-    walk[w.key]??=f.y>=frontY(w.front,f.x)||(w.landing&&(f.y<=frontY(w.landing,f.x)||sinceLanding[w.key]<=LANDING_REACH))?'front':'behind';
+    walk[w.key]??=(w.desk?!fromBehind(f,p,w.outline):f.y>=frontY(w.front,f.x)||(w.landing&&(f.y<=frontY(w.landing,f.x)||sinceLanding[w.key]<=LANDING_REACH)))?'front':'behind';
   }
   stepped=p;camera=p;dirty=true;updateStatus();
 }

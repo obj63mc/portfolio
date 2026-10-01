@@ -66,7 +66,7 @@ test('control: bad cosmetic ids and bits, unknown ops, bad JSON and anything ove
 
 test('server: hello, in, out and presence are read as the client knows them', () => {
 	const peer: Peer = { id: 2, cc: 'FR', cos: 3, gold: false, river: true, x: 10, y: -1 };
-	const hello = { t: 'hello', id: 1, cc: 'XX', now: 1_790_000_000_000, rate: 20, cap: 60, room: 'overworld:1', peers: [peer], screen: null };
+	const hello = { t: 'hello', id: 1, cc: 'XX', now: 1_790_000_000_000, rate: 20, cap: 60, room: 'overworld:1', peers: [peer], screen: null, tv: { ch: 0, holder: null } };
 	for (const m of [hello, { t: 'in', ...peer }, { t: 'out', id: 2 }, { t: 'presence', id: 2, cos: 0, gold: true, river: false }])
 		assert.deepEqual(readServer(JSON.stringify(m)), m);
 });
@@ -76,8 +76,8 @@ test('server: anything else is dropped, the pong auto-response included', () => 
 	for (const text of [
 		'pong',
 		'{"t":"hello","id":1}',
-		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, room: 'overworld:1', peers: [{ ...peer, gold: 'no' }], screen: null }),
-		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, peers: [peer], screen: null }),
+		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, room: 'overworld:1', peers: [{ ...peer, gold: 'no' }], screen: null, tv: { ch: 0, holder: null } }),
+		JSON.stringify({ t: 'hello', id: 1, cc: 'XX', now: 1, rate: 20, cap: 60, peers: [peer], screen: null, tv: { ch: 0, holder: null } }),
 		JSON.stringify({ t: 'in', ...peer, id: '2' }),
 		JSON.stringify({ t: 'in', ...peer, x: undefined }),
 		JSON.stringify({ t: 'out' }),
@@ -96,7 +96,7 @@ test('control: a poster click is `screen.play` with a title the build knows; any
 });
 
 test('server: the screen snapshot in hello and the echo of an accepted play are read; bad ones are dropped', () => {
-	const hello = { t: 'hello', id: 1, cc: 'XX', now: 5, rate: 20, cap: 60, room: 'foundry:1', peers: [] };
+	const hello = { t: 'hello', id: 1, cc: 'XX', now: 5, rate: 20, cap: 60, room: 'foundry:1', peers: [], tv: { ch: 0, holder: null } };
 	for (const m of [{ ...hello, screen: { title: 'fast-five', at: 4 } }, { t: 'screen', title: 'snow-white', at: 4 }])
 		assert.deepEqual(readServer(JSON.stringify(m)), m);
 	for (const m of [
@@ -106,5 +106,21 @@ test('server: the screen snapshot in hello and the echo of an accepted play are 
 		{ t: 'screen', title: 'lorax', at: '4' },
 		{ t: 'screen', at: 4 }
 	])
+		assert.equal(readServer(JSON.stringify(m)), null, JSON.stringify(m));
+});
+
+test("control: the lobby TV's remote is taken, put back and tuned one channel up or down; anything else is dropped", () => {
+	assert.deepEqual(readControl('{"t":"tv.take","holder":3}'), { t: 'tv.take' });
+	assert.deepEqual(readControl('{"t":"tv.put"}'), { t: 'tv.put' });
+	for (const by of [1, -1]) assert.deepEqual(readControl(JSON.stringify({ t: 'tv.tune', by, ch: 9 })), { t: 'tv.tune', by });
+	for (const by of [0, 2, -2, 0.5, '1', null, undefined]) assert.equal(readControl(JSON.stringify({ t: 'tv.tune', by })), null, String(by));
+	assert.equal(readControl('{"t":"tv.steal"}'), null);
+});
+
+test("server: the lobby TV in hello and after each change, its channel and its remote's holder, are read; bad ones are dropped", () => {
+	const hello = { t: 'hello', id: 1, cc: 'XX', now: 5, rate: 20, cap: 60, room: 'moosylvania:1', peers: [], screen: null };
+	for (const m of [{ ...hello, tv: { ch: -3, holder: 2 } }, { ...hello, tv: { ch: 0, holder: null } }, { t: 'tv', ch: 40, holder: 1 }, { t: 'tv', ch: 0, holder: null }])
+		assert.deepEqual(readServer(JSON.stringify(m)), m);
+	for (const m of [hello, { ...hello, tv: null }, { ...hello, tv: { ch: 0 } }, { ...hello, tv: { ch: '1', holder: null } }, { t: 'tv', ch: 1.5, holder: null }, { t: 'tv', ch: 1, holder: 'me' }, { t: 'tv', holder: 1 }])
 		assert.equal(readServer(JSON.stringify(m)), null, JSON.stringify(m));
 });

@@ -49,4 +49,14 @@ export const artOf = (scene: Overworld | SubScene, prop: Prop): string[] =>
  * An element's world rect as custom properties, prerendered into its style attribute. Only the engine's stylesheet reads
  * them (`html.engine main .at` in app.css), turning the plain document into hit targets placed over their art.
  */
+/**
+ * Where the overworld opens (Joe, 2026-10-01): the welcome sign and the signpost together, the camera centred on the two,
+ * so that a phone's first frame holds both.
+ */
+export const arrival = (o: Overworld): Rect => {
+	const a = propsOf(o).find((p) => p.id === 'welcome')!.rect, b = o.signpost.rect;
+	const x = Math.min(a.x, b.x), y = Math.min(a.y, b.y);
+	return { x, y, w: Math.max(a.x + a.w, b.x + b.w) - x, h: Math.max(a.y + a.h, b.y + b.h) - y };
+};
+
 export const at = (r: Rect) => `--x:${r.x}px;--y:${r.y}px;--w:${r.w}px;--h:${r.h}px`;

@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "fb4b9ee427ad7a423ae50f664e951cdc6aed6f7f271f5374fc98a1bbc9170046",
-  "run": "art/runs/moosylvania-sofa-left/2026-09-29T00-38-20.758Z",
+  "sourceSha256": "2997a893b9e977432007a55638a9df5df7e8953466ea8594246ea8c959bfe21a",
+  "run": "art/runs/moosylvania-sofa-left/2026-10-01T17-58-49.445Z",
   "provider": "derived",
   "derivation": {
     "asset": "moosylvania-master",
-    "referenceSha256": "b53c52762794b564405cd219ba58c600eb37665f1c6f611edf4fa20a60be6dcb",
+    "referenceSha256": "ac08a95cc9c1bb093c32894703ab87f89d5a424bca3810d51634e0e5edc0bdd3",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

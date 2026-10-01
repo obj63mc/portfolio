@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
+import { arrival } from '../src/lib/scenes/index.ts';
 import { ARROW } from '../src/lib/scenes/river.ts';
 import type { Point, Rect } from '../src/lib/scenes/types.ts';
 
@@ -58,12 +59,21 @@ test('districts read west to east by centre x: on the accepted master the park l
 	}
 });
 
-test('arrival: the signpost fits the first 390 x 844 phone frame at 0.6 scale centred on the welcome sign', () => {
-	const w = 390 / 0.6, h = 844 / 0.6;
-	const cx = welcome.rect.x + welcome.rect.w / 2, cy = welcome.rect.y + welcome.rect.h / 2;
+test('arrival: the signpost and the welcome sign both fit the first 390 x 844 phone frame at 0.6 scale, centred on the two (Joe, 2026-10-01)', () => {
+	const w = 390 / 0.6, h = 844 / 0.6, both = arrival(OVERWORLD);
+	const cx = both.x + both.w / 2, cy = both.y + both.h / 2;
 	const frame: Rect = { x: Math.max(0, Math.min(OVERWORLD.w - w, cx - w / 2)), y: Math.max(0, Math.min(OVERWORLD.h - h, cy - h / 2)), w, h };
 	assert.ok(inside(OVERWORLD.signpost.rect, frame));
+	assert.ok(inside(welcome.rect, frame), 'the welcome sign');
 	assert.ok(inside(props.find((p) => p.id === 'moose')!.rect, frame), 'the moose is in the first frame too');
+});
+
+test("the signpost: a link to each district, two to a row on the board's plaques, each over 48 x 48 CSS px on a phone (Joe, 2026-10-01)", () => {
+	const { rect } = OVERWORLD.signpost, rows = Math.ceil(OVERWORLD.districts.length / 2), board = JSON.parse(readFileSync(new URL('../art/generated/overworld/signpost/asset.json', import.meta.url), 'utf8')).world;
+	assert.ok((rect.w / 2) * 0.6 >= 48 && (rect.h / rows) * 0.6 >= 48, 'a phone draws the world at 0.6');
+	assert.ok(inside(rect, board), 'the plaques are on the board');
+	// The plaques as scripts/art/overworld/signs.py draws them: 8 px in from the board's sides, under its 36 px head.
+	assert.deepEqual([rect.x - board.x, rect.y - board.y, board.x + board.w - rect.x - rect.w], [8, 44, 8]);
 });
 
 test('depth regions: horizon above foreground, factor continuous across regions', () => {

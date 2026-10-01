@@ -306,12 +306,18 @@ html.engine {
 		pointer-events: none;
 	}
 
+	/* A prop with nothing to press just now, the lobby TV's remote while another visitor holds it, takes no pointer either. */
+	& main .prop > button:disabled {
+		pointer-events: none;
+	}
+
 	& main {
 		position: fixed;
 		left: 0;
 		top: 0;
 		transform-origin: 0 0;
 		will-change: transform;
+		text-wrap:pretty;
 
 		& h1 {
 			position: absolute;
@@ -370,27 +376,15 @@ html.engine {
 			}
 		}
 
-		/* The signpost's links share its board top to bottom: the four contacts, then the five districts. */
-		& nav {
-			display: flex;
-			flex-direction: column;
-
-			& > a {
-				flex: 1;
-			}
-
-			& ul {
-				flex: 5;
-				display: flex;
-				flex-direction: column;
-				margin: 0;
-				padding: 0;
-				list-style: none;
-			}
-
-			& li {
-				flex: 1;
-			}
+		/* The signpost's links share its plaques, two to a row, in the districts' order: each is one plaque and the gap round it. */
+		& nav ul {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-auto-rows: 1fr;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			list-style: none;
 		}
 
 		& :focus-visible:not(dialog *) {

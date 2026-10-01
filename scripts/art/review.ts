@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import type { Manifest, ProcessedAsset } from './types.ts';
 import { RIG_DRAW_ORDER, assetDir } from './types.ts';
 import { OVERWORLD } from '../../src/lib/scenes/overworld.ts';
-import { SUB_SCENES } from '../../src/lib/scenes/index.ts';
+import { SUB_SCENES, arrival } from '../../src/lib/scenes/index.ts';
 import { compose } from './compose.ts';
 import { deliver, rigBoundsOf } from './deliver.ts';
 import { saveProvenance } from './provenance.ts';
@@ -38,7 +38,7 @@ export async function buildReview(root: string, manifest: Manifest, composites =
   const rigBounds = rigBoundsOf(rigs);
   const centre = (r: { x: number; y: number; w: number; h: number }) => ({ x: Math.round(r.x + r.w / 2), y: Math.round(r.y + r.h / 2) });
   const sourceScenes = [
-    { ...OVERWORLD, arrival: centre(OVERWORLD.districts.flatMap(d => d.venues.flatMap(v => v.props)).find(p => p.id === 'welcome')!.rect), props: [
+    { ...OVERWORLD, arrival: centre(arrival(OVERWORLD)), props: [
       { id: 'signpost', rect: OVERWORLD.signpost.rect }, ...OVERWORLD.districts.flatMap(d => d.venues.flatMap(v => v.props))
     ] },
     ...Object.values(SUB_SCENES).map(scene => ({ ...scene, arrival: { x: 1422, y: 1000 } }))

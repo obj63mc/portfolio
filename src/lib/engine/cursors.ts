@@ -15,7 +15,8 @@ import type { Cover } from './scenery.ts';
  * A cursor to draw: its tip in device px, its country code, whether its body is gold, the cosmetic it wears (0 none, an
  * id this build doesn't know draws nothing) and when that went on (performance.now() ms), which pops it in; whether
  * it is a pointing hand, over something to click (the own cursor only: a peer's is always the arrow); its depth factor
- * (depth.ts, ticket 19), 1 unless set; and the walk-behind scenery it is behind, back to front (scenery.ts).
+ * (depth.ts, ticket 19), 1 unless set; the walk-behind scenery it is behind, back to front (scenery.ts); and whether it
+ * holds the Moosylvania lobby TV's remote, which every visitor in the room then sees in its hand (Joe, 2026-10-01).
  */
 export interface Drawn {
 	x: number;
@@ -27,6 +28,7 @@ export interface Drawn {
 	hand?: boolean;
 	d?: number;
 	behind?: Cover[];
+	remote?: boolean;
 }
 
 const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -49,6 +51,11 @@ export const PEER = 0.75;
 /** Where a cosmetic hangs, units from the tip: the head above it, the face across it, the side at its right; none covers the flag badge. */
 export const ANCHORS = { head: { x: 6, y: 0 }, face: { x: 8, y: 11 }, side: { x: 21, y: 13 } } as const;
 /**
+ * Where the lobby TV's remote is held, units from the tip: at the arrow's left, by the pointing hand's thumb, clear of
+ * every cosmetic, the flag badge and the "you" tag, and inside the atlas cell's pad.
+ */
+const HELD = { x: -6.5, y: 15 };
+/**
  * The flag badge, units from the tip, 4:3 like the sheet's cells: tucked by the arrow's tail at its lower right, and at
  * the hand's palm's lower right, below the side cosmetics' reach (the popcorn tub's foot, 20). Smaller than it was (Joe,
  * 2026-09-30), 11 x 8.25 in place of 16 x 12.
@@ -60,13 +67,15 @@ const OUTLINE = '#1d2b3a';
 const GOLD = '#f2c230';
 /**
  * An atlas cell round the arrow, units, with room for the halo's glow and the antlers' tips: white body, gold body,
- * halo, the hand's white and gold bodies, then a cell per cosmetic, drawn over the body at the same place.
+ * halo, the hand's white and gold bodies, then a cell per cosmetic, drawn over the body at the same place, and one for
+ * the remote in hand.
  */
 const PAD = 14;
 const CELL = { w: 52, h: 60 };
 const BODY = { arrow: 0, halo: 2, hand: 3 };
 const COSMETIC = 5;
-const CELLS = COSMETIC + KNOWN.length;
+const REMOTE = COSMETIC + KNOWN.length;
+const CELLS = REMOTE + 1;
 /** A cosmetic pops in over this long, ms, when it goes on. */
 const POP = 300;
 /** The tag shows this long, ms, then fades over FADE. */
@@ -169,6 +178,23 @@ const DRAW: Record<CosmeticId, (g: CanvasRenderingContext2D) => void> = {
 	}
 };
 
+/**
+ * The lobby TV's remote in hand, not a cosmetic (nothing earns or keeps it): the cream slab that lies on the meeting
+ * table, its coral power button and two dark teal channel keys, tilted as a hand holds one out.
+ */
+function remote(g: CanvasRenderingContext2D) {
+	g.rotate(-0.3);
+	shape(g, '#fff4d4', (p) => p.roundRect(-4, -8.5, 8, 17, 2));
+	g.fillStyle = '#df7554';
+	g.beginPath();
+	g.arc(0, -5, 1.7, 0, 2 * Math.PI);
+	g.fill();
+	g.fillStyle = '#244f55';
+	g.fillRect(-2.2, -1.6, 4.4, 2.6);
+	g.fillRect(-2.2, 2.4, 4.4, 2.6);
+	g.rotate(0.3);
+}
+
 /** The pop: a scale-in from nothing, overshooting a little, over POP ms since `u` 0. */
 const popIn = (u: number) => 1 + 2.70158 * (u - 1) ** 3 + 1.70158 * (u - 1) ** 2;
 
@@ -204,6 +230,8 @@ function rasterize(r: number) {
 		cell(COSMETIC + i, a.x, a.y);
 		DRAW[id](g);
 	});
+	cell(REMOTE, HELD.x, HELD.y);
+	remote(g);
 	return c;
 }
 
@@ -252,8 +280,8 @@ export class Cursors {
 	 * (ticket 19): the walk-behind scenery it is behind, back to front, then the `foreground` scenery, which covers every
 	 * cursor. Then the own cursor's tag, a label never covered, the river's wash-out `fade` (ticket 20), black at `fade`
 	 * opacity, and the iris between scenes (iris.ts) over all of it: black but for a circle `r` device px round `x, y`.
-	 * Redrawn only when a cursor, its badge, its cosmetic, its size, the scenery over it, the tag, the fade or the iris has
-	 * changed.
+	 * Redrawn only when a cursor, its badge, its cosmetic, the remote in its hand, its size, the scenery over it, the tag,
+	 * the fade or the iris has changed.
 	 */
 	draw(own: Drawn | null, peers: Drawn[], now: number, iris: { x: number; y: number; r: number } | null = null, foreground: Cover[] = [], fade = 0) {
 		const tag = own ? Math.max(0, Math.min(1, (this.tagAt + TAG + FADE - now) / FADE)) : 0;
@@ -265,7 +293,7 @@ export class Cursors {
 		).map((c) => ({ ...c, over: [...(c.p.behind ?? []), ...foreground].filter((o) => overlaps(o, this.box(c.p, c.size))) }));
 		const key = [
 			tag, this.ready, settled.size, fade, iris && [iris.x, iris.y, iris.r],
-			...all.flatMap(({ p, size, halo, over }) => [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand, size, halo, ...over.flatMap((o) => [o.key, o.x, o.y])])
+			...all.flatMap(({ p, size, halo, over }) => [p.x, p.y, p.cc, p.gold, p.cos, pop(p), !!p.hand, !!p.remote, size, halo, ...over.flatMap((o) => [o.key, o.x, o.y])])
 		].join();
 		if (key === this.key) return;
 		this.key = key;
@@ -327,7 +355,8 @@ export class Cursors {
 
 	/**
 	 * One cursor on `g`, `size` times its 32 units, scaled about its tip: the arrow or the hand, its cosmetic, `pop` of the
-	 * way through popping in about its anchor, and its flag badge outlined for contrast at a few px.
+	 * way through popping in about its anchor, the lobby TV's remote if it holds it, and its flag badge outlined for
+	 * contrast at a few px.
 	 */
 	private one(g: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, p: Drawn, size: number, halo: boolean, pop: number) {
 		const r = OWN * this.scale, k = size * this.scale, cw = this.atlas.width / CELLS, ch = this.atlas.height;
@@ -341,6 +370,7 @@ export class Cursors {
 			g.drawImage(this.atlas, (COSMETIC + c) * cw, 0, cw, ch, x, y, w, h);
 			g.setTransform(1, 0, 0, 1, 0, 0);
 		}
+		if (p.remote) g.drawImage(this.atlas, REMOTE * cw, 0, cw, ch, x, y, w, h);
 		if (!this.ready) return;
 		// Unknown geo (XX), Tor (T1), EU, UN and any code without a country flag wear the St. Louis flag, the sheet's first cell.
 		const i = this.flags.get(p.cc.toLowerCase()) ?? 0;

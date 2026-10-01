@@ -1,0 +1,32 @@
+[
+  {
+    "file": "loft-railing.svg",
+    "center": [
+      442,
+      505.5
+    ],
+    "height": 43,
+    "shear": 0,
+    "note": "The loft railing's infill between its end posts, 2026-10-01: the master's 5 px mesh came out of the 4x upscale a wobbly grid with smudges and blobs (Joe), so round five paints the old posts and mesh out with the loft floor behind them and the infill is drawn here instead: a straight sub-rail and bottom rail, five posts making six even bays, and eleven balusters to a bay, in the rails' own navy. Drawn in native px (its viewBox is the master's own coordinates) by scripts/art/overworld/lobby-railings-floor.py, so it is placed unsheared at its viewBox centre."
+  },
+  {
+    "file": "stairs-left-railings.svg",
+    "center": [
+      198,
+      700
+    ],
+    "height": 412,
+    "shear": 0,
+    "note": "The left staircase's railing infill, 2026-10-01: the master's mesh and thin rails came out of the 4x upscale a crackle of veins in the far railing and a chain of orange blobs in the near one (Joe), so round five paints the old infill out with what stands behind each run and the infill is drawn here instead: two sub-rails following the handrail and the stringer, and vertical balusters at the loft railing's pitch, in its navy. Four runs (the outer railing against the wall, the inner one in front of the treads, and both lower runs) and the short bay at the stair's top; the handrails, stringers and posts are the master's own. Drawn in native px by scripts/art/overworld/lobby-railings-floor.py, placed unsheared at its viewBox centre."
+  },
+  {
+    "file": "stairs-right-railings.svg",
+    "center": [
+      690,
+      700
+    ],
+    "height": 412,
+    "shear": 0,
+    "note": "The right staircase's railing infill, 2026-10-01: as stairs-left-railings.svg, measured on the right stair."
+  }
+]

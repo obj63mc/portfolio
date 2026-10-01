@@ -5,10 +5,12 @@
 //   binary  [1, x u16, y u16]                        a move in whole world px, at most RATE a second, only when it moved
 //   text    {"t":"presence","cos":0-7,"gold":bool,"river":bool}
 //   text    {"t":"screen.play","title":"fast-five"}   a Foundry poster's click, accepted only while the screen is idle
+//   text    {"t":"tv.take"} {"t":"tv.put"}           the lobby TV's remote, taken from the table and put back
+//   text    {"t":"tv.tune","by":1}                   a channel up or down (-1), from whoever holds the remote
 //   text    ping                                     keepalive every KEEPALIVE, answered pong by the hibernation auto-response
 // server -> client
 //   binary  [2, n u16, (id u16, x u16, y u16) * n]   every cursor that moved since the last tick
-//   text    ServerMessage below: hello, in, out, presence, screen
+//   text    ServerMessage below: hello, in, out, presence, screen, tv
 import { SCREEN_TITLES, type ScreenTitle } from '../scenes/foundry.ts';
 import type { Screen } from './screen.ts';
 
@@ -44,6 +46,16 @@ export interface Peer extends Presence {
 	y: number;
 }
 
+/**
+ * The Moosylvania lobby TV and its remote (Joe, 2026-10-01), a shared prop like the Foundry screen: the channel, a count
+ * of the ups less the downs that each client wraps over its own playlist, so the room never reads one; and the visitor
+ * holding the remote, by id, or null while it lies on the table. Only its holder tunes.
+ */
+export interface Tv {
+	ch: number;
+	holder: number | null;
+}
+
 /** Whether two presences wear, shine and drift alike: a room and a client pass on only a change. */
 export const samePresence = (a: Presence, b: Presence) => a.cos === b.cos && a.gold === b.gold && a.river === b.river;
 
@@ -61,14 +73,23 @@ export type ServerMessage =
 			peers: Peer[];
 			/** The shared-prop snapshot: the Foundry screen's title and start, server time, or null while idle and elsewhere. */
 			screen: Screen;
+			/** The lobby TV's channel and its remote's holder; the first channel and nobody outside the lobby. */
+			tv: Tv;
 	  }
 	| ({ t: 'in' } & Peer)
 	| { t: 'out'; id: number }
 	| ({ t: 'presence'; id: number } & Presence)
 	/** An accepted `screen.play`, to everyone in the room, its sender included. */
-	| ({ t: 'screen' } & NonNullable<Screen>);
+	| ({ t: 'screen' } & NonNullable<Screen>)
+	/** The lobby TV after an accepted take, put or tune, or its holder's leaving: to everyone in the room. */
+	| ({ t: 'tv' } & Tv);
 
-export type ClientMessage = ({ t: 'presence' } & Presence) | { t: 'screen.play'; title: ScreenTitle };
+export type ClientMessage =
+	| ({ t: 'presence' } & Presence)
+	| { t: 'screen.play'; title: ScreenTitle }
+	| { t: 'tv.take' }
+	| { t: 'tv.put' }
+	| { t: 'tv.tune'; by: 1 | -1 };
 
 export function encodeMove(x: number, y: number): ArrayBuffer {
 	const b = new ArrayBuffer(5);
@@ -113,6 +134,7 @@ const isPeer = (m: Record<string, unknown>) =>
 const isObject = (m: unknown): m is Record<string, unknown> => typeof m === 'object' && m !== null;
 const isTitle = (t: unknown): t is ScreenTitle => typeof t === 'string' && Object.hasOwn(SCREEN_TITLES, t);
 const isScreen = (m: unknown) => isObject(m) && isTitle(m.title) && typeof m.at === 'number';
+const isTv = (m: unknown) => isObject(m) && Number.isInteger(m.ch) && (m.holder === null || Number.isInteger(m.holder));
 
 /**
  * A text message from the room, narrowed for the client, or null to drop it: the `pong` auto-response, anything not
@@ -135,6 +157,7 @@ export function readServer(text: string): ServerMessage | null {
 				Number.isInteger(m.cap) &&
 				typeof m.room === 'string' &&
 				(m.screen === null || isScreen(m.screen)) &&
+				isTv(m.tv) &&
 				Array.isArray(m.peers) &&
 				m.peers.every((p) => isObject(p) && isPeer(p))
 			: m.t === 'in'
@@ -143,7 +166,9 @@ export function readServer(text: string): ServerMessage | null {
 					? Number.isInteger(m.id)
 					: m.t === 'screen'
 						? isScreen(m)
-						: m.t === 'presence' && Number.isInteger(m.id) && isPresence(m);
+						: m.t === 'tv'
+							? isTv(m)
+							: m.t === 'presence' && Number.isInteger(m.id) && isPresence(m);
 	return ok ? (m as ServerMessage) : null;
 }
 
@@ -158,8 +183,10 @@ export function readControl(text: string): ClientMessage | null {
 		return null;
 	}
 	if (!isObject(m)) return null;
-	const { t, cos, gold, river, title } = m;
+	const { t, cos, gold, river, title, by } = m;
 	if (t === 'screen.play') return isTitle(title) ? { t, title } : null;
+	if (t === 'tv.take' || t === 'tv.put') return { t };
+	if (t === 'tv.tune') return by === 1 || by === -1 ? { t, by } : null;
 	if (t !== 'presence' || typeof gold !== 'boolean' || typeof river !== 'boolean') return null;
 	return Number.isInteger(cos) && typeof cos === 'number' && cos >= 0 && cos <= 7 ? { t, cos, gold, river } : null;
 }

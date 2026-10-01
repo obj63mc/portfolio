@@ -1,6 +1,0 @@
-{
-  "sourceSha256": "0107a5be0f3bc6a384527b475f6f40d67f69c520dd919d74835519c02e970136",
-  "run": "art/runs/welcome/2026-09-24T19-05-27.879Z",
-  "provider": "codex",
-  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
-}

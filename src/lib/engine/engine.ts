@@ -17,7 +17,8 @@ import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
-import { GAME, doorsOf, propsOf, sceneAt } from '../scenes/index.ts';
+import { tv } from '../tv.svelte.ts';
+import { GAME, arrival, doorsOf, propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { ASHORE, flow, type Current } from '../scenes/river.ts';
 import { blocked, type Side } from '../scenes/walk.ts';
@@ -29,6 +30,7 @@ import { Scenery } from './scenery.ts';
 import { Props, artIn, clickedProp } from './props.ts';
 import { Loader, type Loading } from './loader.ts';
 import { Projector } from './projector.ts';
+import { Remote } from './tv.ts';
 import {
 	KEYS, TILE, centreOn, clamp, coast, fling, framing, glide, pan, rendering, steer, step, stick, tileRange, zoom, type Move, type View
 } from './camera.ts';
@@ -180,6 +182,8 @@ export class Engine {
 	private live: HTMLElement;
 	private props: Props;
 	private projector: Projector;
+	/** The Moosylvania lobby TV's remote (tv.ts). */
+	private remote: Remote;
 	/** The Carondelet lap timer (ticket 18). */
 	private laps: Laps;
 	/** The one-shots (ticket 22). */
@@ -261,6 +265,7 @@ export class Engine {
 		});
 		this.props = new Props(layer, this.loader);
 		this.projector = new Projector(layer, this.net);
+		this.remote = new Remote(layer, this.net);
 		this.laps = new Laps(status.lap, status.live);
 		this.shots = new OneShots(layer, this.net);
 		document.documentElement.classList.add('engine');
@@ -282,6 +287,7 @@ export class Engine {
 		this.listeners.abort();
 		this.props.destroy();
 		this.projector.destroy();
+		this.remote.destroy();
 		this.shots.destroy();
 		this.scenery.destroy();
 		this.raise.disconnect();
@@ -299,7 +305,7 @@ export class Engine {
 
 	/**
 	 * Each navigation's scene and fragment. A page load opens centred on the fragment's target, else the overworld's
-	 * arrival point (the welcome sign) or a sub-scene's exit door. A hop from another scene (ticket 11) lands at a door
+	 * arrival point (between the welcome sign and the signpost) or a sub-scene's exit door. A hop from another scene (ticket 11) lands at a door
 	 * whatever the fragment: into a sub-scene just inside its exit door, focus on its h1; back on the overworld, by the exit
 	 * door or the browser's back button, on the door of the venue left, with nothing focused: the visitor roams free, and
 	 * Tab reaches the door again (Joe, 2026-09-30). The camera is centred on where it lands, a joined cursor is put there
@@ -329,6 +335,7 @@ export class Engine {
 		this.doors = doorsOf(scene);
 		this.props.show(scene, this.density);
 		this.projector.show(scene);
+		this.remote.show();
 		// Every cursor enters the new scene afresh: the own takes the depth and sides of where it lands, and peers are a new room's.
 		this.scenery.show(scene, this.density);
 		this.follow = null;
@@ -341,7 +348,7 @@ export class Engine {
 		const door = from && this.layer.querySelector<HTMLElement>(overworld ? `#${from} .door` : '.door');
 		this.shots.show(scene, !!door);
 		const at = door ?? target;
-		const box = at ? this.box(at) : overworld ? propsOf(scene).find((p) => p.id === 'welcome')!.rect : scene.exit;
+		const box = at ? this.box(at) : overworld ? arrival(scene) : scene.exit;
 		// Just inside a sub-scene's door is the floor in front of it, a cursor's height below the door on its wall, where a
 		// click doesn't leave again. The overworld's doors are buildings, or the Foundry's cinema.
 		const c = door && !overworld ? { x: box.x + box.w / 2, y: box.y + box.h + CARRY } : centre(box);
@@ -480,6 +487,21 @@ export class Engine {
 				if (video) void (video.paused ? video.play().catch(() => {}) : video.pause());
 			},
 			opts
+		);
+		// Locked, the wheel comes to the canvas too: it scrolls what the drawn cursor is over in a card, a screenshot in its
+		// window (Screens.svelte) or, where that has no further to go, the card's own contents.
+		this.canvas.addEventListener(
+			'wheel',
+			(e) => {
+				if (this.input.is !== 'locked' || !this.cursor) return;
+				const by = e.deltaY * (e.deltaMode ? 40 : 1);
+				for (let el = document.elementFromPoint(this.cursor.x, this.cursor.y); el?.closest('dialog'); el = el.parentElement) {
+					const top = el.scrollTop;
+					if (/auto|scroll/.test(getComputedStyle(el).overflowY)) el.scrollBy({ top: by, behavior: 'instant' });
+					if (el.scrollTop !== top) return;
+				}
+			},
+			{ ...opts, passive: true }
 		);
 		// A middle click opens the link under the locked cursor in a new tab, as it would at the OS pointer (ticket 11). A
 		// page can only open the tab in front, which pauses this one.
@@ -702,13 +724,14 @@ export class Engine {
 
 	/**
 	 * Esc with no card, blur or a hidden tab: the lock released, the cursor frozen where it is, the camera and keys stopped,
-	 * and a prop's video held.
+	 * a prop's video held, and the lobby TV's remote put back for the room.
 	 */
 	private pause() {
 		if (!joined(this.input)) return;
 		this.keys.clear();
 		this.stopped = [...this.layer.querySelectorAll('video')].filter((v) => !v.paused);
 		for (const v of this.stopped) v.pause();
+		this.remote.put();
 		this.enter({ is: 'paused', relock: this.input.is === 'locked' || this.input.is === 'released' });
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
 	}
@@ -837,6 +860,7 @@ export class Engine {
 		}
 		// Where the cursor now is decides which props it is behind, before their hover is read.
 		this.walk(scene, now);
+		this.remote.step(now);
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
 		const t = this.net.serverNow(), view = this.seen(), moved = this.props.step(dt * 1000, t, view, this.reducedMotion.matches, this.own), lit = this.projector.step(t);
@@ -1127,11 +1151,11 @@ export class Engine {
 			let f = this.peerFollow.get(id);
 			if (!f) this.peerFollow.set(id, (f = follower(scene)));
 			const last = f.last, { d, sides } = f.step(at, now, !!last && Math.hypot(at.x - last.x, at.y - last.y) > SNAP);
-			peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt, d, behind: behind(sides, p.river) });
+			peers.push({ x: (at.x - cam.x) * k, y: (at.y - cam.y) * k, cc: p.cc, gold: p.gold, cos: p.cos, wornAt: p.wornAt, d, behind: behind(sides, p.river), remote: id === this.net.tv.holder });
 		}
 		for (const id of this.peerFollow.keys()) if (!this.net.peers.has(id)) this.peerFollow.delete(id);
 		const own = c && {
-			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides, this.current.is === 'afloat')
+			x: c.x * this.dpr, y: c.y * this.dpr, cc: this.net.cc, gold, cos: this.worn, wornAt: this.wornAt, hand: this.pointing, d: this.ownDepth, behind: behind(this.ownSides, this.current.is === 'afloat'), remote: tv.held === 'me'
 		};
 		const r = hole(this.iris, now, this.view), iris = this.iris;
 		const shade = r === null || iris.is === 'open' ? null : { x: iris.at.x * this.dpr, y: iris.at.y * this.dpr, r: r * this.dpr };

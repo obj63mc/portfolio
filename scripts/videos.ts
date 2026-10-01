@@ -28,7 +28,16 @@ export interface Manifest {
 	bucket: string;
 	/** Each video on the host, by file name, to its key. */
 	files: Record<string, string>;
+	/** The Moosylvania lobby TV's channels, by file name, in order (`TV_FOLDERS`). */
+	tv: string[];
 }
+
+/**
+ * The folders whose videos the Moosylvania lobby TV plays, in channel order (Joe, 2026-10-01): the agency's own site by
+ * year, then the work. Within a folder the channels go by file name, so a video put in one of them is a channel at the
+ * next sync.
+ */
+export const TV_FOLDERS: readonly string[] = ['moosylvania', 'beer', 'cigar', 'liquor', 'paypal', 'universal'];
 
 /** Every video the site plays, by file name: each prop's card video and each of the Foundry screen's reels. */
 export const used = () => {
@@ -48,7 +57,7 @@ export function sources() {
 /**
  * The map after a sync of `files`, the sources here and the videos played: each at the key its source now hashes to, or
  * at the key it has where its source isn't on this machine. A video already in the map stays in it, its source here or
- * not: the bucket keeps every video it was ever given.
+ * not: the bucket keeps every video it was ever given. The lobby TV's channels are rewritten from the map each time.
  */
 export function plan(was: Manifest, files: readonly string[], local: (file: string) => { folder: string; hash: string } | null): Manifest {
 	const now: Record<string, string> = {};
@@ -57,7 +66,10 @@ export function plan(was: Manifest, files: readonly string[], local: (file: stri
 		if (!key) throw new Error(`${file}: no such file in a folder of art/sources/videos, and no key for it in the map`);
 		now[file] = key;
 	}
-	return { host: was.host, bucket: was.bucket, files: now };
+	// A key's folder is its second segment (scripts/media.ts); `now` is already in file-name order, and the sort is stable.
+	const folder = (file: string) => TV_FOLDERS.indexOf(now[file].split('/')[1]);
+	const tv = Object.keys(now).filter((f) => folder(f) >= 0).sort((a, b) => folder(a) - folder(b));
+	return { host: was.host, bucket: was.bucket, files: now, tv };
 }
 
 const hashOf = (path: string) => createHash('sha256').update(readFileSync(path)).digest('hex').slice(0, 8);

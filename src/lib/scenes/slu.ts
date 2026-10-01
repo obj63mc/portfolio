@@ -19,7 +19,6 @@ export const SLU: SubScene = {
 			id: 'diploma',
 			name: 'Diploma',
 			gist: 'BS Computer Science with Honors, 2005',
-			body: ['Bachelor of Science in Computer Science with Honors, Saint Louis University, 2005.'],
 			rect: { x: 2374, y: 167, w: 333, h: 457 },
 			cosmetic: 1
 		},
@@ -27,7 +26,6 @@ export const SLU: SubScene = {
 			id: 'whiteboard',
 			name: 'Whiteboard',
 			gist: 'basis path testing, the senior project',
-			body: ['A diagram of basis path testing, the senior project.'],
 			rect: { x: 627, y: 0, w: 784, h: 672 },
 			// Clipped where its lower edge reaches behind the near-left desk's monitor (spec: an irregular prop gets a clip-path).
 			clip: 'polygon(100% 0%, 0% 0%, 0% 100%, 30.36% 100%, 30.36% 96.8%, 30.58% 96.46%, 64.6% 86.33%, 65.43% 87.42%, 65.28% 100%, 100% 100%)'
@@ -36,7 +34,6 @@ export const SLU: SubScene = {
 			id: 'workstation',
 			name: 'Lab workstation',
 			gist: 'Joe’s GitHub',
-			body: ['The code lives on GitHub.'],
 			links: [{ label: 'GitHub', href: 'https://github.com/obj63mc' }],
 			rect: { x: 793, y: 1021, w: 284, h: 239 },
 			// Clipped where its top edge reaches behind the near-left desk's back leg and chair base (spec: an irregular prop gets a clip-path).
@@ -49,6 +46,7 @@ export const SLU: SubScene = {
 	walkBehind: [
 		{
 			key: 'slu-desk-front-left',
+			desk: true,
 			rect: { x: 751, y: 584, w: 534, h: 510 },
 			outline: [
 				{ x: 868, y: 651 }, { x: 1132, y: 583 }, { x: 1137, y: 588 }, { x: 1135, y: 724 }, { x: 1160, y: 719 },
@@ -66,6 +64,7 @@ export const SLU: SubScene = {
 		},
 		{
 			key: 'slu-desk-front-right',
+			desk: true,
 			rect: { x: 1600, y: 579, w: 534, h: 539 },
 			outline: [
 				{ x: 1719, y: 646 }, { x: 1947, y: 578 }, { x: 1957, y: 585 }, { x: 1957, y: 709 }, { x: 1991, y: 701 },
@@ -84,6 +83,7 @@ export const SLU: SubScene = {
 		},
 		{
 			key: 'slu-desk-back-left',
+			desk: true,
 			rect: { x: 650, y: 1019, w: 627, h: 569 },
 			outline: [
 				{ x: 791, y: 1083 }, { x: 1072, y: 1018 }, { x: 1079, y: 1024 }, { x: 1079, y: 1136 }, { x: 1130, y: 1124 },
@@ -102,6 +102,7 @@ export const SLU: SubScene = {
 		},
 		{
 			key: 'slu-desk-back-right',
+			desk: true,
 			rect: { x: 1921, y: 978, w: 578, h: 584 },
 			outline: [
 				{ x: 2044, y: 1049 }, { x: 2297, y: 978 }, { x: 2304, y: 984 }, { x: 2304, y: 1100 }, { x: 2338, y: 1092 },

@@ -1,13 +1,28 @@
 {
-  "sourceSha256": "229f4c36f8acffb7a96f0041e73d609abe4942bb6e85c647e6a58b935ba9d2e2",
-  "run": "art/runs/moosylvania-master/2026-09-29T00-37-32.000Z-upscale-4x",
+  "sourceSha256": "bbc8d211173ae89d8120d04b19b363785a75914e9f4e9b7d44216f3cd5f84d3a",
+  "run": "art/runs/moosylvania-master/2026-10-01T17-56-31.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/moosylvania-fix/stitched.png (native 887 x 1774, tile-map round 4)",
-    "baseSha256": "f95d7f9138064cae2b5df6984861779d86cea8c258f53c2ef88962ecad3c348f",
+    "base": "art/sources/moosylvania-fix/stitched.png (native 887 x 1774, tile-map round 5)",
+    "baseSha256": "c393f53eda2fb321597335cd1fcb364a6a557857c4a48151299148db453e62c9",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
-    "script": "scripts/art/overworld/install-master.sh"
+    "script": "scripts/art/overworld/install-master.sh",
+    "decals": [
+      {
+        "file": "art/sources/moosylvania-fix/loft-railing.svg",
+        "sha256": "28259c0ac9ba8ebd7fd10844b42a0c8ccd9f10cf1ee16c86543a3ad4edd724b1"
+      },
+      {
+        "file": "art/sources/moosylvania-fix/stairs-left-railings.svg",
+        "sha256": "c072536bb18e9ea12f346c73f925b1b2082d6ad930b31a9322c6cb5791d9e3ae"
+      },
+      {
+        "file": "art/sources/moosylvania-fix/stairs-right-railings.svg",
+        "sha256": "b30dee743e0d972ff7484d8b6f9e4e4dcf777870a38ba3868e7917f7457b4d42"
+      }
+    ],
+    "decalsSha256": "84b6b31326aba5187c23a058d6d9f65ec924e2a36c00626983fb4a7f264b9f12"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }

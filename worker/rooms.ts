@@ -13,7 +13,8 @@ import {
 	readControl,
 	samePresence,
 	type Peer,
-	type ServerMessage
+	type ServerMessage,
+	type Tv
 } from '../src/lib/net/protocol.ts';
 import { playing, type Screen } from '../src/lib/net/screen.ts';
 import { DIRECTORY, SCENES, refuse, type Env } from './index.ts';
@@ -22,7 +23,7 @@ export { default } from './index.ts';
 
 /**
  * What a room keeps with each socket, so that it can hibernate and wake with everyone where they were, and with the
- * Foundry screen partway through its reel: every socket carries the room's screen, rewritten on each play.
+ * Foundry screen partway through its reel: every socket carries the room's screen, rewritten on each play, and its TV.
  */
 interface Attachment {
 	room: string;
@@ -30,6 +31,7 @@ interface Attachment {
 	/** When they joined, epoch ms: a socket's keepalive clock until its first ping. */
 	at: number;
 	screen: Screen;
+	tv: Tv;
 }
 
 interface Visitor {
@@ -63,6 +65,11 @@ export class Room extends DurableObject<Env> {
 	private swept = 0;
 	/** The Foundry screen (spec: "One shared prop"): held here, reset when the room empties, idle outside the Foundry. */
 	private screen: Screen = null;
+	/**
+	 * The lobby TV and its remote (Joe, 2026-10-01), the other shared prop: held here like the screen, and only a
+	 * Moosylvania room's ever changes. The remote is one object, on the table or with one visitor.
+	 */
+	private tv: Tv = { ch: 0, holder: null };
 	/** One stub for every report, so that they reach the directory in the order they were sent. */
 	private directory = this.ctx.exports.Directory.getByName(DIRECTORY);
 
@@ -72,9 +79,11 @@ export class Room extends DurableObject<Env> {
 		ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
 		// Waking from hibernation runs the constructor again: rebuild the room from its sockets' attachments.
 		for (const ws of ctx.getWebSockets()) {
-			const { room, peer, at, screen } = ws.deserializeAttachment() as Attachment;
+			const { room, peer, at, screen, tv } = ws.deserializeAttachment() as Attachment;
 			this.name = room;
 			this.screen = screen;
+			// A socket kept from before the room held a TV has none.
+			this.tv = tv ?? this.tv;
 			this.visitors.set(ws, { peer, at, tokens: BURST, refill: Date.now() });
 		}
 	}
@@ -109,7 +118,8 @@ export class Room extends DurableObject<Env> {
 			cap: CAP,
 			room: this.name,
 			peers,
-			screen: playing(this.screen, Date.now()) ? this.screen : null
+			screen: playing(this.screen, Date.now()) ? this.screen : null,
+			tv: this.tv
 		};
 		send(ws, JSON.stringify(hello));
 		this.broadcast({ t: 'in', ...peer }, ws);
@@ -149,6 +159,13 @@ export class Room extends DurableObject<Env> {
 			this.screen = { title: m.title, at: now };
 			for (const [w, visitor] of this.visitors) this.save(w, visitor);
 			return this.broadcast({ t: 'screen', ...this.screen });
+		}
+		if (m.t !== 'presence') {
+			// The remote is taken only from the table, the first take winning, and tuned and put back only by its holder;
+			// anything else, or any of it outside the lobby, is dropped.
+			const { ch, holder } = this.tv;
+			if (!this.name.startsWith('moosylvania:') || (m.t === 'tv.take' ? holder !== null : holder !== p.id)) return;
+			return this.tune(m.t === 'tv.take' ? { ch, holder: p.id } : m.t === 'tv.put' ? { ch, holder: null } : { ch: ch + m.by, holder });
 		}
 		// Presence goes out when it changes, never in the tick's frame.
 		if (samePresence(m, p)) return;
@@ -211,10 +228,14 @@ export class Room extends DurableObject<Env> {
 		if (!v) return;
 		this.visitors.delete(ws);
 		this.moved.delete(v.peer);
+		// Whoever leaves holding the remote leaves it on the table, at once: a joiner may be given their id during the
+		// report below.
+		if (this.tv.holder === v.peer.id) this.tune({ ch: this.tv.ch, holder: null });
 		if (!this.visitors.size) {
 			clearTimeout(this.tick);
 			this.tick = undefined;
 			this.screen = null;
+			this.tv = { ch: 0, holder: null };
 		}
 		// The directory hears first, so a peer that sees `out` knows the directory has counted it.
 		await this.report();
@@ -229,8 +250,15 @@ export class Room extends DurableObject<Env> {
 		return this.directory.size(this.name, this.visitors.size).catch(console.error);
 	}
 
+	/** The lobby TV as it now is, kept with every socket and told to the room. */
+	private tune(tv: Tv) {
+		this.tv = tv;
+		for (const [ws, v] of this.visitors) this.save(ws, v);
+		this.broadcast({ t: 'tv', ...tv });
+	}
+
 	private save(ws: WebSocket, { peer, at }: Visitor) {
-		ws.serializeAttachment({ room: this.name, peer, at, screen: this.screen } satisfies Attachment);
+		ws.serializeAttachment({ room: this.name, peer, at, screen: this.screen, tv: this.tv } satisfies Attachment);
 	}
 
 	private broadcast(m: ServerMessage, except?: WebSocket) {

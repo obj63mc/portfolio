@@ -9,3 +9,6 @@ import manifest from './video-files.json';
 export const VIDEOS: Record<string, string> = Object.fromEntries(
 	Object.entries(manifest.files).map(([file, key]) => [file, `${PUBLIC_MEDIA_URL || '/media'}/${key}`])
 );
+
+/** The Moosylvania lobby TV's channels, by file name, in the order `npm run videos` gave them (scripts/videos.ts `TV_FOLDERS`). */
+export const TV: readonly string[] = manifest.tv;

@@ -1,0 +1,3 @@
+# It's MonsterCommerce not Monster.com
+
+Way back in 2004 I started at a startup in Belleville, IL, working on the help desk for an e-commerce platform (think Shopify before Shopify) while finishing my Computer Science degree. I joined full time 2005 and moved to QA working with the Product team developing special features for the platform while learning all about web development and classic ASP web pages when CSS barely even existed yet. Around 2007-2011 I moved to developing the actual marketing website after our acquisition by THE original domain name registrar NetworkSolutions. During this time I learned all about A/B testing and optimizing e-commerce experience developing checkout optimizations for their JSP based website.

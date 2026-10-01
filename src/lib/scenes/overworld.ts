@@ -35,11 +35,7 @@ const districts: District[] = [
 						id: 'welcome',
 						name: 'Welcome sign',
 						gist: 'Moosylvania, 2011 to present',
-						body: [
-							'2011 to present. Senior Developer to Chief Architect.',
-							'Leads all web work with a small team of writers, creatives and developers.'
-						],
-						rect: { x: 1775, y: 1400, w: 120, h: 77 }
+						rect: { x: 1775, y: 1363, w: 160, h: 114 }
 					},
 					{
 						id: 'moose',
@@ -48,7 +44,6 @@ const districts: District[] = [
 						// No card: the moose, the statue, the bike and the MonsterCommerce eye are Easter eggs, their click the
 						// grant (Joe, 2026-09-30).
 						kind: 'action',
-						body: [],
 						rect: { x: 1790, y: 1520, w: 140, h: 105 },
 						cosmetic: 4
 					}
@@ -99,7 +94,6 @@ const districts: District[] = [
 						name: 'Joe’s bike',
 						gist: 'still riding',
 						kind: 'action',
-						body: [],
 						rect: { x: 2012, y: 1884, w: 100, h: 57 },
 						cosmetic: 7
 					},
@@ -107,10 +101,6 @@ const districts: District[] = [
 						id: 'ride-sign',
 						name: 'Ride sign',
 						gist: 'longest ride 160 miles',
-						body: [
-							'Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.',
-							'Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series.'
-						],
 						// The bike's card went (Joe, 2026-09-30); its Strava link came here.
 						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
 						rect: { x: 1992, y: 1806, w: 78, h: 94 }
@@ -153,10 +143,6 @@ const districts: District[] = [
 						id: 'mc-sign',
 						name: 'MonsterCommerce sign',
 						gist: '2004 to 2011, acquired by Network Solutions',
-						body: [
-							'Intern from 2004, full time from 2005 after graduation, left in 2011.',
-							'Acquired by Network Solutions, announced December 2005.'
-						],
 						rect: { x: 5945, y: 1106, w: 581, h: 165 },
 						// The sign, then the monster's eye forming its O, which blinks. The eye is its own prop, drawn here, over the sign.
 						art: ['mc-sign', 'mc-eye']
@@ -166,7 +152,6 @@ const districts: District[] = [
 						name: 'The monster’s eye',
 						gist: 'MonsterCommerce',
 						kind: 'action',
-						body: [],
 						// The eye's cut-out, measured on the plate.
 						rect: { x: 6007, y: 1137, w: 66, h: 75 },
 						clip: 'ellipse(50% 50%)',
@@ -177,10 +162,6 @@ const districts: District[] = [
 						id: 'server-rack',
 						name: 'Server rack',
 						gist: 'the e-commerce platform, Shopify before Shopify',
-						body: [
-							'Built the e-commerce platform: Shopify before Shopify.',
-							'After the acquisition, moved to networksolutions.com, focusing on conversion optimisation, front-end development and A/B testing.'
-						],
 						rect: { x: 6351, y: 1406, w: 121, h: 174 }
 					}
 				]
@@ -197,16 +178,11 @@ export const OVERWORLD: Overworld = {
 	w: 6750,
 	h: 2700,
 	pushBand: 0.25,
-	signpost: {
-		rect: { x: 1520, y: 1370, w: 60, h: 120 },
-		// TODO Joe: the email address and LinkedIn URL are not on record anywhere in the spec. Fill them in.
-		contacts: [
-			{ label: 'Resume', href: '/resume.pdf' },
-			{ label: 'Email', href: 'mailto:TODO' },
-			{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/TODO' },
-			{ label: 'GitHub', href: 'https://github.com/obj63mc' }
-		]
-	},
+	// The directory board on the lawn left of the church steps (Joe, 2026-10-01), drawn by scripts/art/overworld/signs.py:
+	// its six plaques, three rows of two, a district each in the districts' order. The rect is the plaques' own box inside
+	// the board's cut-out, which the links share, each over 48 x 48 CSS px on a phone at 0.6. It links to the districts
+	// alone: the resume and the contacts are in the welcome sign's copy.
+	signpost: { rect: { x: 1298, y: 1178, w: 254, h: 256 } },
 	districts: districts.sort((a, b) => centre(a.rect) - centre(b.rect)),
 	depth: [
 		{ x: 0, y: 0, w: 1500, h: 2700 }, // Maplewood and the Forest Park strip

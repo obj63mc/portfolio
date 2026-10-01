@@ -8,6 +8,7 @@
 import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
 import { GAME, artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
+import { tv } from '../tv.svelte.ts';
 import { drawCourse } from './course-overlay.ts';
 import { MARQUEE, loadFaces, settled } from './fonts.ts';
 import type { Loader, Loading } from './loader.ts';
@@ -177,6 +178,8 @@ export class Props {
 	private rm = false;
 	/** The visitor's own cursor, world px, which the MonsterCommerce eye looks at; none before Join. */
 	private own: Point | null = null;
+	/** The source of the TV's video last asked to play (`television`). */
+	private tried: string | null = null;
 	/** Where a poster's light or a bottle's glint is masked to its pixels (`shine`). */
 	private scratch: OffscreenCanvas | undefined;
 	private listeners = new AbortController();
@@ -287,7 +290,8 @@ export class Props {
 	 * One frame's state at server time `t` (ms), `dt` ms after the last, with the visitor's own cursor at `own`: hover
 	 * levels eased toward what is hovered now.
 	 * Returns the world rect to draw again, or null when nothing in `view` looks different from its last drawing: a
-	 * cut-out arrived (all of it), a hover is fading, a reaction is running, ambient motion moved, the TV's video played.
+	 * cut-out arrived (all of it), a hover is fading, a reaction is running, ambient motion moved, the TV's video played, its remote was
+	 * taken or put back.
 	 */
 	step(dt: number, t: number, view: Rect, rm: boolean, own: Point | null): Rect | null {
 		this.t = t;
@@ -307,7 +311,9 @@ export class Props {
 				rode = l.box.x !== was.x || l.box.y !== was.y;
 				if (rode && overlaps(grow(was, REACH), view)) changed.push(grow(was, REACH));
 			}
-			if (!overlaps(grow(l.box, REACH), view)) continue;
+			const shown = overlaps(grow(l.box, REACH), view);
+			if (l.video) this.television(l.video.el, shown && (!rm || tv.tuned));
+			if (!shown) continue;
 			if (!l.seen) {
 				l.seen = true;
 				for (const loading of l.loading) loading.first();
@@ -401,13 +407,16 @@ export class Props {
 			: (l.rig || l.koi) && !rm ? t
 			: l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}`
 			: isBottle(l.prop) ? glint(t, rm)
-			: v ? `${v.currentTime},${v.ended}`
+			: v ? `${v.currentTime},${v.readyState >= 2}`
+			: l.prop?.tunes ? `${tv.held}`
 			: looking ? `${looking.x.toFixed(1)},${looking.y.toFixed(1)}`
 			: '';
 		return `${l.hover}|${reaction}|${ambient}`;
 	}
 
 	private drawLayer(g: CanvasRenderingContext2D, l: Layer, k: number) {
+		// A remote in someone's hand is off the table.
+		if (l.prop?.tunes && tv.held) return;
 		const { t, rm } = this, since = t - l.clicked, h = l.hover, poster = posterOf(l.prop?.id);
 		g.save();
 		// A click pops a prop about its centre, but the moose wobbles its antlers and the MonsterCommerce eye blinks instead.
@@ -686,9 +695,25 @@ export class Props {
 		g.restore();
 	}
 
-	/** The TV's video on its screen, fitted inside it, from the first frame played until it ends; dark otherwise. */
+	/**
+	 * The TV plays by itself (Joe, 2026-10-01): its video, a `status` prop's, muted and looping, runs while the TV is in
+	 * view and is held while it isn't, its download with it; under reduced motion only once the visitor has pressed a
+	 * channel button. A video is tried once, so one the browser refuses or can't play isn't asked for every frame; a new
+	 * channel is a new video, and one this held is tried again when the TV comes back into view.
+	 */
+	private television(v: HTMLVideoElement, on: boolean) {
+		const src = v.getAttribute('src');
+		if (!on || !src) {
+			if (!v.paused) v.pause(), (this.tried = null);
+		} else if (v.paused && this.tried !== src) {
+			this.tried = src;
+			v.play().catch(() => {});
+		}
+	}
+
+	/** The TV's video on its screen, fitted inside it, whenever it has a frame to show; dark otherwise, as between channels. */
 	private screen(g: CanvasRenderingContext2D, v: HTMLVideoElement, s: Rect) {
-		if (!v.currentTime || v.ended || v.readyState < 2 || !v.videoWidth) return;
+		if (v.readyState < 2 || !v.videoWidth) return;
 		const k = Math.min(s.w / v.videoWidth, s.h / v.videoHeight), w = v.videoWidth * k, h = v.videoHeight * k;
 		g.fillStyle = '#000';
 		g.fillRect(s.x, s.y, s.w, s.h);

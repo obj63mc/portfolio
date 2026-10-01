@@ -87,9 +87,9 @@ test("a follower keeps one cursor's drawn factor and its side of the walk-behind
 	assert.equal(f.sides.get('slu-desk-back-left'), 'behind');
 	assert.ok(f.d < 1 && f.d > FAR);
 	assert.deepEqual(cursor.last, monitor);
-	// A jump onto the monitor from in front of the desk takes the side of where it lands.
+	// A jump onto the monitor takes the side of where it lands, which on a desk is in front (Joe, 2026-10-01).
 	f = cursor.step(monitor, 48, true);
-	assert.equal(f.sides.get('slu-desk-back-left'), 'behind');
+	assert.equal(f.sides.get('slu-desk-back-left'), 'front');
 	// The overworld has no walk-behind scenery.
 	assert.equal(follower(OVERWORLD).step({ x: 100, y: 100 }, 0).sides.size, 0);
 });

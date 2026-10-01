@@ -31,10 +31,11 @@ test('consent at load: no id is off, GPC never loads, a stored choice stands, el
 	// Do Not Track is ignored: there is no input for it.
 });
 
-test('contact clicks: the resume, email, LinkedIn, GitHub and Strava links, from the signpost and the cards; nothing else', () => {
+test('contact clicks: the resume, email, LinkedIn, GitHub and Strava links, wherever a card has them; nothing else', () => {
 	const base = 'https://barmadden.com/';
-	const signpost = OVERWORLD.signpost.contacts.map((l) => contactMethod(l.href, base));
-	assert.deepEqual(signpost, ['resume', 'email', 'linkedin', 'github']);
+	// The welcome sign's copy carries the resume and the contacts since the signpost lost them (Joe, 2026-10-01).
+	const contacts = ['/resume.pdf', 'mailto:joe@example.com', 'https://www.linkedin.com/in/someone', 'https://github.com/obj63mc'].map((href) => contactMethod(href, base));
+	assert.deepEqual(contacts, ['resume', 'email', 'linkedin', 'github']);
 	const cards = [...OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props)), ...SLU.props].flatMap((p) => p.links ?? []);
 	assert.deepEqual(new Set(cards.map((l) => contactMethod(l.href, base))), new Set(['strava', 'github']));
 	for (const href of ['#belleville', '/moosylvania', '/#slu', 'https://example.com/resume', 'https://notgithub.com/x', 'javascript:void 0', 'http://[bad'])

@@ -12,6 +12,8 @@
 			<style>
 				.prop > button, .prop form { display: none; }
 				.prop > dialog { display: block; position: static; border: 0; padding: 0; }
+				/* A remote's card is only its buttons, which need the engine. */
+				.prop > dialog.remote { display: none; }
 				/* The document the engine would have taken (app.css), shown after all, on the page's own background. */
 				html { background: none !important; }
 				body > div { visibility: visible !important; }

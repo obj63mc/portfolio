@@ -9,29 +9,11 @@
       "pushBand": 0.25,
       "signpost": {
         "rect": {
-          "x": 1520,
-          "y": 1370,
-          "w": 60,
-          "h": 120
-        },
-        "contacts": [
-          {
-            "label": "Resume",
-            "href": "/resume.pdf"
-          },
-          {
-            "label": "Email",
-            "href": "mailto:TODO"
-          },
-          {
-            "label": "LinkedIn",
-            "href": "https://www.linkedin.com/in/TODO"
-          },
-          {
-            "label": "GitHub",
-            "href": "https://github.com/obj63mc"
-          }
-        ]
+          "x": 1298,
+          "y": 1178,
+          "w": 254,
+          "h": 256
+        }
       },
       "districts": [
         {
@@ -65,15 +47,11 @@
                   "id": "welcome",
                   "name": "Welcome sign",
                   "gist": "Moosylvania, 2011 to present",
-                  "body": [
-                    "2011 to present. Senior Developer to Chief Architect.",
-                    "Leads all web work with a small team of writers, creatives and developers."
-                  ],
                   "rect": {
                     "x": 1775,
-                    "y": 1400,
-                    "w": 120,
-                    "h": 77
+                    "y": 1363,
+                    "w": 160,
+                    "h": 114
                   }
                 },
                 {
@@ -81,7 +59,6 @@
                   "name": "The moose",
                   "gist": "the Moosylvania mascot",
                   "kind": "action",
-                  "body": [],
                   "rect": {
                     "x": 1790,
                     "y": 1520,
@@ -102,6 +79,36 @@
                 "h": 240
               },
               "door": "/side-project",
+              "props": []
+            }
+          ]
+        },
+        {
+          "id": "forest-park",
+          "name": "Forest Park",
+          "rect": {
+            "x": 200,
+            "y": 250,
+            "w": 1650,
+            "h": 600
+          },
+          "sign": {
+            "x": 1468,
+            "y": 694,
+            "w": 220,
+            "h": 58
+          },
+          "venues": [
+            {
+              "id": "sushi-stand",
+              "name": "Sushi Stand",
+              "rect": {
+                "x": 684,
+                "y": 486,
+                "w": 252,
+                "h": 68
+              },
+              "door": "/sushi-stand",
               "props": []
             }
           ]
@@ -137,7 +144,6 @@
                   "name": "Joe’s bike",
                   "gist": "still riding",
                   "kind": "action",
-                  "body": [],
                   "rect": {
                     "x": 2012,
                     "y": 1884,
@@ -150,10 +156,6 @@
                   "id": "ride-sign",
                   "name": "Ride sign",
                   "gist": "longest ride 160 miles",
-                  "body": [
-                    "Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.",
-                    "Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series."
-                  ],
                   "links": [
                     {
                       "label": "Strava",
@@ -279,10 +281,6 @@
                   "id": "mc-sign",
                   "name": "MonsterCommerce sign",
                   "gist": "2004 to 2011, acquired by Network Solutions",
-                  "body": [
-                    "Intern from 2004, full time from 2005 after graduation, left in 2011.",
-                    "Acquired by Network Solutions, announced December 2005."
-                  ],
                   "rect": {
                     "x": 5945,
                     "y": 1106,
@@ -299,7 +297,6 @@
                   "name": "The monster’s eye",
                   "gist": "MonsterCommerce",
                   "kind": "action",
-                  "body": [],
                   "rect": {
                     "x": 6007,
                     "y": 1137,
@@ -314,10 +311,6 @@
                   "id": "server-rack",
                   "name": "Server rack",
                   "gist": "the e-commerce platform, Shopify before Shopify",
-                  "body": [
-                    "Built the e-commerce platform: Shopify before Shopify.",
-                    "After the acquisition, moved to networksolutions.com, focusing on conversion optimisation, front-end development and A/B testing."
-                  ],
                   "rect": {
                     "x": 6351,
                     "y": 1406,
@@ -1173,25 +1166,21 @@
         {
           "id": "signpost",
           "rect": {
-            "x": 1520,
-            "y": 1370,
-            "w": 60,
-            "h": 120
+            "x": 1298,
+            "y": 1178,
+            "w": 254,
+            "h": 256
           }
         },
         {
           "id": "welcome",
           "name": "Welcome sign",
           "gist": "Moosylvania, 2011 to present",
-          "body": [
-            "2011 to present. Senior Developer to Chief Architect.",
-            "Leads all web work with a small team of writers, creatives and developers."
-          ],
           "rect": {
             "x": 1775,
-            "y": 1400,
-            "w": 120,
-            "h": 77
+            "y": 1363,
+            "w": 160,
+            "h": 114
           }
         },
         {
@@ -1199,7 +1188,6 @@
           "name": "The moose",
           "gist": "the Moosylvania mascot",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 1790,
             "y": 1520,
@@ -1213,7 +1201,6 @@
           "name": "Joe’s bike",
           "gist": "still riding",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 2012,
             "y": 1884,
@@ -1226,10 +1213,6 @@
           "id": "ride-sign",
           "name": "Ride sign",
           "gist": "longest ride 160 miles",
-          "body": [
-            "Longest ride: 160 miles, Ride Across Wisconsin. Longest two-day ride: 235 miles, Ride Across Wisconsin.",
-            "Raced criteriums, still rides. The loop road around the lake hosts the Carondelicious Criterium and the Tuesday night training series."
-          ],
           "links": [
             {
               "label": "Strava",
@@ -1247,10 +1230,6 @@
           "id": "mc-sign",
           "name": "MonsterCommerce sign",
           "gist": "2004 to 2011, acquired by Network Solutions",
-          "body": [
-            "Intern from 2004, full time from 2005 after graduation, left in 2011.",
-            "Acquired by Network Solutions, announced December 2005."
-          ],
           "rect": {
             "x": 5945,
             "y": 1106,
@@ -1267,7 +1246,6 @@
           "name": "The monster’s eye",
           "gist": "MonsterCommerce",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 6007,
             "y": 1137,
@@ -1282,10 +1260,6 @@
           "id": "server-rack",
           "name": "Server rack",
           "gist": "the e-commerce platform, Shopify before Shopify",
-          "body": [
-            "Built the e-commerce platform: Shopify before Shopify.",
-            "After the acquisition, moved to networksolutions.com, focusing on conversion optimisation, front-end development and A/B testing."
-          ],
           "rect": {
             "x": 6351,
             "y": 1406,
@@ -1301,9 +1275,9 @@
           "kind": "prop",
           "rect": {
             "x": 1775,
-            "y": 1400,
-            "w": 120,
-            "h": 77
+            "y": 1363,
+            "w": 160,
+            "h": 114
           }
         },
         {
@@ -1311,10 +1285,10 @@
           "asset": "signpost",
           "kind": "prop",
           "rect": {
-            "x": 1520,
-            "y": 1370,
-            "w": 60,
-            "h": 120
+            "x": 1290,
+            "y": 1134,
+            "w": 270,
+            "h": 336
           }
         },
         {
@@ -1521,18 +1495,18 @@
           "id": "welcome",
           "rect": {
             "x": 1775,
-            "y": 1400,
-            "w": 120,
-            "h": 77
+            "y": 1363,
+            "w": 160,
+            "h": 114
           }
         },
         {
           "id": "signpost",
           "rect": {
-            "x": 1520,
-            "y": 1370,
-            "w": 60,
-            "h": 120
+            "x": 1290,
+            "y": 1134,
+            "w": 270,
+            "h": 336
           }
         },
         {
@@ -1660,9 +1634,32 @@
         {
           "id": "computer-frontend",
           "name": "Frontend computer",
-          "gist": "Nuxt, Next, Svelte, TypeScript",
-          "body": [
-            "Nuxt, Next, Svelte, modern JavaScript, TypeScript and SCSS."
+          "gist": "Vue, Nuxt, React, Svelte, TypeScript",
+          "logos": [
+            {
+              "name": "Vue",
+              "file": "vue.svg"
+            },
+            {
+              "name": "Nuxt",
+              "file": "nuxt.svg"
+            },
+            {
+              "name": "React",
+              "file": "react.svg"
+            },
+            {
+              "name": "Svelte",
+              "file": "svelte.svg"
+            },
+            {
+              "name": "TypeScript",
+              "file": "typescript.svg"
+            },
+            {
+              "name": "JavaScript",
+              "file": "javascript.svg"
+            }
           ],
           "rect": {
             "x": 1391,
@@ -1674,9 +1671,40 @@
         {
           "id": "computer-backend",
           "name": "Backend computer",
-          "gist": "Node.js, TypeScript and PHP platforms",
-          "body": [
-            "Node.js/TypeScript and PHP platforms; experience with ASP.NET C#, Ruby and Python."
+          "gist": "Node.js, PHP, Python, Docker and where they run",
+          "logos": [
+            {
+              "name": "Node.js",
+              "file": "nodejs.svg"
+            },
+            {
+              "name": "PHP",
+              "file": "php.svg"
+            },
+            {
+              "name": "Python",
+              "file": "python.svg"
+            },
+            {
+              "name": "Docker",
+              "file": "docker.svg"
+            },
+            {
+              "name": "AWS",
+              "file": "aws.svg"
+            },
+            {
+              "name": "Cloudflare",
+              "file": "cloudflare.svg"
+            },
+            {
+              "name": "Heroku",
+              "file": "heroku.svg"
+            },
+            {
+              "name": "Render",
+              "file": "render.svg"
+            }
           ],
           "rect": {
             "x": 1580,
@@ -1689,9 +1717,44 @@
         {
           "id": "computer-cms",
           "name": "CMS computer",
-          "gist": "WordPress, SilverStripe, Strapi, Prismic, Storyblok",
-          "body": [
-            "WordPress, SilverStripe and Strapi; headless Prismic and Storyblok."
+          "gist": "WordPress, Silverstripe, Strapi, Shopify, HubSpot",
+          "logos": [
+            {
+              "name": "WordPress",
+              "file": "wordpress.svg"
+            },
+            {
+              "name": "Silverstripe",
+              "file": "silverstripe.svg"
+            },
+            {
+              "name": "Strapi",
+              "file": "strapi.svg"
+            },
+            {
+              "name": "Django",
+              "file": "django.svg"
+            },
+            {
+              "name": "Shopify",
+              "file": "shopify.svg"
+            },
+            {
+              "name": "HubSpot",
+              "file": "hubspot.svg"
+            },
+            {
+              "name": "Marketing Cloud",
+              "file": "salesforce-marketing-cloud.png"
+            },
+            {
+              "name": "Mailchimp",
+              "file": "mailchimp.svg"
+            },
+            {
+              "name": "Campaign Monitor",
+              "file": "campaignmonitor.svg"
+            }
           ],
           "rect": {
             "x": 663,
@@ -1703,9 +1766,28 @@
         {
           "id": "computer-data",
           "name": "Data computer",
-          "gist": "MySQL, PostgreSQL, Redis",
-          "body": [
-            "MySQL, PostgreSQL and Redis; MongoDB experience."
+          "gist": "MySQL, PostgreSQL, Redis, MongoDB, Elasticsearch",
+          "logos": [
+            {
+              "name": "MySQL",
+              "file": "mysql.svg"
+            },
+            {
+              "name": "PostgreSQL",
+              "file": "postgresql.svg"
+            },
+            {
+              "name": "Redis",
+              "file": "redis.svg"
+            },
+            {
+              "name": "MongoDB",
+              "file": "mongodb.svg"
+            },
+            {
+              "name": "Elasticsearch",
+              "file": "elasticsearch.svg"
+            }
           ],
           "rect": {
             "x": 1136,
@@ -1719,7 +1801,6 @@
           "name": "Moose statue",
           "gist": "the Moosylvania mascot",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 1623,
             "y": 2549,
@@ -1734,10 +1815,8 @@
         {
           "id": "meeting-tv",
           "name": "Meeting TV",
-          "gist": "a video from Joe",
-          "body": [
-            "A video from Joe Madden."
-          ],
+          "gist": "sites Joe built, playing muted",
+          "kind": "status",
           "rect": {
             "x": 787,
             "y": 3434,
@@ -1748,7 +1827,7 @@
             "moosylvania-tv"
           ],
           "video": {
-            "file": "fastfive-demo-full-1024x768.mp4",
+            "file": "moosylvania-2019-home-work-cigar-world-2026-09-30.mp4",
             "screen": {
               "x": 896,
               "y": 3491,
@@ -1756,6 +1835,18 @@
               "h": 255
             }
           }
+        },
+        {
+          "id": "tv-remote",
+          "name": "TV remote",
+          "gist": "changes the channel on the meeting TV",
+          "rect": {
+            "x": 1000,
+            "y": 4262,
+            "w": 100,
+            "h": 58
+          },
+          "tunes": "meeting-tv"
         }
       ],
       "exit": {
@@ -1893,6 +1984,7 @@
         },
         {
           "key": "moosylvania-desk-back",
+          "desk": true,
           "rect": {
             "x": 1312,
             "y": 694,
@@ -1965,6 +2057,7 @@
         },
         {
           "key": "moosylvania-desk-right",
+          "desk": true,
           "rect": {
             "x": 1504,
             "y": 850,
@@ -2037,6 +2130,7 @@
         },
         {
           "key": "moosylvania-desk-left",
+          "desk": true,
           "rect": {
             "x": 566,
             "y": 879,
@@ -2097,6 +2191,7 @@
         },
         {
           "key": "moosylvania-desk-centre",
+          "desk": true,
           "rect": {
             "x": 1004,
             "y": 999,
@@ -2165,6 +2260,7 @@
         },
         {
           "key": "moosylvania-desk-front",
+          "desk": true,
           "rect": {
             "x": 1634,
             "y": 1153,
@@ -2764,64 +2860,6 @@
           ]
         },
         {
-          "key": "moosylvania-meeting-table",
-          "rect": {
-            "x": 917,
-            "y": 4151,
-            "w": 579,
-            "h": 322
-          },
-          "outline": [
-            {
-              "x": 1480,
-              "y": 4467
-            },
-            {
-              "x": 925,
-              "y": 4467
-            },
-            {
-              "x": 915,
-              "y": 4424
-            },
-            {
-              "x": 923,
-              "y": 4216
-            },
-            {
-              "x": 1158,
-              "y": 4148
-            },
-            {
-              "x": 1239,
-              "y": 4148
-            },
-            {
-              "x": 1477,
-              "y": 4210
-            },
-            {
-              "x": 1491,
-              "y": 4345
-            },
-            {
-              "x": 1491,
-              "y": 4424
-            }
-          ],
-          "front": [
-            {
-              "x": 925,
-              "y": 4470
-            },
-            {
-              "x": 1480,
-              "y": 4470
-            }
-          ],
-          "props": []
-        },
-        {
           "key": "moosylvania-meeting-chairs-left",
           "rect": {
             "x": 533,
@@ -3085,6 +3123,17 @@
           }
         },
         {
+          "id": "moosylvania-tv-remote",
+          "asset": "moosylvania-tv-remote",
+          "kind": "prop",
+          "rect": {
+            "x": 1000,
+            "y": 4262,
+            "w": 100.4,
+            "h": 58.3
+          }
+        },
+        {
           "id": "moosylvania-statue",
           "asset": "moosylvania-statue",
           "kind": "prop",
@@ -3342,6 +3391,15 @@
           }
         },
         {
+          "id": "moosylvania-tv-remote",
+          "rect": {
+            "x": 1000,
+            "y": 4262,
+            "w": 100.4,
+            "h": 58.3
+          }
+        },
+        {
           "id": "moosylvania-statue",
           "rect": {
             "x": 1623.45,
@@ -3385,9 +3443,6 @@
           "id": "diploma",
           "name": "Diploma",
           "gist": "BS Computer Science with Honors, 2005",
-          "body": [
-            "Bachelor of Science in Computer Science with Honors, Saint Louis University, 2005."
-          ],
           "rect": {
             "x": 2374,
             "y": 167,
@@ -3400,9 +3455,6 @@
           "id": "whiteboard",
           "name": "Whiteboard",
           "gist": "basis path testing, the senior project",
-          "body": [
-            "A diagram of basis path testing, the senior project."
-          ],
           "rect": {
             "x": 627,
             "y": 0,
@@ -3415,9 +3467,6 @@
           "id": "workstation",
           "name": "Lab workstation",
           "gist": "Joe’s GitHub",
-          "body": [
-            "The code lives on GitHub."
-          ],
           "links": [
             {
               "label": "GitHub",
@@ -3455,6 +3504,7 @@
       "walkBehind": [
         {
           "key": "slu-desk-front-left",
+          "desk": true,
           "rect": {
             "x": 751,
             "y": 584,
@@ -3653,6 +3703,7 @@
         },
         {
           "key": "slu-desk-front-right",
+          "desk": true,
           "rect": {
             "x": 1600,
             "y": 579,
@@ -3871,6 +3922,7 @@
         },
         {
           "key": "slu-desk-back-left",
+          "desk": true,
           "rect": {
             "x": 650,
             "y": 1019,
@@ -4087,6 +4139,7 @@
         },
         {
           "key": "slu-desk-back-right",
+          "desk": true,
           "rect": {
             "x": 1921,
             "y": 978,
@@ -4429,7 +4482,6 @@
           "name": "Fast Five poster",
           "gist": "play it on the screen",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 247,
             "y": 187,
@@ -4443,7 +4495,6 @@
           "name": "Snow White and the Huntsman poster",
           "gist": "play it on the screen",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 543,
             "y": 129,
@@ -4457,7 +4508,6 @@
           "name": "The Lorax poster",
           "gist": "play it on the screen",
           "kind": "action",
-          "body": [],
           "rect": {
             "x": 822,
             "y": 70,
@@ -4471,7 +4521,6 @@
           "name": "Screen",
           "gist": "idle, pick a poster to start a reel",
           "kind": "status",
-          "body": [],
           "rect": {
             "x": 1656,
             "y": 85,
@@ -5549,9 +5598,6 @@
           "id": "bottle-bud-light",
           "name": "Bud Light bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "Bud Light: client work at Moosylvania."
-          ],
           "rect": {
             "x": 398,
             "y": 644,
@@ -5566,9 +5612,6 @@
           "id": "bottle-sapporo",
           "name": "Sapporo bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "Sapporo: client work at Moosylvania."
-          ],
           "rect": {
             "x": 500,
             "y": 644,
@@ -5583,9 +5626,6 @@
           "id": "bottle-anchor",
           "name": "Anchor Brewing bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "Anchor Brewing: client work at Moosylvania."
-          ],
           "rect": {
             "x": 602,
             "y": 643,
@@ -5600,9 +5640,6 @@
           "id": "bottle-soonhari",
           "name": "Soonhari bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "Soonhari: client work at Moosylvania."
-          ],
           "rect": {
             "x": 706,
             "y": 682,
@@ -5611,113 +5648,154 @@
           },
           "video": {
             "file": "soonhari-homepage-2026-09-30-4k.mp4"
-          }
+          },
+          "links": [
+            {
+              "label": "See More",
+              "href": "https://soonhariusa.com"
+            }
+          ]
         },
         {
           "id": "bottle-bacardi",
           "name": "Bacardi bottle",
           "gist": "built the website",
-          "body": [
-            "Bacardi: Joe built the website at Moosylvania."
-          ],
           "rect": {
             "x": 795,
             "y": 590,
             "w": 83,
             "h": 260
-          }
+          },
+          "screens": [
+            {
+              "name": "The Oakheart Challenge",
+              "file": "bacardi/1-oakheart-homepage-1028.webp"
+            },
+            {
+              "name": "Vote for your favorite team",
+              "file": "bacardi/2-oakheart-vote-now-1028.webp"
+            },
+            {
+              "name": "Generator your Team Name",
+              "file": "bacardi/3-oakheart-name-generator-before-1028.webp"
+            },
+            {
+              "name": "What you get",
+              "file": "bacardi/4-oakheart-name-generator-after-1028.webp"
+            }
+          ]
         },
         {
           "id": "bottle-grey-goose",
           "name": "Grey Goose bottle",
           "gist": "built the website",
-          "body": [
-            "Grey Goose: Joe built the website at Moosylvania."
-          ],
           "rect": {
             "x": 914,
             "y": 578,
             "w": 76,
             "h": 272
-          }
+          },
+          "screens": [
+            {
+              "name": "Cherry Noir Influencer Launch",
+              "file": "greygoose/1-greygoose-homepage-1028.webp"
+            },
+            {
+              "name": "Stay at Hotel Noir",
+              "file": "greygoose/2-greygoose-about-1028.webp"
+            },
+            {
+              "name": "The Itinerary",
+              "file": "greygoose/3-greygoose-itinerary-1028.webp"
+            },
+            {
+              "name": "Cherry Lane",
+              "file": "greygoose/4-CNRecipeCardCherryLane.webp"
+            },
+            {
+              "name": "Cherry Moon",
+              "file": "greygoose/5-CNRecipeCardCherryMoon.webp"
+            },
+            {
+              "name": "Midnight Martinez",
+              "file": "greygoose/6-CNRecipeCardMidnightMartinez.webp"
+            }
+          ]
         },
         {
           "id": "bottle-ej",
           "name": "E&J Brandy bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "E&J Brandy: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1026,
             "y": 650,
             "w": 95,
             "h": 202
+          },
+          "video": {
+            "file": "ej-brandy-home-collection-vsop-2026-09-30.mp4"
           }
         },
         {
           "id": "bottle-camarena",
           "name": "Camarena Tequila bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "Camarena Tequila: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1157,
             "y": 631,
             "w": 95,
             "h": 219
+          },
+          "video": {
+            "file": "camarena-home-margarita-2026-09-30.mp4"
           }
         },
         {
           "id": "bottle-rumchata",
           "name": "RumChata bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "RumChata: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1290,
             "y": 650,
             "w": 97,
             "h": 201
+          },
+          "video": {
+            "file": "rumchata-home-peppermint-bark-2026-09-30.mp4"
           }
         },
         {
           "id": "bottle-pink-whitney",
           "name": "Pink Whitney bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "Pink Whitney: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1423,
             "y": 622,
             "w": 77,
             "h": 221
+          },
+          "video": {
+            "file": "pink-whitney-home-products-750ml-2026-09-30.mp4"
           }
         },
         {
           "id": "bottle-new-amsterdam",
           "name": "New Amsterdam Vodka bottle",
           "gist": "Moosylvania client work",
-          "body": [
-            "New Amsterdam Vodka: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1535,
             "y": 595,
             "w": 80,
             "h": 252
+          },
+          "video": {
+            "file": "new-amsterdam-home-find-your-wins-2026-09-30.mp4"
           }
         },
         {
           "id": "brewery-sign",
           "name": "Side Project sign",
           "gist": "Side Project Brewing",
-          "body": [
-            "Side Project Brewing’s light bulb, on the Cellar’s cooler door. The Cellar is across the street from Moosylvania."
-          ],
           "rect": {
             "x": 2007,
             "y": 639,
@@ -5728,20 +5806,6 @@
           "art": [
             "side-project-sign"
           ]
-        },
-        {
-          "id": "chalkboard",
-          "name": "Chalkboard",
-          "gist": "Joe’s favourite brewery",
-          "body": [
-            "Side Project is Joe’s favourite brewery. Favourite styles: stouts and barleywines."
-          ],
-          "rect": {
-            "x": 2227,
-            "y": 561,
-            "w": 289,
-            "h": 262
-          }
         }
       ],
       "exit": {
@@ -6199,9 +6263,6 @@
           "id": "humidor-cohiba",
           "name": "Cohiba box",
           "gist": "Moosylvania client work",
-          "body": [
-            "Cohiba: client work at Moosylvania."
-          ],
           "rect": {
             "x": 553,
             "y": 616,
@@ -6211,15 +6272,15 @@
           "cosmetic": 6,
           "art": [
             "brennans-box-cohiba"
-          ]
+          ],
+          "video": {
+            "file": "cohiba-homepage-2026-09-30.mp4"
+          }
         },
         {
           "id": "humidor-macanudo",
           "name": "Macanudo box",
           "gist": "Moosylvania client work",
-          "body": [
-            "Macanudo: client work at Moosylvania."
-          ],
           "rect": {
             "x": 825,
             "y": 619,
@@ -6229,15 +6290,15 @@
           "cosmetic": 6,
           "art": [
             "brennans-box-macanudo"
-          ]
+          ],
+          "video": {
+            "file": "macanudo-homepage-2026-09-30.mp4"
+          }
         },
         {
           "id": "humidor-partagas",
           "name": "Partagas box",
           "gist": "Moosylvania client work",
-          "body": [
-            "Partagas: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1086,
             "y": 629,
@@ -6247,15 +6308,15 @@
           "cosmetic": 6,
           "art": [
             "brennans-box-partagas"
-          ]
+          ],
+          "video": {
+            "file": "partagas-homepage-2026-09-30.mp4"
+          }
         },
         {
           "id": "humidor-la-gloria-cubana",
           "name": "La Gloria Cubana box",
           "gist": "Moosylvania client work",
-          "body": [
-            "La Gloria Cubana: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1336,
             "y": 638,
@@ -6265,15 +6326,15 @@
           "cosmetic": 6,
           "art": [
             "brennans-box-la-gloria-cubana"
-          ]
+          ],
+          "video": {
+            "file": "la-gloria-cubana-homepage-2026-09-30.mp4"
+          }
         },
         {
           "id": "humidor-punch",
           "name": "Punch box",
           "gist": "Moosylvania client work",
-          "body": [
-            "Punch: client work at Moosylvania."
-          ],
           "rect": {
             "x": 1582,
             "y": 643,
@@ -6283,15 +6344,15 @@
           "cosmetic": 6,
           "art": [
             "brennans-box-punch"
-          ]
+          ],
+          "video": {
+            "file": "punch-homepage-2026-09-30.mp4"
+          }
         },
         {
           "id": "stg-logo",
           "name": "Scandinavian Tobacco Group plaque",
           "gist": "Moosylvania client work",
-          "body": [
-            "Scandinavian Tobacco Group: client work at Moosylvania."
-          ],
           "rect": {
             "x": 954,
             "y": 43,
@@ -6300,7 +6361,10 @@
           },
           "art": [
             "brennans-stg"
-          ]
+          ],
+          "video": {
+            "file": "cigarworld-home-feed-macanudo-2026-09-30.mp4"
+          }
         }
       ],
       "exit": {
@@ -8063,7 +8127,7 @@
       "source": {
         "w": 3548,
         "h": 7096,
-        "sha256": "be9b030a358ff97d9e0d4ec59d8efbc2c42558db6d7469ec283ab9df76e22047"
+        "sha256": "3ccf3f4226234fbd2403eb595e8771ec00a584628522d23f60d9ea791672f3a3"
       },
       "trim": {
         "x": 0,
@@ -8890,7 +8954,7 @@
       "source": {
         "w": 164,
         "h": 140,
-        "sha256": "8897ddb221d370d3cca9249f794ac686c759522e9acc9c240cca3896dd0179d7"
+        "sha256": "11e14b03e9f774afc224058593efe81f521af5ed0cc9f7728ec476c0fb82fae2"
       },
       "trim": {
         "x": 0,
@@ -8958,7 +9022,7 @@
       "source": {
         "w": 216,
         "h": 180,
-        "sha256": "dafcacb9213ee6aacf48d1fdf2b241857a8f0e1a5da46dcf561704706f0a8bcb"
+        "sha256": "d35d0eadd5aa8f0e1fccca23eb1791129fd009a8e638be61389f420c0b0919d4"
       },
       "trim": {
         "x": 0,
@@ -9026,7 +9090,7 @@
       "source": {
         "w": 208,
         "h": 180,
-        "sha256": "4d045589de366a0d862cbe7097395d394a9b495e854fd3522a97abf331b03bd4"
+        "sha256": "15763f4ef060ab5a6e6da2ddf4239de2367fed6283900e72c6a0a1cac3e9437e"
       },
       "trim": {
         "x": 0,
@@ -9094,7 +9158,7 @@
       "source": {
         "w": 188,
         "h": 160,
-        "sha256": "8b3c1ea53aa2676b5ebf74199f2d5583220926c220c8ffeedcfd3f1254468a03"
+        "sha256": "76e70e534372711e32ca5036505ae2618ddb602187c1778aa7f6191b8c75070d"
       },
       "trim": {
         "x": 0,
@@ -9162,7 +9226,7 @@
       "source": {
         "w": 1228,
         "h": 584,
-        "sha256": "c8700ab41212b9216a988a5478c78da123dfa81cc37bbcfc4cd0ba3d7af76528"
+        "sha256": "00780f7766c49fbb3ee180d3ba23cdca52aab86299e1c46e3010c5d04ec52d57"
       },
       "trim": {
         "x": 0,
@@ -9201,6 +9265,31 @@
       }
     },
     {
+      "id": "moosylvania-tv-remote",
+      "scene": "moosylvania",
+      "kind": "prop",
+      "file": "moosylvania/moosylvania-tv-remote/image.webp",
+      "world": {
+        "x": 1000,
+        "y": 4262,
+        "w": 100.4,
+        "h": 58.3
+      },
+      "source": {
+        "w": 1000,
+        "h": 580,
+        "sha256": "8fa14841e0296787165912057e9664d7444f15b7bc2566ab2adf54112f81a5e3"
+      },
+      "trim": {
+        "x": 0,
+        "y": 0,
+        "w": 1000,
+        "h": 580
+      },
+      "width": 1000,
+      "height": 580
+    },
+    {
       "id": "moosylvania-statue",
       "scene": "moosylvania",
       "kind": "prop",
@@ -9214,7 +9303,7 @@
       "source": {
         "w": 188,
         "h": 268,
-        "sha256": "63b9e16cae72e49e82d97508feb111d18e608c92f665ca9d44984267da9f1341"
+        "sha256": "fda36a821ec98df12b4ddeffdbbbc558c12111e9fe4369ef1cb0114afafd5e7c"
       },
       "trim": {
         "x": 0,
@@ -9610,7 +9699,7 @@
       "source": {
         "w": 464,
         "h": 352,
-        "sha256": "daadaa4152e2141bda2197559168c863831f6fd0f86cbce472db67059fec192c"
+        "sha256": "fecfb135830b4554e1fbaec23ce8a9bb5af589e6f97924e8f004c90b395e38a2"
       },
       "trim": {
         "x": 0,
@@ -9994,7 +10083,7 @@
       "source": {
         "w": 368,
         "h": 228,
-        "sha256": "6124a22d9bc3226204f764e859bf9381470068a6ad171e424ec808a3bb7cb47e"
+        "sha256": "3e4517c9a4bfee2343ac03551cc4e346ca72139457d002739347c9940f0b2a72"
       },
       "trim": {
         "x": 0,
@@ -10262,7 +10351,7 @@
       "source": {
         "w": 536,
         "h": 432,
-        "sha256": "7f1f9042ce24a826f3b7ee807aa80de1a4b40e4aa344dbd577d4b6cb9b601adf"
+        "sha256": "bf4c86f0585fc3a87002d7cc2e7fbee91736b44fd293ea4c41c7831581d958f2"
       },
       "trim": {
         "x": 0,
@@ -10742,7 +10831,7 @@
       "source": {
         "w": 540,
         "h": 408,
-        "sha256": "4eaacbfca7c50e0d0acd049b38fc007622cbbc69d6b73c257ef40d78d190b941"
+        "sha256": "f8cb61e4c83e9e7d798364dd085adae3664d0d4b416a1dddb9ddc3edb3ac00f8"
       },
       "trim": {
         "x": 0,
@@ -11258,7 +11347,7 @@
       "source": {
         "w": 564,
         "h": 428,
-        "sha256": "9fc7478f296adfd816ba89210e2ef7b66bfeff690bdb8fec288f3ed981132d2c"
+        "sha256": "f6b149e6764a1495eb8e663e330a5cc71833ec9bb6b050c60497e999c541684b"
       },
       "trim": {
         "x": 0,
@@ -11770,7 +11859,7 @@
       "source": {
         "w": 316,
         "h": 236,
-        "sha256": "ee1de125003b0fee3498997078d66a5876a7b8dbff9a2e2ea8519a393ee2684f"
+        "sha256": "cb08074708b5fb23acbd8d73b768a4f14f120de4d540dfde91a46b310f27e708"
       },
       "trim": {
         "x": 0,
@@ -11890,7 +11979,7 @@
       "source": {
         "w": 588,
         "h": 1796,
-        "sha256": "0174221a74975fdc605cddd14138baf72f12ecb903906a5fd2377a9d704ea7d2"
+        "sha256": "3c6d594b047b5976da286d3ab13a94ad5e3605cdbb36bc2931722e8afc43098c"
       },
       "trim": {
         "x": 0,
@@ -12230,7 +12319,7 @@
       "source": {
         "w": 584,
         "h": 1772,
-        "sha256": "bc30c500eb92faedc591f1b3b42b77804a7ac3f87e5180698ecda2759d883051"
+        "sha256": "8c49ea4244f850a0b2437f278abbfe60109af413b966e633e9e14aeac64d5a0e"
       },
       "trim": {
         "x": 0,
@@ -12578,7 +12667,7 @@
       "source": {
         "w": 388,
         "h": 272,
-        "sha256": "c5e03d12a6f392e309256a1d76a242763d1180bc53571564d807ff639245e0b9"
+        "sha256": "c57c3f34a93da8b509ec98d8211bae2e03eeda140e3db8e4fac53a5634c618c8"
       },
       "trim": {
         "x": 0,
@@ -12818,7 +12907,7 @@
       "source": {
         "w": 448,
         "h": 708,
-        "sha256": "fb4b9ee427ad7a423ae50f664e951cdc6aed6f7f271f5374fc98a1bbc9170046"
+        "sha256": "2997a893b9e977432007a55638a9df5df7e8953466ea8594246ea8c959bfe21a"
       },
       "trim": {
         "x": 0,
@@ -13094,7 +13183,7 @@
       "source": {
         "w": 448,
         "h": 716,
-        "sha256": "4ef1f71b3e447f36222f79038f55eff8607255b68b8d21d309ac1cf233307547"
+        "sha256": "180ec4dcb8cd800264823095a6fed4a211ba4fe6ce36f0053148fd95175dd105"
       },
       "trim": {
         "x": 0,
@@ -13354,7 +13443,7 @@
       "source": {
         "w": 1992,
         "h": 1484,
-        "sha256": "0563cc809380229194c0a56fdfa3734bce03032932f1f42c881e059a273aa382"
+        "sha256": "56136188a0c2d85ccb25674e6b30eeefa93ec66becfded5eb9a68a60ecad369b"
       },
       "trim": {
         "x": 0,
@@ -13422,7 +13511,7 @@
       "source": {
         "w": 1184,
         "h": 436,
-        "sha256": "6f90b1f93914cc48e00a0bcefb05a9b619db413bd5dce134829c55fe72cc83f9"
+        "sha256": "55e672f8bb165e88dcc807cde5a2d410392aeea8f0126ed9869bb06743f6a3de"
       },
       "trim": {
         "x": 0,
@@ -13698,7 +13787,7 @@
       "source": {
         "w": 860,
         "h": 480,
-        "sha256": "9cbdab85e5ae3c008b37a8d2bae7ab5fcb35197af02854025b1d2789bb112193"
+        "sha256": "2b896dd04bb2fbd6476e419b06c70af3a84e9e808f147216ba9f029bfbc67914"
       },
       "trim": {
         "x": 0,
@@ -13982,7 +14071,7 @@
       "source": {
         "w": 400,
         "h": 784,
-        "sha256": "59b3506a928b3f03a10c4146b968fb4bb8b9192a9ff0799c4f05f4160bdfd64e"
+        "sha256": "fe9b49cd22500781c8ed327290c0f85f194dbfcc62d7af6089991fe3a70a70bf"
       },
       "trim": {
         "x": 0,
@@ -14430,7 +14519,7 @@
       "source": {
         "w": 400,
         "h": 784,
-        "sha256": "95bbb01ef60a9ec11db72336ceb902bb96ef9e5d6df2de1ec768be2714605371"
+        "sha256": "43248130669e9e1b014464dde7be543dffc61285d44ea08e2698888ec7723f98"
       },
       "trim": {
         "x": 2,
@@ -14846,7 +14935,7 @@
       "source": {
         "w": 756,
         "h": 1660,
-        "sha256": "0fab201c3ed80d79fad712fadd2ff6d9357ac716242a89670a43807e18fdb952"
+        "sha256": "913e6fc09b9950757f8f5964c9a62231e36e18ea87eb1a8d0e17b80ce5ac3428"
       },
       "trim": {
         "x": 0,
@@ -15746,7 +15835,7 @@
       "source": {
         "w": 748,
         "h": 1660,
-        "sha256": "f73319f5d9fa483a03534da900abe8feac4fd008637132bf56ab5c7264741460"
+        "sha256": "67d61adba08845cbb2304923d21911bcc75894db2b0cac37c751f9ab063d9b6a"
       },
       "trim": {
         "x": 0,
@@ -18259,23 +18348,23 @@
       "file": "overworld/welcome/image.webp",
       "world": {
         "x": 1775,
-        "y": 1400,
-        "w": 120,
-        "h": 77
+        "y": 1363,
+        "w": 160,
+        "h": 114
       },
       "source": {
-        "w": 1024,
-        "h": 1024,
-        "sha256": "0107a5be0f3bc6a384527b475f6f40d67f69c520dd919d74835519c02e970136"
+        "w": 640,
+        "h": 456,
+        "sha256": "2d471bc7bb689225109f81f8499f425d2f14385669456d6b4cdc4d2b66c7db63"
       },
       "trim": {
-        "x": 126,
-        "y": 278,
-        "w": 773,
-        "h": 495
+        "x": 0,
+        "y": 0,
+        "w": 640,
+        "h": 456
       },
-      "width": 773,
-      "height": 495
+      "width": 640,
+      "height": 456
     },
     {
       "id": "signpost",
@@ -18283,24 +18372,24 @@
       "kind": "prop",
       "file": "overworld/signpost/image.webp",
       "world": {
-        "x": 1520,
-        "y": 1370,
-        "w": 60,
-        "h": 120
+        "x": 1290,
+        "y": 1134,
+        "w": 270,
+        "h": 336
       },
       "source": {
-        "w": 1254,
-        "h": 1254,
-        "sha256": "dee61f036f4b4113955ea4d900f90446b1c8d51b356decf06fd666457e43fb74"
+        "w": 1080,
+        "h": 1344,
+        "sha256": "6b491f14a44d43396474e3bad0520f91094cbcf9f309c42ba005663e3de99365"
       },
       "trim": {
-        "x": 316,
-        "y": 48,
-        "w": 622,
-        "h": 1158
+        "x": 0,
+        "y": 0,
+        "w": 1080,
+        "h": 1344
       },
-      "width": 622,
-      "height": 1158
+      "width": 1080,
+      "height": 1344
     },
     {
       "id": "door",
@@ -29783,7 +29872,7 @@
       "source": {
         "w": 3548,
         "h": 7096,
-        "sha256": "229f4c36f8acffb7a96f0041e73d609abe4942bb6e85c647e6a58b935ba9d2e2"
+        "sha256": "bbc8d211173ae89d8120d04b19b363785a75914e9f4e9b7d44216f3cd5f84d3a"
       },
       "trim": {
         "x": 0,

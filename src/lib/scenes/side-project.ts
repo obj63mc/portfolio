@@ -18,25 +18,44 @@ const brands = [
 ] as const;
 type Brand = (typeof brands)[number][0];
 const builtSite = new Set(['bacardi', 'grey-goose']);
-// A bottle plays its brand's homepage (art/sources/videos/beer and liquor, `npm run videos`), and its card's only copy is its line, under
-// the video. `link`, where the site is still up, adds a See More link to it under the line.
-// TODO Joe: the spirits' lines (placeholders), and Bacardi's and Grey Goose's photos or videos.
-const homepage: Partial<Record<Brand, { file: string; line: string; link?: string }>> = {
-	'bud-light': { file: 'bud-light-homepage-2026-09-30.mp4', line: 'We built Bud Light\'s "Big Game" Website' },
-	sapporo: { file: 'sapporo-homepage-2026-09-30.mp4', line: 'SapporoBeer.com was a standard brochure site with tons of promotions and minigames - can you find the easter egg on this site to play one?' },
-	anchor: { file: 'anchor-brewing-homepage-2026-09-30.mp4', line: 'When Anchor Rebranded, We Relaunched the brand with a new website.' },
-	soonhari: { file: 'soonhari-homepage-2026-09-30-4k.mp4', line: 'Soonhari, the original flavored Soju just got a brand new website.', link:'https://soonhariusa.com' },
-	ej: { file: 'ej-brandy-home-collection-vsop-2026-09-30.mp4', line: 'The E&J Brandy homepage.' },
-	camarena: { file: 'camarena-home-margarita-2026-09-30.mp4', line: 'The Camarena Tequila homepage.' },
-	rumchata: { file: 'rumchata-home-peppermint-bark-2026-09-30.mp4', line: 'The RumChata homepage.' },
-	'pink-whitney': { file: 'pink-whitney-home-products-750ml-2026-09-30.mp4', line: 'The Pink Whitney homepage.' },
-	'new-amsterdam': { file: 'new-amsterdam-home-find-your-wins-2026-09-30.mp4', line: 'The New Amsterdam Vodka homepage.' }
+// A bottle plays its brand's homepage (art/sources/videos/beer and liquor, `npm run videos`), its copy under the video
+// (src/lib/content/side-project/bottle-<brand>.md). `link`, where the site is still up, adds a See More link under it.
+// TODO Joe: the spirits' copy (placeholders).
+const homepage: Partial<Record<Brand, { file: string; link?: string }>> = {
+	'bud-light': { file: 'bud-light-homepage-2026-09-30.mp4' },
+	sapporo: { file: 'sapporo-homepage-2026-09-30.mp4' },
+	anchor: { file: 'anchor-brewing-homepage-2026-09-30.mp4' },
+	soonhari: { file: 'soonhari-homepage-2026-09-30-4k.mp4', link: 'https://soonhariusa.com' },
+	ej: { file: 'ej-brandy-home-collection-vsop-2026-09-30.mp4' },
+	camarena: { file: 'camarena-home-margarita-2026-09-30.mp4' },
+	rumchata: { file: 'rumchata-home-peppermint-bark-2026-09-30.mp4' },
+	'pink-whitney': { file: 'pink-whitney-home-products-750ml-2026-09-30.mp4' },
+	'new-amsterdam': { file: 'new-amsterdam-home-find-your-wins-2026-09-30.mp4' }
+};
+// The two sites Joe built are gone from the web: their bottles show screenshots of them instead (Joe, 2026-10-01), files
+// in art/sources/screenshots, in the order the card goes through them, each named for what it shows.
+const screens: Partial<Record<Brand, { name: string; file: string }[]>> = {
+	bacardi: [
+		{ name: 'The Oakheart Challenge', file: 'bacardi/1-oakheart-homepage-1028.webp' },
+		{ name: 'Vote for your favorite team', file: 'bacardi/2-oakheart-vote-now-1028.webp' },
+		{ name: 'Generator your Team Name', file: 'bacardi/3-oakheart-name-generator-before-1028.webp' },
+		{ name: 'What you get', file: 'bacardi/4-oakheart-name-generator-after-1028.webp' }
+	],
+	'grey-goose': [
+		{ name: 'Cherry Noir Influencer Launch', file: 'greygoose/1-greygoose-homepage-1028.webp' },
+		{ name: 'Stay at Hotel Noir', file: 'greygoose/2-greygoose-about-1028.webp' },
+		{ name: 'The Itinerary', file: 'greygoose/3-greygoose-itinerary-1028.webp' },
+		{ name: 'Cherry Lane', file: 'greygoose/4-CNRecipeCardCherryLane.webp' },
+		{ name: 'Cherry Moon', file: 'greygoose/5-CNRecipeCardCherryMoon.webp' },
+		{ name: 'Midnight Martinez', file: 'greygoose/6-CNRecipeCardMidnightMartinez.webp' }
+	]
 };
 
 // Measured on the accepted master (art/sources/side-project-fix/stitched.png, 1672 x 941, installed 4x as
 // side-project-master; buildout ticket 05, 2026-09-28): the front bar seen nearly face-on, its navy wall behind. The eleven
 // brand bottles stand in one lit row on the wall's lower shelf, left to right in brand order (round two, 2026-09-30), each
-// rect its matte's trim; the back bar's cooler at the right carries the Side Project sign on its door and the chalkboard.
+// rect its matte's trim; the back bar's cooler at the right carries the Side Project sign on its door. The chalkboard beside
+// it is painted scenery, no longer a prop (Joe, 2026-10-01).
 // The two counters are walk-behind scenery; no prop stands on them.
 const shelf: Record<Brand, Rect> = {
 	'bud-light': { x: 398, y: 644, w: 66, h: 211 },
@@ -59,9 +78,9 @@ const bottles: Prop[] = brands.map(([id, name]) => {
 		id: `bottle-${id}`,
 		name: `${name} bottle`,
 		gist: builtSite.has(id) ? 'built the website' : 'Moosylvania client work',
-		body: [video?.line ?? (builtSite.has(id) ? `${name}: Joe built the website at Moosylvania.` : `${name}: client work at Moosylvania.`)],
 		rect: shelf[id],
 		...(video && { video: { file: video.file } }),
+		...(screens[id] && { screens: screens[id] }),
 		...(video?.link && { links: [{ label: 'See More', href: video.link }] })
 	};
 });
@@ -77,22 +96,14 @@ export const SIDE_PROJECT: SubScene = {
 	h: 1600,
 	props: [
 		...bottles,
-		// TODO Joe: the sign's line is a placeholder; the beer mug moved here from the bottles (Joe, 2026-09-28).
+		// TODO Joe: the sign's copy is a placeholder; the beer mug moved here from the bottles (Joe, 2026-09-28).
 		{
 			id: 'brewery-sign',
 			name: 'Side Project sign',
 			gist: 'Side Project Brewing',
-			body: ['Side Project Brewing’s light bulb, on the Cellar’s cooler door. The Cellar is across the street from Moosylvania.'],
 			rect: { x: 2007, y: 639, w: 124, h: 124 },
 			cosmetic: 5,
 			art: ['side-project-sign']
-		},
-		{
-			id: 'chalkboard',
-			name: 'Chalkboard',
-			gist: 'Joe’s favourite brewery',
-			body: ['Side Project is Joe’s favourite brewery. Favourite styles: stouts and barleywines.'],
-			rect: { x: 2227, y: 561, w: 289, h: 262 }
 		}
 	],
 	exit: { x: 0, y: 323, w: 267, h: 647 },

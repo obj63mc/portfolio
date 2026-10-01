@@ -6,7 +6,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { keyOf, sourceOf } from '../scripts/media.ts';
-import { local, plan, sources, used, type Manifest } from '../scripts/videos.ts';
+import { MOOSYLVANIA } from '../src/lib/scenes/moosylvania.ts';
+import { TV_FOLDERS, local, plan, sources, used, type Manifest } from '../scripts/videos.ts';
 import { mediaUrl } from '../svelte.config.js';
 
 const manifest: Manifest = JSON.parse(readFileSync(new URL('../src/lib/video-files.json', import.meta.url), 'utf8'));
@@ -31,15 +32,26 @@ test('a key is its folder, name and hash, and maps back to its source alone', ()
 });
 
 test("a sync's plan: a changed source takes a new key, a new one joins, and a video whose source is gone from this machine keeps its place", () => {
-	const was: Manifest = { host: 'https://media.example', bucket: 'b', files: { 'a.mp4': keyOf('beer', 'a.mp4', '00000001'), 'b.mp4': keyOf('beer', 'b.mp4', '00000002') } };
+	const was: Manifest = { host: 'https://media.example', bucket: 'b', files: { 'a.mp4': keyOf('beer', 'a.mp4', '00000001'), 'b.mp4': keyOf('beer', 'b.mp4', '00000002') }, tv: ['a.mp4', 'b.mp4'] };
 	const here = (hashes: Record<string, string>) => (file: string) => (hashes[file] ? { folder: 'beer', hash: hashes[file] } : null);
 	assert.deepEqual(plan(was, ['a.mp4', 'b.mp4'], here({ 'a.mp4': '00000001', 'b.mp4': '00000002' })), was);
 	// `a` replaced, `c` new, `b` no longer here: nothing leaves the map, since nothing leaves the bucket.
 	const next = plan(was, ['a.mp4', 'c.mp4'], here({ 'a.mp4': '0000000a', 'c.mp4': '00000003' }));
-	assert.deepEqual(next, { ...was, files: { 'a.mp4': keyOf('beer', 'a.mp4', '0000000a'), 'b.mp4': was.files['b.mp4'], 'c.mp4': keyOf('beer', 'c.mp4', '00000003') } });
+	assert.deepEqual(next, { ...was, files: { 'a.mp4': keyOf('beer', 'a.mp4', '0000000a'), 'b.mp4': was.files['b.mp4'], 'c.mp4': keyOf('beer', 'c.mp4', '00000003') }, tv: ['a.mp4', 'b.mp4', 'c.mp4'] });
 	// A checkout with no sources at all changes nothing; a video with neither a source nor a key can't be planned.
 	assert.deepEqual(plan(was, [], here({})), was);
 	assert.throws(() => plan(was, ['d.mp4'], here({})), /d\.mp4/);
+});
+
+test("the lobby TV's channels: Moosylvania's own site by year first, then each folder of work in turn, by file name, and no other folder", () => {
+	const folders: Record<string, string> = { 'z.mp4': 'beer', 'b.mp4': 'universal', 'y-2022.mp4': 'moosylvania', 'y-2019.mp4': 'moosylvania', 'a.mp4': 'cigar', 'c.mp4': 'sushi', 'd.mp4': 'paypal', 'e.mp4': 'liquor' };
+	const now = plan({ host: 'https://media.example', bucket: 'b', files: {}, tv: [] }, Object.keys(folders), (file) => ({ folder: folders[file], hash: '00000001' }));
+	assert.deepEqual(now.tv, ['y-2019.mp4', 'y-2022.mp4', 'z.mp4', 'a.mp4', 'e.mp4', 'd.mp4', 'b.mp4']);
+	assert.deepEqual(TV_FOLDERS, ['moosylvania', 'beer', 'cigar', 'liquor', 'paypal', 'universal']);
+	// The map as it stands is its own plan's, and the TV in the scene starts on its first channel.
+	assert.deepEqual(plan(manifest, [], () => null).tv, manifest.tv, 'the channels are behind the map: run `npm run videos`');
+	assert.equal(manifest.tv[0], MOOSYLVANIA.props.find((p) => p.id === 'meeting-tv')?.video?.file);
+	assert.equal(manifest.tv[0], 'moosylvania-2019-home-work-cigar-world-2026-09-30.mp4');
 });
 
 test('only a Workers Builds build, main or a Preview, fetches from the media host; a local one serves its own', () => {

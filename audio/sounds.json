@@ -241,22 +241,6 @@
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
 		},
 		{
-			"id": "chalk",
-			"kind": "one-shot",
-			"use": "the chalkboard: a chalk tap",
-			"status": "approved",
-			"file": "chalk-freesound-447925.mp3",
-			"source": "https://freesound.org/people/Breviceps/sounds/447925/",
-			"title": "Write/Draw with chalk on board",
-			"author": "Breviceps",
-			"licence": "CC0",
-			"trim": [
-				0,
-				0.48
-			],
-			"edits": "From Freesound's high-quality preview MP3, not the original download"
-		},
-		{
 			"id": "creak",
 			"kind": "one-shot",
 			"use": "the humidors: a wooden lid creak",

@@ -65,7 +65,9 @@ test('from the ground floor beside the stairs, the cursor goes underneath them',
 });
 
 // The SLU lab's near-left desk, which carries the workstation's monitor (Joe, 2026-09-28): a cursor stepping onto it
-// from between the rows goes behind it, one stepping on from the chair side is in front and can use the monitor.
+// from between the rows goes behind it, one stepping on from the chair side is in front and can use the monitor. A desk
+// hides only a cursor that came down onto it from directly behind (Joe, 2026-10-01: the cursor kept going underneath on
+// its way to the monitor): from either side, at any height, it stays on top.
 const lab = SUB_SCENES.slu;
 const desk = lab.walkBehind.find((w) => w.key === 'slu-desk-back-left')!;
 const monitor = (() => {
@@ -112,15 +114,54 @@ test('stepping onto the desk from in front, the chair side, is in front of it, u
 	assert.equal(onDesk(floor, chair, monitor), 'off, front');
 });
 
-test('from the side, the side is read where the cursor stepped from: above the front line behind, on or below it in front', () => {
-	const left = desk.rect.x - 40, leg = desk.front[0].x + 1;
-	assert.equal(onDesk({ x: left, y: monitor.y }, monitor), 'off, behind');
-	// Low along the floor to under the near leg, then up it: stepped on from below the front line.
+test('from either side of a desk, at any height, the cursor stays on top: straight across to the monitor, past its back corners, or up a leg', () => {
+	const left = desk.rect.x - 40, right = desk.rect.x + desk.rect.w + 40, leg = desk.front[0].x + 1;
+	for (const x of [left, right]) {
+		// Level with the monitor, which is higher than the desktop's two ends: across the aisle beside its back corners.
+		assert.equal(onDesk({ x, y: monitor.y }, monitor), 'off, front', `from x ${x}, level with the monitor`);
+		for (const y of [desk.rect.y + 40, desk.rect.y + desk.rect.h / 2, desk.rect.y + desk.rect.h - 40])
+			assert.equal(onDesk({ x, y }, { x: monitor.x, y }, monitor).split(', ').at(-1), 'front', `from x ${x} at y ${y}`);
+	}
+	// Low along the floor to under the near leg, then up it.
 	assert.equal(onDesk({ x: left, y: desk.front[0].y + 20 }, { x: leg, y: desk.front[0].y + 20 }, { x: leg, y: 1300 }, monitor), 'off, front');
 });
 
-test('a cursor that jumps onto the desk takes the side of where it lands', () => {
-	assert.equal(onDesk(floor, null, monitor), 'off, behind');
+test('only a desk is so forgiving, and every desk is: the lab\'s four and the lobby loft\'s five, a cursor from beside each on top and one from directly behind under it', () => {
+	const desks = Object.values(SUB_SCENES).flatMap((s) => s.walkBehind.filter((w) => w.desk).map((w) => ({ s, w })));
+	assert.deepEqual(desks.map(({ w }) => w.key).sort(), [
+		'moosylvania-desk-back', 'moosylvania-desk-centre', 'moosylvania-desk-front', 'moosylvania-desk-left', 'moosylvania-desk-right',
+		'slu-desk-back-left', 'slu-desk-back-right', 'slu-desk-front-left', 'slu-desk-front-right'
+	]);
+	for (const s of Object.values(SUB_SCENES)) for (const w of s.walkBehind) assert.equal(!!w.desk, w.key.includes('-desk-'), w.key);
+	for (const { s, w } of desks) {
+		// The side a lone cursor takes of this desk alone, stepped from `a` to `b`.
+		const side = (a: Point, b: Point) => {
+			const cursor = walker([w]);
+			cursor.step(a, true);
+			let taken: string | undefined;
+			for (let i = 1; i <= 40 && !taken; i++) taken = cursor.step(lerp(a, b, i / 40)).get(w.key);
+			return taken;
+		};
+		const xs = w.outline.map((p) => p.x), ys = w.outline.map((p) => p.y);
+		const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+		// A point well inside: halfway down the outline, the middle of its leftmost span there.
+		const row = (y0 + y1) / 2;
+		const across = w.outline
+			.flatMap((a, i) => {
+				const b = w.outline[(i + 1) % w.outline.length];
+				return a.y > row !== b.y > row ? [a.x + ((b.x - a.x) * (row - a.y)) / (b.y - a.y)] : [];
+			})
+			.sort((a, b) => a - b);
+		const mid = { x: (across[0] + across[1]) / 2, y: row };
+		assert.equal(side({ x: x0 - 60, y: row }, mid), 'front', `${s.id} ${w.key}: from its left`);
+		assert.equal(side({ x: x1 + 60, y: row }, mid), 'front', `${s.id} ${w.key}: from its right`);
+		assert.equal(side({ x: mid.x, y: y1 + 60 }, mid), 'front', `${s.id} ${w.key}: from the front`);
+		assert.equal(side({ x: mid.x, y: y0 - 60 }, mid), 'behind', `${s.id} ${w.key}: from directly behind`);
+	}
+});
+
+test('a cursor that jumps onto the desk takes the side of where it lands, which on a desk is in front', () => {
+	assert.equal(onDesk(floor, null, monitor), 'off, front');
 	// The chair's foot, inside the outline below the front line.
 	assert.equal(onDesk(aisle, null, { x: 1005, y: 1575 }), 'off, front');
 });

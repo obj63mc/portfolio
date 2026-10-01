@@ -1,6 +1,6 @@
 // Seam 4 for the props (buildout ticket 15), over the built site: the scene canvas is drawn only while something on it
-// moves, hover and click reactions draw and settle, reduced motion freezes ambient motion but keeps click reactions, and
-// the meeting TV's video loads only on its click. The browser refuses the pointer lock here, so the drawn cursor follows
+// moves, hover and click reactions draw and settle, and reduced motion freezes ambient motion but keeps click reactions.
+// The meeting TV and its remote are tv.spec.ts's. The browser refuses the pointer lock here, so the drawn cursor follows
 // the mouse and hover is the page's own.
 import { test, expect, type Page } from '@playwright/test';
 
@@ -126,20 +126,4 @@ test('ambient motion draws while in view; under reduced motion it rests, and a c
 	expect(await drawsOver(page, 600)).toBeGreaterThan(10);
 	await page.waitForTimeout(800);
 	expect(await drawsOver(page, 1000)).toBe(0);
-});
-
-test('the meeting TV loads its video only on the click that opens its card', async ({ page }) => {
-	const videos: string[] = [];
-	page.on('request', (r) => r.url().endsWith('.mp4') && videos.push(r.url()));
-	await page.goto('/moosylvania');
-	await join(page);
-	const tv = page.locator('[data-prop="meeting-tv"] > button');
-	await tv.focus();
-	await page.waitForTimeout(500);
-	expect(videos).toEqual([]);
-	await page.keyboard.press('Enter');
-	const card = page.locator('[data-prop="meeting-tv"] dialog');
-	await expect(card.locator('.player video')).toBeVisible();
-	await expect(card.getByRole('button', { name: /^(Play|Pause)$/ })).toBeAttached();
-	await expect.poll(() => videos.length).toBeGreaterThan(0);
 });

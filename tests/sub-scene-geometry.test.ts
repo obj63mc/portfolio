@@ -168,11 +168,10 @@ test('Side Project: eleven bottles in a row on one shelf, the beers first, the s
 	assert.ok(Math.max(...bases) - Math.min(...bases) < 20, 'bottles stand on one shelf');
 	// The counters stand below the shelf, so no cursor behind the bar is ever over a bottle.
 	for (const w of bar.walkBehind) assert.ok(Math.min(...w.outline.map((p) => p.y)) > Math.max(...bases), w.key);
-	// The beer mug comes from the sign alone, right of the bottles and left of the chalkboard on the same cooler.
+	// The beer mug comes from the sign alone, right of the bottles on the cooler's door.
 	const sign = bar.props.find((p) => p.id === 'brewery-sign')!;
 	assert.deepEqual(bar.props.filter((p) => p.cosmetic === 5).map((p) => p.id), ['brewery-sign']);
-	const chalkboard = bar.props.find((p) => p.id === 'chalkboard')!;
-	assert.ok(sign.rect.x > bottles[10].rect.x + bottles[10].rect.w && sign.rect.x + sign.rect.w < chalkboard.rect.x);
+	assert.ok(sign.rect.x > bottles[10].rect.x + bottles[10].rect.w);
 });
 
 test("Brennan's: five brand boxes in a row on one humidor shelf, each grants the cigar, the STG plaque above them", () => {
@@ -196,13 +195,13 @@ test("Brennan's: five brand boxes in a row on one humidor shelf, each grants the
 	assert.ok(!room.props.some((p) => p.id === 'atm'), 'the ATM left Brennan’s for the overworld');
 });
 
-test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers over the doors, the statue, then the TV', () => {
+test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers over the doors, the statue, then the TV and its remote', () => {
 	const lobby = SUB_SCENES.moosylvania;
 	assert.ok(lobby.h > lobby.w, 'a tall scene, scrolled up and down the nave');
 	assert.equal(lobby.pushBand, 0.25, "the overworld's push band");
 	for (const s of scenes.filter((s) => s !== lobby)) assert.equal(s.pushBand, undefined, `${s.id} keeps the sub-scene band`);
 	const computers = ['computer-frontend', 'computer-backend', 'computer-cms', 'computer-data'];
-	assert.deepEqual(readingOrder(lobby).map((p) => p.id), [...computers, 'moose-statue', 'meeting-tv'], 'props read top to bottom');
+	assert.deepEqual(readingOrder(lobby).map((p) => p.id), [...computers, 'moose-statue', 'meeting-tv', 'tv-remote'], 'props read top to bottom');
 	const rect = (id: string) => lobby.props.find((p) => p.id === id)!.rect;
 	// Each loft computer stands on its own desk and is used from in front of it, from the chair's side.
 	for (const id of computers) {
@@ -222,6 +221,18 @@ test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers 
 	const tv = rect('meeting-tv');
 	assert.ok(bottom(tv) <= frontY(wall.front, tv.x + tv.w / 2) + 2);
 	assert.ok(!lobby.walkBehind.some((w) => w.props.includes('moose-statue')));
+	// The TV is a television, not a button: it plays by itself, and the remote on the meeting table in front of it, on the
+	// tabletop clear of the plant at its centre, is what a visitor takes to change its channel (Joe, 2026-10-01).
+	const set = lobby.props.find((p) => p.id === 'meeting-tv')!, remote = lobby.props.find((p) => p.id === 'tv-remote')!;
+	assert.equal(set.kind, 'status');
+	assert.ok(set.video?.screen, 'its video is drawn on its screen');
+	assert.equal(remote.tunes, set.id);
+	assert.equal(remote.kind, undefined, 'its card is the remote in hand');
+	assert.deepEqual(lobby.props.filter((p) => p.tunes || p.video).map((p) => p.id), ['meeting-tv', 'tv-remote'], 'one TV, one remote');
+	// The meeting table is no walk-behind scenery (Joe, 2026-10-01: it was too easy to go underneath it), so nothing hides
+	// a cursor from the remote: it is in reach from every side.
+	assert.ok(!lobby.walkBehind.some((w) => w.key === 'moosylvania-meeting-table' || w.props.includes('tv-remote')));
+	assert.ok(bottom(remote.rect) < 4355 && remote.rect.x + remote.rect.w < 1150, 'on the tabletop, left of the plant');
 	// The round sofas face the coffee table between them, and the armchairs the meeting table.
 	const unit = (key: string) => lobby.walkBehind.find((w) => w.key === `moosylvania-${key}`)!;
 	faces(unit('sofa-left'), 'right');
@@ -231,8 +242,8 @@ test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers 
 	// The meeting sofa faces the TV from the bottom of the picture, across the table, so every seat can watch it: it is the
 	// nearest furniture, drawn last, a cursor stepping on from the table's side goes behind its back, and nothing stands
 	// in front of the TV.
-	const sofa = unit('meeting-sofa'), table = unit('meeting-table');
-	assert.ok(Math.min(...sofa.outline.map((p) => p.y)) > table.rect.y + table.rect.h, 'the sofa is below the table');
+	const sofa = unit('meeting-sofa');
+	assert.ok(Math.min(...sofa.outline.map((p) => p.y)) > bottom(remote.rect), 'the sofa is below the table and the remote on it');
 	assert.equal(lobby.walkBehind.at(-1), sofa);
 	const top = sofa.outline.reduce((a, b) => (b.y < a.y ? b : a));
 	assert.ok(top.y < frontY(sofa.front, top.x), 'from the table, behind the sofa');

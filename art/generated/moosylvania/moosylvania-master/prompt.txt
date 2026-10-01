@@ -1,3 +1,11 @@
+MOOSYLVANIA MASTER DERIVATION, 2026-10-01 (round 5, upscaled 4x for the background)
+
+Round five (Joe, 2026-10-01; rounds/round-5.json), no model: scripts/art/overworld/lobby-railings-floor.py relaid the loft railing's and both staircases' railing infill, the treads' back edges and the floor of the two offices beneath the loft by construction. The railings' balusters and sub-rails are decals.
+
+The retained image is art/sources/moosylvania-fix/stitched.png, the native 887 x 1774 master after the tile-map rounds (round specs in art/sources/moosylvania-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The moosylvania plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/moosylvania-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
 MOOSYLVANIA MASTER DERIVATION, 2026-09-29 (round 4, upscaled 4x for the background)
 
 the meeting sofa moved from in front of the TV to the bottom of the picture, turned round to face it (Joe)

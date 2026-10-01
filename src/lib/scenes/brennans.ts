@@ -1,6 +1,5 @@
 import type { Prop, Rect, SubScene } from './types';
 
-// TODO Joe: the content inventory promises a one-line "what we did" per brand; none is on record.
 const brands = [
 	['cohiba', 'Cohiba'],
 	['macanudo', 'Macanudo'],
@@ -23,15 +22,16 @@ const humidor: Record<Brand, Rect> = {
 	punch: { x: 1582, y: 643, w: 158, h: 135 }
 };
 
-// One box per brand, its logo on the lid; any of them grants the cigar.
+// One box per brand, its logo on the lid; any of them grants the cigar. Its card plays the brand's homepage
+// (art/sources/videos/cigar, `npm run videos`), its copy under the video (src/lib/content/brennans/humidor-<brand>.md).
 const boxes: Prop[] = brands.map(([id, name]) => ({
 	id: `humidor-${id}`,
 	name: `${name} box`,
 	gist: 'Moosylvania client work',
-	body: [`${name}: client work at Moosylvania.`],
 	rect: humidor[id],
 	cosmetic: 6,
-	art: [`brennans-box-${id}`]
+	art: [`brennans-box-${id}`],
+	video: { file: `${id}-homepage-2026-09-30.mp4` }
 }));
 
 export const BRENNANS: SubScene = {
@@ -49,9 +49,10 @@ export const BRENNANS: SubScene = {
 			id: 'stg-logo',
 			name: 'Scandinavian Tobacco Group plaque',
 			gist: 'Moosylvania client work',
-			body: ['Scandinavian Tobacco Group: client work at Moosylvania.'],
 			rect: { x: 954, y: 43, w: 437, h: 261 },
-			art: ['brennans-stg']
+			art: ['brennans-stg'],
+			// Cigar World, the social network Moosylvania built across STG's brands (Joe, 2026-10-01).
+			video: { file: 'cigarworld-home-feed-macanudo-2026-09-30.mp4' }
 		}
 	],
 	// Brennan's teal front door at the far left. The ATM left the room for the overworld, where Joe has yet to place it

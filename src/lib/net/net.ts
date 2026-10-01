@@ -3,7 +3,7 @@
 // When it is down the scene carries on single-player with no reconnecting UI; the next `hello` overwrites what this
 // client knew without animation. Rates, sizes and the wire format are protocol.ts's.
 import type { ScreenTitle } from '../scenes/foundry.ts';
-import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, samePresence, type ClientMessage, type Peer, type Presence } from './protocol.ts';
+import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, samePresence, type ClientMessage, type Peer, type Presence, type Tv } from './protocol.ts';
 import { record, type Snap } from './peers.ts';
 import { playing, type Screen } from './screen.ts';
 
@@ -55,6 +55,13 @@ export class Net {
 	peers = new Map<number, NetPeer>();
 	/** The room's Foundry screen (ticket 17), from its `hello` and its echoes; offline, the reel of a poster clicked here. */
 	screen: Screen = null;
+	/**
+	 * The room's lobby TV (Joe, 2026-10-01), from its `hello` and its echoes: the channel, and who holds the remote. Offline
+	 * it is this visitor's alone, taken, tuned and put back here.
+	 */
+	tv: Tv = { ch: 0, holder: null };
+	/** This visitor put the remote back and the room hasn't yet said so. */
+	private putting = false;
 	private link: Link = { is: 'off' };
 	private scene: string | null = null;
 	private bot = isBot();
@@ -89,6 +96,7 @@ export class Net {
 	join(scene: string) {
 		this.scene = scene;
 		this.screen = null;
+		this.tv = { ch: 0, holder: null };
 		this.backoff = BACKOFF.first;
 		this.open();
 	}
@@ -97,8 +105,27 @@ export class Net {
 	leave() {
 		this.scene = null;
 		this.screen = null;
+		this.tv = { ch: 0, holder: null };
 		this.close();
 		this.link = { is: 'off' };
+	}
+
+	/**
+	 * The lobby TV's remote: taken from the table, tuned a channel up or down, and put back. The room decides, the first
+	 * take winning and only the holder tuning, and a take or a tune changes nothing here until it echoes. Offline the
+	 * remote is on the table for this visitor alone, until a `hello` overwrites it.
+	 */
+	remote(m: Extract<ClientMessage, { t: `tv.${string}` }>) {
+		const { ch, holder } = this.tv, live = this.link.is === 'live';
+		if (this.link.is === 'live') this.link.ws.send(JSON.stringify(m));
+		if (m.t === 'tv.take') {
+			if (!live) this.tv = { ch, holder: holder ?? this.id };
+		} else if (holder === this.id) {
+			// Putting it back is the holder's to do, so it is back here at once and the card that closed stays closed; the
+			// room's echoes of the presses before it, still on their way, don't hand it back.
+			if (m.t === 'tv.put') (this.tv = { ch, holder: null }), (this.putting = live);
+			else if (!live) this.tv = { ch: ch + m.by, holder };
+		}
 	}
 
 	/**
@@ -172,6 +199,8 @@ export class Net {
 	private close() {
 		if (this.link.is === 'down') clearTimeout(this.link.retry);
 		if ('ws' in this.link && this.link.ws.readyState <= WebSocket.OPEN) this.link.ws.close(1000);
+		// With the room gone nobody else holds the remote; this visitor keeps it if they had it.
+		if (this.tv.holder !== this.id) this.tv = { ch: this.tv.ch, holder: null };
 		this.peers.clear();
 		this.status.count(1);
 	}
@@ -217,6 +246,8 @@ export class Net {
 				this.offset = m.now - Date.now();
 				this.peers = new Map(m.peers.map((p) => [p.id, known(p)]));
 				this.screen = m.screen;
+				this.tv = m.tv;
+				this.putting = false;
 				this.link = { is: 'live', ws, at: t };
 				this.sent = -1; // the new room hears where this cursor is at once
 				this.tell(); // and, once joined, what it wears; the room drops it if that's nothing
@@ -239,6 +270,10 @@ export class Net {
 			}
 			case 'screen':
 				this.screen = { title: m.title, at: m.at };
+				return;
+			case 'tv':
+				if (m.holder !== this.id) this.putting = false;
+				this.tv = { ch: m.ch, holder: this.putting ? null : m.holder };
 				return;
 		}
 		this.status.count(this.peers.size + 1);

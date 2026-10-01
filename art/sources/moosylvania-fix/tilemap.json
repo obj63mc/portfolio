@@ -1,17 +1,65 @@
 {
- "round": 4,
- "base": "rounds/base-4.png",
+ "round": 5,
+ "base": "rounds/base-5.png",
  "tiles": [
   {
-   "name": "meeting",
+   "name": "loft-railing",
    "rect": [
-    150,
-    1380,
-    591,
-    394
+    264,
+    470,
+    360,
+    70
    ],
    "loops": [],
-   "repaintPx": 71722,
+   "repaintPx": 16500,
+   "edit": true
+  },
+  {
+   "name": "stairs-left",
+   "rect": [
+    120,
+    480,
+    170,
+    440
+   ],
+   "loops": [],
+   "repaintPx": 59643,
+   "edit": true
+  },
+  {
+   "name": "stairs-right",
+   "rect": [
+    600,
+    480,
+    170,
+    440
+   ],
+   "loops": [],
+   "repaintPx": 61335,
+   "edit": true
+  },
+  {
+   "name": "floor-left",
+   "rect": [
+    205,
+    670,
+    240,
+    140
+   ],
+   "loops": [],
+   "repaintPx": 24054,
+   "edit": true
+  },
+  {
+   "name": "floor-right",
+   "rect": [
+    525,
+    670,
+    160,
+    140
+   ],
+   "loops": [],
+   "repaintPx": 15795,
    "edit": true
   }
  ],

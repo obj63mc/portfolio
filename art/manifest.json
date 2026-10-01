@@ -305,6 +305,20 @@
       "deriveFrom": "moosylvania-master"
     },
     {
+      "id": "moosylvania-tv-remote",
+      "scene": "moosylvania",
+      "kind": "prop",
+      "prompt": "Not model-drawn: the lobby TV's remote, drawn by construction in art/sources/moosylvania-tv-remote.svg as flat filled shapes in the meeting table's own perspective, palette and light (a cream slab with a coral power button, two dark teal channel keys and a turquoise key, its shadow on the slate), and rendered to art/sources/moosylvania-tv-remote.png. A standalone cut-out placed by its world rect on the tabletop, left of the plant, and not painted into the plate: it leaves the table while a visitor holds it. Re-place with process, never generate.",
+      "size": "1000x580",
+      "references": [],
+      "world": {
+        "x": 1000,
+        "y": 4262,
+        "w": 100.4,
+        "h": 58.3
+      }
+    },
+    {
       "id": "moosylvania-statue",
       "scene": "moosylvania",
       "kind": "prop",
@@ -7549,39 +7563,29 @@
       "id": "welcome",
       "scene": "overworld",
       "kind": "prop",
-      "prompt": "A low wide mustard welcome board with teal frame and two short dark wooden posts. Board blank. Match Maplewood church scale and perspective. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "prompt": "Not model-drawn: the Maplewood welcome board, drawn by construction by scripts/art/overworld/signs.py as flat filled shapes (the old board's teal frame and brown posts, an ivory face under a round crown) carrying the site's badge, art/sources/brand/icon.png cut to a circle, and written to art/sources/welcome.png. A standalone cut-out placed by its world rect right of the church steps. Re-place with process, never generate.",
       "world": {
         "x": 1775,
-        "y": 1400,
-        "w": 120,
-        "h": 77
+        "y": 1363,
+        "w": 160,
+        "h": 114
       },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/overworld/overworld/image.webp"
-      ],
-      "dependsOn": [
-        "overworld"
-      ]
+      "size": "640x456",
+      "references": []
     },
     {
       "id": "signpost",
       "scene": "overworld",
       "kind": "prop",
-      "prompt": "A wooden fingerpost with five blank arrow boards pointing left and right plus a small square board, cream and mustard with teal accent. Tall post. One isolated object centered on pure solid #FF00FF magenta. No ground plane, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.",
+      "prompt": "Not model-drawn: the Maplewood directory board, in place of the fingerpost, drawn by construction by scripts/art/overworld/signs.py as flat filled shapes (a dark teal board on two brown posts, EXPLORE ST. LOUIS across its head, six lettered plaques in ivory, gold and sky, one a district, in Barlow Condensed) and written to art/sources/signpost.png. A standalone cut-out placed by its world rect on the lawn left of the church steps; each plaque is 123 x 80 world px, a link over 48 x 48 CSS px on a phone. Re-place with process, never generate.",
       "world": {
-        "x": 1520,
-        "y": 1370,
-        "w": 60,
-        "h": 120
+        "x": 1290,
+        "y": 1134,
+        "w": 270,
+        "h": 336
       },
-      "size": "1024x1024",
-      "references": [
-        "art/generated/overworld/overworld/image.webp"
-      ],
-      "dependsOn": [
-        "overworld"
-      ]
+      "size": "1080x1344",
+      "references": []
     },
     {
       "id": "door",

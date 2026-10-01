@@ -341,6 +341,36 @@ test("a card's video: the locked cursor over it shows the site's controls, marks
 	await expect.poll(state).toEqual({ paused: true, held: 0, at: 0 });
 });
 
+test("a card's screenshots: the locked cursor's click goes to the next, round from the last to the first, and its wheel scrolls the one it is over (Joe, 2026-10-01)", async ({ page }) => {
+	await page.goto('/side-project');
+	let at = await join(page);
+	const moveTo = async (p: Point) => {
+		await nudge(page, p.x - at.x, p.y - at.y);
+		await expect.poll(() => off(page, p)).toBeLessThan(5);
+		at = p;
+	};
+	await page.locator('[data-prop="bottle-bacardi"] > button').evaluate((b: HTMLElement) => b.click());
+	const card = page.locator('[data-prop="bottle-bacardi"] dialog'), count = card.locator('.screens .bar span'), pages = card.locator('.screens .page');
+	await expect(card).toBeVisible();
+	await expect(pages).toHaveCount(4);
+	// The names are Joe's to rewrite (side-project.ts), so the count says which is in view.
+	await expect(count).toHaveText('1 / 4');
+	await moveTo(await centre(card.getByRole('button', { name: 'Next screenshot' })));
+	await lockedClick(page);
+	await expect(count).toHaveText('2 / 4');
+	await expect(pages.nth(1)).toBeInViewport({ ratio: 0.9 });
+	// The page is far longer than its window: the wheel, which the lock sends to the canvas, scrolls it.
+	await moveTo(await centre(pages.nth(1)));
+	await expect.poll(() => pages.nth(1).evaluate((p) => p.scrollHeight > 2 * p.clientHeight)).toBe(true);
+	await page.evaluate(() => document.pointerLockElement!.dispatchEvent(new WheelEvent('wheel', { bubbles: true, deltaY: 240 })));
+	expect(await pages.nth(1).evaluate((p) => p.scrollTop)).toBe(240);
+	await moveTo(await centre(card.getByRole('button', { name: 'Previous screenshot' })));
+	await lockedClick(page);
+	await expect(count).toHaveText('1 / 4');
+	await lockedClick(page);
+	await expect(count).toHaveText('4 / 4');
+});
+
 test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.locator('dialog.join button')).toBeFocused();

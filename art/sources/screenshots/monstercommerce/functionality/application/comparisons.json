@@ -1,0 +1,1060 @@
+[
+  {
+    "key": "orders",
+    "title": "Orders list",
+    "matchConfidence": "Strong: both are New Orders with status changes and per-order actions.",
+    "notes": "Different sample orders; 3.x includes an open order-navigation menu and original numbered callouts. Both crops preserve the application shell while excluding browser chrome.",
+    "v3": {
+      "file": "functionality/application/01-orders/v3.png",
+      "crop": [
+        0,
+        0,
+        659,
+        367
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        659,
+        367
+      ],
+      "sourceDimensions": [
+        659,
+        367
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 7 in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-10-03",
+      "archiveTimestamp": "20021003025154",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image016.jpg",
+      "archiveUrl": "https://web.archive.org/web/20021003025154id_/http://monstercommerce.com/manual/index_files/image016.jpg",
+      "notes": null,
+      "sha256": "5931c4a762c4412f0f28773af81b30cd569d33cf1052233aecc2f989a6e020ab",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2002-manual/image016.jpg",
+      "width": 659,
+      "height": 367,
+      "sourceSha256": "441ccddae2842f982de4c29140ffd363fc87d2c010686470e56a9cd91278b579",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/01-orders/v4.png",
+      "crop": [
+        22,
+        63,
+        481,
+        472
+      ],
+      "applicationCrop": [
+        22,
+        63,
+        481,
+        472
+      ],
+      "sourceDimensions": [
+        532,
+        600
+      ],
+      "version": "4.1.5.0",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054812",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/op3.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054812id_/http://www.monstercommerce.com/imgs05/screenshots/lg/op3.jpg",
+      "notes": null,
+      "sha256": "390086ea176b90f137cc033565a93cce7d8c692f4a5a348ba7e65d3da12c3d49",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/op3.jpg",
+      "width": 481,
+      "height": 472,
+      "sourceSha256": "b2beff4724f7f92b1e74bbdcade9c50d381784e45630bac9d14c731ddcc46b92",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/01-orders/comparison-3x-4x.png",
+      "width": 1164,
+      "height": 472,
+      "sha256": "ab2278f7c9d050b53ccff3eb10c95d028b6f2a1ef73e167aeed844cce36aadce",
+      "placements": [
+        {
+          "file": "functionality/application/01-orders/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 659,
+          "height": 367
+        },
+        {
+          "file": "functionality/application/01-orders/v4.png",
+          "x": 683,
+          "y": 0,
+          "width": 481,
+          "height": 472
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": []
+  },
+  {
+    "key": "product-list",
+    "title": "Find and manage products",
+    "matchConfidence": "Strong: both show searchable product tables with thumbnails and edit/delete actions.",
+    "notes": "3.x uses a filtered jewelry search, 4.x an unfiltered electronics list. The data differs but this is the same product-management function. 4.x crop omits navigation/browser chrome to correspond to the original 3.x panel figure.",
+    "v3": {
+      "file": "functionality/application/02-product-list/v3.png",
+      "crop": [
+        0,
+        0,
+        405,
+        528
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        405,
+        528
+      ],
+      "sourceDimensions": [
+        405,
+        528
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 45 in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-10-03",
+      "archiveTimestamp": "20021003022357",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image086.jpg",
+      "archiveUrl": "https://web.archive.org/web/20021003022357id_/http://monstercommerce.com/manual/index_files/image086.jpg",
+      "notes": null,
+      "sha256": "1371137d353084e8c8f856f615ae36864ef5233f5158a165d017ce30886d1e53",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image086.jpg",
+      "width": 405,
+      "height": 528,
+      "sourceSha256": "9f81a94777b867ac9251dc99ffb18e2e66858ea61b823f297e45d9a5aac7d06c",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/02-product-list/v4.png",
+      "crop": [
+        115,
+        136,
+        382,
+        441
+      ],
+      "applicationCrop": [
+        10,
+        65,
+        489,
+        513
+      ],
+      "sourceDimensions": [
+        514,
+        600
+      ],
+      "version": "4.1.1.0b",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054636",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im2.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054636id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im2.jpg",
+      "notes": null,
+      "sha256": "cada0007d2f05a916b9757741dd8f8363b5f7663a24bd829e70e990fdc04937c",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im2.jpg",
+      "width": 382,
+      "height": 441,
+      "sourceSha256": "cb5d7d074cde97c4952a72aaeeff99ca33a9ff98a8bcb3d14e650abd2d7e2fdf",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/02-product-list/comparison-3x-4x.png",
+      "width": 811,
+      "height": 528,
+      "sha256": "fb106c4e3fbec6adaf7d8d1dc6b0d60a8b8820b1b69becbb4d6b1ca135bdc0e4",
+      "placements": [
+        {
+          "file": "functionality/application/02-product-list/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 405,
+          "height": 528
+        },
+        {
+          "file": "functionality/application/02-product-list/v4.png",
+          "x": 429,
+          "y": 0,
+          "width": 382,
+          "height": 441
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": [
+      {
+        "file": "functionality/application/02-product-list/v4-application-context.png",
+        "crop": [
+          10,
+          65,
+          489,
+          513
+        ],
+        "applicationCrop": [
+          10,
+          65,
+          489,
+          513
+        ],
+        "sourceDimensions": [
+          514,
+          600
+        ],
+        "version": "4.1.1.0b",
+        "versionEvidence": "Visible version in footer of original full screenshot.",
+        "date": "2006-04-10",
+        "archiveTimestamp": "20060410054636",
+        "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im2.jpg",
+        "archiveUrl": "https://web.archive.org/web/20060410054636id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im2.jpg",
+        "notes": null,
+        "sha256": "b608599d8ad56e1d326b6a936fc28ec3fd9f38633debe77724eed20ca23b4d08",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im2.jpg",
+        "width": 489,
+        "height": 513,
+        "sourceSha256": "cb5d7d074cde97c4952a72aaeeff99ca33a9ff98a8bcb3d14e650abd2d7e2fdf",
+        "label": "MonsterCommerce 4.x"
+      }
+    ]
+  },
+  {
+    "key": "product-editor",
+    "title": "Edit a product",
+    "matchConfidence": "Strong: both show General product editing with advanced tabs, descriptive fields, pricing and display settings.",
+    "notes": "3.x shows a jewelry product; 4.x shows a home-theater system. The latter has a dedicated category assignment area. 4.x original ends at a vertical viewport cutoff, and is not a full page.",
+    "v3": {
+      "file": "functionality/application/03-product-editor/v3.png",
+      "crop": [
+        0,
+        0,
+        660,
+        500
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        660,
+        500
+      ],
+      "sourceDimensions": [
+        660,
+        500
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 32 in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-11-10",
+      "archiveTimestamp": "20021110183850",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image061.jpg",
+      "archiveUrl": "https://web.archive.org/web/20021110183850id_/http://monstercommerce.com/manual/index_files/image061.jpg",
+      "notes": null,
+      "sha256": "8b8fe0fb00e3273c6c1abf05783d5116a5246ab4460669f31758e206474312f3",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image061.jpg",
+      "width": 660,
+      "height": 500,
+      "sourceSha256": "0c2f76624153ef94e24d41c5d76d28982e400853b8864d061377cfb436dff668",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/03-product-editor/v4.png",
+      "crop": [
+        17,
+        65,
+        469,
+        500
+      ],
+      "applicationCrop": [
+        17,
+        65,
+        469,
+        512
+      ],
+      "sourceDimensions": [
+        514,
+        600
+      ],
+      "version": "4.x",
+      "versionEvidence": "Official MonsterCommerce 2005–2006 screenshot series; no exact patch visible in this product-editor image.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054622",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im3.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054622id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im3.jpg",
+      "notes": null,
+      "sha256": "dcd511a101fe80219f8ec7cdbfacc83c10cee59b360dd86f7fff0b6f4cca65e0",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im3.jpg",
+      "width": 469,
+      "height": 500,
+      "sourceSha256": "9ee3086dd724830534597c5f4fac40b360445ba60b0afbd885f1fa0f2a04c56e",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/03-product-editor/comparison-3x-4x.png",
+      "width": 1153,
+      "height": 500,
+      "sha256": "22e2ba4827f351b2ce352a1e5b4a691696317773f423b653d61c5f6dada595e2",
+      "placements": [
+        {
+          "file": "functionality/application/03-product-editor/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 660,
+          "height": 500
+        },
+        {
+          "file": "functionality/application/03-product-editor/v4.png",
+          "x": 684,
+          "y": 0,
+          "width": 469,
+          "height": 500
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": [
+      {
+        "file": "functionality/application/03-product-editor/v4-application-context.png",
+        "crop": [
+          17,
+          65,
+          469,
+          512
+        ],
+        "applicationCrop": [
+          17,
+          65,
+          469,
+          512
+        ],
+        "sourceDimensions": [
+          514,
+          600
+        ],
+        "version": "4.x",
+        "versionEvidence": "Official MonsterCommerce 2005–2006 screenshot series; no exact patch visible in this product-editor image.",
+        "date": "2006-04-10",
+        "archiveTimestamp": "20060410054622",
+        "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im3.jpg",
+        "archiveUrl": "https://web.archive.org/web/20060410054622id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im3.jpg",
+        "notes": null,
+        "sha256": "7cae25ea19ba5bcd9c8e291d8b19f87e2e3be9ceba25b436ab18571eae1da3bd",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im3.jpg",
+        "width": 469,
+        "height": 512,
+        "sourceSha256": "9ee3086dd724830534597c5f4fac40b360445ba60b0afbd885f1fa0f2a04c56e",
+        "label": "MonsterCommerce 4.x"
+      }
+    ]
+  },
+  {
+    "key": "inventory",
+    "title": "Manage inventory quantities",
+    "matchConfidence": "Strong: both are Inventory Manager with category filtering, product stock rows and bulk stock quantity controls.",
+    "notes": "3.x has original training callouts; 4.x adds more filtering controls. Both crops preserve the application context without period browser chrome.",
+    "v3": {
+      "file": "functionality/application/04-inventory/v3.png",
+      "crop": [
+        0,
+        0,
+        431,
+        485
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        431,
+        485
+      ],
+      "sourceDimensions": [
+        431,
+        485
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 25 (Inventory Manager) in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-12-06",
+      "archiveTimestamp": "20021206184456",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image048.jpg",
+      "archiveUrl": "https://web.archive.org/web/20021206184456id_/http://monstercommerce.com/manual/index_files/image048.jpg",
+      "notes": null,
+      "sha256": "c618021dac658994159a2434338a14f3248d35d2a4eb00b4e69f4ac9659d7349",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image048.jpg",
+      "width": 431,
+      "height": 485,
+      "sourceSha256": "03f4aa79c3901f8d50c1695d50b7e82a9f9047d47988796e168795dc2333b0bc",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/04-inventory/v4.png",
+      "crop": [
+        10,
+        66,
+        481,
+        512
+      ],
+      "applicationCrop": [
+        10,
+        66,
+        481,
+        512
+      ],
+      "sourceDimensions": [
+        514,
+        600
+      ],
+      "version": "4.1.1.0b",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054643",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im4.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054643id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im4.jpg",
+      "notes": null,
+      "sha256": "cb782d49dd274e678c8926a2ba8b36da075512e7e30e41c6de148d2a0047b388",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im4.jpg",
+      "width": 481,
+      "height": 512,
+      "sourceSha256": "cf751f7e99156321974c654e06a3aa4be55bdaa1a22ef5423ef593e39241468e",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/04-inventory/comparison-3x-4x.png",
+      "width": 936,
+      "height": 512,
+      "sha256": "757dcd73e6ce8cbfb39a83378965491c6b34924ef84c8d434c99eb2346d0a89f",
+      "placements": [
+        {
+          "file": "functionality/application/04-inventory/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 431,
+          "height": 485
+        },
+        {
+          "file": "functionality/application/04-inventory/v4.png",
+          "x": 455,
+          "y": 0,
+          "width": 481,
+          "height": 512
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": []
+  },
+  {
+    "key": "categories",
+    "title": "Edit product categories",
+    "matchConfidence": "Strong function match: category/subcategory naming, sort order, visibility and markup.",
+    "notes": "3.x shows several categories together; 4.x shows a selected category and its children. This is a real interface-organization change, not the same selected state.",
+    "v3": {
+      "file": "functionality/application/05-categories/v3.png",
+      "crop": [
+        0,
+        0,
+        415,
+        420
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        415,
+        420
+      ],
+      "sourceDimensions": [
+        415,
+        420
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 25 (Category Editor) in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-12-06",
+      "archiveTimestamp": "20021206184547",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image050.jpg",
+      "archiveUrl": "https://web.archive.org/web/20021206184547id_/http://monstercommerce.com/manual/index_files/image050.jpg",
+      "notes": null,
+      "sha256": "72622ed2c530a2da91de35e11215a4e230fc97e9653e6ee6385479f712f35998",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image050.jpg",
+      "width": 415,
+      "height": 420,
+      "sourceSha256": "248655847450c3a12cf297b51d7c3f3f448ffc6d05667e0f55abfc7eb1e70449",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/05-categories/v4.png",
+      "crop": [
+        123,
+        137,
+        366,
+        372
+      ],
+      "applicationCrop": [
+        15,
+        65,
+        482,
+        472
+      ],
+      "sourceDimensions": [
+        514,
+        600
+      ],
+      "version": "4.1.1.0b",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054628",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im1.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054628id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im1.jpg",
+      "notes": null,
+      "sha256": "2a497e5abdd87c51a3c37e314cfecc2633348ab2398d878ea576faa965a444ce",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im1.jpg",
+      "width": 366,
+      "height": 372,
+      "sourceSha256": "43fa893a7ca64d80ffe0fd907be523ee2b6a4210d55da4bb27c4ad4b5c57a232",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/05-categories/comparison-3x-4x.png",
+      "width": 805,
+      "height": 420,
+      "sha256": "7408b1b92393f9ebffafa0968babf60ebe8616f1febbdef2eea30f8c33f2d3b9",
+      "placements": [
+        {
+          "file": "functionality/application/05-categories/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 415,
+          "height": 420
+        },
+        {
+          "file": "functionality/application/05-categories/v4.png",
+          "x": 439,
+          "y": 0,
+          "width": 366,
+          "height": 372
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": [
+      {
+        "file": "functionality/application/05-categories/v4-application-context.png",
+        "crop": [
+          15,
+          65,
+          482,
+          472
+        ],
+        "applicationCrop": [
+          15,
+          65,
+          482,
+          472
+        ],
+        "sourceDimensions": [
+          514,
+          600
+        ],
+        "version": "4.1.1.0b",
+        "versionEvidence": "Visible version in footer of original full screenshot.",
+        "date": "2006-04-10",
+        "archiveTimestamp": "20060410054628",
+        "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/im1.jpg",
+        "archiveUrl": "https://web.archive.org/web/20060410054628id_/http://www.monstercommerce.com/imgs05/screenshots/lg/im1.jpg",
+        "notes": null,
+        "sha256": "29bff4ca06d1d15be9d8346d69ed481fcaffa440d96ff7705ad8e4de9f63806c",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/im1.jpg",
+        "width": 482,
+        "height": 472,
+        "sourceSha256": "43fa893a7ca64d80ffe0fd907be523ee2b6a4210d55da4bb27c4ad4b5c57a232",
+        "label": "MonsterCommerce 4.x"
+      }
+    ]
+  },
+  {
+    "key": "header-html",
+    "title": "Edit the storefront header HTML",
+    "matchConfidence": "Strong: direct equivalents with an HTML textarea and Display Option selection.",
+    "notes": "3.x label: Home Page Header HTML Editor; 4.x label: Top of Page HTML Editor. The 3.x example is blank placeholder HTML; 4.x has saved markup and a WYSIWYG option.",
+    "v3": {
+      "file": "functionality/application/06-header-html/v3.png",
+      "crop": [
+        0,
+        0,
+        575,
+        276
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        575,
+        276
+      ],
+      "sourceDimensions": [
+        575,
+        276
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 61 in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-11-10",
+      "archiveTimestamp": "20021110162505",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image095.jpg",
+      "archiveUrl": "https://web.archive.org/web/20021110162505id_/http://monstercommerce.com/manual/index_files/image095.jpg",
+      "notes": null,
+      "sha256": "929794eee01858354f4dd4723233638ec88419aeaea9de88179f972b80f02eac",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image095.jpg",
+      "width": 575,
+      "height": 276,
+      "sourceSha256": "c2730245dfac057cb60e6749a804b5c7c4fe8e058686f172fa355c9cac0a5b10",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/06-header-html/v4.png",
+      "crop": [
+        145,
+        161,
+        440,
+        210
+      ],
+      "applicationCrop": [
+        17,
+        74,
+        578,
+        497
+      ],
+      "sourceDimensions": [
+        616,
+        600
+      ],
+      "version": "4.1.1.0b",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054747",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/sd1.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054747id_/http://www.monstercommerce.com/imgs05/screenshots/lg/sd1.jpg",
+      "notes": null,
+      "sha256": "b67d70a14986d2a648eba5c77d30429174ea1287056009bb4740d71144ec00f9",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-site-design.jpg",
+      "width": 440,
+      "height": 210,
+      "sourceSha256": "10fee582d95b2f3ef0d40ab72f45db44926510fc6178144adb7ad58889114084",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": {
+      "key": "header-html",
+      "file": "functionality/application/06-header-html/network-solutions.png",
+      "crop": [
+        146,
+        145,
+        954,
+        565
+      ],
+      "applicationCrop": [
+        146,
+        145,
+        954,
+        1079
+      ],
+      "version": "Network Solutions ecommerce 7.x",
+      "date": "2009",
+      "dateConfidence": "Copyright 2009 printed on original manual page; Yumpu mirror uploaded 2012-07-29. Exact screenshot creation date is unknown.",
+      "sourceUrl": "https://www.yumpu.com/en/document/view/354016/ecommerce-help-manual-network-solutions",
+      "archiveUrl": null,
+      "imageUrl": "https://img.yumpu.com/354016/74/1238x1600/ecommerce-help-manual-network-solutions.jpg?quality=80",
+      "versionEvidence": "Same 2009 Network Solutions manual contains explicit Pro E-Commerce 7.3.2.0 in dashboard figure on printed page 323. This Header & Footer figure has no visible patch version; 7.x family attribution only.",
+      "printedPage": 298,
+      "viewerPage": 74,
+      "width": 954,
+      "height": 565,
+      "sha256": "d63f2ae3502ce227eaea5f1f3a18d6f8d43e47849e920a5542024dcf30e69c8b",
+      "notes": "Original manual screenshot shows the Header & Footer editor, Manage Header WYSIWYG, nsScript insertion and View HTML control. Feature crop includes full header editor, omits lower Manage Footer editor. applicationCrop includes both editors and Save buttons. No browser chrome, reconstruction, resizing or enhancement. Source JPEG page is unchanged; crop bounds describe original pixels.",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/ns/printed-298-header-footer.jpg",
+      "sourceSha256": "4f6b68e86ef2d2631cafbe44211c08f5c8ed0d62201cef8b27bd0255a5a608e6",
+      "label": "Network Solutions"
+    },
+    "comparison": {
+      "file": "functionality/application/06-header-html/comparison-3x-4x.png",
+      "width": 1039,
+      "height": 276,
+      "sha256": "c4057b874930d86903caf19dd7218e91184be1aeeb5a692fa50f1ff85f1ab135",
+      "placements": [
+        {
+          "file": "functionality/application/06-header-html/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 575,
+          "height": 276
+        },
+        {
+          "file": "functionality/application/06-header-html/v4.png",
+          "x": 599,
+          "y": 0,
+          "width": 440,
+          "height": 210
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": {
+      "file": "functionality/application/06-header-html/comparison-with-network-solutions.png",
+      "width": 2017,
+      "height": 565,
+      "sha256": "eea2390a5d35f4a4ed3414f3c09051b1a894010ddbec89a687ab88cb6526e7c8",
+      "placements": [
+        {
+          "file": "functionality/application/06-header-html/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 575,
+          "height": 276
+        },
+        {
+          "file": "functionality/application/06-header-html/v4.png",
+          "x": 599,
+          "y": 0,
+          "width": 440,
+          "height": 210
+        },
+        {
+          "file": "functionality/application/06-header-html/network-solutions.png",
+          "x": 1063,
+          "y": 0,
+          "width": 954,
+          "height": 565
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "contexts": [
+      {
+        "file": "functionality/application/06-header-html/v4-application-context.png",
+        "crop": [
+          17,
+          74,
+          578,
+          497
+        ],
+        "applicationCrop": [
+          17,
+          74,
+          578,
+          497
+        ],
+        "sourceDimensions": [
+          616,
+          600
+        ],
+        "version": "4.1.1.0b",
+        "versionEvidence": "Visible version in footer of original full screenshot.",
+        "date": "2006-04-10",
+        "archiveTimestamp": "20060410054747",
+        "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/sd1.jpg",
+        "archiveUrl": "https://web.archive.org/web/20060410054747id_/http://www.monstercommerce.com/imgs05/screenshots/lg/sd1.jpg",
+        "notes": null,
+        "sha256": "85e56e3ced00324775c3509118fff6be1a7a29e68e9dbe9643eeee38fe4b264f",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-site-design.jpg",
+        "width": 578,
+        "height": 497,
+        "sourceSha256": "10fee582d95b2f3ef0d40ab72f45db44926510fc6178144adb7ad58889114084",
+        "label": "MonsterCommerce 4.x"
+      },
+      {
+        "key": "header-html",
+        "file": "functionality/application/06-header-html/network-solutions-application-context.png",
+        "crop": [
+          146,
+          145,
+          954,
+          1079
+        ],
+        "applicationCrop": [
+          146,
+          145,
+          954,
+          1079
+        ],
+        "version": "Network Solutions ecommerce 7.x",
+        "date": "2009",
+        "dateConfidence": "Copyright 2009 printed on original manual page; Yumpu mirror uploaded 2012-07-29. Exact screenshot creation date is unknown.",
+        "sourceUrl": "https://www.yumpu.com/en/document/view/354016/ecommerce-help-manual-network-solutions",
+        "archiveUrl": null,
+        "imageUrl": "https://img.yumpu.com/354016/74/1238x1600/ecommerce-help-manual-network-solutions.jpg?quality=80",
+        "versionEvidence": "Same 2009 Network Solutions manual contains explicit Pro E-Commerce 7.3.2.0 in dashboard figure on printed page 323. This Header & Footer figure has no visible patch version; 7.x family attribution only.",
+        "printedPage": 298,
+        "viewerPage": 74,
+        "width": 954,
+        "height": 1079,
+        "sha256": "83d01acba9cb9bd9e44ea7992d13ce75707d189e41ca977cdcdfa1572d4dda4f",
+        "notes": "Original manual screenshot shows the Header & Footer editor, Manage Header WYSIWYG, nsScript insertion and View HTML control. Feature crop includes full header editor, omits lower Manage Footer editor. applicationCrop includes both editors and Save buttons. No browser chrome, reconstruction, resizing or enhancement. Source JPEG page is unchanged; crop bounds describe original pixels.",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/ns/printed-298-header-footer.jpg",
+        "sourceSha256": "4f6b68e86ef2d2631cafbe44211c08f5c8ed0d62201cef8b27bd0255a5a608e6",
+        "label": "Network Solutions"
+      }
+    ]
+  },
+  {
+    "key": "custom-payments",
+    "title": "Configure custom payment methods",
+    "matchConfidence": "Strong: equivalent custom payment method editors with costs, confirmation text and custom input fields.",
+    "notes": "3.x shows one Credit Card method plus an add form; 4.x shows Account Number and Credit Card methods. Field layout and configuration differ; these are the same feature.",
+    "v3": {
+      "file": "functionality/application/07-custom-payments/v3.png",
+      "crop": [
+        0,
+        0,
+        498,
+        446
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        498,
+        446
+      ],
+      "sourceDimensions": [
+        498,
+        446
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 21 (Custom Payment Manager) in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2003-04-13",
+      "archiveTimestamp": "20030413174901",
+      "sourceUrl": "http://www.monstercommerce.com:80/manual/index_files/image043.jpg",
+      "archiveUrl": "https://web.archive.org/web/20030413174901id_/http://www.monstercommerce.com/manual/index_files/image043.jpg",
+      "notes": null,
+      "sha256": "4ee9c22c05715aec4ab21cf178a85071d45f88511f77f54dbddfd1170667b05d",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image043.jpg",
+      "width": 498,
+      "height": 446,
+      "sourceSha256": "29e8ee8a39af3fd21ee384b978b312fa4878a84bc8ecb66b325f92e084d8a36d",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/07-custom-payments/v4.png",
+      "crop": [
+        125,
+        137,
+        380,
+        441
+      ],
+      "applicationCrop": [
+        17,
+        65,
+        490,
+        513
+      ],
+      "sourceDimensions": [
+        532,
+        600
+      ],
+      "version": "4.1.1.0b",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054823",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/op2.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054823id_/http://www.monstercommerce.com/imgs05/screenshots/lg/op2.jpg",
+      "notes": null,
+      "sha256": "7f6ee61270c7d2a36efd2d569954bea990f84de41a53742154c30f457e600c49",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/op2.jpg",
+      "width": 380,
+      "height": 441,
+      "sourceSha256": "53bb2526dd3bb4d6d6b1130ff609e81029427a96c8fa05968b75575cc680df9f",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/07-custom-payments/comparison-3x-4x.png",
+      "width": 902,
+      "height": 446,
+      "sha256": "7681a5f6326fe769f099a541f3a372f790c65ba58ffa704acd93aebdbdd96c81",
+      "placements": [
+        {
+          "file": "functionality/application/07-custom-payments/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 498,
+          "height": 446
+        },
+        {
+          "file": "functionality/application/07-custom-payments/v4.png",
+          "x": 522,
+          "y": 0,
+          "width": 380,
+          "height": 441
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": [
+      {
+        "file": "functionality/application/07-custom-payments/v4-application-context.png",
+        "crop": [
+          17,
+          65,
+          490,
+          513
+        ],
+        "applicationCrop": [
+          17,
+          65,
+          490,
+          513
+        ],
+        "sourceDimensions": [
+          532,
+          600
+        ],
+        "version": "4.1.1.0b",
+        "versionEvidence": "Visible version in footer of original full screenshot.",
+        "date": "2006-04-10",
+        "archiveTimestamp": "20060410054823",
+        "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/op2.jpg",
+        "archiveUrl": "https://web.archive.org/web/20060410054823id_/http://www.monstercommerce.com/imgs05/screenshots/lg/op2.jpg",
+        "notes": null,
+        "sha256": "1ad573797dcacb83240b86dad4063803add3b228c785a4fe24783b8af540cf81",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/op2.jpg",
+        "width": 490,
+        "height": 513,
+        "sourceSha256": "53bb2526dd3bb4d6d6b1130ff609e81029427a96c8fa05968b75575cc680df9f",
+        "label": "MonsterCommerce 4.x"
+      }
+    ]
+  },
+  {
+    "key": "customers",
+    "title": "Manage customer records",
+    "matchConfidence": "Valid but compact: both show customer search results and editable customer records.",
+    "notes": "The recovered 3.x figure is only a single-result strip, so the 4.x crop contains its search controls and first result. Avoid presenting this as a complete 3.x Customer Manager page. Lower-priority comparison because of the small source.",
+    "v3": {
+      "file": "functionality/application/08-customers/v3.png",
+      "crop": [
+        0,
+        0,
+        620,
+        100
+      ],
+      "applicationCrop": [
+        0,
+        0,
+        620,
+        100
+      ],
+      "sourceDimensions": [
+        620,
+        100
+      ],
+      "version": "3.x",
+      "versionEvidence": "Figure 14 in the official 2002 MonsterCommerce manual; same manual includes login figure explicitly labeled v3.0. Exact patch is not visible on this screen.",
+      "date": "2002-11-10",
+      "archiveTimestamp": "20021110193559",
+      "sourceUrl": "http://monstercommerce.com:80/manual/index_files/image025.gif",
+      "archiveUrl": "https://web.archive.org/web/20021110193559id_/http://monstercommerce.com/manual/index_files/image025.gif",
+      "notes": null,
+      "sha256": "cbcf350c103722fb28c20fbf06da8e1c4c149bda19cde4bf692cb7d9c4a8d411",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/comparison-research/mc/image025.gif",
+      "width": 620,
+      "height": 100,
+      "sourceSha256": "bbaaa378fdaf75eb6c0f37711f416703e16c3fafa5bd9d52e09c0572d0bb7b43",
+      "label": "MonsterCommerce 3.x"
+    },
+    "v4": {
+      "file": "functionality/application/08-customers/v4.png",
+      "crop": [
+        125,
+        137,
+        367,
+        126
+      ],
+      "applicationCrop": [
+        17,
+        65,
+        490,
+        513
+      ],
+      "sourceDimensions": [
+        532,
+        600
+      ],
+      "version": "4.1.5.0",
+      "versionEvidence": "Visible version in footer of original full screenshot.",
+      "date": "2006-04-10",
+      "archiveTimestamp": "20060410054728",
+      "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/cs1.jpg",
+      "archiveUrl": "https://web.archive.org/web/20060410054728id_/http://www.monstercommerce.com/imgs05/screenshots/lg/cs1.jpg",
+      "notes": null,
+      "sha256": "f17dffa3e8794095a7025b0af1a8058bbac37f8d58ef648ccbbb5c49874ba6f9",
+      "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/cs1.jpg",
+      "width": 367,
+      "height": 126,
+      "sourceSha256": "2112c2bba7acf4658b93561a7bf712d11ae2c8b7afb98bbc92b7876937ce077d",
+      "label": "MonsterCommerce 4.x"
+    },
+    "networkSolutions": null,
+    "comparison": {
+      "file": "functionality/application/08-customers/comparison-3x-4x.png",
+      "width": 1011,
+      "height": 126,
+      "sha256": "5b6ce7a46e670c485017a49e043ab82e4a9c505cb51eb86fc79128395cf9bee5",
+      "placements": [
+        {
+          "file": "functionality/application/08-customers/v3.png",
+          "x": 0,
+          "y": 0,
+          "width": 620,
+          "height": 100
+        },
+        {
+          "file": "functionality/application/08-customers/v4.png",
+          "x": 644,
+          "y": 0,
+          "width": 367,
+          "height": 126
+        }
+      ],
+      "operation": "Native screenshots side by side, top aligned with a 24px gap. No added text or image scaling."
+    },
+    "extendedComparison": null,
+    "contexts": [
+      {
+        "file": "functionality/application/08-customers/v4-application-context.png",
+        "crop": [
+          17,
+          65,
+          490,
+          513
+        ],
+        "applicationCrop": [
+          17,
+          65,
+          490,
+          513
+        ],
+        "sourceDimensions": [
+          532,
+          600
+        ],
+        "version": "4.1.5.0",
+        "versionEvidence": "Visible version in footer of original full screenshot.",
+        "date": "2006-04-10",
+        "archiveTimestamp": "20060410054728",
+        "sourceUrl": "http://www.monstercommerce.com/imgs05/screenshots/lg/cs1.jpg",
+        "archiveUrl": "https://web.archive.org/web/20060410054728id_/http://www.monstercommerce.com/imgs05/screenshots/lg/cs1.jpg",
+        "notes": null,
+        "sha256": "a08aecd17553df0471339f7520dd8acf1bfc9fa3918107d0b5c3da6476df47c1",
+        "sourceFile": "art/references/local/monstercommerce-research-2026-09-30/software/mc-2005-screens/cs1.jpg",
+        "width": 490,
+        "height": 513,
+        "sourceSha256": "2112c2bba7acf4658b93561a7bf712d11ae2c8b7afb98bbc92b7876937ce077d",
+        "label": "MonsterCommerce 4.x"
+      }
+    ]
+  }
+]

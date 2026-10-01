@@ -26,6 +26,20 @@ export const inOutline = (p: Point, outline: Point[]) => {
 	return hit;
 };
 
+/**
+ * Whether a step from `from` to `to` comes onto an outline from directly behind it: from above its back edge, the
+ * highest the outline reaches at `from`'s x, and heading down more than across. A step from beside the outline, left or
+ * right of all of it, or across it at any height, sideways past its back corners included, doesn't.
+ */
+export const fromBehind = (from: Point, to: Point, outline: Point[]) => {
+	let back = Infinity;
+	for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
+		const a = outline[i], b = outline[j];
+		if (a.x > from.x !== b.x > from.x) back = Math.min(back, a.y + ((b.y - a.y) * (from.x - a.x)) / (b.x - a.x));
+	}
+	return back !== Infinity && from.y < back && to.y - from.y > Math.abs(to.x - from.x);
+};
+
 export type Side = 'front' | 'behind';
 
 /**
@@ -38,8 +52,11 @@ export const blocked = (units: WalkBehind[], sides: ReadonlyMap<string, Side>) =
  * One cursor's side of each walk-behind unit it is on. The side is decided when the cursor steps onto a unit's outline,
  * read where it stepped from, its last position outside the outline: on or below the front line is in front, above it
  * behind. For a staircase, stepping on from on or above its landing is in front too, as is stepping on within
- * LANDING_REACH of travel after leaving that floor. The side holds until the cursor steps off. A cursor that appears or
- * jumps (a scene entry, a reset, a peer snap) takes the side of the point it lands on.
+ * LANDING_REACH of travel after leaving that floor. A desk is stricter about behind (Joe, 2026-10-01: the cursor kept
+ * going under the lab's desks on its way to the workstation): only stepping on from directly behind it, down over its
+ * back edge, is behind; from either side, whatever the height, and from the front it is in front. The side holds until the
+ * cursor steps off. A cursor that appears or jumps (a scene entry, a reset, a peer snap) takes the side of the point it
+ * lands on, which on a desk is in front.
  */
 export function walker(units: WalkBehind[], reach = LANDING_REACH) {
 	const sides = new Map<string, Side>();
@@ -58,7 +75,8 @@ export function walker(units: WalkBehind[], reach = LANDING_REACH) {
 				if (sides.has(w.key)) continue;
 				const from = last && !inOutline(last, w.outline) ? last : p;
 				const fromAbove = !!w.landing && (from.y <= lineY(w.landing, from.x) || sinceLanding.get(w.key)! <= reach);
-				sides.set(w.key, from.y >= lineY(w.front, from.x) || fromAbove ? 'front' : 'behind');
+				const front = w.desk ? !fromBehind(from, p, w.outline) : from.y >= lineY(w.front, from.x) || fromAbove;
+				sides.set(w.key, front ? 'front' : 'behind');
 			}
 			last = p;
 			return sides;

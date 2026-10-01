@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "6124a22d9bc3226204f764e859bf9381470068a6ad171e424ec808a3bb7cb47e",
-  "run": "art/runs/moosylvania-lounge-chairs/2026-09-29T00-38-12.333Z",
+  "sourceSha256": "3e4517c9a4bfee2343ac03551cc4e346ca72139457d002739347c9940f0b2a72",
+  "run": "art/runs/moosylvania-lounge-chairs/2026-10-01T17-57-58.177Z",
   "provider": "derived",
   "derivation": {
     "asset": "moosylvania-master",
-    "referenceSha256": "b53c52762794b564405cd219ba58c600eb37665f1c6f611edf4fa20a60be6dcb",
+    "referenceSha256": "ac08a95cc9c1bb093c32894703ab87f89d5a424bca3810d51634e0e5edc0bdd3",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

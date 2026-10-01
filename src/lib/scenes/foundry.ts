@@ -105,7 +105,6 @@ export const FOUNDRY: SubScene = {
 			gist: 'play it on the screen',
 			// No card: the reel on the screen is what a poster presents (Joe, 2026-09-29). Its text moves elsewhere later.
 			kind: 'action' as const,
-			body: [],
 			rect: posters[id],
 			cosmetic: 2 as const
 		})),
@@ -115,7 +114,6 @@ export const FOUNDRY: SubScene = {
 			gist: screenGist(),
 			// Nothing to click: the posters start its reels, and the engine keeps its state current (Joe, 2026-09-29).
 			kind: 'status',
-			body: [],
 			rect: { x: 1656, y: 85, w: 1016, h: 833 }
 		}
 	],

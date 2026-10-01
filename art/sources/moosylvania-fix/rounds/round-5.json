@@ -1,0 +1,104 @@
+{
+ "round": 5,
+ "base": "rounds/base-5.png",
+ "notes": {
+  "all": "Joe (2026-10-01), from the running site: the loft railing's mesh is a wobbly grid with smudges and blobs and its top rail cracked; the staircases' railing infill is a crackle of veins and a chain of broken orange blobs, with ragged tread edges; the floor of the two offices beneath the loft is a smear of ghosted plank bands, soft patches and blobs. No model drew this round: scripts/art/overworld/lobby-railings-floor.py relays all three by construction and writes each tile's model. The railing infill itself is too fine for the native master, so the script paints the old infill out here and draws the new one as decals (decals.json), composited onto the 4x upscale by the install."
+ },
+ "tiles": {
+  "loft-railing": {
+   "rect": [
+    264,
+    470,
+    360,
+    70
+   ],
+   "extra": [
+    [
+     278,
+     482,
+     607,
+     531
+    ]
+   ],
+   "fixes": [
+    "Drawn by scripts/art/overworld/lobby-railings-floor.py, not by a model: between the loft railing's end posts and under its top rail, the old posts and mesh are painted out with the loft floor's flat tone."
+   ]
+  },
+  "stairs-left": {
+   "rect": [
+    120,
+    480,
+    170,
+    440
+   ],
+   "extra": [
+    [
+     133,
+     483,
+     273,
+     905
+    ]
+   ],
+   "fixes": [
+    "Drawn by scripts/art/overworld/lobby-railings-floor.py, not by a model: the old infill of the left staircase's four railing runs is painted out with what stands behind each (the wall and wainscot, the treads, the hall floor), and every tread's back edge is relaid as one straight line."
+   ]
+  },
+  "stairs-right": {
+   "rect": [
+    600,
+    480,
+    170,
+    440
+   ],
+   "extra": [
+    [
+     609,
+     483,
+     753,
+     905
+    ]
+   ],
+   "fixes": [
+    "Drawn by scripts/art/overworld/lobby-railings-floor.py, not by a model: as stairs-left, on the right staircase."
+   ]
+  },
+  "floor-left": {
+   "rect": [
+    205,
+    670,
+    240,
+    140
+   ],
+   "extra": [
+    [
+     219,
+     683,
+     429,
+     796
+    ]
+   ],
+   "fixes": [
+    "Drawn by scripts/art/overworld/lobby-railings-floor.py, not by a model: the left office's floor and the floor in front of it are relaid as planks on the hall floor's own seams, with a crisp contact shadow under the chair and the pot."
+   ]
+  },
+  "floor-right": {
+   "rect": [
+    525,
+    670,
+    160,
+    140
+   ],
+   "extra": [
+    [
+     537,
+     683,
+     671,
+     799
+    ]
+   ],
+   "fixes": [
+    "Drawn by scripts/art/overworld/lobby-railings-floor.py, not by a model: as floor-left, in the right office."
+   ]
+  }
+ }
+}

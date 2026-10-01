@@ -139,7 +139,7 @@ test('hello carries the id, the geolocated country, server time, rate, cap, room
 	assert.match(cc, /^([A-Z]{2}|XX)$/);
 	assert.notEqual(cc, 'ZZ', 'the country is never the client’s word');
 	assert.ok(Math.abs(now - Date.now()) < 5000, 'server time');
-	assert.deepEqual(rest, { rate: 20, cap: 60, room: 'overworld:1', peers: [], screen: null });
+	assert.deepEqual(rest, { rate: 20, cap: 60, room: 'overworld:1', peers: [], screen: null, tv: { ch: 0, holder: null } });
 });
 
 test('two bots in a room exchange moves, clamped to the scene; a third on another scene lands in a different room', async () => {
@@ -232,6 +232,59 @@ test('the screen is idle again once its room empties', async () => {
 	assert.equal(probe.hello.screen, null);
 	play(probe, 'fast-five');
 	assert.equal((await probe.take('screen')).title, 'fast-five', 'and takes a play');
+});
+
+const remote = (bot: Bot, m: { t: 'tv.take' | 'tv.put' } | { t: 'tv.tune'; by: number }) => bot.ws.send(JSON.stringify(m));
+
+test("the lobby TV's remote is one visitor's at a time: the first take wins, only its holder tunes for the room, and a put or the holder's leaving frees it", async () => {
+	remote(a, { t: 'tv.take' });
+	const x = await enter('moosylvania'), y = await enter('moosylvania');
+	assert.equal(x.hello.room, 'moosylvania:1');
+	assert.deepEqual(x.hello.tv, { ch: 0, holder: null }, 'the first channel, the remote on the table');
+	remote(y, { t: 'tv.tune', by: 1 });
+	remote(y, { t: 'tv.put' });
+	remote(x, { t: 'tv.take' });
+	const taken = { t: 'tv', ch: 0, holder: x.hello.id };
+	assert.deepEqual(await x.take('tv'), taken, 'echoed to its sender too, and the tune of a visitor without it was dropped');
+	assert.deepEqual(await y.take('tv'), taken);
+	remote(y, { t: 'tv.take' });
+	remote(y, { t: 'tv.tune', by: 1 });
+	remote(y, { t: 'tv.put' });
+	remote(x, { t: 'tv.tune', by: 2 });
+	remote(x, { t: 'tv.tune', by: -1 });
+	const tuned = { t: 'tv', ch: -1, holder: x.hello.id };
+	assert.deepEqual(await y.take('tv'), tuned, 'the channel wraps on each client, so the room counts below the first');
+	assert.deepEqual(await x.take('tv'), tuned);
+	const z = await enter('moosylvania');
+	assert.deepEqual(z.hello.tv, { ch: -1, holder: x.hello.id }, 'a joiner sees the channel and who holds the remote');
+	remote(x, { t: 'tv.put' });
+	assert.deepEqual(await y.take('tv'), { t: 'tv', ch: -1, holder: null });
+	remote(y, { t: 'tv.take' });
+	remote(y, { t: 'tv.tune', by: 1 });
+	assert.deepEqual(await z.take('tv', (m) => m.ch === 0), { t: 'tv', ch: 0, holder: y.hello.id });
+	// Leaving with it in hand leaves it on the table.
+	y.ws.close();
+	assert.deepEqual(await z.take('tv', (m) => m.ch === 0 && m.holder === null), { t: 'tv', ch: 0, holder: null });
+	await z.take('out', (m) => m.id === y.hello.id);
+	ledger.delete(y);
+	await sleep(100);
+	for (const bot of [a, b]) assert.ok(!bot.inbox.some((m) => m.t === 'tv'), 'a take outside the lobby is dropped');
+	// Every change the room made, in order, as the visitor who was there throughout heard it: nothing else was accepted.
+	const heard = x.inbox.flatMap((m) => (m.t === 'tv' ? [[m.ch, m.holder]] : []));
+	assert.deepEqual(heard, [[-1, null], [-1, y.hello.id], [0, y.hello.id], [0, null]]);
+
+	// Once the lobby empties, the TV is back on its first channel.
+	await leave(x, z);
+	z.ws.close();
+	ledger.delete(z);
+	let probe: Bot;
+	while ((probe = await enter('moosylvania')).hello.peers.length) probe.ws.close(), ledger.delete(probe), await sleep(50);
+	assert.deepEqual(probe.hello.tv, { ch: 0, holder: null });
+	const other = await enter('moosylvania');
+	await leave(probe, other);
+	other.ws.close();
+	ledger.delete(other);
+	await sleep(100);
 });
 
 test('a socket past its token bucket (twice the rate, four seconds of burst) is closed with 4008', async () => {

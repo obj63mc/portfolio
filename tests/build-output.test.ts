@@ -50,10 +50,9 @@ test('overworld: skip link, h1, signpost, then districts west to east with their
 	const layer = withoutDialogs(main(page('index.html')));
 	assert.equal(hrefs(layer)[0], '#signpost-districts');
 	assert.equal(texts(layer, 'h1').length, 1);
-	assert.match(hrefs(signpost(layer))[0], /\.pdf$/);
-	assert.match(hrefs(signpost(layer))[1], /^mailto:/);
-	// West to east by centre x on the accepted master: the park lake sits west of the West End row.
-	assert.deepEqual(hrefs(signpost(layer)).slice(4), ['#maplewood', '#forest-park', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
+	// The signpost links to the districts alone (Joe, 2026-10-01), west to east by centre x on the accepted master: the park
+	// lake sits west of the West End row.
+	assert.deepEqual(hrefs(signpost(layer)), ['#maplewood', '#forest-park', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
 	assert.deepEqual(texts(layer, 'h2'), OVERWORLD.districts.map((d) => d.name));
 	assert.deepEqual(texts(layer, 'h3'), OVERWORLD.districts.flatMap((d) => d.venues.map((v) => v.name)));
 	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
@@ -70,12 +69,12 @@ test('overworld: one button per prop, named prop plus gist, and one dialog per c
 	assert.deepEqual(moosylvania.map((t) => t.split(':')[0]), byX, 'props read left to right');
 });
 
-test('overworld: doors and contacts are links, everything else stays a button', () => {
+test('overworld: doors are links, everything else stays a button, and no link outside a card leaves the site', () => {
 	const layer = withoutDialogs(main(page('index.html')));
 	const moosylvania = layer.slice(layer.indexOf('id="moosylvania"'), layer.indexOf('id="side-project"'));
 	assert.ok(hrefs(moosylvania).includes('/moosylvania'), 'venue door links to the flat sub-scene URL');
 	const external = hrefs(layer).filter((h) => /^(https?:|mailto:)/.test(h));
-	assert.deepEqual(external, hrefs(signpost(layer)).filter((h) => /^(https?:|mailto:)/.test(h)), 'external links outside cards live only on the signpost');
+	assert.deepEqual(external, [], 'external links live only in the cards');
 });
 
 test('overworld: a door link to every sub-scene', () => {
@@ -112,12 +111,12 @@ test('sub-scenes: focusable h1, props in reading order, exit link to the venue a
 test('inventory: every prop from the content inventory is on some scene, one grant per cosmetic', () => {
 	const ids = new Set(allProps.map((p) => p.id));
 	const inventory = [
-		'welcome', 'moose', 'computer-frontend', 'computer-backend', 'computer-cms', 'computer-data', 'moose-statue', 'meeting-tv',
+		'welcome', 'moose', 'computer-frontend', 'computer-backend', 'computer-cms', 'computer-data', 'moose-statue', 'meeting-tv', 'tv-remote',
 		'diploma', 'whiteboard', 'workstation',
 		// The marquee is scenery, its letters scrolling what's showing (Joe, 2026-09-30).
 		'screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax',
 		'mc-sign', 'mc-eye', 'server-rack',
-		'chalkboard', 'bottle-bud-light', 'bottle-sapporo', 'bottle-anchor', 'bottle-soonhari', 'bottle-bacardi', 'bottle-grey-goose',
+		'bottle-bud-light', 'bottle-sapporo', 'bottle-anchor', 'bottle-soonhari', 'bottle-bacardi', 'bottle-grey-goose',
 		'bottle-ej', 'bottle-camarena', 'bottle-rumchata', 'bottle-pink-whitney', 'bottle-new-amsterdam', 'brewery-sign',
 		// The ATM (PayPal and Venmo) left Brennan's for the overworld; it returns to this list when Joe places it.
 		'humidor-cohiba', 'humidor-macanudo', 'humidor-partagas', 'humidor-la-gloria-cubana', 'humidor-punch', 'stg-logo',
@@ -261,10 +260,68 @@ const player = (card: string) => {
 	return video;
 };
 
-test("the meeting TV: its card holds the video with the site's controls, loaded only when played", () => {
-	const tv = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-meeting-tv-title"[\s\S]*?<\/dialog>/)![0];
-	const video = player(tv);
-	assert.match(video, new RegExp(`src="${MEDIA}/videos/universal/fastfive-demo-full-1024x768\\.[0-9a-f]{8}\\.mp4"`));
+test('the meeting TV is a television, no button and no card, its video named only by the engine; its remote is the card (Joe, 2026-10-01)', () => {
+	const layer = main(page('moosylvania.html'));
+	const tv = layer.match(/<div class="prop[^>]*data-prop="meeting-tv"[^>]*>[\s\S]*?<\/div>/)![0];
+	assert.doesNotMatch(tv, /<button|<dialog/);
+	assert.match(tv, /Meeting TV: [^<]*channel 1 of \d+/);
+	const video = opens(tv, 'video')[0];
+	for (const attribute of ['hidden', 'muted', 'loop', 'playsinline', 'preload="none"']) assert.ok(video.includes(` ${attribute}`), attribute);
+	assert.ok(!/\s(src|autoplay|controls)[\s=>]/.test(video), 'a page without the engine fetches and plays nothing');
+	// The remote's button asks for it, and its card is the remote: channel up and down, and power, which closes it.
+	assert.match(layer, /<button[^>]*aria-haspopup="dialog"[^>]*data-take[^>]*>\s*TV remote: changes the channel/);
+	const remote = layer.match(/<dialog[^>]*aria-labelledby="card-tv-remote-title"[\s\S]*?<\/dialog>/)![0];
+	assert.match(opens(remote, 'dialog')[0], /class="[^"]*\bremote\b/);
+	assert.match(remote, /<button[^>]*data-tune="1"[^>]*aria-label="Channel up"/);
+	assert.match(remote, /<button[^>]*data-tune="-1"[^>]*aria-label="Channel down"/);
+	assert.match(remote, /<form method="dialog"[^>]*>\s*<button[^>]*aria-label="Power: put the remote back"/);
+	assert.equal(opens(remote, 'button').length, 3, 'up, down and power only');
+	assert.doesNotMatch(remote, /<video/);
+	assert.match(page('moosylvania.html'), /<noscript>[\s\S]*dialog\.remote \{ display: none/, 'its buttons need the engine');
+});
+
+test('copy: each card\'s is its Markdown file, built in as markup; no file is without a card, and no card empty (Joe, 2026-10-01)', () => {
+	const dir = new URL('../src/lib/content/', import.meta.url);
+	const files = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.md') && f.includes('/'));
+	const copy = new Map(files.map((f) => [f.slice(f.lastIndexOf('/') + 1, -3), readFileSync(new URL(f, dir), 'utf8').trim()]));
+	assert.equal(copy.size, files.length, 'a prop id names one file');
+	const scenes = [['overworld', 'index.html', OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props))] as const,
+		...Object.values(SUB_SCENES).map((s) => [s.id, `${s.id}.html`, s.props] as const)];
+	for (const [scene, file, props] of scenes) {
+		const layer = main(page(file));
+		for (const p of props.filter((p) => !p.kind && !p.tunes)) {
+			const text = copy.get(p.id);
+			assert.ok(text || p.video || p.logos || p.screens, `${p.id}: a card has copy or media`);
+			const card = layer.match(new RegExp(`<dialog[^>]*aria-labelledby="card-${p.id}-title"[\\s\\S]*?</dialog>`))![0];
+			assert.equal(/<div class="copy[^>]*>\s*(<!--.*?-->)?\s*<(p|ul|ol|h\d)>/.test(card), !!text, `${p.id}: its copy as markup`);
+			if (text) assert.ok(files.includes(`${scene}/${p.id}.md`), `${p.id}: filed under its scene`);
+			copy.delete(p.id);
+		}
+	}
+	assert.deepEqual([...copy.keys()], [], 'every file is a card\'s');
+	// Markdown's own marks are markup by the time they are on the page.
+	const cms = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-computer-cms-title"[\s\S]*?<\/dialog>/)![0];
+	assert.equal(opens(cms, 'p').filter((p) => p === '<p>').length, 2, 'a paragraph each');
+	// A headline is the copy's own, under the card's title in the page's headings: a sub-scene's card is an h2.
+	const diploma = main(page('slu.html')).match(/<dialog[^>]*aria-labelledby="card-diploma-title"[\s\S]*?<\/dialog>/)![0];
+	assert.match(diploma, /<h2[^>]*id="card-diploma-title"[\s\S]*<div class="copy[^>]*>\s*(<!--.*?-->)?\s*<h3>Diploma<\/h3>/);
+});
+
+test("the loft's computers: each card shows its stack's logos, a hashed file each, named under it and fetched when shown (Joe, 2026-10-01)", () => {
+	const layer = main(page('moosylvania.html'));
+	const computers = SUB_SCENES.moosylvania.props.filter((p) => p.logos);
+	assert.equal(computers.length, 4);
+	for (const p of computers) {
+		const card = layer.match(new RegExp(`<dialog[^>]*aria-labelledby="card-${p.id}-title"[\\s\\S]*?</dialog>`))![0];
+		const images = opens(card, 'img');
+		assert.equal(images.length, p.logos!.length, p.id);
+		for (const [i, image] of images.entries()) {
+			const [, file] = image.match(/src="[^"]*\/(_app\/immutable\/assets\/[^"]+)"/) ?? [];
+			assert.ok(file && existsSync(new URL(`../build/${file}`, import.meta.url)), `${p.id}: ${p.logos![i].file} is in the build`);
+			assert.match(image, /alt=""[^>]*loading="lazy"/, p.id);
+			assert.ok(card.includes(`>${p.logos![i].name}</li>`), `${p.id}: ${p.logos![i].name}`);
+		}
+	}
 });
 
 // The videos are on the media host (Joe, 2026-09-30), not in the build: a Workers Builds build names the host, a local
@@ -382,4 +439,22 @@ test('caching: every hashed file of the build is kept for good, the icons a day,
 	}
 	// A page is also asked for at its path without the extension.
 	for (const path of ['/', '/moosylvania', '/sushi-stand', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
+});
+
+test("the bottles of the sites Joe built: each card shows its screenshots in a window, a hashed file each, named and fetched when shown (Joe, 2026-10-01)", () => {
+	const layer = main(page('side-project.html'));
+	const built = SUB_SCENES['side-project'].props.filter((p) => p.screens);
+	assert.deepEqual(built.map((p) => p.id), ['bottle-bacardi', 'bottle-grey-goose']);
+	for (const p of built) {
+		const card = layer.match(new RegExp(`<dialog[^>]*aria-labelledby="card-${p.id}-title"[\\s\\S]*?</dialog>`))![0];
+		const images = opens(card, 'img');
+		assert.equal(images.length, p.screens!.length, p.id);
+		for (const [i, image] of images.entries()) {
+			const [, file] = image.match(/src="[^"]*\/(_app\/immutable\/assets\/[^"]+)"/) ?? [];
+			assert.ok(file && existsSync(new URL(`../build/${file}`, import.meta.url)), `${p.id}: ${p.screens![i].file} is in the build`);
+			assert.ok(image.includes(`alt="${p.screens![i].name}"`) && image.includes('loading="lazy"'), `${p.id}: ${p.screens![i].name}`);
+		}
+		assert.equal(opens(card, 'button').filter((b) => /aria-label="(Previous|Next) screenshot"/.test(b)).length, 2, p.id);
+		assert.doesNotMatch(card, /<video/, p.id);
+	}
 });

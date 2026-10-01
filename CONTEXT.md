@@ -40,7 +40,7 @@ An interactive object placed in a scene that reacts when a visitor hovers or cli
 _Avoid_: object, item, hotspot, element
 
 **Shared prop**:
-A prop whose state is held by the room's server and seen identically by every visitor in the room, such as the Foundry screen.
+A prop whose state is held by the room's server and seen identically by every visitor in the room: the Foundry screen, and the Moosylvania lobby's meeting TV with its remote, whose channel the room holds and which one visitor holds at a time.
 _Avoid_: synced prop, global prop, multiplayer prop, server prop
 
 **Local prop**:
@@ -60,7 +60,7 @@ Scenery drawn in front of every cursor, the visitor's own included, such as a ne
 _Avoid_: occluder, foreground layer, overlay, z-index
 
 **Walk-behind scenery**:
-Scenery a cursor can pass behind or in front of, such as a lab desk with its monitor and chair or a row of theatre seats. The side a cursor steps onto it from decides which, until it steps off; a prop standing on it can be used only from in front.
+Scenery a cursor can pass behind or in front of, such as a lab desk with its monitor and chair or a row of theatre seats. The side a cursor steps onto it from decides which, until it steps off; a prop standing on it can be used only from in front. A desk hides only a cursor that came down onto it from directly behind: from either side or the front the cursor stays on top.
 _Avoid_: occluder, z-sorting, depth sorting, furniture layer
 
 **Cosmetic**:

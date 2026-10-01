@@ -202,9 +202,13 @@ test.describe('elsewhere', () => {
 		expect(await views()).toEqual([{ page_location: `${GA}/` }]);
 		const events = (await queued(page)).filter((c) => c[0] === 'event').map((c) => c.slice(1));
 		expect(events).toContainEqual(['card_open', { prop_id: 'welcome', scene: 'overworld' }]);
-		await page.evaluate(() => document.querySelector<HTMLAnchorElement>('#signpost a[href^="mailto:"]')!.addEventListener('click', (e) => e.preventDefault()));
-		await page.locator('#signpost a[href^="mailto:"]').focus();
+		// The ride sign's card links to Strava; the signpost links to the districts alone (Joe, 2026-10-01).
+		await page.locator('main [data-prop="ride-sign"] > button').focus();
 		await page.keyboard.press('Enter');
-		expect((await queued(page)).at(-1)).toEqual(['event', 'contact_click', { method: 'email' }]);
+		const strava = page.locator('[data-prop="ride-sign"] dialog a[href*="strava.com"]').first();
+		await strava.evaluate((a) => a.addEventListener('click', (e) => e.preventDefault()));
+		await strava.focus();
+		await page.keyboard.press('Enter');
+		expect((await queued(page)).at(-1)).toEqual(['event', 'contact_click', { method: 'strava' }]);
 	});
 });

@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "0fab201c3ed80d79fad712fadd2ff6d9357ac716242a89670a43807e18fdb952",
-  "run": "art/runs/moosylvania-lanterns-left/2026-09-29T00-38-27.994Z",
+  "sourceSha256": "913e6fc09b9950757f8f5964c9a62231e36e18ea87eb1a8d0e17b80ce5ac3428",
+  "run": "art/runs/moosylvania-lanterns-left/2026-10-01T17-59-34.658Z",
   "provider": "derived",
   "derivation": {
     "asset": "moosylvania-master",
-    "referenceSha256": "b53c52762794b564405cd219ba58c600eb37665f1c6f611edf4fa20a60be6dcb",
+    "referenceSha256": "ac08a95cc9c1bb093c32894703ab87f89d5a424bca3810d51634e0e5edc0bdd3",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

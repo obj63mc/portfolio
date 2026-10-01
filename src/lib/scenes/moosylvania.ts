@@ -5,12 +5,14 @@ import type { SubScene } from './types';
 // the nave of the converted church from above the chancel: the meeting area behind the front desk at the bottom, the front
 // desk with its frosted glass moose wall, the round sofas, then the twin staircases up to the loft of desks, with two
 // offices and the front doors beneath it. Each prop rect is its matte's trim. The loft desks, the lounge armchairs, the
-// moose wall with the TV panel in front of it, the round sofas and their coffee table and the meeting furniture are
-// walk-behind scenery; the four computers stand on their desks and the TV on the wall, so each is used from in front. The
-// twin staircases are walk-behind too, with a landing at the loft and the flight's full width as the outline: stepping on
-// at the foot or from the loft is on the stairs, and from either side, under the rising flight, underneath them (Joe,
-// 2026-09-28). The reception desk stays in the plate, so the statue on it is always in reach. The six hanging lanterns are
-// foreground.
+// moose wall with the TV panel in front of it, the round sofas and their coffee table and the meeting chairs and sofa are
+// walk-behind scenery; the four computers stand on their desks and the TV on the wall, so each is used from in front, a
+// desk hiding only a cursor that came from directly behind it. The meeting table is not (Joe, 2026-10-01: it was too easy
+// to go underneath it on the way to the remote): it stays in the plate, every cursor over it, so the TV's remote on it is
+// always in reach. The twin staircases are walk-behind too, with a landing at the loft and the flight's full
+// width as the outline: stepping on at the foot or from the loft is on the stairs, and from either side, under the rising
+// flight, underneath them (Joe, 2026-09-28). The reception desk stays in the plate, so the statue on it is always in
+// reach. The six hanging lanterns are foreground.
 export const MOOSYLVANIA: SubScene = {
 	id: 'moosylvania',
 	title: 'Moosylvania, Maplewood',
@@ -23,18 +25,36 @@ export const MOOSYLVANIA: SubScene = {
 	// Scrolls like the overworld (Joe, 2026-09-28).
 	pushBand: 0.25,
 	props: [
+		// The loft's four computers, a stack each (Joe, 2026-10-01): its logos across the card, over copy naming what Joe
+		// uses (src/lib/content/moosylvania). Hosting has no computer of its own and shares the backend's.
 		{
 			id: 'computer-frontend',
 			name: 'Frontend computer',
-			gist: 'Nuxt, Next, Svelte, TypeScript',
-			body: ['Nuxt, Next, Svelte, modern JavaScript, TypeScript and SCSS.'],
+			gist: 'Vue, Nuxt, React, Svelte, TypeScript',
+			logos: [
+				{ name: 'Vue', file: 'vue.svg' },
+				{ name: 'Nuxt', file: 'nuxt.svg' },
+				{ name: 'React', file: 'react.svg' },
+				{ name: 'Svelte', file: 'svelte.svg' },
+				{ name: 'TypeScript', file: 'typescript.svg' },
+				{ name: 'JavaScript', file: 'javascript.svg' }
+			],
 			rect: { x: 1391, y: 690, w: 108, h: 92 }
 		},
 		{
 			id: 'computer-backend',
 			name: 'Backend computer',
-			gist: 'Node.js, TypeScript and PHP platforms',
-			body: ['Node.js/TypeScript and PHP platforms; experience with ASP.NET C#, Ruby and Python.'],
+			gist: 'Node.js, PHP, Python, Docker and where they run',
+			logos: [
+				{ name: 'Node.js', file: 'nodejs.svg' },
+				{ name: 'PHP', file: 'php.svg' },
+				{ name: 'Python', file: 'python.svg' },
+				{ name: 'Docker', file: 'docker.svg' },
+				{ name: 'AWS', file: 'aws.svg' },
+				{ name: 'Cloudflare', file: 'cloudflare.svg' },
+				{ name: 'Heroku', file: 'heroku.svg' },
+				{ name: 'Render', file: 'render.svg' }
+			],
 			rect: { x: 1580, y: 850, w: 143, h: 119 },
 			// Clipped where its top-left corner reaches behind the back desk's leg (spec: an irregular prop gets a clip-path).
 			clip: 'polygon(100% 100%, 100% 0%, 28.49% 0%, 28.69% 9.15%, 0% 25.77%, 0% 100%)'
@@ -42,15 +62,31 @@ export const MOOSYLVANIA: SubScene = {
 		{
 			id: 'computer-cms',
 			name: 'CMS computer',
-			gist: 'WordPress, SilverStripe, Strapi, Prismic, Storyblok',
-			body: ['WordPress, SilverStripe and Strapi; headless Prismic and Storyblok.'],
+			gist: 'WordPress, Silverstripe, Strapi, Shopify, HubSpot',
+			logos: [
+				{ name: 'WordPress', file: 'wordpress.svg' },
+				{ name: 'Silverstripe', file: 'silverstripe.svg' },
+				{ name: 'Strapi', file: 'strapi.svg' },
+				{ name: 'Django', file: 'django.svg' },
+				{ name: 'Shopify', file: 'shopify.svg' },
+				{ name: 'HubSpot', file: 'hubspot.svg' },
+				{ name: 'Marketing Cloud', file: 'salesforce-marketing-cloud.png' },
+				{ name: 'Mailchimp', file: 'mailchimp.svg' },
+				{ name: 'Campaign Monitor', file: 'campaignmonitor.svg' }
+			],
 			rect: { x: 663, y: 879, w: 138, h: 119 }
 		},
 		{
 			id: 'computer-data',
 			name: 'Data computer',
-			gist: 'MySQL, PostgreSQL, Redis',
-			body: ['MySQL, PostgreSQL and Redis; MongoDB experience.'],
+			gist: 'MySQL, PostgreSQL, Redis, MongoDB, Elasticsearch',
+			logos: [
+				{ name: 'MySQL', file: 'mysql.svg' },
+				{ name: 'PostgreSQL', file: 'postgresql.svg' },
+				{ name: 'Redis', file: 'redis.svg' },
+				{ name: 'MongoDB', file: 'mongodb.svg' },
+				{ name: 'Elasticsearch', file: 'elasticsearch.svg' }
+			],
 			rect: { x: 1136, y: 996, w: 124, h: 106 }
 		},
 		{
@@ -59,7 +95,6 @@ export const MOOSYLVANIA: SubScene = {
 			gist: 'the Moosylvania mascot',
 			// No card, like the moose outside: an Easter egg granting the same antlers (Joe, 2026-09-30).
 			kind: 'action',
-			body: [],
 			rect: { x: 1623, y: 2549, w: 124, h: 179 },
 			art: ['moosylvania-statue'],
 			cosmetic: 4
@@ -67,15 +102,26 @@ export const MOOSYLVANIA: SubScene = {
 		{
 			id: 'meeting-tv',
 			name: 'Meeting TV',
-			gist: 'a video from Joe',
-			// Clicking plays it on this TV for that visitor only, and its card holds the same video with controls (spec:
-			// "Local prop, the Moosylvania meeting TV"). TODO Joe: its line, the card's only copy, under the video.
-			body: ['A video from Joe Madden.'],
+			gist: 'sites Joe built, playing muted',
+			// A television, not a button (Joe, 2026-10-01): it plays by itself on its screen, muted, each video over and over,
+			// while it is in view. Its channels are the videos `npm run videos` lists for it (video-files.json `tv`), the
+			// agency's own site by year and then the work, and `video.file` is the first of them. The room holds the channel,
+			// so everyone in it watches the same one, and the remote on the meeting table changes it. The screen is the
+			// panel's dark inset inside its black border, measured on the TV's matte.
+			kind: 'status',
 			rect: { x: 787, y: 3434, w: 828, h: 392 },
 			art: ['moosylvania-tv'],
-			// TODO Joe: the video file and its captions. The Fast Five game's demo stands in (Joe, 2026-09-29). The screen is
-			// the panel's dark inset inside its black border, measured on the TV's matte.
-			video: { file: 'fastfive-demo-full-1024x768.mp4', screen: { x: 896, y: 3491, w: 610, h: 255 } }
+			video: { file: 'moosylvania-2019-home-work-cigar-world-2026-09-30.mp4', screen: { x: 896, y: 3491, w: 610, h: 255 } }
+		},
+		{
+			id: 'tv-remote',
+			name: 'TV remote',
+			gist: 'changes the channel on the meeting TV',
+			// One remote for the room (Joe, 2026-10-01): whoever clicks it holds it, their cursor carrying it and its place
+			// on the table bare for everyone, until they put it back. Its card is the remote in hand (Remote.svelte). A
+			// standalone cut-out, not in the plate, at its `world` rect in art/manifest.json.
+			rect: { x: 1000, y: 4262, w: 100, h: 58 },
+			tunes: 'meeting-tv'
 		}
 	],
 	// The arched double front doors beneath the loft, between the two offices.
@@ -102,6 +148,7 @@ export const MOOSYLVANIA: SubScene = {
 		},
 		{
 			key: 'moosylvania-desk-back',
+			desk: true,
 			rect: { x: 1312, y: 694, w: 311, h: 234 },
 			outline: [
 				{ x: 1618, y: 860 }, { x: 1502, y: 915 }, { x: 1456, y: 923 }, { x: 1315, y: 912 }, { x: 1310, y: 741 },
@@ -114,6 +161,7 @@ export const MOOSYLVANIA: SubScene = {
 		},
 		{
 			key: 'moosylvania-desk-right',
+			desk: true,
 			rect: { x: 1504, y: 850, w: 360, h: 290 },
 			outline: [
 				{ x: 1845, y: 1112 }, { x: 1686, y: 1134 }, { x: 1521, y: 1126 }, { x: 1504, y: 1009 }, { x: 1502, y: 917 },
@@ -126,6 +174,7 @@ export const MOOSYLVANIA: SubScene = {
 		},
 		{
 			key: 'moosylvania-desk-left',
+			desk: true,
 			rect: { x: 566, y: 879, w: 363, h: 273 },
 			outline: [
 				{ x: 920, y: 942 }, { x: 917, y: 1128 }, { x: 706, y: 1147 }, { x: 563, y: 1126 }, { x: 566, y: 942 }, { x: 663, y: 877 },
@@ -138,6 +187,7 @@ export const MOOSYLVANIA: SubScene = {
 		},
 		{
 			key: 'moosylvania-desk-centre',
+			desk: true,
 			rect: { x: 1004, y: 999, w: 379, h: 286 },
 			outline: [
 				{ x: 1375, y: 1061 }, { x: 1377, y: 1126 }, { x: 1366, y: 1255 }, { x: 1177, y: 1280 }, { x: 1009, y: 1255 },
@@ -150,6 +200,7 @@ export const MOOSYLVANIA: SubScene = {
 		},
 		{
 			key: 'moosylvania-desk-front',
+			desk: true,
 			rect: { x: 1634, y: 1153, w: 211, h: 157 },
 			outline: [
 				{ x: 1840, y: 1304 }, { x: 1645, y: 1304 }, { x: 1632, y: 1250 }, { x: 1632, y: 1191 }, { x: 1729, y: 1150 },
@@ -236,18 +287,6 @@ export const MOOSYLVANIA: SubScene = {
 				{ x: 1867, y: 3553 }
 			],
 			props: ['meeting-tv']
-		},
-		{
-			key: 'moosylvania-meeting-table',
-			rect: { x: 917, y: 4151, w: 579, h: 322 },
-			outline: [
-				{ x: 1480, y: 4467 }, { x: 925, y: 4467 }, { x: 915, y: 4424 }, { x: 923, y: 4216 }, { x: 1158, y: 4148 },
-				{ x: 1239, y: 4148 }, { x: 1477, y: 4210 }, { x: 1491, y: 4345 }, { x: 1491, y: 4424 }
-			],
-			front: [
-				{ x: 925, y: 4470 }, { x: 1480, y: 4470 }
-			],
-			props: []
 		},
 		{
 			key: 'moosylvania-meeting-chairs-left',

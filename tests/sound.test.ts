@@ -33,7 +33,6 @@ test('the sound design table, by prop', () => {
 		workstation: 'click',
 		'bottle-bacardi': 'pour',
 		'bottle-soonhari': 'pour',
-		chalkboard: 'chalk',
 		'humidor-cohiba': 'creak',
 		'humidor-punch': 'creak',
 		'brewery-sign': 'cooler',
@@ -49,7 +48,8 @@ test("a card's click sounds the prop's signature alone; a card with no signature
 	assert.deepEqual(clickSounds(prop('brewery-sign')), ['cooler']);
 	assert.deepEqual(clickSounds(prop('stg-logo')), ['lighter']);
 	assert.deepEqual(clickSounds(prop('diploma')), ['card'], "the card's own paper is its sound (Joe, 2026-09-30)");
-	assert.deepEqual(clickSounds(prop('meeting-tv')), ['card'], 'its video is its sound');
+	assert.deepEqual(clickSounds(prop('tv-remote')), ['card'], 'picked up, its card is its sound');
+	assert.deepEqual(clickSounds(prop('meeting-tv')), [], 'the TV is no button, and plays muted');
 });
 
 test("a Foundry poster's click is silent: the screen's projector start is heard by the whole room instead", () => {

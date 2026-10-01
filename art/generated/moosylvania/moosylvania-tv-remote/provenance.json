@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "8fa14841e0296787165912057e9664d7444f15b7bc2566ab2adf54112f81a5e3",
+  "provider": "constructed",
+  "source": "art/sources/moosylvania-tv-remote.svg",
+  "note": "Drawn by construction as flat filled polygons, no model: the SVG's header gives the geometry and the ImageMagick command that rendered art/sources/moosylvania-tv-remote.png."
+}
