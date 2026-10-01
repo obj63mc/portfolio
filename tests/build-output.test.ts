@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { screenGist } from '../src/lib/scenes/foundry.ts';
-import { measurementId, mediaUrl } from '../svelte.config.js';
+import { beaconToken, measurementId, mediaUrl } from '../svelte.config.js';
 
 const page = (file: string) => readFileSync(new URL(`../build/${file}`, import.meta.url), 'utf8');
 const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
@@ -23,6 +23,8 @@ const allProps = [...overworldProps, ...subScenes.flatMap((s) => s.props)];
 const files = ['index.html', ...subScenes.map((s) => `${s.id}.html`)];
 /** The GA4 measurement ID this build was made with: none but on a `main` build in Workers Builds (ticket 23). */
 const gaId = measurementId(process.env);
+/** Cloudflare's beacon token this build was made with, on the same builds; the beacon loads only beside GA. */
+const beacon = gaId && beaconToken(process.env);
 /** The consent bar, a popover: in the Join card and on the page, only in a build with GA. */
 const consentBar = /<div class="consent[^"]*" popover="manual"[\s\S]*?<\/button>\s*<\/div>(\s*<!--[^>]*-->)*\s*<\/div>/g;
 
@@ -184,10 +186,10 @@ test('the Join and Paused cards: on every page, outside the layer, closed until 
 test('analytics: a build without a measurement ID has no GA script, no queue and no bar; with one it has them', () => {
 	const dir = new URL('../build/_app/immutable/', import.meta.url);
 	const js = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.js')).map((f) => readFileSync(new URL(f, dir), 'utf8')).join('\n');
-	const loader = /googletagmanager\.com\/gtag\/js/, queue = /dataLayer/;
+	const loader = /googletagmanager\.com\/gtag\/js/, queue = /dataLayer/, cloudflare = /static\.cloudflareinsights\.com\/beacon\.min\.js/;
 	for (const file of files) {
 		const html = page(file), bars = html.match(consentBar) ?? [];
-		assert.doesNotMatch(html, /<script[^>]*googletagmanager/, `${file}: never an inline or static GA script`);
+		assert.doesNotMatch(html, /<script[^>]*(googletagmanager|cloudflareinsights)/, `${file}: never an inline or static analytics script`);
 		assert.equal(bars.length, gaId ? 2 : 0, `${file}: the bar in the Join card and on the page`);
 		if (gaId) assert.ok(bars.every((b) => opens(b, 'button').length === 2), file);
 	}
@@ -199,6 +201,9 @@ test('analytics: a build without a measurement ID has no GA script, no queue and
 		assert.doesNotMatch(js, loader);
 		assert.doesNotMatch(js, queue);
 	}
+	// Cloudflare's beacon is loaded by the same code, with its token, or not in the build at all.
+	if (beacon) assert.match(js, cloudflare), assert.ok(js.includes(beacon), 'the beacon token');
+	else assert.doesNotMatch(js, cloudflare);
 });
 
 // The world rect an element carries for the engine's stylesheet to place it (buildout ticket 08), read back from its
@@ -307,8 +312,8 @@ test('cards: every card is labelled and closes natively', () => {
 test('headers: one CSP per page, allowing self, the GA hosts, the socket and the media host, with every inline script hashed', () => {
 	const expected: Record<string, string[]> = {
 		'default-src': ["'self'"],
-		'script-src': ["'self'", 'https://www.googletagmanager.com'],
-		'connect-src': ["'self'", 'wss://barmadden.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com'],
+		'script-src': ["'self'", 'https://www.googletagmanager.com', 'https://static.cloudflareinsights.com/beacon.min.js'],
+		'connect-src': ["'self'", 'wss://barmadden.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com', 'https://cloudflareinsights.com'],
 		'img-src': ["'self'", 'https://*.google-analytics.com', 'https://*.googletagmanager.com'],
 		'media-src': ["'self'", 'blob:', 'https://media.barmadden.com']
 	};
@@ -318,6 +323,8 @@ test('headers: one CSP per page, allowing self, the GA hosts, the socket and the
 		assert.equal(policies.length, 1, file);
 		const directives = Object.fromEntries(policies[0].split(';').map((d) => d.trim().split(/\s+/)).map(([name, ...src]) => [name, src]));
 		for (const [name, sources] of Object.entries(expected)) for (const s of sources) assert.ok(directives[name]?.includes(s), `${file} ${name} ${s}`);
+		// Cloudflare's host as a whole would let through the tag its edge adds by itself, which no consent governs.
+		assert.ok(!directives['script-src'].includes('https://static.cloudflareinsights.com'), `${file}: the beacon at its one path only`);
 		for (const [, body] of html.matchAll(/<script>([\s\S]*?)<\/script>/g))
 			assert.ok(directives['script-src'].includes(`'sha256-${createHash('sha256').update(body).digest('base64')}'`), `${file} inline script hashed`);
 	}

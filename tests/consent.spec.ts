@@ -1,19 +1,24 @@
 // Seam 4 for analytics (buildout ticket 23): the consent bar in a European timezone, over the Join card and operable before
-// Join, against the site built with a test measurement ID, which playwright.config.ts builds into .smoke/ and serves on
-// the port after the site's. Nothing reaches Google: every request to its hosts is aborted, and recorded to show whether
-// gtag.js was asked for. A headless tab can't take a real pointer lock, so a stand-in refuses it and Join leaves the
-// unlocked mouse, whose clicks land where they are sent.
+// Join, against the site built with a test measurement ID and a test beacon token, which playwright.config.ts builds into
+// .smoke/ and serves on the port after the site's. Nothing reaches Google or Cloudflare's analytics: every request to
+// their hosts is aborted, and recorded to show whether gtag.js and Cloudflare's beacon, which loads on the same answer,
+// were asked for. A headless tab can't take a real pointer lock, so a stand-in refuses it and Join leaves the unlocked
+// mouse, whose clicks land where they are sent.
 import { test, expect, type Page } from '@playwright/test';
 
 const GA = `http://localhost:${Number(process.env.SMOKE_PORT ?? 4173) + 1}`;
 
-/** Requests for Google's hosts, each aborted. */
+/** Requests for Google's hosts and Cloudflare's analytics, each aborted. */
 async function google(page: Page) {
 	const asked: string[] = [];
-	await page.route(/googletagmanager\.com|google-analytics\.com/, (route) => (asked.push(route.request().url()), route.abort()));
+	await page.route(/googletagmanager\.com|google-analytics\.com|cloudflareinsights\.com/, (route) => (asked.push(route.request().url()), route.abort()));
 	return asked;
 }
 const gtagJs = (asked: string[]) => asked.some((u) => u.startsWith('https://www.googletagmanager.com/gtag/js?id=G-SMOKETEST'));
+/** Cloudflare's beacon, asked for at the one path the page policy allows. */
+const beaconJs = (asked: string[]) => asked.includes('https://static.cloudflareinsights.com/beacon.min.js');
+/** The token the beacon's own tag carries for it; none while there is no tag. */
+const beaconToken = (page: Page) => page.evaluate(() => JSON.parse(document.querySelector<HTMLElement>('script[data-cf-beacon]')?.dataset.cfBeacon ?? '{}').token);
 
 /** What the page queued for gtag.js, each call as an array. */
 const queued = (page: Page) => page.evaluate(() => (window.dataLayer ?? []).map((call) => Array.from(call as ArrayLike<unknown>)));
@@ -51,7 +56,7 @@ test.beforeEach(({ page }) =>
 test.describe('in a European timezone', () => {
 	test.use({ timezoneId: 'Europe/Paris' });
 
-	test('the bar shows over the Join card and takes a keyboard and a click before Join; Allow loads gtag and is kept', async ({ page }) => {
+	test('the bar shows over the Join card and takes a keyboard and a click before Join; Allow loads gtag and Cloudflare\'s beacon and is kept', async ({ page }) => {
 		const asked = await google(page);
 		await arrive(page);
 		await expect(bar(page)).toHaveCount(1);
@@ -64,7 +69,7 @@ test.describe('in a European timezone', () => {
 		await expect(noThanks(page)).toBeFocused();
 		for (const b of [allow(page), noThanks(page)]) await expect(b).toHaveAttribute('aria-pressed', 'false');
 		await page.waitForTimeout(500);
-		expect(gtagJs(asked), 'nothing loads before a choice').toBe(false);
+		expect(asked, 'nothing loads before a choice, Google\'s or Cloudflare\'s').toEqual([]);
 		expect(await queued(page), 'events wait in memory, not in the queue gtag.js reads').toEqual([]);
 
 		// A real click: Playwright refuses it if the card's backdrop would take it.
@@ -73,6 +78,8 @@ test.describe('in a European timezone', () => {
 		await expect(joinCard(page), 'answering is not joining').toBeVisible();
 		await expect(joinCard(page).locator(':scope > button'), 'focus back on Join').toBeFocused();
 		await expect.poll(() => gtagJs(asked)).toBe(true);
+		await expect.poll(() => beaconJs(asked), "Cloudflare's beacon on the same answer").toBe(true);
+		expect(await beaconToken(page)).toBe('smoketest');
 		const calls = await queued(page);
 		const update = calls.findIndex((c) => c[0] === 'consent' && c[1] === 'update');
 		expect(calls[update][2]).toEqual({ analytics_storage: 'granted' });
@@ -85,7 +92,7 @@ test.describe('in a European timezone', () => {
 		await expect(bar(page), 'asked once').toHaveCount(0);
 	});
 
-	test('No thanks keeps gtag away; the icon reopens the bar with it pressed, and Allow then loads gtag', async ({ page }) => {
+	test('No thanks keeps gtag and the beacon away; the icon reopens the bar with it pressed, and Allow then loads both', async ({ page }) => {
 		const asked = await google(page);
 		await arrive(page);
 		await noThanks(page).click();
@@ -97,7 +104,7 @@ test.describe('in a European timezone', () => {
 		await page.keyboard.press('Enter');
 		await page.keyboard.press('Escape');
 		await page.waitForTimeout(3500);
-		expect(gtagJs(asked)).toBe(false);
+		expect(asked, 'neither gtag.js nor the beacon').toEqual([]);
 		expect(await queued(page)).toEqual([]);
 
 		const icon = page.locator('.controls .analytics');
@@ -112,6 +119,7 @@ test.describe('in a European timezone', () => {
 		await expect(bar(page)).toHaveCount(0);
 		await expect(icon, 'focus back on the icon').toBeFocused();
 		await expect.poll(() => gtagJs(asked)).toBe(true);
+		await expect.poll(() => beaconJs(asked)).toBe(true);
 		expect((await queued(page)).filter((c) => c[0] === 'event'), 'what happened while declined stays unsent').toEqual([]);
 		await icon.click();
 		await expect(allow(page)).toHaveAttribute('aria-pressed', 'true');
@@ -147,7 +155,7 @@ test.describe('in a European timezone', () => {
 		await expect.poll(async () => (await queued(page)).at(-1)).toEqual(['consent', 'update', { analytics_storage: 'denied' }]);
 	});
 
-	test('Global Privacy Control: gtag never loads, and the reopened bar has both buttons disabled with a note', async ({ page }) => {
+	test('Global Privacy Control: neither gtag nor the beacon ever loads, and the reopened bar has both buttons disabled with a note', async ({ page }) => {
 		await page.addInitScript(() => Object.defineProperty(Navigator.prototype, 'globalPrivacyControl', { get: () => true }));
 		const asked = await google(page);
 		await arrive(page);
@@ -170,10 +178,11 @@ test.describe('in a European timezone', () => {
 test.describe('elsewhere', () => {
 	test.use({ timezoneId: 'America/Chicago' });
 
-	test('no bar; gtag loads after the first frame and hears each scene entered, never a fragment', async ({ page }) => {
+	test('no bar; gtag and the beacon load after the first frame, and gtag hears each scene entered, never a fragment', async ({ page }) => {
 		const asked = await google(page);
 		await arrive(page);
 		await expect.poll(() => gtagJs(asked)).toBe(true);
+		await expect.poll(() => beaconJs(asked)).toBe(true);
 		await expect(bar(page)).toHaveCount(0);
 		await expect(page.locator('.controls .analytics')).toHaveCount(0);
 		const views = async () => (await queued(page)).filter((c) => c[0] === 'event' && c[1] === 'page_view').map((c) => c[2]);

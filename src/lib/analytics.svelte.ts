@@ -1,10 +1,11 @@
-// GA4 on the page (spec: "Analytics"; buildout ticket 23): the bundled `dataLayer` and `gtag()` queue, gtag.js loaded
-// after the first frame when the idle browser gets to it, the consent bar's state, and the six events. Only a production
-// build has a measurement ID (svelte.config.js); in any other there is no queue, no script and no bar, and every event
-// below is a call to nothing. The rules are analytics/consent.ts's, what reaches gtag analytics/tracker.ts's; the
-// choice persists through saved.svelte.ts.
+// Analytics on the page (spec: "Analytics"; buildout ticket 23): GA4's bundled `dataLayer` and `gtag()` queue, gtag.js
+// loaded after the first frame when the idle browser gets to it, the consent bar's state, and the six events; and beside
+// it Cloudflare Web Analytics' beacon, under the same consent (Joe, 2026-10-01), loaded where gtag.js is and nowhere
+// else. Only a production build has a measurement ID and a beacon token (svelte.config.js); in any other there is no
+// queue, no script and no bar, and every event below is a call to nothing. The rules are analytics/consent.ts's, what
+// reaches gtag analytics/tracker.ts's; the choice persists through saved.svelte.ts.
 import { browser } from '$app/environment';
-import { PUBLIC_GA_ID } from '$env/static/public';
+import { PUBLIC_CF_BEACON, PUBLIC_GA_ID } from '$env/static/public';
 import { contactMethod, european, initial, sceneOf, type Choice, type Consent } from './analytics/consent.ts';
 import { Tracker, type Gtag } from './analytics/tracker.ts';
 import { saved } from './saved.svelte.ts';
@@ -24,6 +25,8 @@ declare global {
 
 /** The build's GA4 measurement ID, empty in every build but production's. */
 export const GA_ID = PUBLIC_GA_ID;
+/** Cloudflare Web Analytics' site token, empty in every build but production's. */
+const CF_BEACON = PUBLIC_CF_BEACON;
 
 /** The page's queue, which gtag.js works through once it has loaded: it reads each call's arguments object, not an array. */
 function queue(): Gtag {
@@ -33,13 +36,25 @@ function queue(): Gtag {
 	};
 }
 
-/** gtag.js, injected after the next frame once the browser is idle, or within 3 s; where there is no idle callback (Safari), just after that frame. */
+/**
+ * gtag.js, injected after the next frame once the browser is idle, or within 3 s; where there is no idle callback
+ * (Safari), just after that frame. Cloudflare's beacon goes in with it, as its own snippet would have it: a script with
+ * no cookie and no storage, which counts the page and each scene entered by its path, and times the page's loading. It
+ * is the site's to load, not Cloudflare's edge's, so that it waits for the same answer gtag.js does. Like gtag.js it
+ * can't be unloaded: after a No thanks it is gone from the next page load.
+ */
 function load() {
 	const inject = () => {
 		const s = document.createElement('script');
 		s.async = true;
 		s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`;
 		document.head.append(s);
+		if (!CF_BEACON) return;
+		const b = document.createElement('script');
+		b.defer = true;
+		b.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+		b.dataset.cfBeacon = JSON.stringify({ token: CF_BEACON });
+		document.head.append(b);
 	};
 	requestAnimationFrame(() => ('requestIdleCallback' in window ? requestIdleCallback(inject, { timeout: 3000 }) : setTimeout(inject)));
 }

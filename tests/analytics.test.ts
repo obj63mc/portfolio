@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { REGIONS, contactMethod, european, initial, sceneOf, type Consent } from '../src/lib/analytics/consent.ts';
 import { Tracker } from '../src/lib/analytics/tracker.ts';
-import { measurementId } from '../svelte.config.js';
+import { beaconToken, measurementId } from '../svelte.config.js';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SLU } from '../src/lib/scenes/slu.ts';
 
@@ -59,6 +59,14 @@ test('the build: the measurement ID reaches the site only on a main build in Wor
 	assert.equal(measurementId({ WORKERS_CI_BRANCH: 'feature/x', PUBLIC_GA_ID: 'G-1' }), '');
 	assert.equal(measurementId({ PUBLIC_GA_ID: 'G-1' }), '', 'a local build');
 	assert.equal(measurementId({ WORKERS_CI_BRANCH: 'main' }), '');
+});
+
+test("the build: Cloudflare's beacon token reaches the site only on a main build too, the site's own unless another is named", () => {
+	const own = beaconToken({ WORKERS_CI_BRANCH: 'main' });
+	assert.match(own, /^[0-9a-f]{32}$/);
+	assert.equal(beaconToken({ WORKERS_CI_BRANCH: 'main', PUBLIC_CF_BEACON: 'another' }), 'another');
+	assert.equal(beaconToken({ WORKERS_CI_BRANCH: 'main', PUBLIC_CF_BEACON: '' }), '', 'named as none');
+	for (const env of [{ WORKERS_CI_BRANCH: 'feature/x' }, {}, { PUBLIC_CF_BEACON: 'another' }]) assert.equal(beaconToken(env), '', JSON.stringify(env));
 });
 
 /** A tracker over a fake gtag: every call it made, and how often it asked for gtag.js. */

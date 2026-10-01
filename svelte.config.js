@@ -22,8 +22,18 @@ export const measurementId = (env) => (env.WORKERS_CI_BRANCH === 'main' && env.P
  */
 export const mediaUrl = (env) => env.PUBLIC_MEDIA_URL ?? (env.WORKERS_CI_BRANCH ? media.host : '');
 
+/**
+ * Cloudflare Web Analytics' site token: public, since the page carries it, and so kept here; `PUBLIC_CF_BEACON` names
+ * another. Like the measurement ID it reaches only a `main` build in Workers Builds, so nothing else counts a visit.
+ */
+const CF_BEACON = '514693578145419188d0063ff1886d55';
+
+/** @param {Record<string, string | undefined>} env */
+export const beaconToken = (env) => (env.WORKERS_CI_BRANCH === 'main' && (env.PUBLIC_CF_BEACON ?? CF_BEACON)) || '';
+
 // Set before SvelteKit reads the environment, and always set, if empty, so `$env/static/public` always exports it.
 process.env.PUBLIC_MEDIA_URL = mediaUrl(process.env);
+process.env.PUBLIC_CF_BEACON = beaconToken(process.env);
 // TEMP (ticket 23 hands-on testing): `vite dev` passes PUBLIC_GA_ID through too. Remove once testing is done.
 process.env.PUBLIC_GA_ID = measurementId(process.env) || (process.argv.includes('dev') && process.env.PUBLIC_GA_ID) || '';
 
@@ -49,14 +59,18 @@ export default {
 			mode: 'hash',
 			directives: {
 				'default-src': ['self'],
-				'script-src': ['self', 'https://www.googletagmanager.com'],
+				// GA's loader, and Cloudflare Web Analytics' beacon at the one path the site's own consent code loads it from
+				// (src/lib/analytics.svelte.ts). The path is exact on purpose: the tag Cloudflare's edge can add to a page by
+				// itself, which no consent would govern, is at a versioned path under it, and stays refused.
+				'script-src': ['self', 'https://www.googletagmanager.com', 'https://static.cloudflareinsights.com/beacon.min.js'],
 				// The inline style attribute in app.html.
 				'style-src': ['self', 'unsafe-inline'],
 				'img-src': ['self', ...gaHosts],
 				// The videos, from the media host; a local build's are its own. The streamed music plays from the file the page
 				// fetched, at a blob: URL (src/lib/sound.svelte.ts).
 				'media-src': ['self', 'blob:', media.host],
-				'connect-src': ['self', 'wss://barmadden.com', 'https://*.analytics.google.com', ...gaHosts],
+				// The beacon reports to Cloudflare's own host.
+				'connect-src': ['self', 'wss://barmadden.com', 'https://*.analytics.google.com', ...gaHosts, 'https://cloudflareinsights.com'],
 				'object-src': ['none'],
 				'base-uri': ['self']
 			}

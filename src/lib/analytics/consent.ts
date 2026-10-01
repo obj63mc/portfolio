@@ -1,6 +1,7 @@
 // Analytics consent (spec: "Analytics"; buildout ticket 23) as pure functions: what GA does this session given the build's
 // measurement ID, the browser's privacy signal, its timezone and the visitor's stored choice; and which of the site's
-// links and pages its events name. Nothing here touches the DOM, storage or gtag.
+// links and pages its events name. Cloudflare's beacon loads where GA does, on the same answer (analytics.svelte.ts).
+// Nothing here touches the DOM, storage or gtag.
 
 export type Choice = 'granted' | 'denied';
 

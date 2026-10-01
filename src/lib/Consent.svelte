@@ -3,11 +3,12 @@
 	import { bar } from './analytics.svelte.ts';
 	import type { Choice } from './analytics/consent.ts';
 
-	// The consent bar (buildout ticket 23): one line asking a European visitor whether GA may count their visit, with
-	// equal Allow and No thanks buttons, as a manual popover over the scene that stays until they choose. It is rendered
-	// twice and shows in one place at a time: inside the Join card (`gate`) while that is up, since a modal card leaves
-	// only its own contents operable and a popover beside it would be inert, whatever its place in the top layer; and on
-	// the page after Join, and when the analytics icon reopens it. Answering it is not joining.
+	// The consent bar (buildout ticket 23): one line asking a European visitor whether analytics, GA and Cloudflare's
+	// beacon alike (Joe, 2026-10-01), may count their visit, with equal Allow and No thanks buttons, as a manual popover
+	// over the scene that stays until they choose. It is rendered twice and shows in one place at a time: inside the Join
+	// card (`gate`) while that is up, since a modal card leaves only its own contents operable and a popover beside it
+	// would be inert, whatever its place in the top layer; and on the page after Join, and when the analytics icon
+	// reopens it. Answering it is not joining.
 	let { gate = false }: { gate?: boolean } = $props();
 	const uid = $props.id();
 	let el: HTMLElement;
@@ -53,13 +54,13 @@
 </script>
 
 <div class="consent" popover="manual" role="region" aria-labelledby="{uid}-ask" bind:this={el}>
-	<p id="{uid}-ask">Can I count visits with Google Analytics? No ads, no tracking elsewhere.</p>
+	<p id="{uid}-ask">Can I count visits with analytics? No ads, no tracking elsewhere.</p>
 	<div class="choices">
 		<button type="button" class="alternate" aria-pressed={bar.pressed === 'granted'} disabled={bar.gpc} onclick={() => choose('granted')}>Allow</button>
 		<button type="button" class="alternate" aria-pressed={bar.pressed === 'denied'} disabled={bar.gpc} onclick={() => choose('denied')}>No thanks</button>
 	</div>
 	{#if bar.gpc}
-		<p class="note">Your browser's Global Privacy Control is on, so Google Analytics stays off.</p>
+		<p class="note">Your browser's Global Privacy Control is on, so analytics stays off.</p>
 	{/if}
 </div>
 
