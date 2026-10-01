@@ -18,7 +18,7 @@ import { saved } from '../saved.svelte.ts';
 import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
 import { tv } from '../tv.svelte.ts';
-import { GAME, arrival, doorsOf, propsOf, sceneAt } from '../scenes/index.ts';
+import { arrival, doorsOf, gameAt, propsOf, sceneAt, type GameId } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { ASHORE, flow, type Current } from '../scenes/river.ts';
 import { blocked, type Side } from '../scenes/walk.ts';
@@ -44,7 +44,7 @@ export type Scene = Overworld | SubScene;
 /**
  * The visitor's input (spec: Input): the Join card up; joined with the pointer locked, with the unlocked mouse (a refused
  * lock), or by touch on a device with no mouse or trackpad; released, the lock let go by Esc in a card until the next
- * click takes it back; paused, which re-locks on resume if the lock was held; or away at Sushi Stand, a page with no scene,
+ * click takes it back; paused, which re-locks on resume if the lock was held; or away at a game, a page with no scene,
  * the same on the way back.
  */
 type Input =
@@ -128,8 +128,8 @@ const placed = (el: Element | null) => (el?.matches('section') ? el.querySelecto
 
 export class Engine {
 	private scene: Scene | null = null;
-	/** Away at Sushi Stand (`suspend`), from this scene. */
-	private away: Scene | null = null;
+	/** Away at a page with no scene (`suspend`): the game whose door led there, if it is one. */
+	private away: { door?: GameId } | null = null;
 	private view: View;
 	/** The session's render scale, which the view's leaves only to frame the Foundry's reel (ticket 17). */
 	private base: number;
@@ -318,8 +318,9 @@ export class Engine {
 			if (target) this.panTo(target);
 			return;
 		}
-		// Back from Sushi Stand, the engine takes the page again and lands at the fish that led there (Joe, 2026-09-30).
-		const back = this.away, from = this.scene?.id ?? (back && GAME), overworld = 'districts' in scene;
+		// Back from a game, the engine takes the page again and lands at the door that led there, the koi or the angler
+		// (Joe, 2026-09-30).
+		const back = this.away, from = this.scene?.id ?? back?.door, overworld = 'districts' in scene;
 		if (back) {
 			this.away = null;
 			document.documentElement.classList.add('engine');
@@ -380,8 +381,8 @@ export class Engine {
 	 */
 	close(to: URL): Promise<void> | null {
 		if (!this.scene) return null;
-		// Into Sushi Stand the koi splashes (Joe, 2026-09-30).
-		sound.play(to.pathname === `/${GAME}` ? 'splash' : 'door-open');
+		// Into Sushi Stand the koi splashes (Joe, 2026-09-30), and into Big Muddy the angler's cast does.
+		sound.play(gameAt(to.pathname) ? 'splash' : 'door-open');
 		// The scene's beds fade as the iris closes, and the theme toward its level beyond the door (ticket 21).
 		sound.leave(sceneAt(to.pathname));
 		if (this.reducedMotion.matches || document.hidden) return null;
@@ -395,13 +396,13 @@ export class Engine {
 	}
 
 	/**
-	 * Out to Sushi Stand (Joe, 2026-09-30), a page of its own with no scene: the room left, the lock let go and the
-	 * canvases put away, nothing drawn and no input taken, until `show` brings the next scene.
+	 * Out to a game (Joe, 2026-09-30), the page at `pathname`, one of its own with no scene: the room left, the lock let go
+	 * and the canvases put away, nothing drawn and no input taken, until `show` brings the next scene.
 	 */
-	suspend() {
+	suspend(pathname: string) {
 		if (!this.scene) return;
 		const i = this.input;
-		this.away = this.scene;
+		this.away = { door: gameAt(pathname) };
 		this.scene = null;
 		this.net.leave();
 		this.keys.clear();
@@ -644,7 +645,7 @@ export class Engine {
 	 * The cursor canvas to the top of the top layer, over a prop card or its video gone full screen, where the mouse's
 	 * drawn cursor reaches the card's controls. Not on touch (Joe, 2026-09-30): a card's controls are the finger's and
 	 * the cursor holds still while it is open, so it stays under the card and its backdrop, dimmed with the scene, and
-	 * never sits on the video being watched. Nor away at Sushi Stand, whose own card it is put away under.
+	 * never sits on the video being watched. Nor away at a game, whose own card it is put away under.
 	 */
 	private lift() {
 		if (this.input.is === 'touch' || !this.scene) return;

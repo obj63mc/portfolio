@@ -691,7 +691,7 @@
 		{
 			"id": "star",
 			"kind": "one-shot",
-			"use": "Sushi Stand: the final results, a video-game star power-up in the spirit of Mario's (Joe, 2026-09-30)",
+			"use": "Sushi Stand: the final results, a video-game star power-up in the spirit of Mario's (Joe, 2026-09-30); Big Muddy: a fish on the hook, the same power-up (Joe, 2026-10-01)",
 			"status": "approved",
 			"file": "star-freesound-220173.mp3",
 			"source": "https://freesound.org/people/GameAudio/sounds/220173/",
@@ -703,6 +703,70 @@
 				0.9
 			],
 			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "snag",
+			"kind": "one-shot",
+			"use": "Big Muddy: the lure snagged, a rotten branch snapping (Joe, 2026-10-01)",
+			"status": "approved",
+			"file": "snag-freesound-757246.mp3",
+			"source": "https://freesound.org/people/HenKonen/sounds/757246/",
+			"title": "Veggie Snap, stale",
+			"author": "HenKonen",
+			"licence": "CC0",
+			"trim": [
+				0,
+				0.55
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "lure-up",
+			"kind": "one-shot",
+			"use": "Big Muddy: a catch earns the next lure, a blues harmonica's chord (Joe, 2026-10-01)",
+			"status": "approved",
+			"file": "lure-up-freesound-792628.mp3",
+			"source": "https://freesound.org/people/Sadiquecat/sounds/792628/",
+			"title": "Harmonica-C front-exit-mic - steccato chord 9",
+			"author": "Sadiquecat",
+			"licence": "CC0",
+			"trim": [
+				0,
+				1.12
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "bed-big-muddy",
+			"kind": "bed",
+			"use": "Big Muddy's bed: under water, a low rumble and bubbling, while the lure is down (Joe, 2026-10-01)",
+			"status": "approved",
+			"file": "bed-big-muddy-freesound-393819.mp3",
+			"source": "https://freesound.org/people/Kinoton/sounds/393819/",
+			"title": "Underwater Ambience",
+			"author": "Kinoton",
+			"licence": "CC0",
+			"trim": [
+				26,
+				62
+			],
+			"edits": "From Freesound's high-quality preview MP3, not the original download"
+		},
+		{
+			"id": "music-big-muddy",
+			"kind": "music",
+			"use": "Big Muddy's music: an idyllic village tune, marimba, xylophone and oboe, in the spirit of a fishing pond's (Joe, 2026-10-01)",
+			"status": "approved",
+			"file": "music-big-muddy-pixabay-325123.mp3",
+			"source": "https://pixabay.com/music/modern-classical-watermill-in-the-old-town-loopable-325123/",
+			"title": "Watermill in the old town (Loopable)",
+			"author": "HarumachiMusic",
+			"licence": "Pixabay Content License",
+			"trim": [
+				0,
+				60
+			],
+			"edits": "Downloaded from Pixabay by Joe; served only as this edited loop, never whole"
 		}
 	]
 }

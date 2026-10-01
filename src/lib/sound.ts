@@ -3,6 +3,7 @@
 // grant or the Foundry screen sounds like, which one-shots a scene loads, and when a scene's buffers are let go. The
 // Web Audio module that plays them is sound.svelte.ts; the files are audio/sounds.json's, encoded by `npm run audio`.
 import { propsOf } from './scenes/index.ts';
+import type { GameId } from './scenes/overworld.ts';
 import type { Overworld, Prop, SubScene } from './scenes/types';
 import type { Screen } from './net/screen.ts';
 
@@ -13,7 +14,7 @@ import type { Screen } from './net/screen.ts';
 export const ONE_SHOTS = [
 	'card', 'chime', 'fanfare', 'best-lap', 'door-open', 'door-close', 'projector',
 	'knock', 'moose', 'bell', 'squelch', 'fan', 'click', 'marker', 'pour', 'creak', 'cooler', 'lighter',
-	'splash', 'tap', 'register', 'profit', 'loss', 'service-bell', 'rain', 'star'
+	'splash', 'tap', 'register', 'profit', 'loss', 'service-bell', 'rain', 'star', 'snag', 'lure-up'
 ] as const;
 
 export type SoundId = (typeof ONE_SHOTS)[number];
@@ -75,16 +76,21 @@ export const PROP_SOUNDS: Readonly<Record<string, SoundId>> = {
 export const SILENT: readonly string[] = ['diploma', 'meeting-tv', 'tv-remote', 'poster-fast-five', 'poster-snow-white', 'poster-lorax', 'screen', 'atm', 'venmo-stand'];
 
 /**
- * What each scene hears beyond its props: the overworld's signpost, the lap timer's beep and the Grand Basin koi's splash
- * into Sushi Stand, the Foundry's projector start.
+ * What each scene hears beyond its props: the overworld's signpost, the lap timer's beep and the splash into a game, the
+ * Grand Basin koi's into Sushi Stand and the angler's cast into Big Muddy, the Foundry's projector start.
  */
 const EXTRAS: Readonly<Record<string, readonly SoundId[]>> = { overworld: ['knock', 'best-lap', 'splash'], foundry: ['projector'] };
 
 /**
- * Sushi Stand's one-shots (Joe, 2026-09-30): every press's tap, the fish market's pounds included, the doors' bell as a
- * service opens, the register on its sales, a day's profit or loss, the storm in an outlook, and the star at the end.
+ * The games' one-shots. Sushi Stand's (Joe, 2026-09-30): every press's tap, the fish market's pounds included, the doors'
+ * bell as a service opens, the register on its sales, a day's profit or loss, the storm in an outlook, and the star at
+ * the end. Big Muddy's (Joe, 2026-10-01): every press's tap, the splash of a cast, Sushi Stand's star on a catch, the
+ * snag, and the harmonica's chord on the next lure earned.
  */
-export const GAME_SOUNDS: readonly SoundId[] = ['tap', 'service-bell', 'register', 'profit', 'loss', 'rain', 'star'];
+export const GAME_SOUNDS: Readonly<Record<GameId, readonly SoundId[]>> = {
+	'sushi-stand': ['tap', 'service-bell', 'register', 'profit', 'loss', 'rain', 'star'],
+	'big-muddy': ['tap', 'splash', 'star', 'snag', 'lure-up']
+};
 
 /** A scene's buffers are let go this long after the visitor leaves it, ms, unless the scene they are in needs them. */
 export const LINGER = 60_000;

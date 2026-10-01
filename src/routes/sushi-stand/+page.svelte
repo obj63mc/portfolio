@@ -11,7 +11,7 @@
 	import { saved } from '$lib/saved.svelte';
 	import { sound } from '$lib/sound.svelte';
 	import type { Stand } from '$lib/saved';
-	import { GAME } from '$lib/scenes';
+	import { SUSHI } from '$lib/scenes';
 	import { NAME_MAX, type Game, type Kept, type Meal } from '$lib/sushi/game';
 	import {
 		BOOST_COST, DAYS, FISH, PIECES_PER_LB, conditions, dinner, dollars, expenses, lunch, market, pieceCost, profit, total,
@@ -94,10 +94,10 @@
 	// Its music plays while the page is up, the restaurant's bed under a service and its sales (sound.svelte.ts `game`).
 	// A game left unfinished carries on from its step, once the page has mounted: the prerendered page opens on the how-to.
 	onMount(() => {
-		sound.game(true);
+		sound.game(SUSHI);
 		// A copy: the page changes its own, and what is stored changes only by a write.
 		if (saved.game) resume(structuredClone(saved.game));
-		return () => sound.game(false);
+		return () => sound.game(null);
 	});
 
 	/** Picks a kept game up where it was left, with none of the step's sounds but a service's bed. */
@@ -278,7 +278,7 @@
 <!-- Every press taps, the fish market's pounds included (Joe, 2026-09-30). On a page opened straight from its URL no Join
 	came first, so the first press is the one that lets the sound start. -->
 <div
-	class="sushi"
+	class="sushi game"
 	class:night
 	data-step={step.is}
 	role="presentation"
@@ -302,7 +302,7 @@
 				<span>Start over</span>
 			</button>
 		{/if}
-		<a class="exit" href="/#{GAME}">
+		<a class="exit" href="/#{SUSHI}">
 			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
 			<span>Back to Forest Park</span>
 		</a>
@@ -585,7 +585,7 @@
 					<p class="small">Your top 10 stays on this device.</p>
 					<div class="cta">
 						<button type="button" class="primary" onclick={newGame}>{finished ? 'Play again' : "Let's play"}</button>
-						<a class="secondary" href="/#{GAME}">Back to Forest Park</a>
+						<a class="secondary" href="/#{SUSHI}">Back to Forest Park</a>
 					</div>
 				{/if}
 			</section>

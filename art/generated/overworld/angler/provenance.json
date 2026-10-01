@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "0996abb3d2baf94d60d3674bd3dfe06aa8d7739944351b4a963e3a75a58af978",
+  "run": "art/runs/angler/2026-10-01T21-09-11.349Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

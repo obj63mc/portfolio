@@ -42,5 +42,9 @@
 	"bed-sushi-service": "/audio/bed-sushi-service.cab07558.mp3",
 	"bed-forest-park": "/audio/bed-forest-park.4eadc912.mp3",
 	"music-sushi-stand": "/audio/music-sushi-stand.8755ebab.mp3",
-	"star": "/audio/star.625a9528.mp3"
+	"star": "/audio/star.625a9528.mp3",
+	"snag": "/audio/snag.5fd19515.mp3",
+	"lure-up": "/audio/lure-up.6b0638b2.mp3",
+	"bed-big-muddy": "/audio/bed-big-muddy.c17eebc7.mp3",
+	"music-big-muddy": "/audio/music-big-muddy.38e937af.mp3"
 }

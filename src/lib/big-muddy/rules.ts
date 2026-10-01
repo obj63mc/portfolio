@@ -35,7 +35,7 @@ const EARNS = [10, 30, 50] as const;
 export interface Species {
 	id: string;
 	name: string;
-	/** Its box at full size, units. */
+	/** Its box at full size, units: its picture's shape, at the area of the original's frame for the fish it stands for. */
 	w: number;
 	h: number;
 	/** How fast it swims across and rises, units/s. */
@@ -50,9 +50,9 @@ export interface Species {
 }
 
 export const SPECIES = [
-	{ id: 'bass', name: 'largemouth bass', w: 250, h: 101, swim: 270, rise: 170, per: 400, lb: 7.5, min: 1, turn: 2 },
-	{ id: 'catfish', name: 'blue catfish', w: 300, h: 174, swim: 200, rise: 102, per: 1000, lb: 22.5, min: 0, turn: 5 },
-	{ id: 'gar', name: 'alligator gar', w: 500, h: 116, swim: 150, rise: 85, per: 1000, lb: 21, min: 0, turn: 7 }
+	{ id: 'bass', name: 'largemouth bass', w: 250, h: 99, swim: 270, rise: 170, per: 400, lb: 7.5, min: 1, turn: 2 },
+	{ id: 'catfish', name: 'blue catfish', w: 396, h: 132, swim: 200, rise: 102, per: 1000, lb: 22.5, min: 0, turn: 5 },
+	{ id: 'gar', name: 'alligator gar', w: 554, h: 105, swim: 150, rise: 85, per: 1000, lb: 21, min: 0, turn: 7 }
 ] as const satisfies readonly Species[];
 
 export type FishId = (typeof SPECIES)[number]['id'];
@@ -109,7 +109,7 @@ const isObject = (m: unknown): m is Record<string, unknown> => typeof m === 'obj
 export const isCatch = (c: unknown): c is Catch =>
 	isObject(c) && SPECIES.some((s) => s.id === c.fish) && Number.isInteger(c.lb) && (c.lb as number) >= 0 && Number.isInteger(c.depth) && Number.isFinite(c.at);
 
-export const speciesOf = (id: FishId): Species => SPECIES.find((s) => s.id === id)!;
+export const speciesOf = (id: FishId): (typeof SPECIES)[number] => SPECIES.find((s) => s.id === id)!;
 export const depthOf = (y: number) => Math.round(y / FT);
 /** The view's top left corner in the water: the hook is kept mid-view, LURE_Y down. */
 export const viewOf = (run: Run) => ({ x: run.x + HOOK.w / 2 - VIEW.w / 2, y: run.y - LURE_Y });
@@ -129,7 +129,7 @@ function below(run: Run, rand: Rand) {
 	return { x: v.x + rand() * VIEW.w, y: foot + GAP + rand() * foot };
 }
 
-function swimmer(s: Species, run: Run, rand: Rand, turn: number): Swimmer {
+function swimmer(s: (typeof SPECIES)[number], run: Run, rand: Rand, turn: number): Swimmer {
 	const at = below(run, rand), { lb, scale } = weigh(s, depthOf(run.y), rand);
 	return { fish: s.id, ...at, w: s.w * scale, h: s.h * scale, lb, dir: rand() < 0.5 ? -1 : 1, turn: 1 + Math.floor(rand() * turn) };
 }

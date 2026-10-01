@@ -34,11 +34,11 @@
 		if (!to) return;
 		// A scene entered, the first load included, counts for analytics (ticket 23); a fragment on the same scene doesn't.
 		pageView(to.url);
-		// Sushi Stand has no scene: the engine, if it is running, steps away until the next one (Joe, 2026-09-30).
+		// A game has no scene: the engine, if it is running, steps away until the next one (Joe, 2026-09-30).
 		const shown = sceneAt(to.url.pathname);
 		// A page with no scene, or an engine that can't start, is the plain document, shown (app.css).
 		document.documentElement.classList.toggle('plain', !shown || failed);
-		if (!shown) return void started?.suspend();
+		if (!shown) return void started?.suspend(to.url.pathname);
 		engine ??= import('$lib/engine/engine')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
 			.catch((err) => {

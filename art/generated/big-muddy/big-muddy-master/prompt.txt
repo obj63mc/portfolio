@@ -1,0 +1,12 @@
+STYLE: Flat vector illustration matching the supplied original daytime artwork. Broad layered solid-color shapes, clean edges, no outlines, no grain or painted texture, no gradients. Bright and clear palette: light cyan #87CDD5, turquoise #2FB8B0, yellow-green #AFC652, ivory #FFF4D4, sunny golden yellow #FFD34F, fresh leaf green #719B50, small coral accents #DF7554, dark teal #244F55. Use cream for walls and pale surfaces, not as an all-over tint. Brown only where the actual reference contains wood or brick; keep it a minority color. Slightly elevated perspective with consistent scale, one light source upper left. No sepia wash, no muddy olive/brown shadows. No people, animals, text or lettering unless explicitly requested. Nothing photographic.
+
+REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.
+
+
+ASSET: big-muddy-backdrop
+The title picture of the fishing game Big Muddy, people and fish explicitly requested: the Mississippi at St. Louis cut away at the waterline. The top third is above water in bright daylight: light cyan sky with two flat clouds, the Gateway Arch and a low downtown skyline on the far bank at the left, the blue steel arches of the Eads Bridge behind them, and on the near sandy bank at the right an angler in a golden yellow bucket hat and coral shirt seated on a folding stool, rod out over the river, the line running straight down into the water. The lower two thirds are under water: turquoise #2FB8B0 at the top deepening to dark teal #244F55 at the bottom in four flat bands, a small largemouth bass near the top, a larger blue catfish with long whiskers in the middle and a very long alligator gar near the bottom, each bigger the deeper it swims, a coral lure on the line among them, bare sunken branches rising from the two bottom corners and a few rings of bubbles. Match the landmarks and the flat style of the supplied map. No lettering, no numbers, no logos.
+
+Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Fill the image edge to edge.
+References in order:
+1. <repo>/art/references/ref-scene-1-day.png
+2. <repo>/art/generated/overworld/overworld/image.webp

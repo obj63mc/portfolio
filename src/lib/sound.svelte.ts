@@ -16,6 +16,7 @@ import {
 import { KEY } from './saved.ts';
 import { saved } from './saved.svelte.ts';
 import { GAME_SOUNDS, LINGER, ONE_SHOTS, needed, stale, type SoundId } from './sound.ts';
+import type { GameId } from './scenes/overworld.ts';
 import type { Overworld, Point, SubScene } from './scenes/types';
 
 type Scene = Overworld | SubScene;
@@ -54,10 +55,10 @@ let joined = false;
 let current: Scene | null = null;
 let centre: Point = { x: 0, y: 0 };
 /**
- * Sushi Stand (Joe, 2026-09-30), up without a scene or the engine's frames: whether a service is on, and the timer that
+ * A game (Joe, 2026-09-30), up without a scene or the engine's frames: which, whether its bed is on, and the timer that
  * steps its loops in their place.
  */
-let game: { service: boolean; timer: ReturnType<typeof setInterval> } | null = null;
+let game: { id: GameId; service: boolean; timer: ReturnType<typeof setInterval> } | null = null;
 /** How often the game steps its loops, ms: well inside a pass's scheduling lead. */
 const GAME_STEP = 250;
 /**
@@ -468,7 +469,7 @@ function load(ids: Iterable<AudioId>) {
 
 /** Everything the visitor's scene needs now: its one-shots, and the loops for the camera's place in it. */
 const need = (): ReadonlySet<AudioId> =>
-	game ? new Set<AudioId>([...GAME_SOUNDS, ...GAME_LOOPS])
+	game ? new Set<AudioId>([...GAME_SOUNDS[game.id], ...Object.values(GAME_LOOPS[game.id])])
 	: current ? new Set<AudioId>([...needed(current), ...loopsNeeded(current, centre)])
 	: new Set();
 
@@ -560,7 +561,7 @@ export const sound = {
 	 * here, and its loops fade in as the iris opens, the theme keeping its place.
 	 */
 	scene(scene: Scene) {
-		this.game(false);
+		this.game(null);
 		const now = performance.now();
 		for (const id of need()) left.set(id, now);
 		current = scene;
@@ -569,22 +570,22 @@ export const sound = {
 		setTimeout(sweep, LINGER);
 	},
 	/**
-	 * Sushi Stand up, or down: its sounds load, the last scene's are let go a minute later, and its loops fade in as the
+	 * A game up, or none: its sounds load, the last scene's are let go a minute later, and its loops fade in as the
 	 * page opens and step on a timer, since the engine draws no frames while it is up.
 	 */
-	game(on: boolean) {
-		if (on === !!game) return;
+	game(up: GameId | null) {
+		if (up === (game?.id ?? null)) return;
 		const now = performance.now();
 		for (const id of need()) left.set(id, now);
 		if (game) clearInterval(game.timer);
-		game = on ? { service: false, timer: setInterval(() => this.step({ centre, paused: false, screen: false }), GAME_STEP) } : null;
-		if (on) {
+		game = up ? { id: up, service: false, timer: setInterval(() => this.step({ centre, paused: false, screen: false }), GAME_STEP) } : null;
+		if (up) {
 			passage = { is: 'opening', until: (ctx?.currentTime ?? 0) + 3 * EASE.opening };
 			if (joined && saved.sound) load(need());
 		}
 		setTimeout(sweep, LINGER);
 	},
-	/** A Sushi Stand service on or over: the restaurant's bed comes up under the music, and goes. */
+	/** A game's bed on or off: a Sushi Stand service's restaurant, Big Muddy's water while the lure is down. */
 	service(on: boolean) {
 		if (game) game.service = on;
 	},
@@ -607,7 +608,7 @@ export const sound = {
 		centre = frame.centre;
 		const scene = current;
 		if ((!scene && !game) || !joined || !saved.sound) return;
-		const want = game ? GAME_LOOPS : loopsNeeded(scene!, centre), now = performance.now();
+		const want: ReadonlySet<LoopId> = game ? new Set(Object.values(GAME_LOOPS[game.id])) : loopsNeeded(scene!, centre), now = performance.now();
 		if ([...want].some((id) => !wanted.has(id)) || [...wanted].some((id) => !want.has(id))) {
 			for (const id of wanted) if (!want.has(id)) left.set(id, now);
 			for (const id of want) left.delete(id);
@@ -622,7 +623,7 @@ export const sound = {
 		const tc = passage.is === 'leaving' ? EASE.closing : passage.is === 'opening' ? EASE.opening : EASE.camera;
 		const level = frame.paused ? LEVEL.paused : 1;
 		if (level !== ambienceLevel) ambience.gain.setTargetAtTime((ambienceLevel = level), t, 0.1);
-		const s = { screen: frame.screen, video: [...media].some((m) => !m.paused && !m.ended) }, here = game ? gameGains(game.service) : gains(scene!, centre, s);
+		const s = { screen: frame.screen, video: [...media].some((m) => !m.paused && !m.ended) }, here = game ? gameGains(game.id, game.service) : gains(scene!, centre, s);
 		const target = passage.is === 'leaving' ? leavingGains(here, passage.to, s) : here;
 		for (const id of new Set<LoopId>([...target.keys(), ...loops.keys(), ...streams.keys()])) {
 			// In hundredths, so a slow pan sets a new target when it is heard, not every frame.

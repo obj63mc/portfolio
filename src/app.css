@@ -64,10 +64,10 @@ body {
 /*
  * Until the engine takes the page, a scene's plain document stays hidden on the engine's night backdrop, so it never
  * flashes up before the canvas (Joe, 2026-09-30). Without JavaScript the <noscript> style in app.html shows it; with no
- * scene to show (an error page) or an engine that can't start, the layout marks `plain` and it shows. Sushi Stand, which
- * never starts the engine, shows from its first paint.
+ * scene to show (an error page) or an engine that can't start, the layout marks `plain` and it shows. A game (`.game`, Sushi Stand
+ * or Big Muddy), which never starts the engine, shows from its first paint.
  */
-html:not(.engine, .plain):not(:has(.sushi)) {
+html:not(.engine, .plain):not(:has(.game)) {
 	background: #1d2b3a;
 
 	& body > div {
@@ -237,9 +237,35 @@ button.secondary {
 	}
 }
 
-/* The touch joystick (buildout ticket 10): the engine's, so it shows only once joined by touch (below). */
+/*
+ * The touch joystick (buildout ticket 10): the engine's, so it shows only once joined by touch, and Big Muddy's own
+ * (`.on`), which steers its lure. Thumb-sized, bottom-right; its knob follows the finger, held to the rim.
+ */
 .joystick {
 	display: none;
+}
+
+:is(html.engine[data-input='touch'] .joystick, .joystick.on) {
+	display: block;
+	position: fixed;
+	inset-inline-end: calc(1.25rem + env(safe-area-inset-right));
+	inset-block-end: calc(1.25rem + env(safe-area-inset-bottom));
+	inline-size: 7.5rem;
+	block-size: 7.5rem;
+	box-sizing: border-box;
+	border: 2px solid rgb(255 255 255 / 0.6);
+	border-radius: 50%;
+	background: rgb(255 255 255 / 0.25);
+
+	& > div {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		inline-size: 45%;
+		block-size: 45%;
+		border-radius: 50%;
+		background: rgb(255 255 255 / 0.85);
+	}
 }
 
 /*
@@ -453,30 +479,6 @@ html.engine {
 			font-weight: 700;
 			letter-spacing: 0.2em;
 			text-transform: uppercase;
-		}
-	}
-
-	/* Thumb-sized, bottom-right; its knob follows the finger, held to the rim. */
-	&[data-input='touch'] .joystick {
-		display: block;
-		position: fixed;
-		inset-inline-end: calc(1.25rem + env(safe-area-inset-right));
-		inset-block-end: calc(1.25rem + env(safe-area-inset-bottom));
-		inline-size: 7.5rem;
-		block-size: 7.5rem;
-		box-sizing: border-box;
-		border: 2px solid rgb(255 255 255 / 0.6);
-		border-radius: 50%;
-		background: rgb(255 255 255 / 0.25);
-
-		& > div {
-			position: absolute;
-			inset: 0;
-			margin: auto;
-			inline-size: 45%;
-			block-size: 45%;
-			border-radius: 50%;
-			background: rgb(255 255 255 / 0.85);
 		}
 	}
 

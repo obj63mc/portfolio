@@ -23067,6 +23067,80 @@
         "w": 2845,
         "h": 1600
       }
+    },
+    {
+      "id": "angler",
+      "scene": "overworld",
+      "kind": "scenery",
+      "size": "1024x1024",
+      "references": [
+        "art/generated/overworld/overworld/image.webp"
+      ],
+      "dependsOn": [
+        "overworld"
+      ],
+      "world": {
+        "x": 5973,
+        "y": 325,
+        "w": 40,
+        "h": 31
+      },
+      "prompt": "A person fishing, explicitly requested: an angler seated on a small folding camp stool in perfect side view facing left, leaning forward a little and holding a fishing rod in both hands, the rod angled up and out to the left well past their knees. Sunny golden yellow #FFD34F bucket hat, coral #DF7554 shirt, dark teal #244F55 trousers, ivory skin tone kept simple with no facial features beyond the profile, a small ivory tackle box on the ground behind the stool. Match the flat cartoon style of the supplied riverside scene; a simple readable silhouette at small size. One isolated figure centered on pure solid #FF00FF magenta. No fishing line, no float, no water, no ground plane, no cast shadow, no other objects, no lettering. All edges, the rod's tip included, entirely inside the frame."
+    },
+    {
+      "id": "big-muddy-bass",
+      "scene": "big-muddy",
+      "kind": "scenery",
+      "size": "1983x793",
+      "references": [],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 149
+      },
+      "prompt": "A largemouth bass for the game Big Muddy, explicitly requested: a deep-bodied fish with a large open mouth whose jaw reaches past the eye, a spiny front dorsal fin joined to a soft rear one, leaf green #719B50 back, yellow-green #AFC652 flank with one broken darker green stripe along its side, ivory #FFF4D4 belly, a dark teal #244F55 eye. Flat vector game sprite in the style contract's palette: broad solid shapes, clean edges, no outlines, no gradients. The fish is level and straight, in perfect side view facing left, nose at the left and tail at the right, filling the frame's width with a clean margin. One isolated object centered on pure solid #FF00FF magenta. No water, no bubbles, no ground, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame."
+    },
+    {
+      "id": "big-muddy-catfish",
+      "scene": "big-muddy",
+      "kind": "scenery",
+      "size": "1774x887",
+      "references": [],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 594,
+        "h": 198
+      },
+      "prompt": "A blue catfish for the game Big Muddy, explicitly requested: a heavy smooth scaleless fish with a broad flat head, four pairs of long whiskers (barbels) round its mouth, a deeply forked tail and a small fin on its back, light cyan #87CDD5 back and flank shading to an ivory #FFF4D4 belly in one flat step, a dark teal #244F55 eye. Flat vector game sprite in the style contract's palette: broad solid shapes, clean edges, no outlines, no gradients. The fish is level and straight, in perfect side view facing left, nose at the left and tail at the right, filling the frame's width with a clean margin. One isolated object centered on pure solid #FF00FF magenta. No water, no bubbles, no ground, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame."
+    },
+    {
+      "id": "big-muddy-gar",
+      "scene": "big-muddy",
+      "kind": "scenery",
+      "size": "1983x793",
+      "references": [],
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 831,
+        "h": 157
+      },
+      "prompt": "An alligator gar for the game Big Muddy, explicitly requested: a very long torpedo-shaped fish with a long broad snout full of small teeth, its dorsal and anal fins set far back near a rounded tail, sunny golden yellow #FFD34F and yellow-green #AFC652 body with a row of darker spots toward the tail, ivory #FFF4D4 belly, a dark teal #244F55 eye. Flat vector game sprite in the style contract's palette: broad solid shapes, clean edges, no outlines, no gradients. The fish is level and straight, in perfect side view facing left, nose at the left and tail at the right, filling the frame's width with a clean margin. One isolated object centered on pure solid #FF00FF magenta. No water, no bubbles, no ground, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame."
+    },
+    {
+      "id": "big-muddy-master",
+      "scene": "big-muddy",
+      "kind": "reference",
+      "size": "1024x1024",
+      "references": [
+        "art/generated/overworld/overworld/image.webp"
+      ],
+      "dependsOn": [
+        "overworld"
+      ],
+      "prompt": "The title picture of the fishing game Big Muddy, people and fish explicitly requested: the Mississippi at St. Louis cut away at the waterline. The top third is above water in bright daylight: light cyan sky with two flat clouds, the Gateway Arch and a low downtown skyline on the far bank at the left, the blue steel arches of the Eads Bridge behind them, and on the near sandy bank at the right an angler in a golden yellow bucket hat and coral shirt seated on a folding stool, rod out over the river, the line running straight down into the water. The lower two thirds are under water: turquoise #2FB8B0 at the top deepening to dark teal #244F55 at the bottom in four flat bands, a small largemouth bass near the top, a larger blue catfish with long whiskers in the middle and a very long alligator gar near the bottom, each bigger the deeper it swims, a coral lure on the line among them, bare sunken branches rising from the two bottom corners and a few rings of bubbles. Match the landmarks and the flat style of the supplied map. No lettering, no numbers, no logos."
     }
   ],
   "sceneLayouts": {

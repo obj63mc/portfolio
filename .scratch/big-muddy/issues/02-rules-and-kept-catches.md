@@ -4,10 +4,14 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] `start`, `step`, `weigh`, `afterCatch`, `afterSnag`, `Catch`, `isCatch`
-- [ ] `Saved.catches` and `Saved.lure`, read, merged and narrowed
-- [ ] `tests/big-muddy.test.ts`
+- [x] `start`, `step`, `weigh`, `afterCatch`, `afterSnag`, `Catch`, `isCatch`
+- [x] `Saved.catches` and `Saved.lure`, read, merged and narrowed
+- [x] `tests/big-muddy.test.ts`
 
 ## Comments
+
+### Built, 2026-10-01
+
+`src/lib/big-muddy/rules.ts`, `Saved.catches` and `Saved.lure` in `src/lib/saved.ts`, `tests/big-muddy.test.ts` (10 tests). A fish rises at its mean speed, a constant, where the plan said drawn at spawn and each turn: the original's draw every frame averages to it. Committed by Joe in 770152d.

@@ -41,7 +41,7 @@ test('every cut-out the site draws is delivered at both densities, at the size i
 	// overworld's scenery the plate doesn't paint.
 	const delivered = new Set(due.map((d) => d.file));
 	for (const s of scenes) {
-		const scenery = 'walkBehind' in s ? s.walkBehind.map((w) => w.key) : [...s.river.bridges.map((b) => b.key), 'signpost', 'door', 'rider', ...s.track.cover, s.track.sign, ...s.marquee.art];
+		const scenery = 'walkBehind' in s ? s.walkBehind.map((w) => w.key) : [...s.river.bridges.map((b) => b.key), 'signpost', 'door', 'rider', ...s.track.cover, s.track.sign, ...s.marquee.art, s.angler.art];
 		for (const id of [...propsOf(s).flatMap((p) => artOf(s, p)), ...s.foreground.map((c) => c.key), ...scenery]) {
 			const original = `${s.id}/${id}/image.webp`;
 			const files: string[] = existsSync(generated(original))

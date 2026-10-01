@@ -1,0 +1,12 @@
+STYLE: Flat vector illustration matching the supplied original daytime artwork. Broad layered solid-color shapes, clean edges, no outlines, no grain or painted texture, no gradients. Bright and clear palette: light cyan #87CDD5, turquoise #2FB8B0, yellow-green #AFC652, ivory #FFF4D4, sunny golden yellow #FFD34F, fresh leaf green #719B50, small coral accents #DF7554, dark teal #244F55. Use cream for walls and pale surfaces, not as an all-over tint. Brown only where the actual reference contains wood or brick; keep it a minority color. Slightly elevated perspective with consistent scale, one light source upper left. No sepia wash, no muddy olive/brown shadows. No people, animals, text or lettering unless explicitly requested. Nothing photographic.
+
+REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.
+
+
+ASSET: angler
+A person fishing, explicitly requested: an angler seated on a small folding camp stool in perfect side view facing left, leaning forward a little and holding a fishing rod in both hands, the rod angled up and out to the left well past their knees. Sunny golden yellow #FFD34F bucket hat, coral #DF7554 shirt, dark teal #244F55 trousers, ivory skin tone kept simple with no facial features beyond the profile, a small ivory tackle box on the ground behind the stool. Match the flat cartoon style of the supplied riverside scene; a simple readable silhouette at small size. One isolated figure centered on pure solid #FF00FF magenta. No fishing line, no float, no water, no ground plane, no cast shadow, no other objects, no lettering. All edges, the rod's tip included, entirely inside the frame.
+
+Target aspect ratio and size: 1024x1024. Save the tool's native output; never resize it. Keep the entire object within the frame with a clean margin.
+References in order:
+1. <repo>/art/references/ref-scene-1-day.png
+2. <repo>/art/generated/overworld/overworld/image.webp

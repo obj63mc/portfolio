@@ -1,0 +1,25 @@
+{
+  "id": "big-muddy-bass",
+  "scene": "big-muddy",
+  "kind": "scenery",
+  "file": "big-muddy/big-muddy-bass/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 375,
+    "h": 149
+  },
+  "source": {
+    "w": 1984,
+    "h": 793,
+    "sha256": "c8753e5a78aae3d63b1d541ff847f64432a767d1c75ff6f9b55f9f33937c2867"
+  },
+  "trim": {
+    "x": 45,
+    "y": 16,
+    "w": 1892,
+    "h": 752
+  },
+  "width": 1892,
+  "height": 752
+}

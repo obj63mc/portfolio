@@ -1,0 +1,19 @@
+{
+  "id": "big-muddy-master",
+  "scene": "big-muddy",
+  "kind": "reference",
+  "file": "big-muddy/big-muddy-master/image.webp",
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "b8c1040453c83395c54ddcb925564b736bf03171d59c4fe28f944cd425f02282"
+  },
+  "trim": {
+    "x": 0,
+    "y": 0,
+    "w": 1254,
+    "h": 1254
+  },
+  "width": 1254,
+  "height": 1254
+}

@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
-import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
+import { BIG_MUDDY, OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { arrival } from '../src/lib/scenes/index.ts';
 import { ARROW } from '../src/lib/scenes/river.ts';
 import type { Point, Rect } from '../src/lib/scenes/types.ts';
@@ -161,4 +161,22 @@ test('the Foundry: its door is the cinema under its marquee, not the hall beside
 	assert.ok(tl.x === bl.x && tr.x === br.x && tl.x < tr.x && tl.y < bl.y && tr.y < br.y, 'upright sides, west to east');
 	const reach = { x: canopy.x - 1, y: canopy.y - 1, w: canopy.w + 2, h: canopy.h + 2 };
 	for (const p of OVERWORLD.marquee.face) assert.ok(inside({ ...p, w: 0, h: 0 }, reach), `${p.x}, ${p.y} on the canopy`);
+});
+
+test("Big Muddy's door (Joe, 2026-10-01): a phone's finger wide and tall, its centre ashore on the Illinois bank, where a visitor lands coming back", () => {
+	const door = OVERWORLD.districts.flatMap((d) => d.venues).find((v) => v.id === BIG_MUDDY)!.rect;
+	assert.ok(door.w * 0.6 >= 48 && door.h * 0.6 >= 48, 'over 48 x 48 CSS px on a phone at 0.6');
+	const c = { x: door.x + door.w / 2, y: door.y + door.h / 2 };
+	assert.equal(inPolygon(c, OVERWORLD.river.mask), false, 'its centre is off the water');
+	// Its west edge is over the water, where the angler's line goes in.
+	assert.equal(inPolygon({ x: door.x + 5, y: c.y }, OVERWORLD.river.mask), true);
+	// The angler sits inside their door, the rod's tip and the bobber with them, the bobber on the water and off the
+	// Eads deck; their boots, the cut-out's foot a little left of its middle, are ashore.
+	const { art, tip, bobber } = OVERWORLD.angler;
+	const at: Rect = JSON.parse(readFileSync(new URL(`../art/generated/overworld/${art}/asset.json`, import.meta.url), 'utf8')).world;
+	assert.ok(inside(at, door), 'the cut-out is inside the door');
+	for (const p of [tip, bobber]) assert.ok(p.x >= door.x && p.x <= door.x + door.w && p.y >= door.y && p.y <= door.y + door.h);
+	assert.equal(inPolygon(bobber, OVERWORLD.river.mask), true, 'the bobber floats');
+	assert.equal(OVERWORLD.river.decks.some((d) => inPolygon(bobber, d)), false);
+	assert.equal(inPolygon({ x: at.x + at.w * 0.5, y: at.y + at.h }, OVERWORLD.river.mask), false, 'the boots are on the bank');
 });

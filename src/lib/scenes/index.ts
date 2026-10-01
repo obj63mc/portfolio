@@ -7,7 +7,7 @@ import { SIDE_PROJECT } from './side-project.ts';
 import { SLU } from './slu.ts';
 import type { Overworld, Prop, Rect, SubScene } from './types';
 
-export { GAME } from './overworld.ts';
+export { BIG_MUDDY, GAMES, SUSHI, gameAt, type GameId } from './overworld.ts';
 
 /** Every sub-scene by its flat URL slug, which is also the overworld venue id its exit link targets. */
 export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
@@ -18,8 +18,8 @@ export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
 export const sceneAt = (pathname: string): Overworld | SubScene | undefined => (pathname === '/' ? OVERWORLD : SUB_SCENES[pathname.slice(1)]);
 
 /**
- * A scene's doors, each with the scene behind it and its own rect: the overworld's venues that have a sub-scene (Sushi
- * Stand's door leads to a page with no scene), or a sub-scene's exit, back to the overworld.
+ * A scene's doors, each with the scene behind it and its own rect: the overworld's venues that have a sub-scene (a
+ * game's door leads to a page with no scene), or a sub-scene's exit, back to the overworld.
  */
 export const doorsOf = (s: Overworld | SubScene): { to: Overworld | SubScene; at: Rect }[] =>
 	'districts' in s

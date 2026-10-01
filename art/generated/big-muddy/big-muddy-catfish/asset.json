@@ -1,0 +1,25 @@
+{
+  "id": "big-muddy-catfish",
+  "scene": "big-muddy",
+  "kind": "scenery",
+  "file": "big-muddy/big-muddy-catfish/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 594,
+    "h": 198
+  },
+  "source": {
+    "w": 1774,
+    "h": 887,
+    "sha256": "673c04389164fd4813af4fe401932448b8a94dc774d8107899c1203929b79619"
+  },
+  "trim": {
+    "x": 38,
+    "y": 156,
+    "w": 1697,
+    "h": 567
+  },
+  "width": 1697,
+  "height": 567
+}

@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "673c04389164fd4813af4fe401932448b8a94dc774d8107899c1203929b79619",
+  "run": "art/runs/big-muddy-catfish/2026-10-01T21-10-47.190Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

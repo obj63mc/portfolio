@@ -1,0 +1,6 @@
+{
+  "sourceSha256": "c8753e5a78aae3d63b1d541ff847f64432a767d1c75ff6f9b55f9f33937c2867",
+  "run": "art/runs/big-muddy-bass/2026-10-01T21-08-04.859Z",
+  "provider": "codex",
+  "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
+}

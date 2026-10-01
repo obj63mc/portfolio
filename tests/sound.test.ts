@@ -88,9 +88,9 @@ test('every scene loads the global one-shots, its props\' signatures and its own
 	assert.ok(needed(OVERWORLD).has('best-lap') && needed(OVERWORLD).has('knock'), 'the lap beep and the signpost');
 	assert.ok(needed(SUB_SCENES.foundry).has('projector'));
 	assert.ok(!needed(SUB_SCENES.slu).has('projector') && !needed(SUB_SCENES.slu).has('best-lap'));
-	assert.ok(needed(OVERWORLD).has('splash'), 'the Grand Basin koi, into Sushi Stand');
-	const all = new Set([...SCENES.flatMap((s) => [...needed(s)]), ...GAME_SOUNDS]);
-	assert.deepEqual([...all].sort(), [...ONE_SHOTS].sort(), 'every one-shot is heard somewhere, Sushi Stand included');
+	assert.ok(needed(OVERWORLD).has('splash'), 'the Grand Basin koi, into Sushi Stand, and the angler’s cast, into Big Muddy');
+	const all = new Set([...SCENES.flatMap((s) => [...needed(s)]), ...Object.values(GAME_SOUNDS).flat()]);
+	assert.deepEqual([...all].sort(), [...ONE_SHOTS].sort(), 'every one-shot is heard somewhere, the games included');
 });
 
 test("a scene's buffers are let go a minute after it is left, unless the scene the visitor is in needs them", () => {

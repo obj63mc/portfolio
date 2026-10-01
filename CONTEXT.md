@@ -22,6 +22,14 @@ _Avoid_: building, location, portal
 The game behind the koi swimming in Forest Park's Grand Basin: five days running a sushi stand, carried over from Sapporo's 2018 Sushi Star. It fills the whole window like a scene, but it is a page of its own with no scene or room; its scores are the visitor's own top ten, kept on the device like laps, and so is a game left unfinished, which carries on from where it was left.
 _Avoid_: mini-game, Sushi Star, level
 
+**Big Muddy**:
+The game behind the angler fishing the Mississippi from the Illinois bank, beside the grain elevator in Belleville's north: a lure sinks, steered left and right past fish and snags, and the first touch ends the cast, carried over from the Lunker Lake giveaway game. A page of its own with no scene or room, like Sushi Stand; the visitor's ten heaviest catches and the lure they have earned are kept on the device.
+_Avoid_: mini-game, Lunker Lake, level
+
+**Cast**:
+One go at Big Muddy, from the lure entering the water to the catch or snag that ends it.
+_Avoid_: round, run, life
+
 **Sub-scene**:
 The interior scene a visitor enters through a venue, such as the CS lab inside Saint Louis University.
 _Avoid_: interior, level, page, room

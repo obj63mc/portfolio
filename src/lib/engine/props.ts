@@ -6,13 +6,13 @@
 // for a locked or steered cursor, keyboard focus) and clicked (the click that opens a card), and plays their reactions;
 // their timing is in motion.ts. Carried over from the rendering prototype's canvas props (tag archive/prototype/rendering-camera).
 import { POSTER_LAMPS, posterOf } from '../scenes/foundry.ts';
-import { GAME, artOf, propsOf } from '../scenes/index.ts';
+import { BIG_MUDDY, SUSHI, artOf, propsOf, type GameId } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { tv } from '../tv.svelte.ts';
 import { drawCourse } from './course-overlay.ts';
 import { MARQUEE, loadFaces, settled } from './fonts.ts';
 import type { Loader, Loading } from './loader.ts';
-import { CLICK_MS, KOI, WATER, blink, breath, chase, gaze, glint, hover, koi, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
+import { BOBBER, CLICK_MS, KOI, WATER, blink, bob, breath, chase, gaze, glint, hover, koi, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its original's file under art/generated. */
@@ -93,6 +93,10 @@ interface Layer {
 	board?: { face: Point[]; text: string; period?: number };
 	/** The Grand Basin koi's swim, the door to Sushi Stand, which it lights while hovered. */
 	koi?: Rect;
+	/** The game whose door it is the art of, which lights it while hovered: the koi, the angler. */
+	door?: GameId;
+	/** The angler's line: from the rod's tip to the bobber on the water. */
+	line?: { tip: Point; bobber: Point };
 	/** Its hover level, 0 to 1, and when it was last clicked (server ms). */
 	hover: number;
 	clicked: number;
@@ -112,11 +116,9 @@ const HOVERED = [
 	'.prop > button:is(.hot, :focus-visible)'
 ].join(', ');
 
-/** The Grand Basin koi's door hovered, as HOVERED reads a prop's button. */
-const KOI_HOVERED = [
-	`html:not([data-input='locked'], [data-input='touch']) #${GAME} .door:hover`,
-	`#${GAME} .door:is(.hot, :focus-visible)`
-].join(', ');
+/** A game's door hovered, the Grand Basin koi's or the angler's, as HOVERED reads a prop's button. */
+const doorHovered = (id: GameId) =>
+	[`html:not([data-input='locked'], [data-input='touch']) #${id} .door:hover`, `#${id} .door:is(.hot, :focus-visible)`].join(', ');
 /** The koi's kohaku colours from the style contract (art/style.txt): an ivory body with coral patches, a dark teal eye. */
 const KOI_INK = { body: '#fff4d4', patch: '#df7554', eye: '#244f55', shadow: 'rgb(36 79 85 / 0.22)', ring: '255 244 212' };
 
@@ -238,8 +240,14 @@ export class Props {
 			this.layers.push(layer(undefined, ['signpost', 'door'], scene.signpost.rect), layer(undefined, ['rider'], rider(this.t, this.rm).at));
 			this.layers.push(...[...scene.track.cover, scene.track.sign].map((id) => layer(undefined, [id])));
 			this.layers.push({ ...layer(undefined, scene.marquee.art), board: { face: scene.marquee.face, text: scene.marquee.text } });
-			const swim = scene.districts.flatMap((d) => d.venues).find((v) => v.id === GAME)?.rect;
-			if (swim) this.layers.push({ box: swim, cuts: [], koi: swim, hover: 0, clicked: -Infinity, drawn: '', loading: [], seen: false });
+			const swim = scene.districts.flatMap((d) => d.venues).find((v) => v.id === SUSHI)?.rect;
+			if (swim) this.layers.push({ box: swim, cuts: [], koi: swim, door: SUSHI, hover: 0, clicked: -Infinity, drawn: '', loading: [], seen: false });
+			// The angler, Big Muddy's door: their cut-out, and the line and bobber drawn here, which the layer's box takes in.
+			const { art, tip, bobber } = scene.angler, angler = layer(undefined, [art]);
+			if (angler.cuts.length) {
+				const reach = { x: Math.min(tip.x, bobber.x) - 20, y: Math.min(tip.y, bobber.y) - 6, w: Math.abs(tip.x - bobber.x) + 40, h: Math.abs(tip.y - bobber.y) + 16 };
+				this.layers.push({ ...angler, box: union([angler.box, reach]), door: BIG_MUDDY, line: { tip, bobber } });
+			}
 			// The line is three checks along the path and four across it: no wider than the path, and under twice as high.
 			const at = along(LOOP, 0), half = LOOP.half;
 			this.line = { ...at, half, box: { x: at.x - half, y: at.y - 2 * half, w: 2 * half, h: 4 * half } };
@@ -303,7 +311,7 @@ export class Props {
 		let rode = false;
 		for (const l of this.layers) {
 			if (l.prop) l.hover = hover(l.hover, hovered.has(l.prop.id) || l.cuts.some((c) => hovered.has(c.id)), dt, rm);
-			else if (l.koi) l.hover = hover(l.hover, !!this.layer.querySelector(KOI_HOVERED), dt, rm);
+			else if (l.door) l.hover = hover(l.hover, !!this.layer.querySelector(doorHovered(l.door)), dt, rm);
 			if (l.rig?.name === 'rider') {
 				// The rider moves along the loop: where it was is drawn again too, and its base y reorders it.
 				const was = l.box;
@@ -405,6 +413,8 @@ export class Props {
 		const ambient =
 			l.rig?.name === 'moose' && !rm ? breath(moose(t, l.hover, since, rm))
 			: (l.rig || l.koi) && !rm ? t
+			// The bobber rides a world px and a half: to a tenth, it is drawn some twenty times a second.
+			: l.line && !rm ? bob(t, rm).dy.toFixed(1)
 			: l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}`
 			: isBottle(l.prop) ? glint(t, rm)
 			: v ? `${v.currentTime},${v.readyState >= 2}`
@@ -445,6 +455,7 @@ export class Props {
 			}
 			if (l.rig) this.drawRig(g, l);
 			if (l.koi) this.drawKoi(g, l.koi);
+			if (l.line) this.drawLine(g, l.line);
 		};
 		// Hovered, a prop glows round its silhouette, which covers its painted original exactly; a poster's picture light
 		// lights it instead, but under reduced motion every hover is the plain glow. The glow is painted first and the prop
@@ -462,6 +473,32 @@ export class Props {
 		if (poster && h && !rm) this.lamp(g, l.cuts[0], POSTER_LAMPS[poster], h);
 		if (l.video) this.screen(g, l.video.el, l.video.screen);
 		g.restore();
+	}
+
+	/** The angler's line, slack from the rod's tip to the bobber, which rides the water inside its ring: coral over ivory. */
+	private drawLine(g: CanvasRenderingContext2D, { tip, bobber }: { tip: Point; bobber: Point }) {
+		const { dy, ring } = bob(this.t, this.rm), y = bobber.y - dy, r = BOBBER.r;
+		if (ring) {
+			g.strokeStyle = `rgb(255 244 212 / ${ring.a})`;
+			g.lineWidth = 1;
+			g.beginPath();
+			g.ellipse(bobber.x, bobber.y + r * 0.6, ring.r, ring.r * KOI.fore, 0, 0, Math.PI * 2);
+			g.stroke();
+		}
+		g.strokeStyle = 'rgb(255 244 212 / 0.85)';
+		g.lineWidth = 0.5;
+		g.beginPath();
+		g.moveTo(tip.x, tip.y);
+		g.quadraticCurveTo((tip.x + bobber.x) / 2 - 1.5, (tip.y + y) / 2 + 3, bobber.x, y - r);
+		g.stroke();
+		g.fillStyle = '#fff4d4';
+		g.beginPath();
+		g.arc(bobber.x, y, r, 0, Math.PI * 2);
+		g.fill();
+		g.fillStyle = '#df7554';
+		g.beginPath();
+		g.arc(bobber.x, y, r, Math.PI, 0);
+		g.fill();
 	}
 
 	/** The Grand Basin koi: its rings on the water, its shadow, then the fish, its tail beating. */

@@ -200,6 +200,11 @@ export interface Overworld extends SceneBase {
 		/** What scrolls across the board, over and over. */
 		text: string;
 	};
+	/**
+	 * The angler on the Illinois bank, the art of Big Muddy's door: scenery that the door lights. Their cut-out, the rod's
+	 * `tip`, and the `bobber` on the water, to which a line is drawn.
+	 */
+	angler: { art: string; tip: Point; bobber: Point };
 }
 
 export interface SubScene extends SceneBase {

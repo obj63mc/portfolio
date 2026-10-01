@@ -1,0 +1,25 @@
+{
+  "id": "angler",
+  "scene": "overworld",
+  "kind": "scenery",
+  "file": "overworld/angler/image.webp",
+  "world": {
+    "x": 5973,
+    "y": 325,
+    "w": 40,
+    "h": 31
+  },
+  "source": {
+    "w": 1254,
+    "h": 1254,
+    "sha256": "0996abb3d2baf94d60d3674bd3dfe06aa8d7739944351b4a963e3a75a58af978"
+  },
+  "trim": {
+    "x": 102,
+    "y": 217,
+    "w": 1047,
+    "h": 818
+  },
+  "width": 1047,
+  "height": 818
+}

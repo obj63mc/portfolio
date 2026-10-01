@@ -1,0 +1,11 @@
+STYLE: Flat vector illustration matching the supplied original daytime artwork. Broad layered solid-color shapes, clean edges, no outlines, no grain or painted texture, no gradients. Bright and clear palette: light cyan #87CDD5, turquoise #2FB8B0, yellow-green #AFC652, ivory #FFF4D4, sunny golden yellow #FFD34F, fresh leaf green #719B50, small coral accents #DF7554, dark teal #244F55. Use cream for walls and pale surfaces, not as an all-over tint. Brown only where the actual reference contains wood or brick; keep it a minority color. Slightly elevated perspective with consistent scale, one light source upper left. No sepia wash, no muddy olive/brown shadows. No people, animals, text or lettering unless explicitly requested. Nothing photographic.
+
+REFERENCE ROLES: First illustration is the style/palette reference. Real location photos control architecture and furniture arrangement. A final composition/crop reference controls exact object position, scale and orientation when extracting or editing an asset. Preserve that camera and geometry.
+
+
+ASSET: big-muddy-catfish
+A blue catfish for the game Big Muddy, explicitly requested: a heavy smooth scaleless fish with a broad flat head, four pairs of long whiskers (barbels) round its mouth, a deeply forked tail and a small fin on its back, light cyan #87CDD5 back and flank shading to an ivory #FFF4D4 belly in one flat step, a dark teal #244F55 eye. Flat vector game sprite in the style contract's palette: broad solid shapes, clean edges, no outlines, no gradients. The fish is level and straight, in perfect side view facing left, nose at the left and tail at the right, filling the frame's width with a clean margin. One isolated object centered on pure solid #FF00FF magenta. No water, no bubbles, no ground, no cast shadow, no other objects, no lettering. All object edges entirely inside the frame.
+
+Target aspect ratio and size: 1774x887. Save the tool's native output; never resize it. Keep the entire object within the frame with a clean margin.
+References in order:
+1. <repo>/art/references/ref-scene-1-day.png

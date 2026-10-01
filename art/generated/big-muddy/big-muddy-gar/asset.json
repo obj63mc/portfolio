@@ -1,0 +1,25 @@
+{
+  "id": "big-muddy-gar",
+  "scene": "big-muddy",
+  "kind": "scenery",
+  "file": "big-muddy/big-muddy-gar/image.webp",
+  "world": {
+    "x": 0,
+    "y": 0,
+    "w": 831,
+    "h": 157
+  },
+  "source": {
+    "w": 1983,
+    "h": 793,
+    "sha256": "050f1fe9a07ba76e3739c4e0fb53e010729b7c8e3a82817ffa6bc46e70737ad1"
+  },
+  "trim": {
+    "x": 45,
+    "y": 219,
+    "w": 1894,
+    "h": 359
+  },
+  "width": 1894,
+  "height": 359
+}

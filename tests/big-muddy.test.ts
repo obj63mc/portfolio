@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { addCatch, keepLure, merge, read, type Saved } from '../src/lib/saved.ts';
+import { HALO, water } from '../src/lib/big-muddy/draw.ts';
 import {
 	FT, GAP, HOOK, LURE_Y, LURES, REACH, SCHOOL, SNAG, SNAGS, SPECIES, STEER, STEP, VIEW, afterCatch, afterSnag, depthOf, isCatch, speciesOf, start, step, viewOf, weigh,
 	type End, type Run
@@ -183,4 +184,15 @@ test('the lure is kept from the second up, read back only as a lure, and is the 
 	for (const lure of [1, 5, '2', null]) assert.equal('lure' in read(JSON.stringify({ v: 1, lure })), false);
 	assert.equal(merge(keepLure(none, 4), keepLure(none, 2)).lure, 2);
 	assert.equal('lure' in merge(keepLure(none, 4), none), false);
+});
+
+test('the outline round the fish, the snags and the lure stands 3 to 1 against the water at every depth (Joe, 2026-10-01)', () => {
+	// WCAG's relative luminance and contrast ratio; 3 to 1 is its floor for graphics.
+	const channel = (c: number) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
+	const luminance = ([r, g, b]: number[]) => 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+	const halo = luminance([1, 3, 5].map((i) => parseInt(HALO.slice(i, i + 2), 16)));
+	for (let depth = 0; depth <= 400; depth++) {
+		const ratio = (halo + 0.05) / (luminance(water(depth).match(/\d+/g)!.map(Number)) + 0.05);
+		assert.ok(ratio >= 3, `${depth} ft: ${ratio.toFixed(2)} to 1`);
+	}
 });

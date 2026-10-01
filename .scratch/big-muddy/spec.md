@@ -1,6 +1,6 @@
 # Big Muddy
 
-Status: ready-for-agent
+Status: ready-for-human (the art's look, real devices)
 
 Lunker Lake, the fishing game made for the Punch Cigars and Bassmaster giveaway (`~/Sites/old/bassmaster.moosebeta.com`,
 ImpactJS on SilverStripe), rebuilt in Svelte and TypeScript as Big Muddy, behind an angler fishing the Mississippi from
@@ -14,7 +14,8 @@ the Illinois bank beside the grain elevator (Joe, 2026-10-01). A page of its own
   a joystick. The camera keeps the lure centred, as the original's did, so the pointer steers by which side of the lure
   it is on, full speed 100 units out.
 - Drawn natively on a 2D canvas, no library. Pixi is the way up if shader effects are wanted, a swap inside `draw.ts`.
-- Music: delta blues; three candidates a row, Joe picks.
+- Music: first delta blues, then, on hearing the candidates, something in the spirit of the Zelda fishing themes; Joe
+  picked "Watermill in the old town" from Pixabay. A catch plays Sushi Stand's star.
 - All new art, through Codex. Nothing of the original's is carried over: no sprite, photo, campaign copy, lure name,
   age gate, sweepstakes, share link or analytics, and never its database dump.
 - The leaderboard is the visitor's own ten heaviest catches, kept on the device. No name is asked for.
@@ -41,6 +42,10 @@ Changed on purpose:
 - A fish or snag is taken away once wholly above the view, where the original's went 96 px above its top, in sight
   when large.
 - Five of each fish and eight snags from the first frame; the original reached those numbers over its first seconds.
+- A fish's box is its new picture's shape at the area of the original's frame: the bass 250 by 99, the catfish 396 by
+  132 (the carp's was 300 by 174), the gar 554 by 105 (the pike's 500 by 116).
+- Everything the lure can touch, and the lure, has an ivory outline, and the water starts a shade under the style's
+  turquoise, so the outline stands 3 to 1 against it at every depth (Joe, 2026-10-01).
 - Three tiers of result line, small, medium and big; the original's big tier could never show.
 
 ## Slices

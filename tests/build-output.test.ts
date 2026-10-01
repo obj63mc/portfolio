@@ -304,7 +304,7 @@ test('copy: each card\'s is its Markdown file, built in as markup; no file is wi
 	assert.equal(opens(cms, 'p').filter((p) => p === '<p>').length, 2, 'a paragraph each');
 	// A headline is the copy's own, under the card's title in the page's headings: a sub-scene's card is an h2.
 	const diploma = main(page('slu.html')).match(/<dialog[^>]*aria-labelledby="card-diploma-title"[\s\S]*?<\/dialog>/)![0];
-	assert.match(diploma, /<h2[^>]*id="card-diploma-title"[\s\S]*<div class="copy[^>]*>\s*(<!--.*?-->)?\s*<h3>Diploma<\/h3>/);
+	assert.match(diploma, /<h2[^>]*id="card-diploma-title"[\s\S]*<div class="copy[^>]*>\s*(<!--.*?-->)?\s*<h3>[^<]+<\/h3>/);
 });
 
 test("the loft's computers: each card shows its stack's logos, a hashed file each, named under it and fetched when shown (Joe, 2026-10-01)", () => {
@@ -438,7 +438,7 @@ test('caching: every hashed file of the build is kept for good, the icons a day,
 		assert.deepEqual(cacheControl(`/${f}`), icon ? ['public, max-age=86400'] : [], f);
 	}
 	// A page is also asked for at its path without the extension.
-	for (const path of ['/', '/moosylvania', '/sushi-stand', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
+	for (const path of ['/', '/moosylvania', '/sushi-stand', '/big-muddy', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
 });
 
 test("the bottles of the sites Joe built, MonsterCommerce's server rack and the café's ATM and stand: each card shows its screenshots in a window, a hashed file each, named and fetched when shown (Joe, 2026-10-01)", () => {

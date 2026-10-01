@@ -254,6 +254,19 @@ export function ripples(river: Overworld['river'], t: number, rm: boolean): Ripp
 }
 
 /**
+ * The angler's bobber on the Mississippi (Joe, 2026-10-01), Big Muddy's door: `r` world px across, it rides the water up
+ * and down `rise` world px every `period` ms, a ring spreading from it each time it dips. Under reduced motion it rests.
+ */
+export const BOBBER = { r: 1.8, rise: 1, period: 2_800 } as const;
+
+/** How far the bobber sits above its rest at `t`, world px, and its ring: how far out, and how faint. */
+export function bob(t: number, rm: boolean) {
+	if (rm) return { dy: 0, ring: null };
+	const phase = (t % BOBBER.period) / BOBBER.period;
+	return { dy: BOBBER.rise * Math.sin(2 * Math.PI * phase), ring: { r: BOBBER.r + 7 * phase, a: 0.5 * (1 - phase) } };
+}
+
+/**
  * The koi in Forest Park's Grand Basin (Joe, 2026-09-30), whose click opens Sushi Stand: `len` world px nose to tail,
  * seen from the map's raised camera, which squashes the water's depth to `fore` of its width; it laps an oval in its swim
  * rect every `period` ms, a little faster and slower in turn, its tail beating every `beat` ms, and leaves a ring on the

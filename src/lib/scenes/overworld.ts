@@ -7,10 +7,16 @@ import type { District, Overworld, Rect } from './types';
 const centre = (r: Rect) => r.x + r.w / 2;
 
 /**
- * Sushi Stand (Joe, 2026-09-30): the game behind the koi in Forest Park's Grand Basin, a page of its own with no scene,
- * at `/sushi-stand`; also the id of the venue whose door leads there.
+ * The games (Joe, 2026-09-30 and 2026-10-01), each a page of its own with no scene, at `/<id>`, which is also the id of
+ * the venue whose door leads there: Sushi Stand behind the koi in Forest Park's Grand Basin, and Big Muddy behind the
+ * angler on the Mississippi's Illinois bank.
  */
-export const GAME = 'sushi-stand';
+export const SUSHI = 'sushi-stand';
+export const BIG_MUDDY = 'big-muddy';
+export const GAMES = [SUSHI, BIG_MUDDY] as const;
+export type GameId = (typeof GAMES)[number];
+/** The game a page path is, if it is one. */
+export const gameAt = (pathname: string): GameId | undefined => GAMES.find((g) => pathname === `/${g}`);
 
 // One ground plane, one horizon: the depth factor runs 0.85 at the treeline to 1.0 at the south edge in every
 // region, so crossing a region boundary never changes scale. The regions tile the whole world, sky included, so the
@@ -75,7 +81,7 @@ const districts: District[] = [
 		name: 'Forest Park',
 		rect: { x: 200, y: 250, w: 1650, h: 600 },
 		sign: { x: 1468, y: 694, w: 220, h: 58 },
-		venues: [{ id: GAME, name: 'Sushi Stand', rect: { x: 684, y: 486, w: 252, h: 68 }, door: `/${GAME}`, props: [] }]
+		venues: [{ id: SUSHI, name: 'Sushi Stand', rect: { x: 684, y: 486, w: 252, h: 68 }, door: `/${SUSHI}`, props: [] }]
 	},
 	{
 		id: 'central-west-end',
@@ -140,9 +146,22 @@ const districts: District[] = [
 	{
 		id: 'belleville',
 		name: 'Belleville',
-		rect: { x: 5800, y: 950, w: 950, h: 900 },
+		// North to the treeline, 700 px more than it was, to take in the Illinois bank and its grain elevator, where the
+		// angler fishes (Joe, 2026-10-01).
+		rect: { x: 5800, y: 250, w: 950, h: 1600 },
 		sign: { x: 6110, y: 1630, w: 350, h: 130 },
 		venues: [
+			{
+				// An angler on the sand point west of the grain elevator, fishing the Mississippi (Joe, 2026-10-01); clicking them
+				// opens Big Muddy, the game (routes/big-muddy). An Easter egg, so the angler is small, about the drawn cursor's
+				// size, rod and all; the venue is the least a finger needs round them on a phone, 48 CSS px at 0.6, its door
+				// the whole of it and its centre ashore, where a visitor lands coming back.
+				id: BIG_MUDDY,
+				name: 'Big Muddy',
+				rect: { x: 5956, y: 296, w: 80, h: 80 },
+				door: `/${BIG_MUDDY}`,
+				props: []
+			},
 			{
 				id: 'monstercommerce',
 				name: 'MonsterCommerce',
@@ -237,7 +256,9 @@ export const OVERWORLD: Overworld = {
 		// West bank north to south, the south edge, then the east bank south to north. Traced by water colour on the
 		// fill-pass master at 50 px rows (scripts/art/overworld/assembly/rivermask.py); the rows under the Eads arches
 		// and the Poplar bridge, the Arch levee riverboat and the Belleville barge dock are read by eye on gridded crops
-		// instead. East bank rows 800 to 900 re-traced on the round-thirteen master (the bank below the east pier).
+		// instead. East bank rows 800 to 900 re-traced on the round-thirteen master (the bank below the east pier), and rows
+		// 250 to 450 on a gridded crop of the master (2026-10-01): they ran 40 to 115 px inland of the painted bank beside
+		// the grain elevator, where the angler's door now is.
 		mask: [
 			{ x: 4870, y: 250 }, { x: 4880, y: 300 }, { x: 4900, y: 350 }, { x: 4960, y: 400 }, { x: 4943, y: 450 },
 			{ x: 4912, y: 500 }, { x: 4880, y: 550 }, { x: 4861, y: 600 }, { x: 4925, y: 650 }, { x: 4990, y: 700 },
@@ -258,7 +279,7 @@ export const OVERWORLD: Overworld = {
 			{ x: 5776, y: 1200 }, { x: 5613, y: 1150 }, { x: 5634, y: 1100 }, { x: 5715, y: 1050 }, { x: 5753, y: 1000 },
 			{ x: 5797, y: 950 }, { x: 5896, y: 900 }, { x: 5943, y: 850 }, { x: 5926, y: 800 }, { x: 5988, y: 750 },
 			{ x: 5998, y: 700 }, { x: 6000, y: 650 }, { x: 6150, y: 600 }, { x: 6300, y: 550 }, { x: 6320, y: 500 },
-			{ x: 6300, y: 450 }, { x: 6200, y: 400 }, { x: 6080, y: 350 }, { x: 6030, y: 300 }, { x: 6000, y: 250 }
+			{ x: 6227, y: 450 }, { x: 6090, y: 400 }, { x: 5975, y: 350 }, { x: 5990, y: 300 }, { x: 5900, y: 250 }
 		],
 		// The Eads deck, road and parapet face, from the bridge cut-out's registration matte (its top edge and the girders'
 		// underside) between x 4880, on the west abutment, and 6430, on the east bank's grass, so stepping off either end
@@ -329,5 +350,9 @@ export const OVERWORLD: Overworld = {
 			{ x: 3238, y: 1662 }
 		],
 		text: 'Now Playing  *  Fast Five  *  Snow White & the Huntsman  *  The Lorax'
-	}
+	},
+	// Scenery, the art of Big Muddy's door (Joe, 2026-10-01): a standalone cut-out on the sand point, placed by its
+	// manifest world rect. The rod's tip is read on the cut-out as placed; the bobber floats west of the bank, clear of
+	// the Eads Bridge's steel arch, which crosses the water south of it.
+	angler: { art: 'angler', tip: { x: 5974, y: 326 }, bobber: { x: 5966, y: 349 } }
 };

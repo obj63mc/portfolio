@@ -23,7 +23,7 @@
             "x": 0,
             "y": 860,
             "w": 1950,
-            "h": 905
+            "h": 900
           },
           "sign": {
             "x": 400,
@@ -85,10 +85,10 @@
               "id": "bread-co",
               "name": "St. Louis Bread Co.",
               "rect": {
-                "x": 1260,
-                "y": 1640,
-                "w": 160,
-                "h": 125
+                "x": 1225,
+                "y": 1615,
+                "w": 229,
+                "h": 138
               },
               "door": "/bread-co",
               "props": []
@@ -268,9 +268,9 @@
           "name": "Belleville",
           "rect": {
             "x": 5800,
-            "y": 950,
+            "y": 250,
             "w": 950,
-            "h": 900
+            "h": 1600
           },
           "sign": {
             "x": 6110,
@@ -279,6 +279,18 @@
             "h": 130
           },
           "venues": [
+            {
+              "id": "big-muddy",
+              "name": "Big Muddy",
+              "rect": {
+                "x": 5956,
+                "y": 296,
+                "w": 80,
+                "h": 80
+              },
+              "door": "/big-muddy",
+              "props": []
+            },
             {
               "id": "monstercommerce",
               "name": "MonsterCommerce",
@@ -904,23 +916,23 @@
             "y": 500
           },
           {
-            "x": 6300,
+            "x": 6227,
             "y": 450
           },
           {
-            "x": 6200,
+            "x": 6090,
             "y": 400
           },
           {
-            "x": 6080,
+            "x": 5975,
             "y": 350
           },
           {
-            "x": 6030,
+            "x": 5990,
             "y": 300
           },
           {
-            "x": 6000,
+            "x": 5900,
             "y": 250
           }
         ],
@@ -1263,6 +1275,17 @@
           }
         ],
         "text": "Now Playing  *  Fast Five  *  Snow White & the Huntsman  *  The Lorax"
+      },
+      "angler": {
+        "art": "angler",
+        "tip": {
+          "x": 5974,
+          "y": 326
+        },
+        "bobber": {
+          "x": 5966,
+          "y": 349
+        }
       },
       "arrival": {
         "x": 1835,
@@ -1665,6 +1688,17 @@
             "y": 1668.5106382978724,
             "w": 900,
             "h": 464.6808510638298
+          }
+        },
+        {
+          "id": "angler",
+          "asset": "angler",
+          "kind": "scenery",
+          "rect": {
+            "x": 5973,
+            "y": 325,
+            "w": 40,
+            "h": 31
           }
         }
       ],
@@ -6952,13 +6986,31 @@
         {
           "id": "atm",
           "name": "ATM",
-          "gist": "PayPal",
+          "gist": "PayPal: email, banner ads and micro sites",
           "rect": {
             "x": 428,
             "y": 488,
             "w": 198,
             "h": 450
-          }
+          },
+          "screens": [
+            {
+              "name": "Holiday coffee micro site",
+              "file": "paypal/01-holiday-coffee-site.webp"
+            },
+            {
+              "name": "Email: Citi Preferred",
+              "file": "paypal/02-email-citi-preferred.webp"
+            },
+            {
+              "name": "Email: Citi Premier",
+              "file": "paypal/03-email-citi-premier.webp"
+            },
+            {
+              "name": "PayPal Credit banner",
+              "file": "paypal/04-credit-banner.webp"
+            }
+          ]
         },
         {
           "id": "ux-laptop",
@@ -6974,18 +7026,79 @@
             "bread-co-ux-laptop",
             "bread-co-ux-cup",
             "bread-co-ux-clipboard"
-          ]
+          ],
+          "video": {
+            "file": "paypal-credit-ux-2026-09-30.mp4"
+          }
         },
         {
           "id": "venmo-stand",
           "name": "Scan-to-pay stand",
-          "gist": "Venmo",
+          "gist": "Venmo: CRM across in-app messages, email and banners",
           "rect": {
             "x": 1722,
             "y": 541,
             "w": 136,
             "h": 164
-          }
+          },
+          "screens": [
+            {
+              "name": "In-app: Starbucks offer",
+              "file": "venmo/01-in-app-starbucks.webp"
+            },
+            {
+              "name": "In-app: FanDuel offer",
+              "file": "venmo/02-in-app-fanduel.webp"
+            },
+            {
+              "name": "In-app: Burger King",
+              "file": "venmo/03-in-app-burger-king.webp"
+            },
+            {
+              "name": "Email: Debit Card reloads",
+              "file": "venmo/04-email-debit-reload.webp"
+            },
+            {
+              "name": "Same email, dark mode",
+              "file": "venmo/05-email-debit-reload-dark.webp"
+            },
+            {
+              "name": "Email: Welcome",
+              "file": "venmo/06-email-welcome.webp"
+            },
+            {
+              "name": "Email: Refer a friend",
+              "file": "venmo/07-email-refer-a-friend.webp"
+            },
+            {
+              "name": "Email: Credit Card",
+              "file": "venmo/08-email-credit-card.webp"
+            },
+            {
+              "name": "Email: Crypto",
+              "file": "venmo/09-email-crypto.webp"
+            },
+            {
+              "name": "Email: Tipping",
+              "file": "venmo/10-email-tipping.webp"
+            },
+            {
+              "name": "Email: QR Kit",
+              "file": "venmo/11-email-qr-kit.webp"
+            },
+            {
+              "name": "Email: Purchase Protection",
+              "file": "venmo/12-email-purchase-protection.webp"
+            },
+            {
+              "name": "Email: DoorDash offer",
+              "file": "venmo/13-email-doordash.webp"
+            },
+            {
+              "name": "Email: Holiday gifting",
+              "file": "venmo/14-email-holiday.webp"
+            }
+          ]
         }
       ],
       "exit": {
@@ -36025,6 +36138,125 @@
       },
       "width": 6688,
       "height": 3764
+    },
+    {
+      "id": "angler",
+      "scene": "overworld",
+      "kind": "scenery",
+      "file": "overworld/angler/image.webp",
+      "world": {
+        "x": 5973,
+        "y": 325,
+        "w": 40,
+        "h": 31
+      },
+      "source": {
+        "w": 1254,
+        "h": 1254,
+        "sha256": "0996abb3d2baf94d60d3674bd3dfe06aa8d7739944351b4a963e3a75a58af978"
+      },
+      "trim": {
+        "x": 102,
+        "y": 217,
+        "w": 1047,
+        "h": 818
+      },
+      "width": 1047,
+      "height": 818
+    },
+    {
+      "id": "big-muddy-bass",
+      "scene": "big-muddy",
+      "kind": "scenery",
+      "file": "big-muddy/big-muddy-bass/image.webp",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 149
+      },
+      "source": {
+        "w": 1984,
+        "h": 793,
+        "sha256": "c8753e5a78aae3d63b1d541ff847f64432a767d1c75ff6f9b55f9f33937c2867"
+      },
+      "trim": {
+        "x": 45,
+        "y": 16,
+        "w": 1892,
+        "h": 752
+      },
+      "width": 1892,
+      "height": 752
+    },
+    {
+      "id": "big-muddy-catfish",
+      "scene": "big-muddy",
+      "kind": "scenery",
+      "file": "big-muddy/big-muddy-catfish/image.webp",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 594,
+        "h": 198
+      },
+      "source": {
+        "w": 1774,
+        "h": 887,
+        "sha256": "673c04389164fd4813af4fe401932448b8a94dc774d8107899c1203929b79619"
+      },
+      "trim": {
+        "x": 38,
+        "y": 156,
+        "w": 1697,
+        "h": 567
+      },
+      "width": 1697,
+      "height": 567
+    },
+    {
+      "id": "big-muddy-gar",
+      "scene": "big-muddy",
+      "kind": "scenery",
+      "file": "big-muddy/big-muddy-gar/image.webp",
+      "world": {
+        "x": 0,
+        "y": 0,
+        "w": 831,
+        "h": 157
+      },
+      "source": {
+        "w": 1983,
+        "h": 793,
+        "sha256": "050f1fe9a07ba76e3739c4e0fb53e010729b7c8e3a82817ffa6bc46e70737ad1"
+      },
+      "trim": {
+        "x": 45,
+        "y": 219,
+        "w": 1894,
+        "h": 359
+      },
+      "width": 1894,
+      "height": 359
+    },
+    {
+      "id": "big-muddy-master",
+      "scene": "big-muddy",
+      "kind": "reference",
+      "file": "big-muddy/big-muddy-master/image.webp",
+      "source": {
+        "w": 1254,
+        "h": 1254,
+        "sha256": "b8c1040453c83395c54ddcb925564b736bf03171d59c4fe28f944cd425f02282"
+      },
+      "trim": {
+        "x": 0,
+        "y": 0,
+        "w": 1254,
+        "h": 1254
+      },
+      "width": 1254,
+      "height": 1254
     }
   ],
   "rigs": {
