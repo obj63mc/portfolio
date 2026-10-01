@@ -10,20 +10,34 @@
 
 	const clock = (s: number) => (Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00');
 	const toggle = (v: HTMLVideoElement | null | undefined) => v && void (v.paused ? v.play().catch(() => {}) : v.pause());
+
+	// On touch nothing hovers, so the bar is the finger's to call up, as a native player's is (Joe, 2026-10-01): a tap on the
+	// playing video shows it or puts it away, and shown it goes by itself three seconds after the last touch of it. A tap
+	// on the paused video plays it, the bar staying those three seconds.
+	const touch = () => document.documentElement.dataset.input === 'touch';
+	let shown = $state(false);
+	let hiding: ReturnType<typeof setTimeout> | undefined;
+	/** Shows the bar or puts it away; `held`, it stays for as long as a finger is on it. */
+	function show(on = true, held = false) {
+		clearTimeout(hiding);
+		shown = on;
+		if (on && !held) hiding = setTimeout(() => (shown = false), 3000);
+	}
 </script>
 
 <svelte:document onfullscreenchange={() => (full = !!player && document.fullscreenElement === player)} />
 
 <!-- The bar shows while the cursor is over the player (hovered, or marked `.hot` by the engine under the lock), while it
-	is paused or holds focus, and always on touch. -->
-<div class="player" class:paused bind:this={player}>
+	is paused or holds the keyboard's focus, and on touch once tapped up (`.shown`). -->
+<div class="player" class:paused class:shown bind:this={player}>
 	<!-- svelte-ignore a11y_media_has_caption, a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-	<video {src} preload="none" playsinline bind:paused bind:currentTime={time} bind:duration bind:muted onclick={(e) => toggle(e.currentTarget)}>
+	<video {src} preload="none" playsinline bind:paused bind:currentTime={time} bind:duration bind:muted onclick={(e) => (touch() && !paused ? show(!shown) : toggle(e.currentTarget))} onplay={() => show()}>
 		{#if captions}
 			<track kind="captions" src={captions} srclang="en" label="English" default />
 		{/if}
 	</video>
-	<div class="bar">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="bar" onpointerdown={() => show(true, true)} onpointerup={() => show()} onpointercancel={() => show()}>
 		<button type="button" aria-label={paused ? 'Play' : 'Pause'} onclick={() => toggle(player?.querySelector('video'))}>
 			<svg viewBox="0 0 24 24" aria-hidden="true">
 				{#if paused}
@@ -98,11 +112,18 @@
 		transition: opacity 0.2s;
 	}
 
-	.player:global(.hot) .bar,
-	.player:is(.paused, :focus-within) .bar,
-	:global(html:not([data-input='locked'], [data-input='touch'])) .player:hover .bar,
+	/* Put away on touch it takes no tap: one where it was reaches the video, which calls it up. */
 	:global(html[data-input='touch']) .bar {
+		pointer-events: none;
+	}
+
+	/* Focus the keyboard gave: a tapped button keeps focus in some browsers, which would hold the bar there for good. */
+	.player:global(.hot) .bar,
+	.player:is(.paused, :has(:focus-visible)) .bar,
+	:global(html:not([data-input='locked'], [data-input='touch'])) .player:hover .bar,
+	:global(html[data-input='touch']) .player.shown .bar {
 		opacity: 1;
+		pointer-events: auto;
 	}
 
 	button {

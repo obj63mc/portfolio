@@ -717,6 +717,41 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		await expect(stick).toBeVisible();
 	});
 
+	test("a card's video keeps its controls put away while it plays: a tap calls them up, and a tap or three seconds puts them away", async ({ page }) => {
+		await page.goto('/side-project');
+		await page.locator('dialog.join button').tap();
+		await page.locator('[data-prop="bottle-anchor"] > button').evaluate((b: HTMLElement) => b.click());
+		const player = page.locator('[data-prop="bottle-anchor"] dialog .player'), video = player.locator('video'), bar = player.locator('.bar');
+		const state = () => video.evaluate((v: HTMLVideoElement) => ({ paused: v.paused, muted: v.muted }));
+		const tap = async (l: Locator) => {
+			const c = await centre(l);
+			await page.touchscreen.tap(c.x, c.y);
+		};
+		const playing = { paused: false, muted: false };
+		await expect.poll(state).toEqual(playing);
+		// Shown as the video starts, the bar goes by itself; put away it takes no tap, so one where its last button was
+		// calls it up and presses nothing.
+		await expect(bar).toHaveCSS('opacity', '0', { timeout: 6000 });
+		await tap(bar.locator('button').last());
+		await expect(bar).toHaveCSS('opacity', '1');
+		expect(await state()).toEqual(playing);
+		// A tap on the video puts it away again and the next calls it back, the video playing on.
+		await tap(video);
+		await expect(bar).toHaveCSS('opacity', '0');
+		await tap(video);
+		await expect(bar).toHaveCSS('opacity', '1');
+		expect(await state()).toEqual(playing);
+		// Paused from the bar, it stays for as long as the video is paused.
+		await tap(bar.locator('button').first());
+		await expect.poll(state).toEqual({ paused: true, muted: false });
+		await page.waitForTimeout(3500);
+		await expect(bar).toHaveCSS('opacity', '1');
+		// A tap on the paused video plays it, and the bar goes after its three seconds.
+		await tap(video);
+		await expect.poll(state).toEqual(playing);
+		await expect(bar).toHaveCSS('opacity', '0', { timeout: 6000 });
+	});
+
 	test('a hidden tab pauses; the Resume tap goes back to touch without a lock', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('dialog.join button').tap();
