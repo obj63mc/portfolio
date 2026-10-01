@@ -16,10 +16,10 @@ test('the dev server serves a background tile, and nothing else under art/', asy
 		assert.equal(tile.status, 200);
 		assert.equal(tile.headers.get('content-type'), 'image/webp');
 		assert.equal((await fetch(new URL('art/style.txt', base))).status, 403, 'the art workspace stays private');
-		assert.equal((await fetch(new URL('art/sources/videos/universal/lorax-demo-tour-1280x800.mp4', base))).status, 403, 'a video but through /media');
-		// A checkout without the video sources (`npm run videos pull`) has none to serve.
+		// A checkout without the video sources, Workers Builds' or one yet to `npm run videos pull`, has none to serve.
 		const key = Object.values<string>(JSON.parse(readFileSync(new URL('../src/lib/video-files.json', import.meta.url), 'utf8')).files)[0];
 		if (existsSync(SOURCES + sourceOf(key))) {
+			assert.equal((await fetch(new URL(`art/sources/videos/${sourceOf(key)}`, base))).status, 403, 'a video but through /media');
 			const part = await fetch(new URL(`media/${key}`, base), { headers: { Range: 'bytes=4-11' } });
 			assert.equal(part.status, 206);
 			assert.match(part.headers.get('content-range') ?? '', /^bytes 4-11\/\d+$/);

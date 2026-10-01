@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { screenGist } from '../src/lib/scenes/foundry.ts';
-import { measurementId } from '../svelte.config.js';
+import { measurementId, mediaUrl } from '../svelte.config.js';
 
 const page = (file: string) => readFileSync(new URL(`../build/${file}`, import.meta.url), 'utf8');
 const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
@@ -242,6 +242,9 @@ test('props (ticket 15): each wrapper names its prop for the engine, and an irre
 	}
 });
 
+/** Where this build fetches its videos from: the media host on Workers Builds, which runs these tests too, else its own server. */
+const MEDIA = (mediaUrl(process.env) || '/media').replace(/[.]/g, '\\.');
+
 /**
  * A card's video with the site's own controls, which the locked cursor can reach, not the browser's: Play and the seek
  * slider prerendered, loaded only when played.
@@ -256,11 +259,11 @@ const player = (card: string) => {
 test("the meeting TV: its card holds the video with the site's controls, loaded only when played", () => {
 	const tv = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-meeting-tv-title"[\s\S]*?<\/dialog>/)![0];
 	const video = player(tv);
-	assert.match(video, /src="\/media\/videos\/universal\/fastfive-demo-full-1024x768\.[0-9a-f]{8}\.mp4"/);
+	assert.match(video, new RegExp(`src="${MEDIA}/videos/universal/fastfive-demo-full-1024x768\\.[0-9a-f]{8}\\.mp4"`));
 });
 
-// The videos are on the media host (Joe, 2026-09-30), not in the build: a local build names its own /media, and the
-// only films built in are Sushi Stand's two short services.
+// The videos are on the media host (Joe, 2026-09-30), not in the build: a Workers Builds build names the host, a local
+// one its own /media, and the only films built in are Sushi Stand's two short services.
 test('videos: none of the cards\' or the screen\'s is in the build', () => {
 	const films = readdirSync(new URL('../build/_app/immutable/assets/', import.meta.url)).filter((f) => f.endsWith('.mp4'));
 	assert.deepEqual(films.map((f) => f.split('.')[0]).sort(), ['dinner', 'lunch']);
@@ -276,7 +279,7 @@ test("the bottles: each card holds its brand's homepage video with the site's co
 	]) {
 		const card = bar.match(new RegExp(`<dialog[^>]*aria-labelledby="card-bottle-${id}-title"[\\s\\S]*?</dialog>`))![0];
 		const video = player(card);
-		assert.match(video, new RegExp(`src="/media/videos/(beer|liquor)/${file}\\.[0-9a-f]{8}\\.mp4"`), id);
+		assert.match(video, new RegExp(`src="${MEDIA}/videos/(beer|liquor)/${file}\\.[0-9a-f]{8}\\.mp4"`), id);
 		// A video card closes by its round X, not a Close at the foot.
 		assert.ok(/<form method="dialog" class="x[\s"]/.test(card) && !card.includes('>Close</button>'), id);
 	}
