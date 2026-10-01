@@ -157,11 +157,11 @@ const offCentre = async (page: Page, l: Locator) => {
 const unfocused = (page: Page) => page.evaluate(() => document.activeElement === document.body && !document.querySelector(':focus-visible'));
 
 /**
- * Joins with a click near the Join button's corner, where the cursor starts, and waits for the lock; and for the cursor
- * to be drawn there, unless scenery there covers it (`seen` false: a desk in the SLU lab, ticket 19).
+ * Joins with a click near the Join button's top right corner, where the cursor starts, and waits for the lock; and for the
+ * cursor to be drawn there, unless scenery there covers it (`seen` false: a desk in the SLU lab, ticket 19).
  */
 async function join(page: Page, seen = true) {
-	const b = (await page.locator('dialog.join[open] button').boundingBox())!, at = { x: b.x + 8, y: b.y + 8 };
+	const b = (await page.locator('dialog.join[open] button').boundingBox())!, at = { x: b.x + b.width - 8, y: b.y + 8 };
 	await page.mouse.click(at.x, at.y);
 	await expect(page.locator('dialog.join')).toBeHidden();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
@@ -532,10 +532,11 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		const post = (await page.locator('#signpost').boundingBox())!;
 		expect(post.x >= 0 && post.y >= 0 && post.x + post.width <= 390 && post.y + post.height <= 844, 'the signpost in the first frame').toBe(true);
 
-		const b = (await page.locator('dialog.join[open] button').boundingBox())!;
-		await page.touchscreen.tap(b.x + 8, b.y + 8);
+		// The Join button's right end, clear of the foreground tree south of the church.
+		const b = (await page.locator('dialog.join[open] button').boundingBox())!, pressed = { x: b.x + b.width - 8, y: b.y + 8 };
+		await page.touchscreen.tap(pressed.x, pressed.y);
 		await expect(page.locator('dialog.join')).toBeHidden();
-		await expect.poll(() => off(page, { x: b.x + 8, y: b.y + 8 })).toBeLessThan(5);
+		await expect.poll(() => off(page, pressed)).toBeLessThan(5);
 		await expect(stick).toBeVisible();
 		expect(await lockHolder(page), 'no lock on touch').toBeNull();
 
@@ -636,17 +637,17 @@ test.describe('a phone, with no mouse or trackpad', () => {
 	});
 
 	test('the toggles and the joystick are the finger’s: the cursor over them marks nothing and never holds the camera', async ({ page }) => {
-		// Midtown, where no prop is near the toggles once the cursor is on them. Dragging the view up to the scene's top
-		// carries the cursor down by the camera's height, so Join is tapped that far above the toggles.
+		// Midtown, where no prop is near the toggles once the cursor is on them. Dragging the view down carries the cursor
+		// down with the scene, so the drag is as long as the Join tap is above the toggles.
 		await page.goto('/#midtown');
 		const toggles = (await page.locator('.controls:not(dialog *)').boundingBox())!, join = (await page.locator('dialog.join[open] button').boundingBox())!;
-		// The Join button's left end: the drag carries the cursor down level with the toggles, just right of them, and the
-		// joystick steers it left onto them.
-		const at = { x: join.x + 4, y: toggles.y + toggles.height / 2 - (await camera(page)).y };
-		expect(at.y > join.y && at.y < join.y + join.height, 'the Join tap on the button').toBe(true);
+		// The Join button's top left corner: the drag carries the cursor down level with the toggles, just right of them,
+		// and the joystick steers it left onto them.
+		const at = { x: join.x + 4, y: join.y + 4 }, down = toggles.y + toggles.height / 2 - at.y;
+		expect(down, 'the camera can scroll that far').toBeLessThan((await camera(page)).y);
 		await page.touchscreen.tap(at.x, at.y);
 		const f = await finger(page), hub = await centre(page.locator('.joystick'));
-		await drag(page, f, { x: 320, y: 100 }, { x: 0, y: 35 }, 20);
+		await drag(page, f, { x: 320, y: 100 }, { x: 0, y: down / 20 }, 20);
 		await page.waitForTimeout(150);
 		await f.up();
 		for (let i = 0; i < 20 && (await tip(page))!.x > toggles.x + toggles.width - 8; i++) {

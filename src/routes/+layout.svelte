@@ -13,6 +13,7 @@
 	import type { Engine } from '$lib/engine/engine';
 	import LapBoard from '$lib/LapBoard.svelte';
 	import SoundToggle from '$lib/SoundToggle.svelte';
+	import skyline from '$lib/brand/skyline.webp?no-inline';
 	import { sceneAt } from '$lib/scenes';
 
 	let { children } = $props();
@@ -103,8 +104,12 @@
 	JavaScript, never shows them. The cursor canvas is a manual popover, in the top layer with the cards: the engine raises
 	it over each prop card, so a locked cursor can reach the card's Close, and leaves these two above it, dimming the scene.
 -->
-<dialog class="gate join" aria-label="Join" bind:this={join}>
-	<button type="button" class="primary">Join</button>
+<dialog class="gate join" aria-labelledby="join-title" bind:this={join}>
+	<!-- The daylight window (Joe, 2026-09-30): the skyline art is in art/sources/brand/. -->
+	<img src={skyline} alt="" width="1600" height="640" />
+	<p class="name" id="join-title">BarMadden.com</p>
+	<p class="tag">Portfolio of Joseph Madden</p>
+	<button type="button" class="primary">Let's Explore</button>
 	<!-- The consent bar for a European visitor, over the card, operable before Join (ticket 23). -->
 	{#if GA_ID}
 		<Consent gate />

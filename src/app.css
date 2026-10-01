@@ -423,6 +423,45 @@ html.engine {
 		box-shadow: 0 0 0 7px var(--night), 0 1.375rem 2.75rem rgb(0 0 0 / 0.3);
 	}
 
+	/*
+	 * The Join card (Joe, 2026-09-30, option B of the arrival mockups): a daylight window of the skyline across its top,
+	 * the site's name under it in the headline face, the tagline in sky, then Let's Explore.
+	 */
+	& dialog.join {
+		inline-size: 24rem;
+		padding-block-start: 0;
+		padding-inline: 0;
+		overflow: hidden;
+
+		& img {
+			display: block;
+			inline-size: 100%;
+			block-size: auto;
+			margin-block-end: 1.25rem;
+			border-block-end: 2px solid rgb(255 244 212 / 0.3);
+		}
+
+		/* The name is out of the page's headings, which the cards' titles make up. */
+		& .name {
+			margin: 0;
+			margin-inline: 1.5rem;
+			font-family: var(--headline);
+			font-size: 2.75rem;
+			font-weight: 800;
+			line-height: 0.95;
+		}
+
+		& .tag {
+			margin-block: 0.4rem 1.375rem;
+			margin-inline: 1.5rem;
+			color: var(--sky);
+			font-size: 0.6875rem;
+			font-weight: 700;
+			letter-spacing: 0.2em;
+			text-transform: uppercase;
+		}
+	}
+
 	/* Thumb-sized, bottom-right; its knob follows the finger, held to the rim. */
 	&[data-input='touch'] .joystick {
 		display: block;

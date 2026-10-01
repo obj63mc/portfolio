@@ -67,6 +67,10 @@ The five interiors are iterated like the overworld (2026-09-25). Each has a comm
 
 Measured mattes of the master (the seven SLU lab cut-outs, the eight Foundry cut-outs, the fourteen Side Project cut-outs, the nine Brennan's cut-outs, the twenty-four lobby cut-outs) are re-derived by the install. The other cut-outs are Codex extractions, redrawn by the model: each covers its painted original, but none matches it pixel for pixel, so a round that touches its crop leaves it stale (the install lists it) and it is regenerated or replaced by a measured matte in issue 05's prop pass.
 
+## Brand: the Join card skyline and the icons
+
+The Join card's daylight window and the site's icons (2026-09-30) are Codex redraws of Joe's lockup exploration, chosen from the arrival mockups: option B for the card, the detailed scene for every icon size. `sources/brand/` keeps each native output (`skyline-panel.png`, 1983 × 793; `icon.png`, 1254 × 1254), its prompt and the reference crop it was drawn from. Each was upscaled 4× by Real-ESRGAN (`digital-art-4x`, as the scene masters) and resized: `src/lib/brand/skyline.webp` (1600 wide, the Join card and the overworld's plain-document masthead), `static/apple-touch-icon.png` (180), `static/icon-192.png` and `static/icon-512.png` (the web manifest), and `static/favicon.ico` (16, 32 and 48, the square cut to a circle). The name and tagline are live text.
+
 ## Files and coordinates
 
 - `manifest.json`: prompts, dependencies, crop registration, reviewed placement and overworld rig layout. `style.txt`: brighter location-aware art direction.

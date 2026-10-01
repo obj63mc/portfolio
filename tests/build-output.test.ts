@@ -169,7 +169,9 @@ test('the Join and Paused cards: on every page, outside the layer, closed until 
 			assert.doesNotMatch(opens(card, 'dialog')[0], /\sopen\b/, `${file}: prerendered closed, so a page without the engine never shows it`);
 			assert.match(opens(card, 'dialog')[0], /aria-label(ledby)?=/, file);
 		}
-		assert.equal(join.replace(/<[^>]+>/g, '').trim(), texts(join, 'button').join(), `${file}: the Join card holds only its button`);
+		// The Join card: the skyline, the site's name and tagline, and its one button (Joe, 2026-09-30).
+		assert.deepEqual([...texts(join, 'p'), ...texts(join, 'button')].map((t) => t.replace(/&#39;/g, "'")),
+			['BarMadden.com', 'Portfolio of Joseph Madden', "Let's Explore"], `${file}: the Join card's name, tagline and button`);
 		assert.equal(opens(join, 'button').length, 1, file);
 		// Resume, and the Sound toggle, since the modal card makes the corner's inert.
 		assert.equal(opens(paused, 'button').length, 2, file);

@@ -2,6 +2,7 @@
 	import { OVERWORLD as overworld } from '$lib/scenes/overworld';
 	import { at, leftToRight } from '$lib/scenes/index';
 	import PropCard from '$lib/Prop.svelte';
+	import skyline from '$lib/brand/skyline.webp?no-inline';
 </script>
 
 <svelte:head>
@@ -11,7 +12,9 @@
 
 <!-- With the engine the skip link sits on the signpost, where it leads, so focusing it never pans the camera away. -->
 <a class="skip at" style={at(overworld.signpost.rect)} href="#signpost-districts">Skip to districts</a>
-<h1>{overworld.title}</h1>
+<!-- The plain document's masthead (Joe, 2026-09-30): the Join card's skyline over the site's name; with the engine the h1 is
+	hidden (app.css), its picture with it. -->
+<h1><img src={skyline} alt="" width="1600" height="640" />BarMadden.com, the portfolio of Joseph Madden</h1>
 <nav id="signpost" class="at" style={at(overworld.signpost.rect)} aria-label="Signpost">
 	{#each overworld.signpost.contacts as link}
 		<a href={link.href}>{link.label}</a>
@@ -39,3 +42,13 @@
 		{/each}
 	</section>
 {/each}
+
+<style>
+	h1 img {
+		display: block;
+		inline-size: min(100%, 40rem);
+		block-size: auto;
+		margin-block-end: 0.75rem;
+		border-radius: 0.75rem;
+	}
+</style>

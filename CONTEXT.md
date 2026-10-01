@@ -106,7 +106,7 @@ A connected user, shown to others as a cursor.
 _Avoid_: user, player, cursor, client
 
 **Join**:
-The click or tap that brings a visitor into the scene, on every device. Their cursor starts moving for everyone else; on desktop their pointer is also locked to the page.
+The click or tap that brings a visitor into the scene, on every device. Their cursor starts moving for everyone else; on desktop their pointer is also locked to the page. The Join card's button reads Let's Explore.
 _Avoid_: enter, start, log in, sign in
 
 **Paused**:
