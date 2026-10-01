@@ -3,4 +3,4 @@ generated/**/*.png
 generated/.processing-*/
 references/local/
 generated/*/*-fix-*/
-sources/videos/client-homepages/
+sources/videos/
