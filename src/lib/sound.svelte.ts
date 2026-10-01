@@ -5,9 +5,14 @@
 // door they are about to take, and let go a minute after that scene is left (sound.ts). The beds, the theme and the
 // scenes' music (ticket 21) are loops (loops.ts): each a gain the engine's every frame sets from the camera's centre and
 // the scene, eased so nothing pops, over passes that overlap (a bed's at equal power, music's at equal gain); paused,
-// all of them duck to 30 percent together. Nothing is fetched before Join or while muted, and a failed fetch is silence.
+// all of them duck to 30 percent together. A bed plays from its decoded buffer; the theme and the music are streamed
+// (Joe, 2026-10-01), each from audio elements of a small pool, through the same gains. Nothing is fetched before Join or
+// while muted, and a failed fetch is silence.
 import FILES from './sound-files.json';
-import { GAME_LOOPS, LEVEL, OVERLAP, envelope, fadeOf, gameGains, gains, leavingGains, loopsFor, loopsNeeded, nextPass, playhead, type Fade, type LoopId } from './loops.ts';
+import {
+	CROSS, GAME_LOOPS, LEVEL, OVERLAP, SLOWEST, envelope, fadeOf, gameGains, gains, latencyAfter, leavingGains, loopsFor, loopsNeeded, nextPass, playhead, startIn, streamed,
+	type Fade, type LoopId, type MusicId
+} from './loops.ts';
 import { KEY } from './saved.ts';
 import { saved } from './saved.svelte.ts';
 import { GAME_SOUNDS, LINGER, ONE_SHOTS, needed, stale, type SoundId } from './sound.ts';
@@ -30,8 +35,13 @@ const VOICES = 8;
  * crossfade, a scene fading out as the iris closes on the door (450 ms) and the next fading in as it opens (600 ms).
  */
 const EASE = { camera: 0.08, closing: 0.15, opening: 0.2 } as const;
-/** A pass is scheduled this long, s, before it starts. */
+/** A pass is scheduled this long, s, before it starts; a streamed one is made ready then. */
 const AHEAD = 1.5;
+/**
+ * The audio elements the streamed music plays from, as many as it can need at once: two pieces, one fading out as the
+ * other fades in across a door, each at its seam with a pass on two.
+ */
+const DECKS = 4;
 
 let ctx: AudioContext | null = null;
 /** Everything heard goes through here. */
@@ -57,8 +67,11 @@ const GAME_STEP = 250;
 let passage: { is: 'settled' } | { is: 'leaving'; to: Scene | undefined } | { is: 'opening'; until: number } = { is: 'settled' };
 /** The choice this tab last applied, so another tab's write that leaves it alone changes nothing here. */
 let applied = saved.sound;
-/** A buffer: being fetched, under the signal that calls the fetch off, or decoded and ready to play. */
-type Buffer = { is: 'loading'; signal: AbortSignal } | { is: 'ready'; buffer: AudioBuffer };
+/**
+ * A sound held: being fetched, under the signal that calls the fetch off; decoded and ready to play; or, streamed music,
+ * its file as it came, at a URL an audio element plays it from.
+ */
+type Buffer = { is: 'loading'; signal: AbortSignal } | { is: 'ready'; buffer: AudioBuffer } | { is: 'file'; url: string };
 const buffers = new Map<AudioId, Buffer>();
 /** When each buffer stopped being needed (performance ms): its scene left, a door not taken, or a bed the camera left. */
 const left = new Map<AudioId, number>();
@@ -92,10 +105,16 @@ const ready = (id: AudioId) => {
 	return b?.is === 'ready' ? b.buffer : null;
 };
 
+/** A streamed piece's file, once it is fetched. */
+const file = (id: MusicId) => {
+	const b = buffers.get(id);
+	return b?.is === 'file' ? b.url : null;
+};
+
 /**
- * One loop: a gain the engine sets every frame, over passes of its buffer that each overlap the next by OVERLAP s
+ * One bed: a gain the engine sets every frame, over passes of its buffer that each overlap the next by OVERLAP s
  * (loops.ts `envelope`), scheduled a little ahead. Silent for a moment, it stops and keeps its place, so it starts again
- * where it left off: the theme comes back from a sub-scene with music at the playhead it left.
+ * where it left off.
  */
 class Loop {
 	readonly gain: GainNode;
@@ -163,6 +182,229 @@ const period = (source: AudioBufferSourceNode) => source.buffer!.duration - OVER
 
 const loops = new Map<LoopId, Loop>();
 
+/**
+ * An audio element of the pool and its place in the graph, its sound through `g`, which a pass fades: free, or taken
+ * by a stream until `use` is aborted, which ends its listeners. `wanted` while it should be sounding, which a mute or a
+ * hidden tab pauses and a press or the next frame starts again; `starting` while a play is yet to be answered.
+ */
+interface Deck {
+	el: HTMLAudioElement;
+	/** The element's sound in the graph, held here so it lives as long as the element. */
+	node: MediaElementAudioSourceNode;
+	g: GainNode;
+	use: AbortController | null;
+	wanted: boolean;
+	starting: boolean;
+	/** Its fade in, context s: from silence at `from` to full `over` s on. */
+	fade: { from: number; over: number };
+}
+
+const decks: Deck[] = [];
+/** How many presses have woken the context: a stream whose play the browser refused tries again after the next. */
+let presses = 0;
+/**
+ * How long an element takes to sound once it is told to play, s: measured each time a piece begins, and again from how
+ * far off each seam's next pass was (loops.ts `latencyAfter`).
+ */
+let latency = 0;
+
+/**
+ * Calls `then` once a deck that has said it is playing is: Safari says so a tenth of a second before the element's clock
+ * moves, Chrome as it does. With how long that was, s; none if it was paused meanwhile, or never moved.
+ */
+function sounding(deck: Deck, then: (waited: number | null) => void) {
+	const { el } = deck, from = performance.now(), was = el.currentTime;
+	const timer = setInterval(() => {
+		const waited = (performance.now() - from) / 1000, moved = el.currentTime - was;
+		if (!moved && !el.paused && waited < 4 * SLOWEST) return;
+		clearInterval(timer);
+		then(moved > 0 ? Math.max(0, waited - moved) : null);
+	}, 10);
+	deck.use!.signal.addEventListener('abort', () => clearInterval(timer));
+}
+
+/** A free deck, its sound into `out`; none while all are taken, and the stream that asked waits. */
+function take(out: AudioNode): Deck | null {
+	const deck = decks.find((d) => !d.use);
+	if (!deck) return null;
+	deck.use = new AbortController();
+	deck.fade = { from: 0, over: 0 };
+	deck.g.gain.cancelScheduledValues(0);
+	deck.g.gain.value = 0;
+	deck.g.connect(out);
+	return deck;
+}
+
+/** A deck given back: paused, its file let go, silent and out of the graph. */
+function release(deck: Deck) {
+	deck.use?.abort();
+	deck.use = null;
+	deck.wanted = deck.starting = false;
+	deck.el.pause();
+	deck.el.removeAttribute('src');
+	deck.el.load();
+	deck.g.disconnect();
+}
+
+/** A deck told to play; a refusal, which a browser gives an element no press has touched, is left to `refused`. */
+function play(deck: Deck, refused: () => void) {
+	deck.wanted = deck.starting = true;
+	deck.el.play().then(
+		() => void (deck.starting = false),
+		(e: unknown) => {
+			deck.starting = false;
+			if (e instanceof DOMException && e.name === 'NotAllowedError') refused();
+		}
+	);
+}
+
+/**
+ * One piece of music, streamed: a gain the engine sets every frame, like a loop's, over passes that an audio element
+ * each plays from the piece's file, the next started on a second element as the last reaches its period and crossed
+ * into over CROSS s at equal power (loops.ts). Silent for a moment, it stops, gives its elements back and keeps its place,
+ * so the theme comes back from a sub-scene with music at the playhead it left.
+ */
+class Stream {
+	readonly gain: GainNode;
+	private c: AudioContext;
+	/**
+	 * Stopped where it was in its period (s); or playing the pass on `on`, and from AHEAD s before its period the `next`:
+	 * made ready, then started by its `timer`, then crossed into until context time `until`.
+	 */
+	private run: { is: 'stopped'; at: number } | { is: 'playing'; on: Deck; next?: { deck: Deck; timer?: ReturnType<typeof setTimeout>; started: boolean; until?: number } } = {
+		is: 'stopped',
+		at: 0
+	};
+	private target = 0;
+	/** When its target went to 0, context s. */
+	private quietSince = 0;
+	/** The press count when a play was last refused: nothing is played again until another press. */
+	private refused = -1;
+
+	constructor(c: AudioContext, out: AudioNode) {
+		this.c = c;
+		this.gain = new GainNode(c, { gain: 0 });
+		this.gain.connect(out);
+	}
+
+	/** One frame at context time `now`, as a loop's: `url` is the piece's file, none until it is fetched. */
+	step(url: string | null, target: number, tc: number, now: number) {
+		if (target !== this.target) {
+			this.gain.gain.setTargetAtTime(target, now, tc);
+			if (!target) this.quietSince = now;
+			this.target = target;
+		}
+		const r = this.run;
+		if (r.is === 'stopped') {
+			const deck = target > 0 && url && this.refused !== presses ? take(this.gain) : null;
+			if (deck) (this.run = { is: 'playing', on: deck }), this.begin(deck, url!, r.at);
+			return;
+		}
+		if (!target && now - this.quietSince > 5 * tc) return this.stop();
+		const { on, next } = r, P = on.el.duration - OVERLAP;
+		// A file the browser can't play is silence, and isn't tried again until a press.
+		if (on.el.error || next?.deck.el.error) return (this.refused = presses), this.stop();
+		// Paused by a mute or a hidden tab and back, or refused and pressed since: on from where it was.
+		if (this.refused !== presses) for (const d of [on, next?.deck]) if (d?.wanted && d.el.paused && !d.el.ended && !d.starting) play(d, () => (this.refused = presses));
+		if (next) {
+			// Crossed: the last pass's element goes back, and the next is the pass playing.
+			if (next.until !== undefined && now >= next.until) release(on), (this.run = { is: 'playing', on: next.deck });
+			// Held before it started, its timer with it: set again from where the pass playing now is.
+			else if (!next.started && next.timer === undefined && !on.el.paused) next.timer = setTimeout(() => this.cross(), startIn(on.el.currentTime, P, latency));
+			return;
+		}
+		// The pass ran out with nothing to follow it, its file gone or every element taken: from the top, when it can.
+		if (on.el.ended) return release(on), void (this.run = { is: 'stopped', at: 0 });
+		if (!url || !(P - on.el.currentTime < AHEAD)) return;
+		const deck = take(this.gain);
+		if (!deck) return;
+		deck.el.src = url;
+		r.next = { deck, started: false };
+	}
+
+	/** A mute or a hidden tab: its elements pause where they are, and a pass yet to start waits. */
+	hold() {
+		const r = this.run;
+		if (r.is !== 'playing') return;
+		if (r.next) clearTimeout(r.next.timer), (r.next.timer = undefined);
+		for (const d of [r.on, r.next?.deck]) d?.el.pause();
+	}
+
+	/** The first pass, or the one that picks up `offset` s in: faded in from silence as it sounds, as a loop's is. */
+	private begin(deck: Deck, url: string, offset: number) {
+		const { el } = deck, signal = deck.use!.signal;
+		el.src = url;
+		el.addEventListener(
+			'playing',
+			() => {
+				this.fade(deck, envelope(offset, 0, 'gain').in.duration);
+				// How long this browser's elements take to sound, for the seams to come.
+				sounding(deck, (waited) => void (waited !== null && waited <= SLOWEST && (latency = waited)));
+			},
+			{ once: true, signal }
+		);
+		const go = () => {
+			if (offset) el.currentTime = offset;
+			// Muted or hidden while its file was read: it waits, as a held pass does, for the frame that plays it.
+			if (this.c.state !== 'running') return void (deck.wanted = true);
+			play(deck, () => (this.refused = presses));
+		};
+		// A place in the file can be set only once the browser knows the file.
+		if (offset && el.readyState < HTMLMediaElement.HAVE_METADATA) el.addEventListener('loadedmetadata', go, { once: true, signal });
+		else go();
+	}
+
+	/** A deck's pass in from silence over `over` s, from now. */
+	private fade(deck: Deck, over: number) {
+		const t = this.c.currentTime;
+		deck.fade = { from: t, over };
+		deck.g.gain.setValueAtTime(0, t);
+		deck.g.gain.linearRampToValueAtTime(1, t + over);
+	}
+
+	/** The next pass, started; once it sounds the two cross, and how far off it was sets the lead the next one is given. */
+	private cross() {
+		const r = this.run;
+		if (r.is !== 'playing' || !r.next || r.next.started) return;
+		const { on, next } = r, { deck } = next, signal = deck.use!.signal;
+		next.timer = undefined;
+		next.started = true;
+		deck.el.addEventListener(
+			'playing',
+			() =>
+				sounding(deck, () => {
+					const t = this.c.currentTime, past = on.el.currentTime - (on.el.duration - OVERLAP);
+					if (!on.el.paused && !deck.el.paused) latency = latencyAfter(latency, past - deck.el.currentTime);
+					// Over CROSS s, or what is left of the last pass's overlap if the start was slow; the last pass out from the
+					// level its own fade in has reached, full unless it began a moment ago.
+					const over = Math.min(CROSS, Math.max(0.05, OVERLAP - past)), f = on.fade, level = f.over ? Math.min(1, Math.max(0, (t - f.from) / f.over)) : 1;
+					const e = envelope(0, 0, 'power');
+					on.g.gain.cancelScheduledValues(t);
+					on.g.gain.setValueCurveAtTime(e.out.curve.map((v) => v * level), t, over);
+					deck.g.gain.cancelScheduledValues(t);
+					deck.g.gain.setValueCurveAtTime(e.in.curve, t, over);
+					deck.fade = { from: t, over };
+					next.until = t + over;
+				}),
+			{ once: true, signal }
+		);
+		play(deck, () => (this.refused = presses));
+	}
+
+	private stop() {
+		const r = this.run;
+		if (r.is !== 'playing') return;
+		// Where the pass heard is: the next one, once the two have begun to cross.
+		const { el } = r.next?.until !== undefined ? r.next.deck : r.on, P = el.duration - OVERLAP;
+		const at = el.ended || el.error || !(P > 0) ? 0 : el.currentTime % P;
+		clearTimeout(r.next?.timer);
+		for (const d of [r.on, r.next?.deck]) if (d) release(d);
+		this.run = { is: 'stopped', at };
+	}
+}
+
+const streams = new Map<MusicId, Stream>();
+
 /** Inside a press: the context made the first time, and resumed from the toggle, a hidden tab or iOS's interruption. */
 function wake() {
 	if (!ctx) {
@@ -173,16 +415,31 @@ function wake() {
 		master.connect(ctx.destination);
 		ambience = ctx.createGain();
 		ambience.connect(master);
+		// The streamed music's elements, made and loaded inside this press: iOS plays an element later, outside a press,
+		// only if a press has touched it (as Howler's pool is unlocked).
+		for (let i = 0; i < DECKS; i++) {
+			const el = new Audio(), g = new GainNode(ctx, { gain: 0 });
+			el.preload = 'auto';
+			el.load();
+			const node = new MediaElementAudioSourceNode(ctx, { mediaElement: el });
+			node.connect(g);
+			decks.push({ el, node, g, use: null, wanted: false, starting: false, fade: { from: 0, over: 0 } });
+		}
 	}
+	presses++;
 	if (ctx.state !== 'running') ctx.resume().catch(() => {});
+	// A piece a mute, a hidden tab or iOS paused plays on from inside the press.
+	for (const d of decks) if (d.wanted && d.el.paused && !d.el.ended && !d.starting) play(d, () => {});
 }
 
 const ONE_SHOT: ReadonlySet<AudioId> = new Set(ONE_SHOTS);
 
 /**
- * Fetches and decodes the sounds not yet held; nothing before Join or while muted. The loops, megabytes between them
- * (the theme alone is two), are asked for at low priority, so they come after the scene's pictures and the one-shots, a
- * few kilobytes each, and fade in when they arrive.
+ * Fetches the sounds not yet held, and decodes them, but the streamed music, whose file is kept as it came for an audio
+ * element to play: fetched here and not by the element, which asks a host for byte ranges that this one doesn't answer,
+ * so the fetch is still one a mute calls off, made once, and at this priority. Nothing before Join or while muted. The
+ * loops, megabytes between them (the theme alone is two), are asked for at low priority, so they come after the scene's
+ * pictures and the one-shots, a few kilobytes each, and fade in when they arrive.
  */
 function load(ids: Iterable<AudioId>) {
 	const c = ctx, { signal } = fetches;
@@ -193,10 +450,16 @@ function load(ids: Iterable<AudioId>) {
 		const loading: Buffer = { is: 'loading', signal };
 		buffers.set(id, loading);
 		fetch(u, { signal, priority: ONE_SHOT.has(id) ? 'auto' : 'low' })
-			.then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${u}: ${r.status}`))))
-			.then((data) => c.decodeAudioData(data))
+			.then((r): Promise<Buffer> => {
+				if (!r.ok) return Promise.reject(new Error(`${u}: ${r.status}`));
+				if (streamed(id)) return r.blob().then((data) => ({ is: 'file', url: URL.createObjectURL(data) }));
+				return r.arrayBuffer().then((data) => c.decodeAudioData(data)).then((buffer) => ({ is: 'ready', buffer }));
+			})
 			.then(
-				(buffer) => void (buffers.get(id) === loading && buffers.set(id, { is: 'ready', buffer })),
+				(held) => {
+					if (buffers.get(id) === loading) buffers.set(id, held);
+					else if (held.is === 'file') URL.revokeObjectURL(held.url); // muted while it came
+				},
 				// Silence, and fetched again when a scene next needs it.
 				() => void (buffers.get(id) === loading && buffers.delete(id))
 			);
@@ -212,9 +475,18 @@ const need = (): ReadonlySet<AudioId> =>
 /** Lets go of the buffers the visitor's scene doesn't need that were left behind a minute ago. */
 function sweep() {
 	for (const id of stale(left, need(), performance.now())) {
+		const b = buffers.get(id);
+		// A piece not needed for a minute has long faded out and given its elements back.
+		if (b?.is === 'file') URL.revokeObjectURL(b.url);
 		buffers.delete(id);
 		left.delete(id);
 	}
+}
+
+/** The context suspended, by a mute or a hidden tab: the loops hold where they are, and the streamed music's elements pause. */
+function suspend() {
+	ctx?.suspend().catch(() => {});
+	for (const s of streams.values()) s.hold();
 }
 
 /** Muted: every voice stopped, every fetch in flight aborted, the context suspended; the loops hold where they are. */
@@ -223,7 +495,7 @@ function mute() {
 	fetches.abort();
 	fetches = new AbortController();
 	for (const [id, b] of buffers) if (b.is === 'loading') buffers.delete(id);
-	ctx?.suspend().catch(() => {});
+	suspend();
 }
 
 /** The toggle's choice, pressed here or written by another tab, applied once joined; a hidden tab stays suspended. */
@@ -239,7 +511,7 @@ function apply() {
 if (typeof window !== 'undefined') {
 	document.addEventListener('visibilitychange', () => {
 		if (!document.hidden) return;
-		ctx?.suspend().catch(() => {});
+		suspend();
 		hush(false);
 	});
 	// The saved state heard the event first: it listened from its module's load.
@@ -352,9 +624,20 @@ export const sound = {
 		if (level !== ambienceLevel) ambience.gain.setTargetAtTime((ambienceLevel = level), t, 0.1);
 		const s = { screen: frame.screen, video: [...media].some((m) => !m.paused && !m.ended) }, here = game ? gameGains(game.service) : gains(scene!, centre, s);
 		const target = passage.is === 'leaving' ? leavingGains(here, passage.to, s) : here;
-		for (const id of new Set<LoopId>([...target.keys(), ...loops.keys()])) {
+		for (const id of new Set<LoopId>([...target.keys(), ...loops.keys(), ...streams.keys()])) {
 			// In hundredths, so a slow pan sets a new target when it is heard, not every frame.
-			const buffer = ready(id), g = Math.round((target.get(id) ?? 0) * 100) / 100;
+			const g = Math.round((target.get(id) ?? 0) * 100) / 100;
+			if (streamed(id)) {
+				const url = file(id);
+				let stream = streams.get(id);
+				if (!stream) {
+					if (!g || !url) continue;
+					streams.set(id, (stream = new Stream(c, ambience)));
+				}
+				stream.step(url, g, tc, t);
+				continue;
+			}
+			const buffer = ready(id);
 			let loop = loops.get(id);
 			if (!loop) {
 				if (!g || !buffer) continue;

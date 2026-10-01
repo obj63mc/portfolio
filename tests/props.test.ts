@@ -8,7 +8,7 @@ import { DENSITIES, deliveries, rigBoundsOf, webpSize } from '../scripts/art/del
 import { rigsOf } from '../scripts/art/review.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES, artOf, propsOf } from '../src/lib/scenes/index.ts';
-import { CLICK_MS, GAZE, HOVER_MS, RIDER, SCROLL_SPEED, TURNS, blink, chase, gaze, glint, hover, moose, pop, progress, rider, ripples, scrolled, turned } from '../src/lib/engine/motion.ts';
+import { CLICK_MS, GAZE, HOVER_MS, RIDER, SCROLL_SPEED, TURNS, blink, breath, chase, gaze, glint, hover, moose, pop, progress, rider, ripples, scrolled, turned } from '../src/lib/engine/motion.ts';
 import { along, course, locate } from '../src/lib/engine/track.ts';
 import { inOutline, lineY } from '../src/lib/scenes/walk.ts';
 
@@ -183,6 +183,21 @@ test('the moose breathes and blinks on its own and lifts its head on hover; unde
 		const p = moose(t, 1, Infinity, true);
 		assert.deepEqual([p.body.sy, p.head.r, p.antlers.r, p.eye.sy], [1, 0, 0, 1], `resting at ${t}`);
 	}
+});
+
+test('a still camera draws the breathing moose when its back has moved a tenth of a world px, not at every frame, and draws every frame of a blink', () => {
+	const standing = OVERWORLD.districts.flatMap((d) => d.venues).flatMap((v) => v.props).find((p) => p.id === 'moose')!.rect;
+	/** The keys of `frames` frames from `from` ms, 60 a second. */
+	const keys = (from: number, frames: number) => Array.from({ length: frames }, (_, i) => breath(moose(from + (i * 1000) / 60, 0, Infinity, false)));
+	const drawn = (ks: string[]) => ks.filter((k, i) => i === 0 || k !== ks[i - 1]).length;
+	// A breath out and in, 3 s, clear of the blink at 4.5 s.
+	const breathing = drawn(keys(0, 180));
+	assert.ok(breathing >= 40 && breathing <= 56, `${breathing} drawings of 180 frames`);
+	// Between two drawings the back, the moose's height from its feet, has moved a tenth of a world px or so.
+	assert.ok(0.001 * standing.h <= 0.11, `${0.001 * standing.h} world px`);
+	const blinking = keys(4500, 12);
+	assert.equal(drawn(blinking), blinking.length, 'every frame of a blink');
+	assert.equal(breath(moose(100, 0, Infinity, true)), breath(moose(2000, 0, Infinity, true)), 'at rest under reduced motion');
 });
 
 test('the marquee chases in three steps and the bottles glint in sweeps; both hold still between changes and under reduced motion', () => {

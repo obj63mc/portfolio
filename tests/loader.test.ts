@@ -1,5 +1,7 @@
 // Seam 2: the engine's image loader (src/lib/engine/loader.ts) with stand-ins for the network and the decoder: what is in
 // view is fetched at once, what is round it in its turn, what a door leads to last, and a tile left behind is called off.
+// The stand-in clock stands still unless a test moves it, and an answer that took no time is one from the cache, which
+// leaves how many go at a time at four: the slow connection's number.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Loader, type Fetching } from '../src/lib/engine/loader.ts';
@@ -21,6 +23,7 @@ interface Call {
  */
 function harness(saveData = false, decoding?: Promise<void>) {
 	const calls: Call[] = [], decoded: string[] = [], closed: string[] = [];
+	let clock = 0;
 	const io: Fetching = {
 		fetch: (url, init) =>
 			new Promise((resolve, reject) => {
@@ -34,9 +37,10 @@ function harness(saveData = false, decoding?: Promise<void>) {
 			await decoding;
 			return { width: 1, height: 1, close: () => void closed.push(url) };
 		},
-		saveData: () => saveData
+		saveData: () => saveData,
+		now: () => clock
 	};
-	return { loader: new Loader(io), calls, decoded, closed, asked: () => calls.map((c) => c.url) };
+	return { loader: new Loader(io), calls, decoded, closed, asked: () => calls.map((c) => c.url), pass: (ms: number) => void (clock += ms) };
 }
 
 /** Lets every promise settled so far run its reactions. */
@@ -222,6 +226,50 @@ test('one that failed ahead is asked for again by the next door, and a visitor s
 	assert.deepEqual(saving.asked(), []);
 	saving.loader.image('tile', 'now');
 	assert.deepEqual(saving.asked(), ['tile'], 'what they are looking at is still fetched');
+});
+
+test('how many go at a time follows the connection: one more for each image back quickly, up to sixteen; a slow one halves it, never below four; one from the cache changes nothing', async () => {
+	const { loader, calls, pass } = harness();
+	for (let i = 0; i < 40; i++) void outcome(loader.image(`cut-out-${i}`, 'soon').bmp);
+	await settle();
+	let answered = 0;
+	/** Answers the oldest fetch in flight, `ms` on; how many are then in flight. */
+	const answer = async (ms: number) => {
+		pass(ms);
+		calls[answered++].answer();
+		await settle();
+		return calls.length - answered;
+	};
+	assert.equal(calls.length, 4);
+	assert.equal(await answer(0), 4, 'one from the cache, back at once: still four');
+	assert.equal(await answer(80), 5, 'one back off the network in 80 ms: five');
+	// Each of these was in flight no longer than 16 x 10 ms.
+	const flying: number[] = [];
+	for (let i = 0; i < 13; i++) flying.push(await answer(10));
+	assert.deepEqual(flying, [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 16], 'one more each, up to sixteen');
+	assert.equal(await answer(1500), 15, 'a slow one: no more are asked for');
+	for (let i = 0; i < 11; i++) flying.push(await answer(0));
+	assert.equal(flying.at(-1), 4, 'until four are in flight');
+	assert.equal(await answer(0), 4, 'and then four at a time again');
+	const started = calls.length;
+	assert.equal(await answer(0), 4);
+	assert.equal(calls.length, started + 1, 'never fewer');
+});
+
+test('what a door leads to goes half as many at a time as what is round the view', async () => {
+	const { loader, calls, pass } = harness();
+	loader.warm(Array.from({ length: 12 }, (_, i) => `ahead-${i}`));
+	await settle();
+	assert.equal(calls.length, 2);
+	// Each back in 50 ms: the window goes 5, 6, 7, and half of it 3, 3, 4.
+	const flying: number[] = [];
+	for (let i = 0; i < 3; i++) {
+		pass(50);
+		calls[i].answer();
+		await settle();
+		flying.push(calls.length - i - 1);
+	}
+	assert.deepEqual(flying, [3, 3, 4]);
 });
 
 test('doors: the overworld has one to each sub-scene, inside the world, and a sub-scene has its exit, back to the overworld', () => {

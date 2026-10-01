@@ -81,6 +81,16 @@ export function moose(t: number, h: number, since: number, rm: boolean): Record<
 	};
 }
 
+/**
+ * The moose's pose as a key for what draws it (props.ts `look`): its body's stretch to a thousandth, a tenth of a world px
+ * at its back, and its eye's to a hundredth. Its breath lifts its back a world px and a quarter over a second and a half,
+ * a twentieth of a px a frame, and keyed by the time it was drawn again at every frame: a repaint of its corner of the
+ * scene, the GPU process's work more than the page's, for nothing the eye sees (2026-10-01: standing still at Maplewood,
+ * 23% of a core in the GPU process, 9% keyed so). Equal keys are a moose the eye can't tell apart: some 16 drawings a
+ * second, and every frame of a blink.
+ */
+export const breath = (p: Record<'body' | 'eye', Pose>) => `${p.body.sy.toFixed(3)},${p.eye.sy.toFixed(2)}`;
+
 /** Samples each side of the rider in its moving average. */
 const TAPS = 8;
 

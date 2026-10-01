@@ -310,7 +310,7 @@ test('headers: one CSP per page, allowing self, the GA hosts, the socket and the
 		'script-src': ["'self'", 'https://www.googletagmanager.com'],
 		'connect-src': ["'self'", 'wss://barmadden.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://*.googletagmanager.com'],
 		'img-src': ["'self'", 'https://*.google-analytics.com', 'https://*.googletagmanager.com'],
-		'media-src': ["'self'", 'https://media.barmadden.com']
+		'media-src': ["'self'", 'blob:', 'https://media.barmadden.com']
 	};
 	for (const file of files) {
 		const html = page(file);

@@ -1,7 +1,8 @@
 // The beds and the music (spec: "Sound"; buildout ticket 21) as pure rules: which beds a scene has and where each is
 // heard, every loop's gain for the camera's centre and the scene's state, the loops a camera position needs loaded, and
-// the passes each loop plays. The Web Audio module that plays them is sound.svelte.ts; the one-shots' rules are sound.ts's;
-// the files are audio/sounds.json's, encoded by `npm run audio`.
+// the passes each loop plays, a bed's from its buffer and the music's from audio elements. The Web Audio module that plays
+// them is sound.svelte.ts; the one-shots' rules are sound.ts's; the files are audio/sounds.json's, encoded by
+// `npm run audio`.
 import type { Overworld, Point, Rect, SubScene } from './scenes/types';
 
 type Scene = Overworld | SubScene;
@@ -135,6 +136,41 @@ export const loopsNeeded = (scene: Scene, centre: Point): ReadonlySet<LoopId> =>
 export const loopsFor = (scene: Scene): ReadonlySet<LoopId> =>
 	new Set<LoopId>('districts' in scene ? ['theme'] : [...bedsOf(scene).map((b) => b.id), ...musicOf(scene)]);
 
+/**
+ * The music is streamed (Joe, 2026-10-01): played from audio elements, which decode it as it plays, where a bed is
+ * decoded whole into a buffer and held. Decoded, the theme alone was 50 MB, and the six loops at Join 120 MB, a second
+ * and a half of an M4's decoding between them; an element holds the file as it came, 2 MB, and a few seconds of sound.
+ */
+export const streamed = (id: string): id is MusicId => (MUSIC as readonly string[]).includes(id);
+
+/**
+ * A streamed loop's passes cross over this long, s, at equal power. An element can't be started at a time, only now,
+ * and sounds a moment after it is told to, none in Chrome and a tenth of a second on an iPhone; so the next pass is
+ * started that moment early (`startIn`), as the player measured it when the piece began, which leaves the two a few
+ * hundredths of a second apart, never in step as a buffer's passes are. That far apart the copies either side of a seam
+ * are as good as uncorrelated: crossed at equal gain, as music's passes were from a buffer, the theme lost 1 to 2 dB
+ * through the crossing at offsets from 4 to 90 ms, and at equal power it stayed within a decibel (simulated on the file,
+ * 2026-10-01). Half a second, not the whole OVERLAP: the rest is the time a slow start has before the last pass runs
+ * out. A pass is never hurried or slowed into step, since an iPhone's element stutters at any rate but its own (iOS 18.5
+ * simulator).
+ */
+export const CROSS = 0.5;
+
+/**
+ * How long from now a streamed loop's next pass is started, ms: when the pass playing, `pos` s in, reaches its period
+ * `P`, less the `latency` s a start takes to sound; at once if that is past.
+ */
+export const startIn = (pos: number, P: number, latency: number) => Math.max(0, (P - pos - latency) * 1000);
+
+/** A start that takes longer than this to sound, s, was held up, and says nothing of the next. */
+export const SLOWEST = 0.25;
+
+/**
+ * How long a start takes to sound, s, estimated again after a pass that sounded `late` s after it was due (early, below
+ * zero): halfway from the last estimate toward what this one took, and never more than SLOWEST.
+ */
+export const latencyAfter = (latency: number, late: number) => Math.min(SLOWEST, Math.max(0, latency + late / 2));
+
 /** When the pass after one started at context time `at` from `offset` s into a loop of period `P` s starts, from 0. */
 export const nextPass = (at: number, offset: number, P: number) => at + P - offset;
 
@@ -147,9 +183,10 @@ const STEPS = 32;
 export const RESUME = 0.5;
 
 /**
- * How a loop's passes cross: a bed's two stretches are uncorrelated, so at equal power (sine in, cosine out, their squares
+ * How a buffer's passes cross: a bed's two stretches are uncorrelated, so at equal power (sine in, cosine out, their squares
  * summing to one); music cut where it nearly repeats is close to a copy of itself across the seam, so at equal gain (the
- * two summing to one), which an equal-power cross would swell by up to 3 dB.
+ * two summing to one), which an equal-power cross would swell by up to 3 dB. That holds for passes in step to the
+ * sample, which a buffer's are; the music is streamed now, and its passes cross as CROSS says.
  */
 export type Fade = 'power' | 'gain';
 

@@ -20,7 +20,10 @@ import { OVERLAP } from '../src/lib/loops.ts';
  */
 export const KINDS = {
 	'one-shot': { channels: 1, kbps: 96, level: { peak: -6 }, max: 2 },
-	bed: { channels: 2, kbps: 96, level: { lufs: -30 }, loop: [30, 45] },
+	// A bed is mono (Joe, 2026-10-01): it is ambience under the theme, and decoded it is held whole, four bytes a sample
+	// a channel at the output's rate whatever its bitrate, so one channel halves what the beds near the camera hold, five
+	// of them at Join. At 64 kbps the one channel has more bits than each of two had at 96.
+	bed: { channels: 1, kbps: 64, level: { lufs: -30 }, loop: [30, 45] },
 	// Music's loops are 60 to 120 s by the format rule, but the theme is "a 2 to 3 minute loop", and Joe would have it
 	// whatever loops best, longer included (2026-09-30): up to 3 minutes. Sushi Stand's pick, a 54 s loop, repeats every 52 s
 	// (Joe, 2026-09-30).
@@ -176,7 +179,8 @@ function encode(src: string, s: Sound, tmp: string): Buffer {
 	} else {
 		// Measured, then one gain for the whole cut: loudnorm's own one pass rides the level through the file, which would
 		// leave a loop's end at another level from its start, where the passes meet.
-		const stderr = measure('ebur128');
+		// One channel is heard from both speakers, 3 LU louder than it measures alone: measured as the two.
+		const stderr = measure(k.channels === 1 ? 'ebur128=dualmono=true' : 'ebur128');
 		const lufs = /Integrated loudness:\s+I:\s+(-?[\d.]+) LUFS/.exec(stderr);
 		if (!lufs) throw new Error(`${s.id}: couldn't measure its loudness\n${stderr}`);
 		level = `volume=${(k.level.lufs - Number(lufs[1])).toFixed(2)}dB`;

@@ -11,7 +11,7 @@ import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { drawCourse } from './course-overlay.ts';
 import { MARQUEE, loadFaces, settled } from './fonts.ts';
 import type { Loader, Loading } from './loader.ts';
-import { CLICK_MS, KOI, WATER, blink, chase, gaze, glint, hover, koi, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
+import { CLICK_MS, KOI, WATER, blink, breath, chase, gaze, glint, hover, koi, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
 /** A rig part in its master's px: its parent, its pivot as fractions of itself, and its original's file under art/generated. */
@@ -169,8 +169,8 @@ export class Props {
 	private arrived = false;
 	/** The Side Project bottle row's reach, which the glint sweeps. */
 	private row: Rect | null = null;
-	/** The overworld's lap start line: where it crosses the path's centreline, the way the path runs, the path's half-width. */
-	private line: { x: number; y: number; dx: number; dy: number; half: number } | null = null;
+	/** The overworld's lap start line: where it crosses the path's centreline, the way the path runs, the path's half-width, and the box it is drawn in. */
+	private line: { x: number; y: number; dx: number; dy: number; half: number; box: Rect } | null = null;
 	/** The overworld's river, its outline's box, and the ripples' frame it last drew; none in a sub-scene. */
 	private river: { is: Overworld['river']; box: Rect; drawn: number } | null = null;
 	private t = 0;
@@ -237,7 +237,9 @@ export class Props {
 			this.layers.push({ ...layer(undefined, scene.marquee.art), board: { face: scene.marquee.face, text: scene.marquee.text } });
 			const swim = scene.districts.flatMap((d) => d.venues).find((v) => v.id === GAME)?.rect;
 			if (swim) this.layers.push({ box: swim, cuts: [], koi: swim, hover: 0, clicked: -Infinity, drawn: '', loading: [], seen: false });
-			this.line = { ...along(LOOP, 0), half: LOOP.half };
+			// The line is three checks along the path and four across it: no wider than the path, and under twice as high.
+			const at = along(LOOP, 0), half = LOOP.half;
+			this.line = { ...at, half, box: { x: at.x - half, y: at.y - 2 * half, w: 2 * half, h: 4 * half } };
 			const m = scene.river.mask, x = Math.min(...m.map((p) => p.x)), y = Math.min(...m.map((p) => p.y));
 			this.river = { is: scene.river, box: { x, y, w: Math.max(...m.map((p) => p.x)) - x, h: Math.max(...m.map((p) => p.y)) - y }, drawn: -1 };
 		}
@@ -328,7 +330,7 @@ export class Props {
 	draw(g: CanvasRenderingContext2D, cam: Point, k: number, view: Rect) {
 		g.setTransform(k, 0, 0, k, -cam.x * k, -cam.y * k);
 		if (this.river && overlaps(this.river.box, view)) this.water(g, this.river.is);
-		if (this.line) this.startLine(g, this.line);
+		if (this.line && overlaps(this.line.box, view)) this.startLine(g, this.line);
 		for (const l of this.layers) if (overlaps(grow(l.box, REACH), view)) this.drawLayer(g, l, k);
 		if (import.meta.env.DEV && this.course && this.line) drawCourse(g);
 		g.setTransform(1, 0, 0, 1, 0, 0);
@@ -393,8 +395,10 @@ export class Props {
 		const v = l.video?.el, eye = l.cuts.find((c) => c.iris);
 		// The eye looks only while it is in view, since `step` reads no layer out of it: to a tenth of a world px.
 		const looking = eye && gaze(eye.rect, this.own, rm);
+		// The rider and the koi travel, and are drawn every frame; the moose stands and breathes, and is drawn when it shows.
 		const ambient =
-			(l.rig || l.koi) && !rm ? t
+			l.rig?.name === 'moose' && !rm ? breath(moose(t, l.hover, since, rm))
+			: (l.rig || l.koi) && !rm ? t
 			: l.board ? `${chase(t, rm)},${scrolled(t, rm)},${settled.has(BOARD.font)}`
 			: isBottle(l.prop) ? glint(t, rm)
 			: v ? `${v.currentTime},${v.ended}`

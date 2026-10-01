@@ -5,7 +5,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-	bedGain, BEDS, bedsOf, GAME_LOOPS, gameGains, envelope, FADE, fadeOf, gains, leavingGains, LEVEL, loopsFor, loopsNeeded, MUSIC, NEAR, nextPass, OVERLAP, playhead, RESUME, SCENE_MUSIC, type LoopId
+	bedGain, BEDS, bedsOf, CROSS, GAME_LOOPS, gameGains, envelope, FADE, fadeOf, gains, latencyAfter, leavingGains, LEVEL, loopsFor, loopsNeeded, MUSIC, NEAR, nextPass, OVERLAP, playhead, RESUME, SCENE_MUSIC,
+	SLOWEST, startIn, streamed, type LoopId
 } from '../src/lib/loops.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
@@ -170,6 +171,26 @@ test("a bed's passes cross at equal power; music's, cut where it nearly repeats,
 	for (const id of MUSIC) assert.equal(fadeOf(id), 'gain', id);
 	const e = envelope(0, 36, 'gain');
 	for (let i = 0; i < e.out.curve.length; i++) near(e.out.curve[i] + e.in!.curve[i], 1, `point ${i}`, 1e-6);
+});
+
+test('the theme and the music are streamed, and every bed is decoded', () => {
+	for (const id of MUSIC) assert.ok(streamed(id), id);
+	for (const id of BEDS) assert.ok(!streamed(id), id);
+	assert.ok(!streamed('card'), 'nor a one-shot');
+});
+
+test("a streamed loop's next pass starts as the last reaches its period, less the time a start takes to sound, and at once if that is past", () => {
+	near(startIn(126.5, 128, 0), 1500, 'a second and a half to go');
+	near(startIn(126.5, 128, 0.11), 1390, "less an iPhone's tenth of a second", 1e-6);
+	assert.equal(startIn(127.95, 128, 0.11), 0, 'inside the latency: now');
+	assert.equal(startIn(129, 128, 0), 0, 'past its period: now');
+	// The estimate goes halfway to what each seam found, and stays between none and the slowest start that counts.
+	near(latencyAfter(0.03, 0.09), 0.075, 'a late start');
+	near(latencyAfter(0.03, -0.02), 0.02, 'an early one');
+	assert.equal(latencyAfter(0.01, -0.5), 0);
+	assert.equal(latencyAfter(0.2, 0.4), SLOWEST);
+	// The two cross well inside the overlap, so the slowest start still crosses before the last pass runs out.
+	assert.ok(SLOWEST + CROSS < OVERLAP);
 });
 
 test('leaving through a door, every loop fades with the iris but the theme, which goes toward its level where the visitor lands', () => {

@@ -1,9 +1,10 @@
 // Seam 4: the sound over the built site (buildouts ticket 22 and 21): nothing under /audio/ is fetched before Join or while
 // muted, the Sound toggle's choice is kept, the one-shots sound on their events and nowhere else, and the theme gives way
-// to a sub-scene's music and comes back where it left off. A spy follows each decoded buffer back to the file it was
-// fetched from and records every one that starts playing: one-shots by id, a loop's passes with the offset each starts
-// from. The lock is refused, so the OS pointer is the cursor. The parts that need a sourced file skip until
-// `npm run audio` has encoded some.
+// to a sub-scene's music and comes back where it left off. A spy follows each decoded buffer, and each file an audio
+// element plays, back to the file it was fetched from and records every one that starts playing: one-shots by id, a
+// loop's passes with the offset each starts from, a bed's from its buffer and the streamed music's from its element. The
+// lock is refused, so the OS pointer is the cursor. The parts that need a sourced file skip until `npm run audio` has
+// encoded some.
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
@@ -28,6 +29,26 @@ function spy() {
 		if (url) from.set(buffer, url);
 		return buffer;
 	} as typeof decode;
+	// The streamed music: the fetched file is handed to an audio element at a blob: URL.
+	const files = new Map<string, string>();
+	const blob = Response.prototype.blob;
+	Response.prototype.blob = async function () {
+		const data = await blob.call(this);
+		from.set(data, this.url);
+		return data;
+	};
+	const createObjectURL = URL.createObjectURL;
+	URL.createObjectURL = (obj) => {
+		const url = createObjectURL(obj), source = from.get(obj);
+		if (source) files.set(url, source);
+		return url;
+	};
+	const play = HTMLMediaElement.prototype.play;
+	HTMLMediaElement.prototype.play = function () {
+		const url = files.get(this.src), id = url && /\/audio\/([a-z-]+)\./.exec(url)![1];
+		if (id) passes.push({ id, offset: this.currentTime });
+		return play.call(this);
+	};
 	const start = AudioBufferSourceNode.prototype.start;
 	AudioBufferSourceNode.prototype.start = function (...args: Parameters<typeof start>) {
 		const url = this.buffer && from.get(this.buffer), id = url && /\/audio\/([a-z-]+)\./.exec(url)![1];

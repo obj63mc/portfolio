@@ -53,8 +53,9 @@ export default {
 				// The inline style attribute in app.html.
 				'style-src': ['self', 'unsafe-inline'],
 				'img-src': ['self', ...gaHosts],
-				// The videos, from the media host; a local build's are its own.
-				'media-src': ['self', media.host],
+				// The videos, from the media host; a local build's are its own. The streamed music plays from the file the page
+				// fetched, at a blob: URL (src/lib/sound.svelte.ts).
+				'media-src': ['self', 'blob:', media.host],
 				'connect-src': ['self', 'wss://barmadden.com', 'https://*.analytics.google.com', ...gaHosts],
 				'object-src': ['none'],
 				'base-uri': ['self']
