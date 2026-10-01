@@ -2,17 +2,20 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { dimensions, magick } from './process.ts';
+import { deliveries, rigBoundsOf, webpLossless, webpSize } from './deliver.ts';
+import { rigsOf } from './review.ts';
 import type { Manifest, ProcessedAsset } from './types.ts';
 import { assetDir } from './types.ts';
 
 export function validateOutputs(root: string, manifest: Manifest): string[] {
   const problems: string[] = [];
-  const placed: ProcessedAsset[] = [];
+  const placed: ProcessedAsset[] = [], processed: ProcessedAsset[] = [];
   for (const asset of manifest.assets) {
     const dir = join(root, 'art/generated', assetDir(asset)), metadata = join(dir, 'asset.json');
     if (!existsSync(metadata)) { problems.push(`${asset.id}: not generated`); continue; }
     const result = JSON.parse(readFileSync(metadata, 'utf8')) as ProcessedAsset;
     if (result.world) placed.push(result);
+    processed.push(result);
     const file = join(root, 'art/generated', result.file);
     const size = dimensions(file);
     if (size.w !== result.width || size.h !== result.height) problems.push(`${asset.id}: dimensions disagree with metadata`);
@@ -65,6 +68,14 @@ export function validateOutputs(root: string, manifest: Manifest): string[] {
         if (result.source.w !== source.w || result.source.h !== source.h) problems.push(`${asset.id}: master and part frame dimensions differ; registration requires review`);
       }
     }
+  }
+  // Every cut-out the site draws has its delivery sizes (deliver.ts), each the size it is drawn at now.
+  for (const { asset, density, file, size, lossless } of deliveries(processed, manifest.sceneLayouts, rigBoundsOf(rigsOf(processed).rigs))) {
+    const path = join(root, 'art/generated', file);
+    if (!existsSync(path)) { problems.push(`${asset.id}: no delivery size at ${density}; npm run art:review writes it`); continue; }
+    const actual = webpSize(path);
+    if (actual.w !== size.w || actual.h !== size.h) problems.push(`${asset.id}: its delivery size at ${density} must be ${size.w} × ${size.h}; npm run art:review rewrites it`);
+    else if (webpLossless(path) !== lossless) problems.push(`${asset.id}: its delivery size at ${density} must be ${lossless ? 'lossless' : 'lossy'}; npm run art:review rewrites it`);
   }
   const props = [
     ...placed.filter(a => a.kind === 'prop').map(a => ({id:a.id,scene:a.scene,rect:a.world!})),

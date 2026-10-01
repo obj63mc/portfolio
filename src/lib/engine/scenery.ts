@@ -5,6 +5,7 @@
 // (cursors.ts), so a static copy never covers the scene canvas's props, their reactions or another cursor.
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import type { Side } from '../scenes/walk.ts';
+import type { Loader, Loading } from './loader.ts';
 import { cutout } from './props.ts';
 
 /** A cut-out to draw over a cursor, in device px; walk-behind scenery says where it stands, back to front (`at`). */
@@ -23,7 +24,11 @@ interface Piece {
 	key: string;
 	rect: Rect;
 	bmp?: ImageBitmap;
+	/** On its way, in its turn until the piece is in view (`near`). */
+	loading: Loading;
 }
+
+const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
 export class Scenery {
 	/** Foreground scenery, over every cursor. */
@@ -32,23 +37,41 @@ export class Scenery {
 	private units: Piece[] = [];
 	/** The overworld's bridges; none in a sub-scene. */
 	private bridges: Piece[] = [];
+	/** The pieces not yet in view, whose cut-outs wait their turn. */
+	private waiting: Piece[] = [];
 	/** Bumped on each scene, so a cut-out arriving for the last one is dropped. */
 	private generation = 0;
+	private loader: Loader;
+
+	/** The cut-outs come through `loader`. */
+	constructor(loader: Loader) {
+		this.loader = loader;
+	}
 
 	/** A new scene's scenery, its cut-outs loading at `density` image px per world px. */
 	show(scene: Overworld | SubScene, density: number) {
 		this.clear();
 		const gen = ++this.generation;
 		const load = ({ key, rect }: { key: string; rect: Rect }): Piece[] => {
-			const c = cutout(scene.id, key, rect, density);
+			const c = cutout(this.loader, scene.id, key, rect, density);
 			if (!c) return [];
-			const piece: Piece = { key, rect: c.rect };
-			c.bmp.then((bmp) => (gen === this.generation ? (piece.bmp = bmp) : bmp.close())).catch(() => {}); // a failed cut-out covers nothing
+			const piece: Piece = { key, rect: c.rect, loading: c.loading };
+			c.loading.bmp.then((bmp) => (gen === this.generation ? (piece.bmp = bmp) : bmp.close())).catch(() => {}); // a failed cut-out covers nothing
 			return [piece];
 		};
 		this.fore = scene.foreground.flatMap(load);
 		this.units = ('walkBehind' in scene ? scene.walkBehind : []).flatMap(load);
 		this.bridges = 'river' in scene ? scene.river.bridges.flatMap(load) : [];
+		this.waiting = [...this.fore, ...this.units, ...this.bridges];
+	}
+
+	/** The scenery standing in `view` (world px), where a cursor may go behind it, is fetched first in line. */
+	near(view: Rect) {
+		for (let i = this.waiting.length - 1; i >= 0; i--) {
+			if (!overlaps(this.waiting[i].rect, view)) continue;
+			this.waiting[i].loading.first();
+			this.waiting.splice(i, 1);
+		}
 	}
 
 	/** Foreground scenery through the camera at `cam`, `k` device px per world px. */
@@ -75,10 +98,11 @@ export class Scenery {
 
 	private clear() {
 		this.generation++;
-		for (const p of [...this.fore, ...this.units, ...this.bridges]) p.bmp?.close();
+		for (const p of [...this.fore, ...this.units, ...this.bridges]) p.loading.cancel(), p.bmp?.close();
 		this.fore = [];
 		this.units = [];
 		this.bridges = [];
+		this.waiting = [];
 	}
 }
 

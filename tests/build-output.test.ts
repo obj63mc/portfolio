@@ -354,3 +354,25 @@ test('headers: _headers sends frame-ancestors and the other page headers, never 
 	assert.match(headers, /^\/audio\/\*\n\s+Cache-Control: public, max-age=31536000, immutable$/m, 'the hashed sounds are cached for good');
 	assert.match(page('404.html'), /<h1>[^<]+<\/h1>/);
 });
+
+// What the rules of _headers send for a path: a rule is a path line, `*` standing for anything, then its headers.
+const cacheControl = (path: string) => {
+	const rules = page('_headers').split(/\n(?=\/)/).filter((r) => r.startsWith('/'));
+	const matches = (rule: string) => new RegExp(`^${rule.split('\n')[0].trim().replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`).test(path);
+	return rules.filter(matches).flatMap((r) => [...r.matchAll(/^\s+Cache-Control: (.*)$/gm)].map((m) => m[1]));
+};
+
+test('caching: every hashed file of the build is kept for good, the icons a day, and a page is asked for again each time', () => {
+	const dir = new URL('../build/', import.meta.url), forever = ['public, max-age=31536000, immutable'];
+	const built = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => /\.\w+$/.test(f));
+	const hashed = built.filter((f) => f.startsWith('_app/immutable/') || f.startsWith('audio/'));
+	// The tiles and the cut-outs among them, the bulk of what a visit fetches.
+	assert.ok(hashed.filter((f) => f.endsWith('.webp')).length > 100, 'the art is in the build');
+	for (const f of hashed) assert.deepEqual(cacheControl(`/${f}`), forever, f);
+	for (const f of built.filter((f) => !hashed.includes(f))) {
+		const icon = /^(favicon\.ico|apple-touch-icon\.png|icon-\d+\.png|manifest\.webmanifest)$/.test(f);
+		assert.deepEqual(cacheControl(`/${f}`), icon ? ['public, max-age=86400'] : [], f);
+	}
+	// A page is also asked for at its path without the extension.
+	for (const path of ['/', '/moosylvania', '/sushi-stand', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
+});

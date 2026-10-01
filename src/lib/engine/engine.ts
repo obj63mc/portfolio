@@ -17,7 +17,7 @@ import { COSMETICS } from '../cosmetics.ts';
 import { saved } from '../saved.svelte.ts';
 import { grantSound } from '../sound.ts';
 import { sound } from '../sound.svelte.ts';
-import { GAME, propsOf, sceneAt } from '../scenes/index.ts';
+import { GAME, doorsOf, propsOf, sceneAt } from '../scenes/index.ts';
 import type { Overworld, Point, Rect, SubScene } from '../scenes/types';
 import { ASHORE, flow, type Current } from '../scenes/river.ts';
 import { blocked, type Side } from '../scenes/walk.ts';
@@ -26,7 +26,8 @@ import { SNAP, sample, visible } from '../net/peers.ts';
 import { playing } from '../net/screen.ts';
 import { follower } from './depth.ts';
 import { Scenery } from './scenery.ts';
-import { Props, clickedProp } from './props.ts';
+import { Props, artIn, clickedProp } from './props.ts';
+import { Loader, type Loading } from './loader.ts';
 import { Projector } from './projector.ts';
 import {
 	KEYS, TILE, centreOn, clamp, coast, fling, framing, glide, pan, rendering, steer, step, stick, tileRange, zoom, type Move, type View
@@ -77,6 +78,8 @@ type Gesture =
 // Every scene's background tiles at both densities, keyed by path: a background's folder repeats its scene's id,
 // /art/generated/<id>/<id>/<density>/<column>-<row>.webp. Never inlined: the page's CSP has no data: source.
 const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp', { eager: true, query: '?no-inline', import: 'default' });
+/** A scene's background tile at `density`, by `<column>-<row>`; none where the scene has no art. */
+const tileUrl = (scene: Scene, density: number, key: string): string | undefined => TILE_URLS[`/art/generated/${scene.id}/${scene.id}/${density}/${key}.webp`];
 
 /**
  * The on-screen toggles, and the consent bar on the page (ticket 23): they hold the camera still when the mouse's cursor
@@ -94,6 +97,15 @@ const WASH = 400;
 const BACKDROP = '#1d2b3a';
 
 const centre = (r: Rect): Point => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
+const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+/**
+ * Where a hop from `from` lands in `to`, world px, as `show` lands it: just inside a sub-scene's exit door, on the floor a
+ * cursor's height below it, or on the overworld at the door of the venue left.
+ */
+function landing(to: Scene, from: Scene): Point {
+	if ('exit' in to) return { x: to.exit.x + to.exit.w / 2, y: to.exit.y + to.exit.h + CARRY };
+	return centre(doorsOf(to).find((d) => d.to.id === from.id)?.at ?? propsOf(to).find((p) => p.id === 'welcome')!.rect);
+}
 /** A point held inside the viewport. */
 const inView = (p: Point, v: View): Point => ({ x: Math.max(0, Math.min(v.w - 1, p.x)), y: Math.max(0, Math.min(v.h - 1, p.y)) });
 
@@ -150,8 +162,12 @@ export class Engine {
 	private joy: { id: number; r: number; from: Point; pull: Point; steered: boolean } | null = null;
 	/** World rects that hold the camera still: the props, and the overworld's signpost. */
 	private targets: Rect[] = [];
+	/** Every image the engine fetches, in the order the visitor needs them (loader.ts). */
+	private loader = new Loader();
 	/** Background tiles held, by `<column>-<row>`; a tile still loading has no bitmap. */
-	private held = new Map<string, { bmp?: ImageBitmap }>();
+	private held = new Map<string, { bmp?: ImageBitmap; loading?: Loading }>();
+	/** The scene's doors still to be fetched ahead of a hop through them (`lookAhead`). */
+	private doors: ReturnType<typeof doorsOf> = [];
 	private dirty = true;
 	/** The scene's room: peers, "N here", the offline announcement and the server time ambient motion runs on. */
 	private net: Net;
@@ -169,7 +185,7 @@ export class Engine {
 	/** The one-shots (ticket 22). */
 	private shots: OneShots;
 	/** Foreground and walk-behind scenery, drawn over the cursors it covers (ticket 19). */
-	private scenery = new Scenery();
+	private scenery = new Scenery(this.loader);
 	/** The own cursor followed through the scene: none until its first step there; `jumped` makes its next step a jump. */
 	private follow: ReturnType<typeof follower> | null = null;
 	private jumped = false;
@@ -243,7 +259,7 @@ export class Engine {
 			count: (n) => (status.here.textContent = `${n} here`),
 			solo: (on) => (status.live.textContent = on ? 'Offline, exploring solo' : '')
 		});
-		this.props = new Props(layer);
+		this.props = new Props(layer, this.loader);
 		this.projector = new Projector(layer, this.net);
 		this.laps = new Laps(status.lap, status.live);
 		this.shots = new OneShots(layer, this.net);
@@ -269,7 +285,7 @@ export class Engine {
 		this.shots.destroy();
 		this.scenery.destroy();
 		this.raise.disconnect();
-		for (const t of this.held.values()) t.bmp?.close();
+		this.dropTiles();
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
 		for (const card of Object.values(this.cards)) card.close();
 		this.cursors.hidePopover();
@@ -309,8 +325,8 @@ export class Engine {
 		if (this.cursor) this.art.tag();
 		// A prop that only says its state (the Foundry screen) is nothing to aim at.
 		this.targets = [...(overworld ? [scene.signpost.rect] : []), ...propsOf(scene).filter((p) => p.kind !== 'status').map((p) => p.rect)];
-		for (const t of this.held.values()) t.bmp?.close();
-		this.held.clear();
+		this.dropTiles();
+		this.doors = doorsOf(scene);
 		this.props.show(scene, this.density);
 		this.projector.show(scene);
 		// Every cursor enters the new scene afresh: the own takes the depth and sides of where it lands, and peers are a new room's.
@@ -824,6 +840,8 @@ export class Engine {
 		// The scene canvas is drawn only when something on it changed: all of it for the camera or a tile, just the props'
 		// area when only they moved on a still camera (props.ts), which keeps a breathing moose from repainting the screen.
 		const t = this.net.serverNow(), view = this.seen(), moved = this.props.step(dt * 1000, t, view, this.reducedMotion.matches, this.own), lit = this.projector.step(t);
+		this.scenery.near(view);
+		if (this.doors.length && joined(this.input)) this.lookAhead(scene, view);
 		this.shots.step(t);
 		// The beds follow the camera's centre, the theme and the music the scene, its screen and a prop's video (ticket 21).
 		sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t) });
@@ -967,23 +985,30 @@ export class Engine {
 		return true;
 	}
 
-	/** Fetch the tiles in view and one ring beyond; close and forget any beyond two rings, so phone memory stays flat. */
+	/**
+	 * Fetch the tiles in view at once and one ring beyond in their turn (loader.ts), a tile of the ring at once when it
+	 * comes into view; close and forget any beyond two rings, so phone memory stays flat, calling off one still on its way.
+	 */
 	private loadTiles() {
-		const scene = this.scene!, want = tileRange(this.cam, this.view, scene, 1), keep = tileRange(this.cam, this.view, scene, 2);
+		const scene = this.scene!, seen = tileRange(this.cam, this.view, scene, 0), want = tileRange(this.cam, this.view, scene, 1), keep = tileRange(this.cam, this.view, scene, 2);
 		for (let row = want.y0; row <= want.y1; row++)
 			for (let col = want.x0; col <= want.x1; col++) {
-				const key = `${col}-${row}`;
-				if (this.held.has(key)) continue;
-				const tile: { bmp?: ImageBitmap } = {};
+				const key = `${col}-${row}`, inView = col >= seen.x0 && col <= seen.x1 && row >= seen.y0 && row <= seen.y1;
+				const had = this.held.get(key);
+				if (had) {
+					if (inView) had.loading?.hurry();
+					continue;
+				}
+				const tile: { bmp?: ImageBitmap; loading?: Loading } = {};
 				this.held.set(key, tile);
-				const url = TILE_URLS[`/art/generated/${scene.id}/${scene.id}/${this.density}/${key}.webp`];
+				const url = tileUrl(scene, this.density, key);
 				if (!url) continue; // no art for this scene: the backdrop shows
-				fetch(url)
-					.then((r) => r.blob())
-					.then((b) => createImageBitmap(b))
+				tile.loading = this.loader.image(url, inView ? 'now' : 'soon');
+				tile.loading.bmp
 					.then((bmp) => {
 						if (this.held.get(key) !== tile) return bmp.close(); // evicted, or the scene changed, while loading
 						tile.bmp = bmp;
+						tile.loading = undefined;
 						this.dirty = true;
 					})
 					.catch(() => {}); // a failed tile stays backdrop
@@ -991,9 +1016,16 @@ export class Engine {
 		for (const [key, tile] of this.held) {
 			const [col, row] = key.split('-').map(Number);
 			if (col >= keep.x0 && col <= keep.x1 && row >= keep.y0 && row <= keep.y1) continue;
+			tile.loading?.cancel();
 			tile.bmp?.close();
 			this.held.delete(key);
 		}
+	}
+
+	/** Every tile let go: the scene changed, or the engine is done. */
+	private dropTiles() {
+		for (const t of this.held.values()) t.loading?.cancel(), t.bmp?.close();
+		this.held.clear();
 	}
 
 	/** Every background tile in view has arrived, or has no art. */
@@ -1002,9 +1034,30 @@ export class Engine {
 		for (let row = r.y0; row <= r.y1; row++)
 			for (let col = r.x0; col <= r.x1; col++) {
 				const key = `${col}-${row}`;
-				if (TILE_URLS[`/art/generated/${scene.id}/${scene.id}/${this.density}/${key}.webp`] && !this.held.get(key)?.bmp) return false;
+				if (tileUrl(scene, this.density, key) && !this.held.get(key)?.bmp) return false;
 			}
 		return true;
+	}
+
+	/**
+	 * From Join on, a door in `view` has what its hop lands on fetched ahead: the tiles in view there and
+	 * the cut-outs standing in it, into the browser's cache, once nothing of this scene is still coming, so the iris
+	 * opens on the whole view. A sub-scene's only door is its exit, fetched ahead wherever the camera is; each scene once.
+	 */
+	private lookAhead(scene: Scene, view: Rect) {
+		for (let i = this.doors.length - 1; i >= 0; i--) {
+			const { to, at } = this.doors[i];
+			if (!('exit' in scene || overlaps(at, view))) continue;
+			this.doors.splice(i, 1);
+			const v = { ...this.view, s: this.base }, cam = centreOn(landing(to, scene), v, to), r = tileRange(cam, v, to, 0);
+			const tiles: string[] = [];
+			for (let row = r.y0; row <= r.y1; row++)
+				for (let col = r.x0; col <= r.x1; col++) {
+					const url = tileUrl(to, this.density, `${col}-${row}`);
+					if (url) tiles.push(url);
+				}
+			this.loader.warm([...tiles, ...artIn(to, this.density, { x: cam.x, y: cam.y, w: v.w / v.s, h: v.h / v.s })]);
+		}
 	}
 
 	/** The world rect in view. */

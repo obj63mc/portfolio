@@ -16,6 +16,18 @@ export const SUB_SCENES: Record<string, SubScene> = Object.fromEntries(
 /** The scene a page path shows: the overworld at the root, a sub-scene at its slug; none for any other path. */
 export const sceneAt = (pathname: string): Overworld | SubScene | undefined => (pathname === '/' ? OVERWORLD : SUB_SCENES[pathname.slice(1)]);
 
+/**
+ * A scene's doors, each with the scene behind it and its own rect: the overworld's venues that have a sub-scene (Sushi
+ * Stand's door leads to a page with no scene), or a sub-scene's exit, back to the overworld.
+ */
+export const doorsOf = (s: Overworld | SubScene): { to: Overworld | SubScene; at: Rect }[] =>
+	'districts' in s
+		? s.districts.flatMap((d) => d.venues).flatMap((v) => {
+				const to = v.door ? sceneAt(v.door) : undefined;
+				return to ? [{ to, at: v.doorRect ?? v.rect }] : [];
+			})
+		: [{ to: OVERWORLD, at: s.exit }];
+
 /** Props left to right, the spec's reading order for the overworld's venues and the wide sub-scenes. */
 export const leftToRight = (props: Prop[]): Prop[] => [...props].sort((a, b) => a.rect.x - b.rect.x);
 

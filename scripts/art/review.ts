@@ -5,6 +5,7 @@ import { RIG_DRAW_ORDER, assetDir } from './types.ts';
 import { OVERWORLD } from '../../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../../src/lib/scenes/index.ts';
 import { compose } from './compose.ts';
+import { deliver, rigBoundsOf } from './deliver.ts';
 import { saveProvenance } from './provenance.ts';
 
 /** A rig part in its rig's space: where its trim sits in the master's frame, or from its anchor if cut from a sheet. */
@@ -13,14 +14,10 @@ export function rigPart({ rig, trim, width, height, file }: ProcessedAsset) {
   return { parent: rig!.parent, x: trim.x - ax, y: trim.y - ay, w: width, h: height, pivot: rig!.pivot, file };
 }
 
-export async function buildReview(root: string, manifest: Manifest, composites = false) {
-  const assets: ProcessedAsset[] = manifest.assets.flatMap(a => {
-    const path = join(root, 'art/generated', assetDir(a), 'asset.json');
-    return existsSync(path) ? [JSON.parse(readFileSync(path, 'utf8')) as ProcessedAsset] : [];
-  });
-  const rigs: Record<string, Record<string, { parent: string | null; x: number; y: number; w: number; h: number; pivot: number[]; file: string }>> = {};
+/** Every rig's parts by rig name, and the scene each rig is in. */
+export function rigsOf(assets: ProcessedAsset[]) {
+  const rigs: Record<string, Record<string, ReturnType<typeof rigPart>>> = {};
   const rigScenes: Record<string, string> = {};
-  for (const asset of assets) saveProvenance(root, asset);
   for (const asset of assets) if (asset.rig) {
     const { name, part } = asset.rig;
     const rig = rigs[name] ??= {};
@@ -28,10 +25,17 @@ export async function buildReview(root: string, manifest: Manifest, composites =
     // Source-space trim offsets preserve registration when independently keyed parts are trimmed.
     rig[part] = rigPart(asset);
   }
-  const rigBounds = Object.fromEntries(Object.entries(rigs).map(([name, rig]) => {
-    const parts = Object.values(rig), x = Math.min(...parts.map(p => p.x)), y = Math.min(...parts.map(p => p.y));
-    return [name, { x, y, w: Math.max(...parts.map(p => p.x+p.w))-x, h: Math.max(...parts.map(p => p.y+p.h))-y }];
-  }));
+  return { rigs, rigScenes };
+}
+
+export async function buildReview(root: string, manifest: Manifest, composites = false) {
+  const assets: ProcessedAsset[] = manifest.assets.flatMap(a => {
+    const path = join(root, 'art/generated', assetDir(a), 'asset.json');
+    return existsSync(path) ? [JSON.parse(readFileSync(path, 'utf8')) as ProcessedAsset] : [];
+  });
+  for (const asset of assets) saveProvenance(root, asset);
+  const { rigs, rigScenes } = rigsOf(assets);
+  const rigBounds = rigBoundsOf(rigs);
   const centre = (r: { x: number; y: number; w: number; h: number }) => ({ x: Math.round(r.x + r.w / 2), y: Math.round(r.y + r.h / 2) });
   const sourceScenes = [
     { ...OVERWORLD, arrival: centre(OVERWORLD.districts.flatMap(d => d.venues.flatMap(v => v.props)).find(p => p.id === 'welcome')!.rect), props: [
@@ -56,5 +60,8 @@ export async function buildReview(root: string, manifest: Manifest, composites =
   writeFileSync(join(root, 'art/generated/review.json'), JSON.stringify({ scenes, assets, rigs, rigBounds, rigDrawOrder: RIG_DRAW_ORDER,
     pending: manifest.assets.filter(a => !assets.some(p => p.id === a.id)).map(a => a.id) }, null, 2) + '\n');
   console.log(`Review data: ${assets.length}/${manifest.assets.length} assets. art/review.html`);
+  // The sizes the site fetches (deliver.ts), for every cut-out that has none or whose drawn size changed.
+  const delivered = deliver(root, assets, manifest.sceneLayouts, rigBounds);
+  if (delivered) console.log(`Delivery sizes: wrote ${delivered}.`);
   if (composites) compose(root, scenes, assets, rigs, rigBounds);
 }

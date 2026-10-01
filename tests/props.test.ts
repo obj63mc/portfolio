@@ -3,6 +3,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { DENSITIES, deliveries, rigBoundsOf, webpSize } from '../scripts/art/deliver.ts';
+import { rigsOf } from '../scripts/art/review.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES, artOf, propsOf } from '../src/lib/scenes/index.ts';
 import { CLICK_MS, GAZE, HOVER_MS, RIDER, SCROLL_SPEED, TURNS, blink, chase, gaze, glint, hover, moose, pop, progress, rider, ripples, scrolled, turned } from '../src/lib/engine/motion.ts';
@@ -21,6 +24,37 @@ test('every prop resolves to its cut-outs or a rig in its scene; the track is it
 			for (const id of art)
 				assert.ok(existsSync(generated(`${s.id}/${id}/image.webp`)) || existsSync(generated(`${s.id}/${id}-rig.json`)), `${s.id}/${p.id}: ${id}`);
 		}
+});
+
+// The site fetches a cut-out at the size it draws it, never its original (scripts/art/deliver.ts): the art pipeline writes
+// each one's delivery sizes, and this holds a build to them wherever it is made, without ImageMagick.
+test('every cut-out the site draws is delivered at both densities, at the size it is drawn', () => {
+	const manifest = JSON.parse(readFileSync(new URL('../art/manifest.json', import.meta.url), 'utf8'));
+	const assets = manifest.assets.map((a: { scene: string; id: string }) => JSON.parse(readFileSync(generated(`${a.scene}/${a.id}/asset.json`), 'utf8')));
+	const due = deliveries(assets, manifest.sceneLayouts, rigBoundsOf(rigsOf(assets).rigs));
+	for (const d of due) {
+		assert.ok(existsSync(generated(d.file)), `${d.file}: npm run art:review writes it`);
+		assert.deepEqual(webpSize(fileURLToPath(generated(d.file))), d.size, `${d.file}: npm run art:review rewrites it`);
+		assert.ok(d.size.w <= d.asset.width && d.size.h <= d.asset.height, `${d.file} is never larger than its original`);
+	}
+	// What the engine asks for: each prop's cut-outs and its rig's parts, the scenery drawn over the cursors, and the
+	// overworld's scenery the plate doesn't paint.
+	const delivered = new Set(due.map((d) => d.file));
+	for (const s of scenes) {
+		const scenery = 'walkBehind' in s ? s.walkBehind.map((w) => w.key) : [...s.river.bridges.map((b) => b.key), 'signpost', 'door', 'rider', ...s.track.cover, s.track.sign, ...s.marquee.art];
+		for (const id of [...propsOf(s).flatMap((p) => artOf(s, p)), ...s.foreground.map((c) => c.key), ...scenery]) {
+			const original = `${s.id}/${id}/image.webp`;
+			const files: string[] = existsSync(generated(original))
+				? [original]
+				: Object.values(JSON.parse(readFileSync(generated(`${s.id}/${id}-rig.json`), 'utf8')) as Record<string, { file: string }>).map((p) => p.file);
+			for (const file of files) for (const density of DENSITIES) assert.ok(delivered.has(file.replace('image.webp', `${density}.webp`)), `${file} at ${density}`);
+		}
+	}
+	// A rig's parts are delivered as the manifest lays the rig out, which is the size the site fits it into: the moose's
+	// prop rect here, the rider's below.
+	const layout = manifest.sceneLayouts.overworld.rigs.find((r: { name: string }) => r.name === 'moose').rect;
+	const moose = propsOf(OVERWORLD).find((p) => artOf(OVERWORLD, p).includes('moose'))!.rect;
+	assert.deepEqual({ w: layout.w, h: layout.h }, { w: moose.w, h: moose.h });
 });
 
 test('the rider rests where the art manifest lays it out, and rides the track from there', () => {

@@ -10,7 +10,7 @@ import FILES from './sound-files.json';
 import { GAME_LOOPS, LEVEL, OVERLAP, envelope, fadeOf, gameGains, gains, leavingGains, loopsFor, loopsNeeded, nextPass, playhead, type Fade, type LoopId } from './loops.ts';
 import { KEY } from './saved.ts';
 import { saved } from './saved.svelte.ts';
-import { GAME_SOUNDS, LINGER, needed, stale, type SoundId } from './sound.ts';
+import { GAME_SOUNDS, LINGER, ONE_SHOTS, needed, stale, type SoundId } from './sound.ts';
 import type { Overworld, Point, SubScene } from './scenes/types';
 
 type Scene = Overworld | SubScene;
@@ -177,7 +177,13 @@ function wake() {
 	if (ctx.state !== 'running') ctx.resume().catch(() => {});
 }
 
-/** Fetches and decodes the sounds not yet held; nothing before Join or while muted. */
+const ONE_SHOT: ReadonlySet<AudioId> = new Set(ONE_SHOTS);
+
+/**
+ * Fetches and decodes the sounds not yet held; nothing before Join or while muted. The loops, megabytes between them
+ * (the theme alone is two), are asked for at low priority, so they come after the scene's pictures and the one-shots, a
+ * few kilobytes each, and fade in when they arrive.
+ */
 function load(ids: Iterable<AudioId>) {
 	const c = ctx, { signal } = fetches;
 	if (!c || !joined || !saved.sound) return;
@@ -186,7 +192,7 @@ function load(ids: Iterable<AudioId>) {
 		if (!u || buffers.has(id)) continue;
 		const loading: Buffer = { is: 'loading', signal };
 		buffers.set(id, loading);
-		fetch(u, { signal })
+		fetch(u, { signal, priority: ONE_SHOT.has(id) ? 'auto' : 'low' })
 			.then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`${u}: ${r.status}`))))
 			.then((data) => c.decodeAudioData(data))
 			.then(

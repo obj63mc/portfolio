@@ -10,10 +10,11 @@ import { GAME, artOf, propsOf } from '../scenes/index.ts';
 import type { Overworld, Point, Prop, Rect, SubScene } from '../scenes/types';
 import { drawCourse } from './course-overlay.ts';
 import { MARQUEE, loadFaces, settled } from './fonts.ts';
+import type { Loader, Loading } from './loader.ts';
 import { CLICK_MS, KOI, WATER, blink, chase, gaze, glint, hover, koi, moose, pop, progress, ripples, rider, scrolled, turned, type Pose } from './motion.ts';
 import { LOOP, along } from './track.ts';
 
-/** A rig part in its master's px: its parent, its pivot as fractions of itself, and its file under art/generated. */
+/** A rig part in its master's px: its parent, its pivot as fractions of itself, and its original's file under art/generated. */
 interface Part {
 	parent: string | null;
 	x: number;
@@ -24,17 +25,11 @@ interface Part {
 	file: string;
 }
 
-// Cut-outs by path, never inlined (the page's CSP has no data: source). The scene plates and the masters they are cut
-// from stay out of the build: the tiles are the plates. So does the rider's pedal sheet, whose frames are cut-outs.
-const IMAGES = import.meta.glob<string>(
-	[
-		'/art/generated/*/*/image.webp',
-		'!/art/generated/*/*-master/image.webp',
-		'!/art/generated/overworld/rider-sheet/image.webp',
-		'!/art/generated/{overworld,slu,foundry,moosylvania,side-project,brennans}/{overworld,slu,foundry,moosylvania,side-project,brennans}/image.webp'
-	],
-	{ eager: true, query: '?no-inline', import: 'default' }
-);
+// Cut-outs by path, never inlined (the page's CSP has no data: source): each one's delivery sizes (scripts/art/deliver.ts),
+// the size it is drawn at with the session's 1.25 or 2 image px per world px, so a frame never scales down 2000 px art
+// and a visit never fetches it. Their lossless originals (`image.webp`), the scene plates and the masters they are cut
+// from stay out of the build: the tiles are the plates.
+const IMAGES = import.meta.glob<string>('/art/generated/*/*/{1.25,2}.webp', { eager: true, query: '?no-inline', import: 'default' });
 /** Each cut-out's world rect as the art pipeline registered it (asset.json); rig parts have none. */
 const WORLDS = import.meta.glob<Rect>(
 	['/art/generated/*/*/asset.json', '!/art/generated/*/*-master/asset.json', '!/art/generated/overworld/{moose,rider}-*/asset.json'],
@@ -102,6 +97,9 @@ interface Layer {
 	clicked: number;
 	/** What it last drew, so a still layer isn't drawn again. */
 	drawn: string;
+	/** Its cut-outs on their way, and whether the layer has been in view, which puts them first in line. */
+	loading: Loading[];
+	seen: boolean;
 }
 
 /**
@@ -137,22 +135,31 @@ const byBase = (a: Layer, b: Layer) => a.box.y + a.box.h - (b.box.y + b.box.h);
 /** The id of the prop whose button a click in the prerendered layer landed on, if any. */
 export const clickedProp = (e: Event) => (e.target as Element).closest<HTMLElement>('.prop > button')?.parentElement?.dataset.prop;
 
-/** A cut-out at its world size in the session's density, so a frame never scales down 2000 px art. */
-function load(url: string, w: number, h: number) {
-	return fetch(url)
-		.then((r) => r.blob())
-		.then((b) => createImageBitmap(b, { resizeWidth: Math.max(1, Math.round(w)), resizeHeight: Math.max(1, Math.round(h)), resizeQuality: 'high' }));
-}
+/** A cut-out's or rig part's delivery file at `density`, from its original's path under art/generated. */
+const delivery = (file: string, density: number): string | undefined => IMAGES[`/art/generated/${file.replace(/image\.webp$/, `${density}.webp`)}`];
 
 /**
  * A scenery cut-out in art/generated/<scene>/<id>/ for the overlay canvas (scenery.ts, buildout ticket 19): its world rect
- * as the art pipeline registered it, else `rect`, and its bitmap loading at `density`; null for one with no art.
+ * as the art pipeline registered it, else `rect`, and its bitmap on its way at `density`, in its turn until the cut-out
+ * is in view; null for one with no art.
  */
-export function cutout(scene: string, id: string, rect: Rect, density: number) {
-	const url = IMAGES[`/art/generated/${scene}/${id}/image.webp`];
+export function cutout(loader: Loader, scene: string, id: string, rect: Rect, density: number) {
+	const url = delivery(`${scene}/${id}/image.webp`, density);
 	if (!url) return null;
-	const world = WORLDS[`/art/generated/${scene}/${id}/asset.json`] ?? rect;
-	return { rect: world, bmp: load(url, world.w * density, world.h * density) };
+	return { rect: WORLDS[`/art/generated/${scene}/${id}/asset.json`] ?? rect, loading: loader.image(url, 'soon') };
+}
+
+/**
+ * The delivery files of the cut-outs and rig parts of `scene` that stand in `view` (world px), at `density`: what
+ * landing there fetches at once, for the engine to fetch ahead of the hop.
+ */
+export function artIn(scene: Overworld | SubScene, density: number, view: Rect): string[] {
+	const dir = `/art/generated/${scene.id}/`, near = grow(view, REACH);
+	const cuts = Object.entries(WORLDS).flatMap(([path, rect]) => (path.startsWith(dir) && rect && overlaps(rect, near) ? [path.slice('/art/generated/'.length).replace('asset.json', 'image.webp')] : []));
+	const parts = propsOf(scene)
+		.filter((p) => overlaps(p.rect, near))
+		.flatMap((p) => artOf(scene, p).flatMap((id) => Object.values(RIGS[`${dir}${id}-rig.json`] ?? {}).map((part) => part.file)));
+	return [...new Set([...cuts, ...parts])].flatMap((file) => delivery(file, density) ?? []);
 }
 
 export class Props {
@@ -174,12 +181,17 @@ export class Props {
 	private scratch: OffscreenCanvas | undefined;
 	private listeners = new AbortController();
 	private layer: HTMLElement;
+	private loader: Loader;
 	/** Dev only, with `?course` in the URL: the lap timer's course drawn over the loop (course-overlay.ts). */
 	private course = import.meta.env.DEV && new URLSearchParams(location.search).has('course');
 
-	/** `layer` is the prerendered layer: its prop buttons are the hit targets, and their clicks open the cards. */
-	constructor(layer: HTMLElement) {
+	/**
+	 * `layer` is the prerendered layer: its prop buttons are the hit targets, and their clicks open the cards. The cut-outs
+	 * come through `loader`.
+	 */
+	constructor(layer: HTMLElement, loader: Loader) {
 		this.layer = layer;
+		this.loader = loader;
 		loadFaces(BOARD.font);
 		// Opening a card is the click (spec: "Cards"): a click, a tap, Enter or Space, or the engine clicking under the cursor.
 		layer.addEventListener(
@@ -210,7 +222,7 @@ export class Props {
 			// describe their bulbs and eye, which are cut-outs too.)
 			const name = art.find((id) => !world(id) && RIGS[`/art/generated/${scene.id}/${id}-rig.json`]) as 'moose' | 'rider' | undefined;
 			const rig = name && at && this.rig(scene.id, name, at);
-			return { prop, box: union([...cuts.map((c) => c.rect), ...(rig ? [rig.at] : [])]), cuts, rig, hover: 0, clicked: -Infinity, drawn: '' };
+			return { prop, box: union([...cuts.map((c) => c.rect), ...(rig ? [rig.at] : [])]), cuts, rig, hover: 0, clicked: -Infinity, drawn: '', loading: [], seen: false };
 		};
 		this.layers = propsOf(scene).map((p) => layer(p, artOf(scene, p), p.rect)).filter((l) => l.cuts.length || l.rig);
 		this.line = null;
@@ -224,7 +236,7 @@ export class Props {
 			this.layers.push(...[...scene.track.cover, scene.track.sign].map((id) => layer(undefined, [id])));
 			this.layers.push({ ...layer(undefined, scene.marquee.art), board: { face: scene.marquee.face, text: scene.marquee.text } });
 			const swim = scene.districts.flatMap((d) => d.venues).find((v) => v.id === GAME)?.rect;
-			if (swim) this.layers.push({ box: swim, cuts: [], koi: swim, hover: 0, clicked: -Infinity, drawn: '' });
+			if (swim) this.layers.push({ box: swim, cuts: [], koi: swim, hover: 0, clicked: -Infinity, drawn: '', loading: [], seen: false });
 			this.line = { ...along(LOOP, 0), half: LOOP.half };
 			const m = scene.river.mask, x = Math.min(...m.map((p) => p.x)), y = Math.min(...m.map((p) => p.y));
 			this.river = { is: scene.river, box: { x, y, w: Math.max(...m.map((p) => p.x)) - x, h: Math.max(...m.map((p) => p.y)) - y }, drawn: -1 };
@@ -237,17 +249,23 @@ export class Props {
 		this.layers.sort(byBase);
 		const bottles = this.layers.filter((l) => isBottle(l.prop));
 		this.row = bottles.length ? union(bottles.map((l) => l.box)) : null;
-		// Every cut-out and rig part, at the size it is drawn.
+		// Every cut-out and rig part, at the size it is drawn: each in its turn, once the view's tiles are in, and first in
+		// line when its layer comes into view (`step`).
 		const arrive = (bmp: ImageBitmap, set: (b: ImageBitmap) => void) => {
 			if (gen !== this.generation) return bmp.close();
 			set(bmp);
 			this.arrived = true;
 		};
+		const load = (l: Layer, file: string, set: (b: ImageBitmap) => void) => {
+			const url = delivery(file, density);
+			if (!url) return Promise.reject(new Error(`${file}: no art`));
+			const loading = this.loader.image(url, 'soon');
+			l.loading.push(loading);
+			return loading.bmp.then((bmp) => arrive(bmp, set));
+		};
 		for (const l of this.layers) {
 			for (const c of l.cuts) {
-				const url = IMAGES[`/art/generated/${scene.id}/${c.id}/image.webp`];
-				load(url, c.rect.w * density, c.rect.h * density)
-					.then((bmp) => arrive(bmp, (b) => (c.bmp = b)))
+				load(l, `${scene.id}/${c.id}/image.webp`, (b) => (c.bmp = b))
 					.then(() => {
 						if (c.id === 'mc-eye' && c.bmp) {
 							const [ball, iris] = split(c.bmp);
@@ -259,11 +277,7 @@ export class Props {
 					})
 					.catch(() => {}); // a failed cut-out leaves its painted original, or nothing
 			}
-			const k = l.rig && Math.min(l.rig.at.w / l.rig.bounds.w, l.rig.at.h / l.rig.bounds.h) * density;
-			for (const p of l.rig?.parts ?? [])
-				load(IMAGES[`/art/generated/${p.file}`], p.w * k!, p.h * k!)
-					.then((bmp) => arrive(bmp, (b) => (p.bmp = b)))
-					.catch(() => {});
+			for (const p of l.rig?.parts ?? []) load(l, p.file, (b) => (p.bmp = b)).catch(() => {});
 		}
 	}
 
@@ -292,6 +306,10 @@ export class Props {
 				if (rode && overlaps(grow(was, REACH), view)) changed.push(grow(was, REACH));
 			}
 			if (!overlaps(grow(l.box, REACH), view)) continue;
+			if (!l.seen) {
+				l.seen = true;
+				for (const loading of l.loading) loading.first();
+			}
 			const look = this.look(l);
 			if (look !== l.drawn) (l.drawn = look), changed.push(grow(l.box, REACH));
 		}
@@ -683,6 +701,7 @@ export class Props {
 
 	private clear() {
 		this.generation++;
+		for (const l of this.layers) for (const loading of l.loading) loading.cancel();
 		for (const l of this.layers) for (const b of [...l.cuts.flatMap((c) => [c.bmp, c.lid, c.ball, c.iris, c.lit]), ...(l.rig?.parts.map((p) => p.bmp) ?? [])]) b?.close();
 		this.layers = [];
 	}
