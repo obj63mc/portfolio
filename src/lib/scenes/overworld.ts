@@ -116,8 +116,7 @@ const districts: District[] = [
 						id: 'ride-sign',
 						name: 'Ride sign',
 						gist: 'longest ride 160 miles',
-						// The bike's card went (Joe, 2026-09-30); its Strava link came here.
-						links: [{ label: 'Strava', href: 'https://www.strava.com/athletes/8703625' }],
+						// The bike's card went (Joe, 2026-09-30); its Strava link came here, and is in the copy alone (Joe, 2026-10-01).
 						rect: { x: 1992, y: 1806, w: 78, h: 94 }
 					}
 				]

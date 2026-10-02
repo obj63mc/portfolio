@@ -34,11 +34,11 @@ test('consent at load: no id is off, GPC never loads, a stored choice stands, el
 test('contact clicks: the resume, email, LinkedIn, GitHub and Strava links, wherever a card has them; nothing else', () => {
 	const base = 'https://barmadden.com/';
 	// The welcome sign's copy carries the resume and the contacts since the signpost lost them (Joe, 2026-10-01).
-	const contacts = ['/resume.pdf', 'mailto:joe@example.com', 'https://www.linkedin.com/in/someone', 'https://github.com/obj63mc'].map((href) => contactMethod(href, base));
-	assert.deepEqual(contacts, ['resume', 'email', 'linkedin', 'github']);
+	const contacts = ['/resume.pdf', 'mailto:joe@example.com', 'https://www.linkedin.com/in/someone', 'https://github.com/obj63mc', 'https://www.strava.com/athletes/8703625'].map((href) => contactMethod(href, base));
+	assert.deepEqual(contacts, ['resume', 'email', 'linkedin', 'github', 'strava']);
 	const cards = [...OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props)), ...SLU.props].flatMap((p) => p.links ?? []);
-	// The lab workstation's GitHub link is in its copy alone (Joe, 2026-10-01).
-	assert.deepEqual(new Set(cards.map((l) => contactMethod(l.href, base))), new Set(['strava']));
+	// The lab workstation's GitHub link and the ride sign's Strava link are in their copy alone (Joe, 2026-10-01).
+	assert.deepEqual(new Set(cards.map((l) => contactMethod(l.href, base))), new Set());
 	for (const href of ['#belleville', '/moosylvania', '/#slu', 'https://example.com/resume', 'https://notgithub.com/x', 'javascript:void 0', 'http://[bad'])
 		assert.equal(contactMethod(href, base), null, href);
 	assert.equal(contactMethod('https://gist.github.com/obj63mc', base), 'github');

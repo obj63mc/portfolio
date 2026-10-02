@@ -134,7 +134,10 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	assert.equal(links('workstation'), '');
 	const workstation = main(page('slu.html')).match(/<dialog[^>]*aria-labelledby="card-workstation-title"[\s\S]*?<\/dialog>/)![0];
 	assert.equal(workstation.match(/href="https:\/\/github\.com\/obj63mc"/g)?.length, 1);
-	assert.match(links('ride-sign'), /strava\.com/);
+	// So is the ride sign's Strava link (Joe, 2026-10-01).
+	assert.equal(links('ride-sign'), '');
+	const rideSign = main(page('index.html')).match(/<dialog[^>]*aria-labelledby="card-ride-sign-title"[\s\S]*?<\/dialog>/)![0];
+	assert.equal(rideSign.match(/href="https:\/\/www\.strava\.com\/athletes\/8703625"/g)?.length, 1);
 	// Easter eggs: their click is the grant, with no card (Joe, 2026-09-30).
 	for (const id of ['moose', 'moose-statue', 'bike', 'mc-eye']) assert.equal(allProps.find((p) => p.id === id)!.kind, 'action', id);
 });
