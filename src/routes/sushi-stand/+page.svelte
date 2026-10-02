@@ -8,18 +8,18 @@
 	// header, drops it for a new one.
 	import { onMount, tick, untrack } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
-	import { saved } from '$lib/saved.svelte';
-	import { sound } from '$lib/sound.svelte';
-	import type { Stand } from '$lib/saved';
-	import { SUSHI } from '$lib/scenes';
-	import { NAME_MAX, type Game, type Kept, type Meal } from '$lib/sushi/game';
+	import { saved } from '#lib/saved.svelte.ts';
+	import { sound } from '#lib/sound.svelte.ts';
+	import type { Stand } from '#lib/saved.ts';
+	import { SUSHI } from '#lib/scenes/index.ts';
+	import { NAME_MAX, type Game, type Kept, type Meal } from '#lib/sushi/game.ts';
 	import {
 		BOOST_COST, DAYS, FISH, PIECES_PER_LB, conditions, dinner, dollars, expenses, lunch, market, pieceCost, profit, total,
 		type Boost, type Conditions, type Day, type FishId, type Item, type Sold
-	} from '$lib/sushi/rules';
-	import lunchVideo from '$lib/sushi/lunch.mp4';
-	import dinnerVideo from '$lib/sushi/dinner.mp4';
-	import sixPack from '$lib/sushi/six-pack.svg?no-inline';
+	} from '#lib/sushi/rules.ts';
+	import lunchVideo from '#lib/sushi/lunch.mp4';
+	import dinnerVideo from '#lib/sushi/dinner.mp4';
+	import sixPack from '#lib/sushi/six-pack.svg?no-inline';
 
 	const IMG = import.meta.glob<string>('/src/lib/sushi/img/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 	const img = (name: string) => IMG[`/src/lib/sushi/img/${name}.webp`];
@@ -610,7 +610,7 @@
 	 */
 	.sushi {
 		--board-pad: clamp(1.25rem, 0.8rem + 2vw, 2.25rem);
-		--skyline: url('$lib/sushi/img/day-bg.webp');
+		--skyline: url('../../lib/sushi/img/day-bg.webp');
 		--pavement: #424242;
 		/* What a phone's toolbars take when they show: the large viewport less the small. */
 		--toolbars: calc(100lvh - 100svh);
@@ -645,7 +645,7 @@
 		}
 
 		&.night {
-			--skyline: url('$lib/sushi/img/night-bg.webp');
+			--skyline: url('../../lib/sushi/img/night-bg.webp');
 			--pavement: #282828;
 			background: #56626a;
 		}

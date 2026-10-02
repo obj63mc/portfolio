@@ -1,11 +1,11 @@
 // Analytics on the page (spec: "Analytics"; buildout ticket 23): GA4's bundled `dataLayer` and `gtag()` queue, gtag.js
 // loaded after the first frame when the idle browser gets to it, the consent bar's state, and the six events; and beside
 // it Cloudflare Web Analytics' beacon, under the same consent (Joe, 2026-10-01), loaded where gtag.js is and nowhere
-// else. Only a production build has a measurement ID and a beacon token (svelte.config.js); in any other there is no
+// else. Only a production build has a measurement ID and a beacon token (scripts/build-env.ts); in any other there is no
 // queue, no script and no bar, and every event below is a call to nothing. The rules are analytics/consent.ts's, what
 // reaches gtag analytics/tracker.ts's; the choice persists through saved.svelte.ts.
-import { browser } from '$app/environment';
-import { PUBLIC_CF_BEACON, PUBLIC_GA_ID } from '$env/static/public';
+import { browser } from '$app/env';
+import { PUBLIC_CF_BEACON, PUBLIC_GA_ID } from '$app/env/public';
 import { contactMethod, european, initial, sceneOf, type Choice, type Consent } from './analytics/consent.ts';
 import { Tracker, type Gtag } from './analytics/tracker.ts';
 import { saved } from './saved.svelte.ts';

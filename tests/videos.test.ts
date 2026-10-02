@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { keyOf, sourceOf } from '../scripts/media.ts';
 import { MOOSYLVANIA } from '../src/lib/scenes/moosylvania.ts';
 import { TV_FOLDERS, local, plan, sources, used, type Manifest } from '../scripts/videos.ts';
-import { mediaUrl } from '../svelte.config.js';
+import { mediaUrl } from '../scripts/build-env.ts';
 
 const manifest: Manifest = JSON.parse(readFileSync(new URL('../src/lib/video-files.json', import.meta.url), 'utf8'));
 

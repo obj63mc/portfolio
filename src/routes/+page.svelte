@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { OVERWORLD as overworld } from '$lib/scenes/overworld';
-	import { at, leftToRight } from '$lib/scenes/index';
-	import PropCard from '$lib/Prop.svelte';
-	import skyline from '$lib/brand/skyline.webp?no-inline';
+	import { OVERWORLD as overworld } from '#lib/scenes/overworld.ts';
+	import { at, leftToRight } from '#lib/scenes/index.ts';
+	import PropCard from '#lib/Prop.svelte';
+	import skyline from '#lib/brand/skyline.webp?no-inline';
 </script>
 
 <svelte:head>

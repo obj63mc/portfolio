@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { screenGist } from '../src/lib/scenes/foundry.ts';
-import { beaconToken, measurementId, mediaUrl } from '../svelte.config.js';
+import { beaconToken, measurementId, mediaUrl } from '../scripts/build-env.ts';
 
 const page = (file: string) => readFileSync(new URL(`../build/${file}`, import.meta.url), 'utf8');
 const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));

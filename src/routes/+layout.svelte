@@ -8,13 +8,13 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
-	import { GA_ID, bar, pageView } from '$lib/analytics.svelte';
-	import Consent from '$lib/Consent.svelte';
-	import type { Engine } from '$lib/engine/engine';
-	import LapBoard from '$lib/LapBoard.svelte';
-	import SoundToggle from '$lib/SoundToggle.svelte';
-	import skyline from '$lib/brand/skyline.webp?no-inline';
-	import { sceneAt } from '$lib/scenes';
+	import { GA_ID, bar, pageView } from '#lib/analytics.svelte.ts';
+	import Consent from '#lib/Consent.svelte';
+	import type { Engine } from '#lib/engine/engine.ts';
+	import LapBoard from '#lib/LapBoard.svelte';
+	import SoundToggle from '#lib/SoundToggle.svelte';
+	import skyline from '#lib/brand/skyline.webp?no-inline';
+	import { sceneAt } from '#lib/scenes/index.ts';
 
 	let { children } = $props();
 	let scene: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, join: HTMLDialogElement, paused: HTMLDialogElement;
@@ -39,7 +39,7 @@
 		// A page with no scene, or an engine that can't start, is the plain document, shown (app.css).
 		document.documentElement.classList.toggle('plain', !shown || failed);
 		if (!shown) return void started?.suspend(to.url.pathname);
-		engine ??= import('$lib/engine/engine')
+		engine ??= import('#lib/engine/engine.ts')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
 			.catch((err) => {
 				failed = true;

@@ -1,16 +1,11 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
+	"extends": "$app/tsconfig",
 	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
-		"types": ["node"]
-	}
+		"types": ["$app/types", "node"]
+	},
+	// The Worker, the scripts and the tests are type-checked with the site; left out, the editor puts them in an inferred
+	// project, which under TypeScript 6 loads no @types and so reports @types/node as missing.
+	"include": ["src", "tests", "worker", "scripts", "*"]
 }

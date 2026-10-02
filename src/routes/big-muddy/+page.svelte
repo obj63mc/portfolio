@@ -8,12 +8,12 @@
 	// (+layout.svelte), and its exit lands back at the angler.
 	import { onMount, tick } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
-	import { draw, type Art } from '$lib/big-muddy/draw';
-	import { SPECIES, STEP, VIEW, afterCatch, afterSnag, depthOf, speciesOf, start, step, type Catch, type End, type Lure, type Run } from '$lib/big-muddy/rules';
-	import { KEYS } from '$lib/engine/camera';
-	import { saved } from '$lib/saved.svelte';
-	import { BIG_MUDDY } from '$lib/scenes';
-	import { sound } from '$lib/sound.svelte';
+	import { draw, type Art } from '#lib/big-muddy/draw.ts';
+	import { SPECIES, STEP, VIEW, afterCatch, afterSnag, depthOf, speciesOf, start, step, type Catch, type End, type Lure, type Run } from '#lib/big-muddy/rules.ts';
+	import { KEYS } from '#lib/engine/camera.ts';
+	import { saved } from '#lib/saved.svelte.ts';
+	import { BIG_MUDDY } from '#lib/scenes/index.ts';
+	import { sound } from '#lib/sound.svelte.ts';
 
 	// The cut-outs at their larger delivery size, as the art pipeline wrote them; none until it has.
 	const IMG = import.meta.glob<string>('/art/generated/big-muddy/*/2.webp', { eager: true, query: '?no-inline', import: 'default' });

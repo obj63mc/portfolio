@@ -35,7 +35,7 @@ The site opens on the **overworld**: one connected, illustrated map of St. Louis
 
 | Part | What it uses |
 | --- | --- |
-| Pages | SvelteKit 2 with Svelte 5 (runes), prerendered to static files by `adapter-static` |
+| Pages | SvelteKit 3 with Svelte 5 (runes) on Vite 8, prerendered to static files by `adapter-static` 4 |
 | Language | TypeScript, strict; plain nested CSS with no preprocessor or utility framework |
 | Scene rendering | The site's own canvas engine in `src/lib/engine/`, drawing tiled backgrounds, props, scenery and cursors |
 | Multiplayer | One Cloudflare Worker and Durable Objects over WebSockets (`worker/`) |
@@ -129,6 +129,7 @@ tests/                   *.test.ts for Node's test runner, *.spec.ts for Playwri
 docs/                    ADRs, the performance report, the audio licence ledger, research, agent conventions
 CONTEXT.md               The glossary
 AGENTS.md, CLAUDE.md     Instructions and coding standards for AI agents (kept in step with each other)
+vite.config.ts           Vite's config and SvelteKit's (the `sveltekit()` plugin's options): adapter and page policy
 wrangler.toml            The Worker, its static assets and its Durable Objects
 ```
 
@@ -187,6 +188,7 @@ Tests never assert on copy. They locate elements by `href`, class or `data-prop`
 
 - **TypeScript:** data crossing a trust boundary enters as `unknown` and is narrowed; state machines are discriminated unions. Modules the Node test runner imports use erasable syntax only (no `enum`, `namespace` or parameter properties).
 - **Svelte 5 in runes mode:** `$props`, `$state` and `$derived`, with `$effect` kept for syncing with the outside world.
+- **Imports:** `#lib/...` with the file's extension (SvelteKit 3's subpath import, in `package.json`), `$app/env` and `$app/env/public`; the public build variables are declared in `src/env.ts`.
 - **CSS:** plain and nested, Baseline features only. Component styles live in the component; global styles in `src/app.css`.
 - **Language:** use the glossary's terms from `CONTEXT.md` in code, comments and docs.
 

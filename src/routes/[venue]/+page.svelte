@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import SubScene from '$lib/SubScene.svelte';
+	import SubScene from '#lib/SubScene.svelte';
 
 	let { data }: PageProps = $props();
 </script>

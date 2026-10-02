@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { REGIONS, contactMethod, european, initial, sceneOf, type Consent } from '../src/lib/analytics/consent.ts';
 import { Tracker } from '../src/lib/analytics/tracker.ts';
-import { beaconToken, measurementId } from '../svelte.config.js';
+import { beaconToken, measurementId } from '../scripts/build-env.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import { SLU } from '../src/lib/scenes/slu.ts';
 
