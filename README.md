@@ -58,7 +58,7 @@ The engine (`src/lib/engine/`) loads after the page has mounted and takes over t
 2. **The prerendered layer** (`<main>`) sits over that canvas as transparent buttons, links and headings, each placed at its world rect. The camera moves the whole layer with one CSS transform, so every hit target stays over its painted pixels.
 3. **The cursor canvas** is on top: every cursor, the scenery that covers cursors, and the iris that closes and opens between scenes.
 
-**Coordinates and scale.** Everything is measured in world pixels (ADR 0001). The render scale is fixed for the session: 1 on a screen 768 px or more on its shorter side, 0.6 on anything smaller. The device pixel ratio is capped at 2. The camera is the world point at the view's top-left corner, clamped to the scene's bounds.
+**Coordinates and scale.** Everything is measured in world pixels. The render scale is fixed for the session: 1 on a screen 768 px or more on its shorter side, 0.6 on anything smaller. The device pixel ratio is capped at 2. The camera is the world point at the view's top-left corner, clamped to the scene's bounds.
 
 **Tiles.** Each scene's background is cut into 512 world-px tiles at two densities, 1.25 and 2 image px per world px, under `art/generated/<scene>/<scene>/<density>/<column>-<row>.webp`. The session uses 1.25 where that covers scale × DPR and 2 otherwise. Each time the camera moves, the engine works out three ranges of tiles from the camera and the view:
 
@@ -85,7 +85,7 @@ Nothing in steps 3 or 4 starts while something in view is still coming. How many
 4. Redraws the scene canvas only if something on it changed. A camera move or a newly arrived tile redraws the whole view: backdrop, tiles, then props in order of their base y. A prop moving on a still camera redraws only its own area, clipped, so an idle animation never repaints the screen.
 5. Redraws the cursor canvas.
 
-Tile edges are rounded to device pixels from world coordinates, so neighbouring tiles meet without seams.
+Tile edges are rounded to device pixels from world coordinates, so neighboring tiles meet without seams.
 
 **Props.** A prop's art is one or more cut-outs delivered at the two tile densities, or a rig of parts with pivots (the moose, the rider, the marquee) tweened in code (`motion.ts`). Ambient motion freezes on a resting frame under reduced motion. The DOM layer stays the hit target: the engine reads which button is hovered, focused or clicked and plays the matching reaction on the canvas.
 
