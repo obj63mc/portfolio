@@ -9,7 +9,7 @@ export const SLU: SubScene = {
 	id: 'slu',
 	title: 'Saint Louis University, Midtown',
 	description:
-		'Inside the Saint Louis University computer science lab: Joe Madden’s BS in Computer Science with Honors, 2005, his senior project and his GitHub.',
+		'Scene inside the Saint Louis University computer science lab: Joe Madden’s BS in Computer Science with Honors, 2005, his senior project and his GitHub.',
 	venue: 'Saint Louis University',
 	district: 'Midtown',
 	w: 2845,

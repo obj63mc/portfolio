@@ -17,7 +17,7 @@ export const MOOSYLVANIA: SubScene = {
 	id: 'moosylvania',
 	title: 'Moosylvania, Maplewood',
 	description:
-		'Inside the Moosylvania lobby, a converted church in Maplewood: the agency where Joe Madden is Chief Architect and the frontend, backend, CMS and data stacks he leads.',
+		'Scene inside the Moosylvania lobby, a converted church in Maplewood: the agency where Joe Madden is Chief Architect and the frontend, backend, CMS and data stacks he leads.',
 	venue: 'Moosylvania',
 	district: 'Maplewood',
 	w: 2400,

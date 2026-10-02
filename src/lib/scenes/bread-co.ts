@@ -11,8 +11,8 @@ import type { SubScene } from './types';
 // pastry case's contents are painted scenery, places for a prop or two more.
 export const BREAD_CO: SubScene = {
 	id: 'bread-co',
-	title: 'St. Louis Bread Co., Maplewood',
-	description: 'Inside a St. Louis Bread Co. café: the work Joe Madden has done at Moosylvania for PayPal, Venmo and Panera.',
+	title: 'St. Louis Bread Co., Lindenwood Park',
+	description: 'Scene inside a St. Louis Bread Co. café: the work Joe Madden has done at Moosylvania for PayPal, Venmo and Panera.',
 	venue: 'St. Louis Bread Co.',
 	// The overworld district its door stands in; the café the room is drawn from is on Chippewa Street.
 	district: 'Maplewood',

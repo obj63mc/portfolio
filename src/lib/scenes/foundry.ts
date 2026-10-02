@@ -93,7 +93,7 @@ export const FOUNDRY: SubScene = {
 	id: 'foundry',
 	title: 'The Foundry, Midtown',
 	description:
-		'Inside the Alamo Drafthouse theatre at City Foundry: three Universal Pictures Home Entertainment games Moosylvania built, on the screen and its posters.',
+		'Scene inside the Alamo Drafthouse theatre at City Foundry: three Universal Pictures Home Entertainment games Moosylvania built, on the screen and its posters.',
 	venue: 'The Foundry',
 	district: 'Midtown',
 	w: 2845,

@@ -38,7 +38,7 @@ export const BRENNANS: SubScene = {
 	id: 'brennans',
 	title: "Brennan's, Central West End",
 	description:
-		"Inside Brennan's on North Euclid: the cigar brands Joe Madden has built for at Moosylvania.",
+		"Scene inside Brennan's on North Euclid: the cigar brand websites Joe Madden has built at Moosylvania.",
 	venue: "Brennan's",
 	district: 'Central West End',
 	w: 2845,

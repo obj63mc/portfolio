@@ -89,7 +89,7 @@ export const SIDE_PROJECT: SubScene = {
 	id: 'side-project',
 	title: 'Side Project Cellar, Maplewood',
 	description:
-		'Inside the Side Project Cellar bar, across the street from Moosylvania: the alcohol brands Joe Madden has built for, and his favourite brewery.',
+		'Scene inside the Side Project Cellar bar, across the parking lot from Moosylvania: showcasing the alcohol brand projects Joe Madden has built, featuring his favourite brewery.',
 	venue: 'Side Project Cellar',
 	district: 'Maplewood',
 	w: 2845,

@@ -228,7 +228,7 @@ export const OVERWORLD: Overworld = {
 	id: 'overworld',
 	title: 'Welcome to the Portfolio of Joseph Madden | BarMadden.com',
 	description:
-		'Explore the portfolio of Joseph Madden, showcasing his career, client work, resume, and contact details in an explorable St. Louis setting.',
+		'Explore the portfolio of Joseph Madden, showcasing my career, client work, resume, and contact details in an explorable St. Louis setting.',
 	w: 6750,
 	h: 2700,
 	pushBand: 0.25,
