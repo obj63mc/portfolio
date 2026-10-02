@@ -2,8 +2,8 @@
 // Bassmaster giveaway (bassmaster.moosebeta.com's lib/game), as plain functions on a fixed step. The lure sinks by
 // itself and is steered left and right; fish and snags rise past it; the first touch ends the cast, a catch the heavier
 // the deeper its fish appeared. The numbers are the original's; what was changed on purpose is in
-// .scratch/big-muddy/spec.md. `rand` is Math.random in the game and a fixed sequence in tests. The page is
-// src/routes/big-muddy/+page.svelte.
+// .scratch/big-muddy/spec.md at tag archive/big-muddy. `rand` is Math.random in the game and a fixed sequence in tests.
+// The page is src/routes/big-muddy/+page.svelte.
 
 export type Rand = () => number;
 
