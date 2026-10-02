@@ -37,7 +37,8 @@ test('contact clicks: the resume, email, LinkedIn, GitHub and Strava links, wher
 	const contacts = ['/resume.pdf', 'mailto:joe@example.com', 'https://www.linkedin.com/in/someone', 'https://github.com/obj63mc'].map((href) => contactMethod(href, base));
 	assert.deepEqual(contacts, ['resume', 'email', 'linkedin', 'github']);
 	const cards = [...OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props)), ...SLU.props].flatMap((p) => p.links ?? []);
-	assert.deepEqual(new Set(cards.map((l) => contactMethod(l.href, base))), new Set(['strava', 'github']));
+	// The lab workstation's GitHub link is in its copy alone (Joe, 2026-10-01).
+	assert.deepEqual(new Set(cards.map((l) => contactMethod(l.href, base))), new Set(['strava']));
 	for (const href of ['#belleville', '/moosylvania', '/#slu', 'https://example.com/resume', 'https://notgithub.com/x', 'javascript:void 0', 'http://[bad'])
 		assert.equal(contactMethod(href, base), null, href);
 	assert.equal(contactMethod('https://gist.github.com/obj63mc', base), 'github');

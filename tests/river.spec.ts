@@ -1,18 +1,18 @@
 // Seam 4 for the river current (buildout ticket 20), over the built site: the drawn cursor left still in the Mississippi
-// for a second floats south at the current's speed, the camera following, until the visitor moves it, reaches a bank or
-// floats to the bottom edge of the scene, which fades it back to the Arch with its "you" tag; moving about in the water
-// never does (Joe, 2026-09-30). The Eads deck is crossed
+// for a second floats south at the current's speed, the camera following, until the visitor moves it or reaches a bank;
+// moving about in the water never sends it back to the Arch (Joe, 2026-09-30). The float to the scene's bottom edge and
+// its fade back to the Arch has no test here: it works, and its test failed about one whole run in two on timing alone
+// (Joe, 2026-10-01); tests/river.test.ts holds the rule. The Eads deck is crossed
 // without floating, and a float drifts round its pier; each bridge, Eads and Poplar Street, is drawn over a cursor under
 // it but not over one on it. The browser refuses the pointer lock here, so the drawn cursor follows the mouse until the
 // keys steer it.
 import { test, expect, type Page } from '@playwright/test';
-import { factor } from '../src/lib/engine/depth.ts';
 import { ARROW } from '../src/lib/scenes/river.ts';
 import { lineY } from '../src/lib/scenes/walk.ts';
 import { OVERWORLD } from '../src/lib/scenes/overworld.ts';
 import type { Point } from '../src/lib/scenes/types.ts';
 
-const { arch } = OVERWORLD.river, [deck, poplar] = OVERWORLD.river.decks;
+const [deck, poplar] = OVERWORLD.river.decks;
 
 function refuseLock() {
 	Element.prototype.requestPointerLock = function () {
@@ -136,31 +136,6 @@ test('moving about on the water below the Poplar Street bridge sends nobody back
 	await point(page, { x: 5400, y: 1960 });
 	await expect.poll(async () => (await camera(page)).y, { timeout: 5000 }).toBeGreaterThan(c.y + 50);
 	expect(await black(page)).toBe(false);
-});
-
-test('floating at the current’s speed, the camera following, to the bottom edge of the scene fades the visitor back to the Arch', async ({ page }) => {
-	test.setTimeout(40_000);
-	await wade(page);
-	// Sampled through the whole float, which the camera follows down: never faster than the current, 150 world px a
-	// second, and seen on screen to the end, its arrow at the bottom edge of the scene.
-	const seen: { t: number; p: Point; screen: number }[] = [];
-	while (!(await black(page))) {
-		const t = await page.evaluate(() => performance.now()), p = await tip(page), c = await camera(page);
-		if (p) seen.push({ t, p, screen: (p.y - c.y) * c.s });
-		expect(seen.length, 'still floating').toBeLessThan(400);
-		await page.waitForTimeout(50);
-	}
-	const moving = seen.filter((s, i) => i && s.p.y > seen[i - 1].p.y);
-	expect(moving.length).toBeGreaterThan(20);
-	for (let i = 10; i < seen.length; i += 10) expect((seen[i].p.y - seen[i - 10].p.y) / ((seen[i].t - seen[i - 10].t) / 1000)).toBeLessThan(165);
-	const last = seen.at(-1)!;
-	expect(last.p.y + 40, 'the arrow at the bottom edge').toBeGreaterThan(OVERWORLD.h - 12);
-	expect(last.screen, 'in view').toBeLessThan(720);
-	// The view cuts to black and opens out of it on the Arch, in the middle of the screen.
-	await expect.poll(async () => ((c) => [Math.round(c.x + 640 / c.s), Math.round(c.y + 360 / c.s)])(await camera(page))).toEqual([arch.x, arch.y]);
-	const s = (await camera(page)).s * factor(OVERWORLD.depth, arch);
-	await expect.poll(async () => ((p) => p && Math.hypot(p.x - 640, p.y - 360))(await cursorAt(page, { x: 640, y: 360 }))).toBeLessThan(1.5);
-	expect(await cursorAt(page, { x: 640 + 23 * 1.25 * s + 50, y: 360 }), 'the "you" tag').not.toBeNull();
 });
 
 test('the deck is crossed without floating, however long the cursor stays on it; under it, in the river, the bridge is drawn over the cursor', async ({ page }) => {

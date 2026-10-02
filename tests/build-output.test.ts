@@ -130,7 +130,10 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 	assert.equal(ids.size, allProps.length, 'prop ids are unique across scenes');
 	assert.deepEqual([...new Set(allProps.map((p) => p.cosmetic).filter(Boolean))].sort(), [1, 2, 3, 4, 5, 6, 7]);
 	const links = (id: string) => (allProps.find((p) => p.id === id)!.links ?? []).map((l) => l.href).join(' ');
-	assert.match(links('workstation'), /github\.com/);
+	// The workstation's GitHub link is in its copy alone (Joe, 2026-10-01), once in its card.
+	assert.equal(links('workstation'), '');
+	const workstation = main(page('slu.html')).match(/<dialog[^>]*aria-labelledby="card-workstation-title"[\s\S]*?<\/dialog>/)![0];
+	assert.equal(workstation.match(/href="https:\/\/github\.com\/obj63mc"/g)?.length, 1);
 	assert.match(links('ride-sign'), /strava\.com/);
 	// Easter eggs: their click is the grant, with no card (Joe, 2026-09-30).
 	for (const id of ['moose', 'moose-statue', 'bike', 'mc-eye']) assert.equal(allProps.find((p) => p.id === id)!.kind, 'action', id);
