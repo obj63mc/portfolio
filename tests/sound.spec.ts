@@ -8,14 +8,14 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { SUB_SCENES } from '../src/lib/scenes/index.ts';
-import { loopsFor } from '../src/lib/loops.ts';
+import { BEDS, loopsFor, OVERLAP, RESUME } from '../src/lib/loops.ts';
 import { clickSounds, needed } from '../src/lib/sound.ts';
 
 const FILES: unknown = JSON.parse(readFileSync(new URL('../src/lib/sound-files.json', import.meta.url), 'utf8'));
 const sourced = (ids: Iterable<string>) => [...ids].filter((id) => typeof FILES === 'object' && FILES !== null && id in FILES).sort();
 
 function spy() {
-	const from = new WeakMap<object, string>(), played: string[] = [], passes: { id: string; offset: number }[] = [];
+	const from = new WeakMap<object, string>(), played: string[] = [], passes: { id: string; offset: number; when: number; duration: number }[] = [];
 	Object.assign(window, { played, passes });
 	const arrayBuffer = Response.prototype.arrayBuffer;
 	Response.prototype.arrayBuffer = async function () {
@@ -46,23 +46,35 @@ function spy() {
 	const play = HTMLMediaElement.prototype.play;
 	HTMLMediaElement.prototype.play = function () {
 		const url = files.get(this.src), id = url && /\/audio\/([a-z-]+)\./.exec(url)![1];
-		if (id) passes.push({ id, offset: this.currentTime });
+		if (id) passes.push({ id, offset: this.currentTime, when: 0, duration: this.duration });
 		return play.call(this);
 	};
 	const start = AudioBufferSourceNode.prototype.start;
 	AudioBufferSourceNode.prototype.start = function (...args: Parameters<typeof start>) {
 		const url = this.buffer && from.get(this.buffer), id = url && /\/audio\/([a-z-]+)\./.exec(url)![1];
-		if (id && /^(bed-|music-|theme$)/.test(id)) passes.push({ id, offset: args[1] ?? 0 });
+		if (id && /^(bed-|music-|theme$)/.test(id)) passes.push({ id, offset: args[1] ?? 0, when: args[0] ?? 0, duration: this.buffer!.duration });
 		else if (id) played.push(id);
 		return start.apply(this, args);
 	};
+	// The engine's context, and its clock, which a test can set ahead to put a loop wherever it likes in its period.
+	Object.assign(window, { skew: 0 });
+	const AC = window.AudioContext;
+	window.AudioContext = class extends AC {
+		constructor(...args: ConstructorParameters<typeof AC>) {
+			super(...args);
+			Object.assign(window, { ctx: this });
+		}
+	};
+	const currentTime = Object.getOwnPropertyDescriptor(BaseAudioContext.prototype, 'currentTime')!;
+	Object.defineProperty(BaseAudioContext.prototype, 'currentTime', { get() { return (currentTime.get!.call(this) as number) + ((window as Window & { skew?: number }).skew ?? 0); } });
 	// The lock refused, as some browsers do: the unlocked mouse carries on (spec: Gaps 6).
 	Element.prototype.requestPointerLock = () => Promise.reject(new DOMException('Refused', 'NotAllowedError'));
 }
 
 const played = (page: Page) => page.evaluate(() => [...((window as Window & { played?: string[] }).played ?? [])].sort());
-/** Every pass a loop has started, in order, with the offset it started from. */
-const passes = (page: Page) => page.evaluate(() => [...((window as Window & { passes?: { id: string; offset: number }[] }).passes ?? [])]);
+/** Every pass a loop has started, in order, with the offset it started from, when, and its buffer's length, s. */
+type Pass = { id: string; offset: number; when: number; duration: number };
+const passes = (page: Page) => page.evaluate(() => [...((window as Window & { passes?: Pass[] }).passes ?? [])]);
 /** The corner's Sound toggle; the Paused card has its own. */
 const toggle = (page: Page) => page.locator('.controls:not(dialog *) .sound');
 
@@ -208,4 +220,39 @@ test("Join starts the bed and the theme; in Brennan's the theme gives way to the
 	expect(resumed.offset).toBeGreaterThan(1);
 	expect(resumed.offset).toBeLessThan(5);
 	expect(ids.each.get('theme'), 'the theme fetched once').toBe(1);
+});
+
+test("a bed that faded out just short of its period's end, as one does behind a game, plays again and the scene still draws", async ({ page }) => {
+	test.skip(sourced(BEDS).length < 1, 'no beds sourced yet');
+	const errors: string[] = [];
+	page.on('pageerror', (e) => errors.push(e.message));
+	await page.goto('/#sushi-stand');
+	await join(page);
+	await expect.poll(async () => (await passes(page)).some((p) => p.id.startsWith('bed-'))).toBe(true);
+	await page.waitForTimeout(1500);
+	const bed = (await passes(page)).filter((p) => p.id.startsWith('bed-')).at(-1)!, P = bed.duration - OVERLAP;
+	await page.evaluate(() => document.querySelector<HTMLAnchorElement>('main a[href="/sushi-stand"]')!.click());
+	await expect(page).toHaveURL(/\/sushi-stand$/);
+	// The door closed on the overworld's beds, which the game's next step stops once they have been silent a second: the
+	// clock set ahead by at least that puts this one 0.3 s short of its period's end as it stops, within the RESUME s it
+	// fades in over when it plays again (Joe, 2026-10-01).
+	await page.evaluate(
+		([bed, P]) => {
+			const w = window as Window & { skew?: number; ctx?: AudioContext };
+			const now = w.ctx!.currentTime, pos = (bed.offset + now - bed.when) % P, ahead = (((P - 0.3 - pos) % P) + P) % P;
+			w.skew = (w.skew ?? 0) + (ahead < 1.5 ? ahead + P : ahead);
+		},
+		[bed, P] as const
+	);
+	await page.waitForTimeout(2500);
+	const before = (await passes(page)).length;
+	await page.evaluate(() => document.querySelector<HTMLAnchorElement>('a[href="/#sushi-stand"]')!.click());
+	await expect(page).toHaveURL(/\/#sushi-stand$/);
+	// Back at the koi the iris opens on the scene, and the bed plays again from where it stopped, its next pass from the
+	// top close behind.
+	await expect.poll(() => page.evaluate(() => document.documentElement.dataset.iris), { timeout: 5000 }).toBe('open');
+	const again = (await passes(page)).slice(before).filter((p) => p.id === bed.id);
+	expect(again.map((p) => p.offset), 'resumed within RESUME s of its period').toContainEqual(expect.any(Number));
+	expect(again.some((p) => p.offset > P - RESUME && p.offset < P), `resumed within RESUME s of its period: ${again.map((p) => p.offset.toFixed(2))}`).toBe(true);
+	expect(errors).toEqual([]);
 });

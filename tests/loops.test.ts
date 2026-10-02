@@ -171,6 +171,15 @@ test('each pass fades in over its first 2 s and out over the 2 s past its period
 		near(r.in!.duration, RESUME, `resumed at ${offset} s, over ${RESUME} s`);
 		near(r.out.at, P - offset, `resumed at ${offset} s, its period is reached ${offset} s sooner`);
 	}
+	// Resumed within RESUME s of its period, the fade in ends where the fade out begins: Web Audio refuses two curves that
+	// overlap, and a bed stopped there would otherwise throw at every frame (Joe, 2026-10-01).
+	for (const offset of [P - 0.1, P - RESUME / 2]) {
+		const r = envelope(offset, P);
+		near(r.in!.duration, P - offset, `resumed at ${offset} s, in only until the fade out`);
+		assert.ok(r.in!.from + r.in!.duration <= r.out.at + 1e-9, `resumed at ${offset} s, the curves don't overlap`);
+	}
+	near(envelope(P - RESUME, P).in!.duration, RESUME, 'resumed exactly RESUME s before its period, over all of RESUME');
+	near(envelope(20, 0, 'gain').in!.duration, RESUME, 'a stream passes no period and resumes over RESUME s');
 });
 
 test("a bed's passes cross at equal power; music's, cut where it nearly repeats, at equal gain so the seam doesn't swell", () => {

@@ -869,7 +869,13 @@ export class Engine {
 		if (this.doors.length && joined(this.input)) this.lookAhead(scene, view);
 		this.shots.step(t);
 		// The beds follow the camera's centre, the theme and the music the scene, its screen and a prop's video (ticket 21).
-		sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t) });
+		// Sound is never worth a frame: a step the browser refuses is logged, and the scene, the iris and the cursors still
+		// draw. Left to escape, one such refusal a frame once held the screen black behind a shut iris (Joe, 2026-10-01).
+		try {
+			sound.step({ centre: { x: view.x + view.w / 2, y: view.y + view.h / 2 }, paused: this.input.is === 'paused', screen: playing(this.net.screen, t) });
+		} catch (err) {
+			console.error(err);
+		}
 		if (this.dirty) this.drawScene(scene);
 		else for (const area of [moved, lit]) if (area) this.drawScene(scene, area);
 		// A Foundry poster's clicker glides to a seat in the second row and watches from it (Joe, 2026-09-29): the cursor is

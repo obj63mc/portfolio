@@ -147,7 +147,7 @@ class Loop {
 		}
 		const r = this.run;
 		if (r.is === 'stopped') {
-			if (target > 0 && buffer) this.run = { is: 'playing', passes: [this.pass(buffer, now + 0.02, r.at)] };
+			if (target > 0 && buffer) this.resume(buffer, now + 0.02, r.at);
 			return;
 		}
 		const last = r.passes[r.passes.length - 1], P = period(last.source);
@@ -155,6 +155,19 @@ class Loop {
 		if (!target && now - this.quietSince > 5 * tc) return this.stop(now);
 		const next = nextPass(last.at, last.offset, P);
 		if (buffer && now > next - AHEAD) r.passes = [...r.passes.filter((p) => now < nextPass(p.at, p.offset, P) + OVERLAP), this.pass(buffer, next, 0)];
+	}
+
+	/**
+	 * Playing again from `offset` s in, at context time `at`; a pass the browser refuses (a schedule it won't take) is
+	 * logged and the loop starts from the top on the next frame instead, so no loop ever throws frame after frame.
+	 */
+	private resume(buffer: AudioBuffer, at: number, offset: number) {
+		try {
+			this.run = { is: 'playing', passes: [this.pass(buffer, at, offset)] };
+		} catch (err) {
+			this.run = { is: 'stopped', at: 0 };
+			console.error(err);
+		}
 	}
 
 	/** A pass of `buffer` starting at context time `at`, `offset` s in, faded in and out on its envelope. */

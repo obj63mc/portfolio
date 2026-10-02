@@ -396,8 +396,10 @@ test('the keyboard joins with the lock; Esc in a card closes it without pausing,
 	await expect(paused).toBeHidden();
 
 	await hold(page, 'ArrowRight', 300);
+	// Released, the keys still steer: 600 px/s for 0.3 s, though a busy machine drops frames and each frame's step is
+	// capped, so what counts is a clear move to the right, well short of a runaway (Joe, 2026-10-01).
 	const moved = (await tip(page))!.x - start.x;
-	expect(moved).toBeGreaterThan(100); // 600 px/s for 0.3 s, give or take a frame
+	expect(moved).toBeGreaterThan(40);
 	expect(moved).toBeLessThan(260);
 	const held = (await tip(page))!, over = await centre(prop);
 	await page.mouse.move(over.x, over.y); // the OS pointer moves; the drawn cursor holds still

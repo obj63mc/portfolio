@@ -213,5 +213,9 @@ export function envelope(offset: number, P: number, fade: Fade = 'power') {
 	const curve = (f: (x: number) => number) => Float32Array.from({ length: STEPS }, (_, i) => f(i / (STEPS - 1)));
 	const up = fade === 'power' ? (x: number) => Math.sin((x * Math.PI) / 2) : (x: number) => x;
 	const down = fade === 'power' ? (x: number) => Math.cos((x * Math.PI) / 2) : (x: number) => 1 - x;
-	return { in: { from: 0, duration: offset > 0 ? RESUME : OVERLAP, curve: curve(up) }, out: { at: P - offset, duration: OVERLAP, curve: curve(down) } };
+	// Resumed within RESUME s of its period, it fades in only until its fade out begins: Web Audio refuses a curve that
+	// overlaps another, and a bed stopped there (a game's page up while it faded) would otherwise throw at every frame it
+	// was asked for, and the engine's frame with it (Joe, 2026-10-01). A stream passes no period: it resumes over RESUME s.
+	const left = P - offset, resume = left > 0 && left < RESUME ? left : RESUME;
+	return { in: { from: 0, duration: offset > 0 ? resume : OVERLAP, curve: curve(up) }, out: { at: P - offset, duration: OVERLAP, curve: curve(down) } };
 }
