@@ -35,7 +35,7 @@ The site opens on the **overworld**: one connected, illustrated map of St. Louis
 
 | Part | What it uses |
 | --- | --- |
-| Pages | SvelteKit 3 with Svelte 5 (runes) on Vite 8, prerendered to static files by `adapter-static` 4 |
+| Pages | SvelteKit 3 with Svelte 5 (runes) on Vite 8, pre-rendered to static files by `adapter-static` 4 |
 | Language | TypeScript, strict; plain nested CSS with no preprocessor or utility framework |
 | Scene rendering | The site's own canvas engine in `src/lib/engine/`, drawing tiled backgrounds, props, scenery and cursors |
 | Multiplayer | One Cloudflare Worker and Durable Objects over WebSockets (`worker/`) |
@@ -43,19 +43,19 @@ The site opens on the **overworld**: one connected, illustrated map of St. Louis
 | Artwork | AI-generated illustrations, produced and tracked by the pipeline in `scripts/art/` and `art/` |
 | Tests | Node's built-in test runner for logic and build output; Playwright for browser smoke testing |
 
-- **Scene data is the single source.** Each scene is one typed module in `src/lib/scenes/`. The prerendered HTML, the canvas engine, the sound engine, analytics and the Worker all read from those modules.
+- **Scene data is the single source.** Each scene is one typed module in `src/lib/scenes/`. The pre-rendered HTML, the canvas engine, the sound engine, analytics and the Worker all read from those modules.
 - **Card copy is Markdown.** Each card's words live in `src/lib/content/<scene>/<prop-id>.md` and are compiled to HTML at build time, so no parser ships to the browser.
 - **Desktop input is pointer locked.** After Join, the drawn cursor stands in for the OS cursor and pushes the camera at the edges; Esc pauses. Touch devices get a joystick and can drag to pan as well as touch props to activate.
 - **Sound.** Looping beds per district and sub-scene blend as the camera moves, under one theme. `npm run audio` encodes and content-hashes every sound from `audio/sounds.json` and writes the licence ledger.
 
 ### The canvas engine
 
-The engine (`src/lib/engine/`) loads after the page has mounted and takes over the prerendered document. It never re-renders the markup; it draws the scene under it and moves it.
+The engine (`src/lib/engine/`) loads after the page has mounted and takes over the pre-rendered document. It never re-renders the markup; it draws the scene under it and moves it.
 
 **Three layers, back to front**
 
 1. **The scene canvas** holds the background tiles, then the props and their moving parts drawn over them.
-2. **The prerendered layer** (`<main>`) sits over that canvas as transparent buttons, links and headings, each placed at its world rect. The camera moves the whole layer with one CSS transform, so every hit target stays over its painted pixels.
+2. **The pre-rendered layer** (`<main>`) sits over that canvas as transparent buttons, links and headings, each placed at its world rect. The camera moves the whole layer with one CSS transform, so every hit target stays over its painted pixels.
 3. **The cursor canvas** is on top: every cursor, the scenery that covers cursors, and the iris that closes and opens between scenes.
 
 **Coordinates and scale.** Everything is measured in world pixels. The render scale is fixed for the session: 1 on a screen 768 px or more on its shorter side, 0.6 on anything smaller. The device pixel ratio is capped at 2. The camera is the world point at the view's top-left corner, clamped to the scene's bounds.
@@ -101,7 +101,7 @@ Cursors behind scenery are drawn first, furthest back first, then everyone else.
 
 1. **Research and prototypes.** Cursor Camp's mechanics, realtime backends and animation frameworks were researched, then five throwaway prototypes answered open questions: the art pipeline, canvas rendering and camera, cursor sync on Durable Objects, own-cursor visibility, and pointer lock api.
 2. **Spec and tickets.** The decisions were assembled into a site spec and split into numbered implementation tickets, kept as Markdown files under `.scratch/<feature>/`.
-3. **Skeleton and scene data.** The SvelteKit skeleton, the scene-data modules and the prerendered overworld and sub-scenes came first, so the accessible document existed before any canvas.
+3. **Skeleton and scene data.** The SvelteKit skeleton, the scene-data modules and the pre-rendered overworld and sub-scenes came first, so the accessible document existed before any canvas.
 4. **Artwork.** Each scene was composed as one complete illustration from location photographs and satellite references, then separated into layers. Prompts fed through Codex to generate individual assets. Defects were fixed in rounds of small tile edits on the native master image, which is then upscaled 4x and cut into tiles. Every accepted asset keeps its prompt, provenance and a review note. Agent Browser was used to capture screenshots and Codex utilized scripts to make videos from gathered portfolio content.
 5. **Buildout.** The canvas engine and camera, Join and pointer lock, touch input, rooms and the directory, cursors and cosmetics, props and cards, synced video playback, easter eggs, audio and other content completed ticket by ticket.
 6. **Games, resume and fallback.** A Sushi Stand game, fishing game, printable resume, and styled no-JavaScript context for accessibility and fallback.
@@ -153,7 +153,7 @@ Video sources are not in git. They live in the R2 bucket, and `src/lib/video-fil
 ```sh
 npm install
 npm run dev        # the site at http://localhost:5173, exploring solo
-npm run build      # prerender to build/
+npm run build      # pre-render to build/
 npm run preview    # serve the build at http://localhost:4173
 ```
 
