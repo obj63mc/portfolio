@@ -114,6 +114,8 @@ export const FOUNDRY: SubScene = {
 			gist: screenGist(),
 			// Nothing to click: the posters start its reels, and the engine keeps its state current (Joe, 2026-09-29).
 			kind: 'status',
+			// Without JavaScript no poster starts a reel: the three videos are the screen's own, each to play by itself.
+			reels: (Object.keys(SCREEN_TITLES) as ScreenTitle[]).map((id) => ({ name: SCREEN_TITLES[id], file: SCREEN_VIDEOS[id].file, line: CASE_STUDY[id] })),
 			rect: { x: 1656, y: 85, w: 1016, h: 833 }
 		}
 	],

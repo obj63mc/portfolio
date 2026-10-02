@@ -62,6 +62,211 @@ body {
 }
 
 /*
+ * The plain document (Joe, 2026-10-02): a scene's page without the engine, read by a visitor with no JavaScript, or one
+ * whose engine couldn't start, and an error page. It wears the resume's colours with no sheet round it: a column on the
+ * lighter night, gold headline, sky district headings under a rule, and each venue, or each prop inside a venue, a night
+ * board framed in ivory with its card read inline (Prop.svelte styles a card's contents). The room's count and the
+ * engine's controls mean nothing on it. With JavaScript it stays hidden until the engine takes the page (the rule below).
+ */
+html:not(.engine):not(:has(.game, .resume)) {
+	background: var(--night-hot);
+	color: var(--ivory);
+	/* No italic face is loaded, so nothing is slanted by the browser either. */
+	font-synthesis-style: none;
+
+	& body {
+		padding: 0;
+	}
+
+	& :is(.presence, .controls, .joystick) {
+		display: none;
+	}
+
+	& main {
+		--board-pad: clamp(1rem, 0.7rem + 1.5vw, 1.75rem);
+		box-sizing: border-box;
+		inline-size: min(100% - 2rem, 56rem);
+		margin-inline: auto;
+		padding-block: 1.5rem 3rem;
+		line-height: 1.55;
+		text-wrap: pretty;
+
+		& h1 {
+			margin-block: 0 1.25rem;
+			color: var(--gold);
+			font-size: clamp(2.25rem, 1.5rem + 2.5vw, 3.25rem);
+			letter-spacing: 0.03em;
+			line-height: 1.02;
+			text-transform: uppercase;
+
+			/* The overworld's masthead: the skyline the column's width, framed as the boards are. */
+			& img {
+				box-sizing: border-box;
+				inline-size: 100%;
+				margin-block-end: 1.25rem;
+				border: 2px solid rgb(255 244 212 / 0.3);
+			}
+		}
+
+		& a {
+			color: var(--gold);
+			font-weight: 500;
+			text-decoration-thickness: 2px;
+			text-underline-offset: 5px;
+		}
+
+		& :focus-visible {
+			outline: 3px solid var(--ivory);
+			outline-offset: 3px;
+		}
+
+		& .skip:focus {
+			z-index: 1;
+			padding: 0.25rem 0.5rem;
+			background: var(--night);
+		}
+
+		/* The signpost: a plaque a district, in a row that wraps. */
+		& nav ul {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.625rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		& nav a {
+			display: block;
+			padding-block: 0.375rem 0.425rem;
+			padding-inline: 1rem;
+			border-radius: 0.5rem;
+			box-shadow: inset 0 0 0 2px var(--sky-lip);
+			color: var(--sky);
+			font-family: var(--headline);
+			font-size: 1.1875rem;
+			font-weight: 800;
+			letter-spacing: 0.06em;
+			line-height: 1.1;
+			text-decoration: none;
+			text-transform: uppercase;
+
+			&:hover {
+				background: var(--sky);
+				box-shadow: none;
+				color: var(--night);
+			}
+		}
+
+		/* A district: its name over a rule, then its venues side by side, one with a card to read the column's width. */
+		& > section {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+			gap: 1rem;
+			margin-block-start: 2.25rem;
+			/* A link to it from the signpost lands clear of the window's edge. */
+			scroll-margin-block-start: 1rem;
+		}
+
+		& h2:not(dialog *) {
+			grid-column: 1 / -1;
+			margin: 0;
+			padding-block-end: 0.25rem;
+			border-block-end: 1px solid rgb(255 244 212 / 0.2);
+			color: var(--sky);
+			font-size: 1.5rem;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+		}
+
+		/* The boards: a venue on the overworld, a prop with its card in a sub-scene (a poster or a remote has none to read). */
+		& section section,
+		& > .prop:has(> dialog:not(.remote)) {
+			box-sizing: border-box;
+			padding: var(--board-pad);
+			border: 2px solid rgb(255 244 212 / 0.3);
+			border-radius: 0.75rem;
+			background: var(--night);
+		}
+
+		& section section {
+			display: flex;
+			flex-direction: column;
+			align-items: start;
+			scroll-margin-block-start: 1rem;
+
+			&:has(dialog) {
+				grid-column: 1 / -1;
+			}
+
+			& .prop:has(dialog) {
+				align-self: stretch;
+				margin-block-end: 1.25rem;
+			}
+
+			/* A venue's second card, under a rule. */
+			& .prop:has(dialog) ~ .prop:has(dialog) {
+				padding-block-start: 1.25rem;
+				border-block-start: 1px solid rgb(255 244 212 / 0.2);
+			}
+
+			& .prop:has(dialog):last-child {
+				margin-block-end: 0;
+			}
+		}
+
+		& h3:not(dialog *) {
+			margin-block: 0 0.75rem;
+			font-size: 1.375rem;
+			letter-spacing: 0.03em;
+			text-transform: uppercase;
+		}
+
+		& > .prop:has(> dialog:not(.remote)) {
+			margin-block-end: 1rem;
+		}
+
+		/* A prop that only says its state, the Foundry screen or the lobby TV: a quiet line between the boards. */
+		& .prop.status p {
+			margin-block: 0 1rem;
+			opacity: 0.75;
+		}
+
+		/* A venue's way in, and a sub-scene's way back: the gold button at a card's size, kept to the board's foot. */
+		& .door {
+			display: inline-block;
+			margin-block-start: auto;
+			padding-block: 0.5rem 0.55rem;
+			padding-inline: 1.375rem;
+			border-radius: 0.5rem;
+			background: var(--gold);
+			box-shadow: 0 0.25rem 0 var(--gold-lip);
+			color: var(--night);
+			font-family: var(--headline);
+			font-size: 1.1875rem;
+			font-weight: 800;
+			letter-spacing: 0.06em;
+			line-height: 1.1;
+			text-decoration: none;
+			text-transform: uppercase;
+
+			&:hover {
+				background: var(--gold-hot);
+			}
+
+			&:active {
+				translate: 0 0.1875rem;
+				box-shadow: 0 0.0625rem 0 var(--gold-lip);
+			}
+		}
+
+		& > .door {
+			margin-block-start: 1rem;
+		}
+	}
+}
+
+/*
  * Until the engine takes the page, a scene's plain document stays hidden on the engine's night backdrop, so it never
  * flashes up before the canvas (Joe, 2026-09-30). Without JavaScript the <noscript> style in app.html shows it; with no
  * scene to show (an error page) or an engine that can't start, the layout marks `plain` and it shows. A game (`.game`, Sushi Stand

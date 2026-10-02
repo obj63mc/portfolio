@@ -7,15 +7,26 @@
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 		<link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
 		<meta name="theme-color" content="#1d2b3a" />
-		<!-- Plain-document fallback: without JavaScript every card reads inline and the button is noise. -->
+		<!-- Plain-document fallback: without JavaScript every card reads inline and the button is noise. Its look is
+			app.css's and Prop.svelte's; this only shows what scripts would have. -->
 		<noscript>
 			<style>
-				.prop > button, .prop form { display: none; }
-				.prop > dialog { display: block; position: static; border: 0; padding: 0; }
+				.prop > button { display: none; }
+				.prop > dialog { display: block; }
 				/* A remote's card is only its buttons, which need the engine. */
 				.prop > dialog.remote { display: none; }
-				/* The document the engine would have taken (app.css), shown after all, on the page's own background. */
-				html { background: none !important; }
+				/* A card's video shows the browser's own controls, and its screenshots scroll by their scrollbar: the site's
+				   own buttons for both need scripts. */
+				.player > .bar, .screens > .bar { display: none !important; }
+				.screens > .track { scrollbar-width: auto !important; scrollbar-color: #fff4d4 #1d2b3a; }
+				/* A prop that only says its state says nothing true: the engine keeps it. */
+				.prop.status > p { display: none; }
+				/* A game is its header, the way out, over its own note of what it is: it needs scripts to play. */
+				.game > :not(header, noscript) { display: none !important; }
+				/* The room's count and the Sound toggle are the scripts' too, on a game as on a scene. */
+				.presence, .controls { display: none !important; }
+				/* The document the engine would have taken (app.css), shown after all, on the plain document's background. */
+				html { background: #2a3d51 !important; }
 				body > div { visibility: visible !important; }
 			</style>
 		</noscript>

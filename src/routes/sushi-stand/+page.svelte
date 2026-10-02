@@ -307,6 +307,15 @@
 			<span>Back to Forest Park</span>
 		</a>
 	</header>
+	<!-- Without JavaScript there is no game: what it is, in place of it (Joe, 2026-10-02; app.html hides the rest). -->
+	<noscript>
+		<section class="board plain">
+			<h1>Sushi Stand</h1>
+			<p>A sushi business game: it's almost International Sushi Day, and you've got five days to make your sushi stand the hottest spot in town.</p>
+			<p>Turn on JavaScript to play.</p>
+			<div class="cta"><a class="secondary" href="/#{SUSHI}">Back to Forest Park</a></div>
+		</section>
+	</noscript>
 	<!-- Start over asks first, then drops the kept game for a new one, from its name. -->
 	<dialog class="restart-card" aria-labelledby="restart-title" bind:this={restart} onclose={(e) => e.currentTarget.returnValue === 'restart' && newGame()}>
 		<h2 id="restart-title">Start over?</h2>
@@ -1017,6 +1026,12 @@
 				color: var(--night);
 			}
 		}
+	}
+
+	.plain {
+		margin-block: 1.5rem;
+		margin-inline: auto;
+		inline-size: min(100% - 2rem, 36rem);
 	}
 
 	.cta {

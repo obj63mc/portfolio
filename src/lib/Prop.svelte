@@ -98,6 +98,19 @@
 		{:else}
 			<p>{prop.name}: {prop.gist}</p>
 		{/if}
+		{#if prop.reels}
+			<!-- The plain document's screen (Joe, 2026-10-02): no poster starts a reel without JavaScript, so each is a video
+				of its own with the browser's controls, fetched only when played. -->
+			<noscript>
+				{#each prop.reels as reel}
+					<figure class="reel">
+						<figcaption><strong>{reel.name}</strong> {reel.line}</figcaption>
+						<!-- svelte-ignore a11y_media_has_caption -->
+						<video src={VIDEOS[reel.file]} controls playsinline preload="none"></video>
+					</figure>
+				{/each}
+			</noscript>
+		{/if}
 	</div>
 {:else}
 	<div class="prop at" data-prop={prop.id} style={at(prop.rect)}>
@@ -162,30 +175,12 @@
 <style>
 	/*
 	 * A card's contents on its night board (src/app.css; Joe, 2026-09-30): its media, its copy, a gold headline where the
-	 * copy has one, and gold links with an arrow. Without the engine the cards read inline as plain document. Every card is
-	 * 90 % of the viewport wide up to 860 px and at most 85 % tall, scrolling inside.
+	 * copy has one, and gold links with an arrow. They read the same in the engine's card and inline in the plain document
+	 * (Joe, 2026-10-02).
 	 */
-	:global(html.engine) dialog {
-		inline-size: min(90vw, 860px);
-		max-inline-size: none;
-		max-block-size: 85svh;
-		overflow: visible;
-
-		&[open] {
-			display: flex;
-			flex-direction: column;
-		}
-
-		/* Room inside the scrolling box for focus rings and a button's lip, which it would clip. */
-		& .scroll {
-			min-block-size: 0;
-			margin: -0.5rem;
-			padding: 0.5rem;
-			overflow-y: auto;
-		}
-
-		/* The venue and the title are read, not shown: what a card shows in words is its copy. */
-		& :is(.where, h2, h4) {
+	dialog {
+		/* The venue is read, not shown: on the plain document its heading is just above. */
+		& .where {
 			position: absolute;
 			inline-size: 1px;
 			block-size: 1px;
@@ -290,6 +285,37 @@
 			margin-block-start: 0.75rem;
 			font-size: 0.9375rem;
 		}
+	}
+
+	/* The engine's card: 90 % of the viewport wide up to 860 px and at most 85 % tall, scrolling inside. */
+	:global(html.engine) dialog {
+		inline-size: min(90vw, 860px);
+		max-inline-size: none;
+		max-block-size: 85svh;
+		overflow: visible;
+
+		&[open] {
+			display: flex;
+			flex-direction: column;
+		}
+
+		/* Room inside the scrolling box for focus rings and a button's lip, which it would clip. */
+		& .scroll {
+			min-block-size: 0;
+			margin: -0.5rem;
+			padding: 0.5rem;
+			overflow-y: auto;
+		}
+
+		/* The title is read, not shown: what a card shows in words is its copy. */
+		& :is(h2, h4) {
+			position: absolute;
+			inline-size: 1px;
+			block-size: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
 
 		/*
 		 * A remote's card is the remote itself (Remote.svelte; Joe, 2026-10-01): small, in the viewport's bottom corner, with
@@ -335,9 +361,81 @@
 		}
 	}
 
-	h2,
-	h4 {
-		margin-block: 0 0.75rem;
-		font-size: 1.75rem;
+	/*
+	 * The plain document's card (Joe, 2026-10-02): no dialog's box, only its contents in the flow of the board app.css
+	 * draws round it, the prop's name a sky label over them. Nothing opens or closes it, so its Close is gone; the
+	 * <noscript> style in app.html shows it in place of its button, as the last rule here does when the engine couldn't start.
+	 */
+	:global(html:not(.engine)) dialog {
+		position: static;
+		inline-size: auto;
+		max-inline-size: none;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+
+		& .x {
+			display: none;
+		}
+
+		& :is(h2, h4) {
+			margin-block: 0 0.75rem;
+			color: var(--sky);
+			font-size: 1.125rem;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+		}
+
+		/* The media no wider than reads well in a wide column. */
+		& :global(:is(.player, .screens)) {
+			max-inline-size: 44rem;
+		}
+	}
+
+	/* A reel of the plain document's screen: a board as a card's is (app.css), its title the card's sky label, its line, its video. */
+	.reel {
+		box-sizing: border-box;
+		margin: 0 0 1rem;
+		padding: var(--board-pad);
+		border: 2px solid rgb(255 244 212 / 0.3);
+		border-radius: 0.75rem;
+		background: var(--night);
+
+		& figcaption {
+			margin-block-end: 0.75rem;
+		}
+
+		& strong {
+			display: block;
+			margin-block-end: 0.5rem;
+			color: var(--sky);
+			font-family: var(--headline);
+			font-size: 1.125rem;
+			font-weight: 800;
+			letter-spacing: 0.06em;
+			line-height: 1.1;
+			text-transform: uppercase;
+		}
+
+		& video {
+			display: block;
+			inline-size: 100%;
+			max-inline-size: 44rem;
+			border-radius: 0.375rem;
+			background: #000;
+		}
+	}
+
+	:global(html.plain) .prop {
+		& > button,
+		& > dialog.remote {
+			display: none;
+		}
+
+		& > dialog:not(.remote) {
+			display: block;
+		}
 	}
 </style>

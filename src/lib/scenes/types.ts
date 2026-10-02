@@ -69,6 +69,12 @@ export interface Prop {
 	 * time, and its cut-out is off the table meanwhile.
 	 */
 	tunes?: string;
+	/**
+	 * What a `status` prop's screen plays at the engine's bidding (the Foundry screen's three reels), for the plain
+	 * document: without JavaScript each is a video with the browser's own controls, under its name and its line, in place
+	 * of the state the prop can't keep (Joe, 2026-10-02). A file as `video`'s is.
+	 */
+	reels?: { name: string; file: string; line: string }[];
 }
 
 export interface Venue {

@@ -233,6 +233,15 @@
 			<span>Back to the riverbank</span>
 		</a>
 	</header>
+	<!-- Without JavaScript there is no game: what it is, in place of it (Joe, 2026-10-02; app.html hides the rest). -->
+	<noscript>
+		<section class="board plain">
+			<h1>Big Muddy</h1>
+			<p>A fishing game: sink a lure into the Mississippi, steer it past the snags and land the heaviest fish you can.</p>
+			<p>Turn on JavaScript to play.</p>
+			<div class="cta"><a class="secondary" href="/#{BIG_MUDDY}">Back to the riverbank</a></div>
+		</section>
+	</noscript>
 	<dialog class="card" aria-labelledby="paused-title" bind:this={pausedCard} onclose={resume}>
 		<h2 id="paused-title">Paused</h2>
 		<p>Your lure is holding at {depth}&nbsp;ft.</p>
@@ -630,6 +639,12 @@
 
 	.card h2 {
 		font-size: 2rem;
+	}
+
+	.plain {
+		margin-block: 1.5rem;
+		margin-inline: auto;
+		inline-size: min(100% - 2rem, 36rem);
 	}
 
 	.how {
