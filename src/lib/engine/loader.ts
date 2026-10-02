@@ -3,7 +3,8 @@
 // already or stand on them; then the ring of tiles round the view and the cut-outs out of it, a few at a time; and what
 // a door in view leads to is fetched last of all, into the browser's cache alone, so the hop finds it there. Before this
 // every tile and every cut-out of a scene was asked for together, and on a slow connection the view waited behind the
-// megabytes round it. A tile the camera has left is called off, its bytes and its decoding saved. The order is kept here
+// megabytes round it. A tile the camera has left is called off, its bytes and its decoding saved. Once all of that is in,
+// the rest of the scene's tiles follow into the cache too, so a glide across it finds them there. The order is kept here
 // and not left to the host: `priority` only hints it. How many go at a time follows the connection (WINDOW).
 
 declare global {
@@ -110,12 +111,14 @@ export class Loader {
 	}
 
 	/**
-	 * URLs fetched ahead of a hop into the browser's cache, never decoded: half the window at a time, once nothing else is
-	 * coming. None for a visitor saving data.
+	 * URLs fetched ahead into the browser's cache, never decoded: half the window at a time, once nothing else is coming.
+	 * The rest of a scene goes last in line; what a door leads to goes `first`, ahead of any of that still waiting. None
+	 * for a visitor saving data.
 	 */
-	warm(urls: Iterable<string>) {
+	warm(urls: Iterable<string>, first = false) {
 		if (this.io.saveData()) return;
-		for (const url of urls) if (!this.have.has(url) && !this.warming.includes(url)) this.warming.push(url);
+		const fresh = [...new Set(urls)].filter((url) => !this.have.has(url));
+		this.warming = first ? [...fresh, ...this.warming.filter((url) => !fresh.includes(url))] : [...this.warming, ...fresh.filter((url) => !this.warming.includes(url))];
 		queueMicrotask(() => this.pump());
 	}
 

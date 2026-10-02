@@ -281,3 +281,25 @@ test('doors: the overworld has one to each sub-scene, inside the world, and a su
 	assert.deepEqual(doors.find((d) => d.to.id === 'foundry')!.at, foundry.doorRect);
 	for (const s of Object.values(SUB_SCENES)) assert.deepEqual(doorsOf(s), [{ to: OVERWORLD, at: s.exit }], s.id);
 });
+
+test('the rest of a scene is fetched ahead last in line, and what a door leads to goes ahead of any of it still waiting', async () => {
+	const { loader, calls, decoded, asked } = harness();
+	loader.image('view', 'now');
+	loader.warm(['view', 'far-1', 'far-2', 'far-3', 'far-4']);
+	await settle();
+	assert.deepEqual(asked(), ['view'], 'nothing of the rest while the view is coming');
+	calls[0].answer();
+	await settle();
+	assert.deepEqual(asked().slice(1), ['far-1', 'far-2']);
+	// A door comes into view: its landing is next, one of the scene's own tiles among it moved up, none asked for twice.
+	loader.warm(['door-1', 'far-4', 'far-1'], true);
+	calls[1].answer();
+	calls[2].answer();
+	await settle();
+	assert.deepEqual(asked().slice(3), ['door-1', 'far-4']);
+	calls[3].answer();
+	calls[4].answer();
+	await settle();
+	assert.deepEqual(asked().slice(5), ['far-3']);
+	assert.deepEqual(decoded, ['view'], 'fetched into the cache, not decoded');
+});

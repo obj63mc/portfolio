@@ -82,6 +82,16 @@ type Gesture =
 const TILE_URLS = import.meta.glob<string>('/art/generated/*/*/{1.25,2}/*.webp', { eager: true, query: '?no-inline', import: 'default' });
 /** A scene's background tile at `density`, by `<column>-<row>`; none where the scene has no art. */
 const tileUrl = (scene: Scene, density: number, key: string): string | undefined => TILE_URLS[`/art/generated/${scene.id}/${scene.id}/${density}/${key}.webp`];
+/** Every background tile of a scene at `density`, the nearest to world point `p` first. */
+function tilesOf(scene: Scene, density: number, p: Point): string[] {
+	const tiles: { url: string; far: number }[] = [];
+	for (let row = 0; row < Math.ceil(scene.h / TILE); row++)
+		for (let col = 0; col < Math.ceil(scene.w / TILE); col++) {
+			const url = tileUrl(scene, density, `${col}-${row}`);
+			if (url) tiles.push({ url, far: Math.hypot((col + 0.5) * TILE - p.x, (row + 0.5) * TILE - p.y) });
+		}
+	return tiles.sort((a, b) => a.far - b.far).map((t) => t.url);
+}
 
 /**
  * The on-screen toggles, and the consent bar on the page (ticket 23): they hold the camera still when the mouse's cursor
@@ -356,7 +366,10 @@ export class Engine {
 		// A hop out of the Foundry mid-reel lands at the session's scale; the box above was read at the reel's.
 		this.view = { ...this.view, s: this.base };
 		this.moveTo(centreOn(c, this.view, scene));
-		const landing = { x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
+		// The rest of the scene's tiles follow into the browser's cache once the view and its ring are in, behind the Join
+		// card too, so a signpost's glide to a far district doesn't arrive before its tiles (Joe, 2026-10-02).
+		this.loader.warm(tilesOf(scene, this.density, c));
+		const landing ={ x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
 		if (door || this.iris.is !== 'open') this.iris = this.reducedMotion.matches ? OPEN : { is: 'shut', at: landing, t0: performance.now(), landed: true };
 		// A locked cursor waits behind the Paused card, since only a click can take the lock back.
 		if (this.input.is === 'away') this.enter(this.input.relock ? { is: 'paused', relock: true } : { is: this.fine.matches ? 'unlocked' : 'touch' });
@@ -801,7 +814,7 @@ export class Engine {
 		const goal = centreOn(centre(this.box(el)), this.view, this.scene);
 		this.armed = false;
 		if (this.reducedMotion.matches) (this.goal = null), this.moveTo(goal);
-		else this.goal = goal;
+		else (this.goal = goal), this.loadTiles(); // where it is headed is asked for before the first step
 	}
 
 	/** The one place the camera moves: the layer's transform, the tiles wanted and a redraw follow it. */
@@ -1019,34 +1032,39 @@ export class Engine {
 	/**
 	 * Fetch the tiles in view at once and one ring beyond in their turn (loader.ts), a tile of the ring at once when it
 	 * comes into view; close and forget any beyond two rings, so phone memory stays flat, calling off one still on its way.
+	 * The view a glide is headed for is fetched at once and kept like the one in view, so it is there when the glide
+	 * arrives (Joe, 2026-10-02).
 	 */
 	private loadTiles() {
 		const scene = this.scene!, seen = tileRange(this.cam, this.view, scene, 0), want = tileRange(this.cam, this.view, scene, 1), keep = tileRange(this.cam, this.view, scene, 2);
-		for (let row = want.y0; row <= want.y1; row++)
-			for (let col = want.x0; col <= want.x1; col++) {
-				const key = `${col}-${row}`, inView = col >= seen.x0 && col <= seen.x1 && row >= seen.y0 && row <= seen.y1;
-				const had = this.held.get(key);
-				if (had) {
-					if (inView) had.loading?.hurry();
-					continue;
-				}
-				const tile: { bmp?: ImageBitmap; loading?: Loading } = {};
-				this.held.set(key, tile);
-				const url = tileUrl(scene, this.density, key);
-				if (!url) continue; // no art for this scene: the backdrop shows
-				tile.loading = this.loader.image(url, inView ? 'now' : 'soon');
-				tile.loading.bmp
-					.then((bmp) => {
-						if (this.held.get(key) !== tile) return bmp.close(); // evicted, or the scene changed, while loading
-						tile.bmp = bmp;
-						tile.loading = undefined;
-						this.dirty = true;
-					})
-					.catch(() => {}); // a failed tile stays backdrop
+		const bound = this.goal && tileRange(this.goal, this.view, scene, 0);
+		const within = (r: typeof seen | null, col: number, row: number) => !!r && col >= r.x0 && col <= r.x1 && row >= r.y0 && row <= r.y1;
+		const load = (col: number, row: number) => {
+			const key = `${col}-${row}`, inView = within(seen, col, row) || within(bound, col, row);
+			const had = this.held.get(key);
+			if (had) {
+				if (inView) had.loading?.hurry();
+				return;
 			}
+			const tile: { bmp?: ImageBitmap; loading?: Loading } = {};
+			this.held.set(key, tile);
+			const url = tileUrl(scene, this.density, key);
+			if (!url) return; // no art for this scene: the backdrop shows
+			tile.loading = this.loader.image(url, inView ? 'now' : 'soon');
+			tile.loading.bmp
+				.then((bmp) => {
+					if (this.held.get(key) !== tile) return bmp.close(); // evicted, or the scene changed, while loading
+					tile.bmp = bmp;
+					tile.loading = undefined;
+					this.dirty = true;
+				})
+				.catch(() => {}); // a failed tile stays backdrop
+		};
+		for (let row = want.y0; row <= want.y1; row++) for (let col = want.x0; col <= want.x1; col++) load(col, row);
+		if (bound) for (let row = bound.y0; row <= bound.y1; row++) for (let col = bound.x0; col <= bound.x1; col++) load(col, row);
 		for (const [key, tile] of this.held) {
 			const [col, row] = key.split('-').map(Number);
-			if (col >= keep.x0 && col <= keep.x1 && row >= keep.y0 && row <= keep.y1) continue;
+			if (within(keep, col, row) || within(bound, col, row)) continue;
 			tile.loading?.cancel();
 			tile.bmp?.close();
 			this.held.delete(key);
@@ -1087,7 +1105,7 @@ export class Engine {
 					const url = tileUrl(to, this.density, `${col}-${row}`);
 					if (url) tiles.push(url);
 				}
-			this.loader.warm([...tiles, ...artIn(to, this.density, { x: cam.x, y: cam.y, w: v.w / v.s, h: v.h / v.s })]);
+			this.loader.warm([...tiles, ...artIn(to, this.density, { x: cam.x, y: cam.y, w: v.w / v.s, h: v.h / v.s })], true);
 		}
 	}
 

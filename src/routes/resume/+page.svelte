@@ -206,7 +206,7 @@
 					</li>
 					<li>
 						Currently manage the
-						<a href="https://github.com/silverstripe/silverstripe-s3">Silverstripe AWS S3 module</a>
+						<a href="https://github.com/silverstripe/silverstripe-s3" target="_blank">Silverstripe AWS S3 module</a>
 						for handling assets and file uploads.
 					</li>
 				</ul>

@@ -162,6 +162,19 @@ Across a pan of the whole overworld the page had decoded 564 s of sound, 214 MB;
 
 No silence through any of them.
 
+## Round three: the signpost's glide (2026-10-02)
+
+On a first visit to a desktop, Join and then the signpost's Belleville at once arrived on blank tiles: a glide takes
+about a second, and a tile was only asked for once the camera was within one ring of it. Two changes:
+
+- **The rest of the scene follows into the cache.** Once the view, its ring and the cut-outs are in, every other
+  background tile of the scene is fetched into the browser's cache, nearest first, behind the Join card too: the
+  overworld's 84 tiles are 3.8 MB at density 2 and 2.5 MB at 1.25. What a door in view leads to goes ahead of any of
+  it still waiting. None of it for a visitor saving data.
+- **Where a glide is headed is asked for at once.** The tiles in view at a glide's goal are fetched and decoded from
+  the click, and kept while the glide lasts. With every tile held back 600 ms, Belleville's twelve were asked for 8 ms
+  after the click and were all drawn when the glide ended.
+
 ## Looked at and left alone
 
 - **Bigger tiles.** Simulated from the real tile files: 1024 px tiles would cut a phone's view from 8 requests to 3.6
