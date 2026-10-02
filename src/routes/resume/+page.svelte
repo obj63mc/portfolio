@@ -80,7 +80,7 @@
 				</div>
 				<div>
 					<dt>Hosting</dt>
-					<dd>AWS, Cloudflare, Heroku, Render, Docker</dd>
+					<dd>AWS, Cloudflare, Heroku, Render, Convex, Docker</dd>
 				</div>
 				<div>
 					<dt>CMS and Commerce</dt>
