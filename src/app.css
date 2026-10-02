@@ -65,13 +65,30 @@ body {
  * Until the engine takes the page, a scene's plain document stays hidden on the engine's night backdrop, so it never
  * flashes up before the canvas (Joe, 2026-09-30). Without JavaScript the <noscript> style in app.html shows it; with no
  * scene to show (an error page) or an engine that can't start, the layout marks `plain` and it shows. A game (`.game`, Sushi Stand
- * or Big Muddy), which never starts the engine, shows from its first paint.
+ * or Big Muddy), which never starts the engine, shows from its first paint, and so does the resume (`.resume`, Joe, 2026-10-02).
  */
-html:not(.engine, .plain):not(:has(.game)) {
+html:not(.engine, .plain):not(:has(.game, .resume)) {
 	background: #1d2b3a;
 
 	& body > div {
 		visibility: hidden;
+	}
+}
+
+/*
+ * The resume (Joe, 2026-10-02): a page of its own with no scene, in the document's flow on a lighter night, its board the
+ * night framed in ivory; the room's count means nothing on it, and nor do the engine's controls, the Sound toggle and the
+ * joystick, which a plain document has no use for (Joe, 2026-10-02).
+ */
+html:has(.resume) {
+	background: var(--night-hot);
+
+	& body {
+		padding: 0;
+	}
+
+	& :is(.presence, .controls, .joystick) {
+		display: none;
 	}
 }
 
@@ -513,5 +530,31 @@ html.engine {
 		&.off {
 			opacity: 0.55;
 		}
+	}
+}
+
+/*
+ * Printed (the resume, Joe, 2026-10-02), the page alone on white paper: none of the layout's chrome round it. Last, so
+ * it outranks the chrome's own display rules above.
+ */
+@media print {
+	html,
+	body {
+		background: #fff;
+	}
+
+	body {
+		padding: 0;
+	}
+
+	canvas,
+	.presence,
+	.controls,
+	.joystick,
+	.lap,
+	.consent,
+	dialog.gate,
+	[role='status'] {
+		display: none;
 	}
 }

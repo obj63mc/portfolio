@@ -1,4 +1,4 @@
-// Seam 3: the prerendered HTML of every scene URL, as a crawler or screen reader sees it.
+// Seam 3: the prerendered HTML of every scene URL, and the resume's, as a crawler or screen reader sees it.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
@@ -21,6 +21,8 @@ const overworldProps = OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) =
 const subScenes = Object.values(SUB_SCENES);
 const allProps = [...overworldProps, ...subScenes.flatMap((s) => s.props)];
 const files = ['index.html', ...subScenes.map((s) => `${s.id}.html`)];
+/** The scene pages and the resume (Joe, 2026-10-02), a page with no scene: the shell round every page is checked on all of them. */
+const pages = [...files, 'resume.html'];
 /** The GA4 measurement ID this build was made with: none but on a `main` build in Workers Builds (ticket 23). */
 const gaId = measurementId(process.env);
 /** Cloudflare's beacon token this build was made with, on the same builds; the beacon loads only beside GA. */
@@ -108,6 +110,40 @@ test('sub-scenes: focusable h1, props in reading order, exit link to the venue a
 	}
 });
 
+// The copy is the page's own markup (Joe, 2026-10-02), so this reads its shape alone: the sections and their headings, the
+// entries with their dates, the contacts by their hosts, the PDF and the way back.
+test('the resume: a page with no scene, its sections, entries and contacts, the PDF as a download and the exit to the arrival point', () => {
+	const html = page('resume.html');
+	assert.match(html, /<meta name="description" content="[^"]{20,}"/);
+	const layer = main(html);
+	assert.match(layer, /<article class="resume[\s"]/, 'the first-paint exemption in app.css keys on it');
+	assert.equal(opens(layer, 'h1').length, 1);
+	// A section a heading, each section named by its h2.
+	const sections = opens(layer, 'section');
+	assert.ok(sections.length >= 4, 'summary, skills, experience and education at the least');
+	assert.equal(texts(layer, 'h2').length, sections.length);
+	for (const s of sections) {
+		const id = s.match(/aria-labelledby="([^"]*)"/)?.[1];
+		assert.ok(id && layer.includes(`<h2 id="${id}"`), s);
+	}
+	// An entry, a role, project or degree: an h3 first, its dates as time elements.
+	const entries = [...layer.matchAll(/<article class="entry[^"]*"[^>]*>([\s\S]*?)<\/article>/g)].map((m) => m[1]);
+	assert.ok(entries.length >= 4, 'three roles and a degree at the least');
+	assert.equal(texts(layer, 'h3').length, entries.length);
+	for (const e of entries) {
+		assert.match(e, /^\s*<h3[\s>]/);
+		assert.match(e, /<time datetime="\d{4}(-\d{2})?">/);
+	}
+	const links = hrefs(layer);
+	assert.ok(links.some((h) => h.startsWith('mailto:')), 'email');
+	assert.ok(links.some((h) => /^https:\/\/(www\.)?linkedin\.com\//.test(h)), 'LinkedIn');
+	assert.ok(links.some((h) => /^https:\/\/github\.com\//.test(h)), 'GitHub');
+	assert.match(layer, /<a[^>]*href="\/resume\.pdf"[^>]*\sdownload(="")?[\s>]/, 'the PDF, a download the router leaves to the browser');
+	assert.match(layer, /<a class="exit[^"]*" href="\/"/, 'the way back, to the arrival point');
+	assert.doesNotMatch(layer, /<dialog|<canvas/);
+	assert.equal(opens(layer, 'button').length, 1, 'Print');
+});
+
 test('inventory: every prop from the content inventory is on some scene, one grant per cosmetic', () => {
 	const ids = new Set(allProps.map((p) => p.id));
 	const inventory = [
@@ -143,7 +179,8 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 });
 
 // The overworld's marquee scrolls them too (Joe, 2026-09-30), painted on the canvas, which has no markup.
-test('clearance: in the markup the Universal titles are told only on the Foundry screen and its posters', () => {
+// The resume names them too (Joe, 2026-10-02): it is no scene, and he cleared them for it.
+test('clearance: in the scenes\' markup the Universal titles are told only on the Foundry screen and its posters', () => {
 	const titles = /Fast Five|Snow White|Lorax/;
 	for (const file of files.filter((f) => f !== 'foundry.html')) assert.doesNotMatch(page(file), titles, file);
 	let foundry = page('foundry.html');
@@ -167,7 +204,7 @@ test('the Foundry: a poster is a button with no card, and the screen only says i
 });
 
 test('the Join and Paused cards: on every page, outside the layer, closed until the engine opens them', () => {
-	for (const file of files) {
+	for (const file of pages) {
 		// The consent bar in the Join card is a popover over it, not the card's content (ticket 23).
 		const html = page(file), shell = html.replace(main(html), '').replace(consentBar, '');
 		const [join, paused, ...rest] = [...shell.matchAll(/<dialog\b[\s\S]*?<\/dialog>/g)].map((m) => m[0]);
@@ -192,7 +229,7 @@ test('analytics: a build without a measurement ID has no GA script, no queue and
 	const dir = new URL('../build/_app/immutable/', import.meta.url);
 	const js = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.js')).map((f) => readFileSync(new URL(f, dir), 'utf8')).join('\n');
 	const loader = /googletagmanager\.com\/gtag\/js/, queue = /dataLayer/, cloudflare = /static\.cloudflareinsights\.com\/beacon\.min\.js/;
-	for (const file of files) {
+	for (const file of pages) {
 		const html = page(file), bars = html.match(consentBar) ?? [];
 		assert.doesNotMatch(html, /<script[^>]*(googletagmanager|cloudflareinsights)/, `${file}: never an inline or static analytics script`);
 		assert.equal(bars.length, gaId ? 2 : 0, `${file}: the bar in the Join card and on the page`);
@@ -380,7 +417,7 @@ test('headers: one CSP per page, allowing self, the GA hosts, the socket and the
 		'img-src': ["'self'", 'https://*.google-analytics.com', 'https://*.googletagmanager.com'],
 		'media-src': ["'self'", 'blob:', 'https://media.barmadden.com']
 	};
-	for (const file of files) {
+	for (const file of pages) {
 		const html = page(file);
 		const policies = [...html.matchAll(/<meta http-equiv="content-security-policy" content="([^"]*)"/g)].map((m) => m[1]);
 		assert.equal(policies.length, 1, file);
@@ -396,7 +433,7 @@ test('headers: one CSP per page, allowing self, the GA hosts, the socket and the
 // The site's type (Joe, 2026-09-30) is self-hosted: every face a file of the site's own, never Google's, and never a data:
 // URL, which the page policy's default-src 'self' would refuse.
 test('fonts: every page preloads the latin faces it is set in, bundled with the site, and nothing inlines a font', () => {
-	for (const file of files) {
+	for (const file of pages) {
 		const html = page(file);
 		assert.doesNotMatch(html, /fonts\.(googleapis|gstatic)\.com/, file);
 		const preloads = [...html.matchAll(/<link href="([^"]*)" rel="preload" as="font" type="font\/woff2" crossorigin>/g)].map((m) => m[1]);
@@ -444,7 +481,7 @@ test('caching: every hashed file of the build is kept for good, the icons a day,
 		assert.deepEqual(cacheControl(`/${f}`), icon ? ['public, max-age=86400'] : [], f);
 	}
 	// A page is also asked for at its path without the extension.
-	for (const path of ['/', '/moosylvania', '/sushi-stand', '/big-muddy', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
+	for (const path of ['/', '/moosylvania', '/sushi-stand', '/big-muddy', '/resume', '/_app/version.json', '/resume.pdf']) assert.deepEqual(cacheControl(path), [], path);
 });
 
 test("the bottles of the sites Joe built, MonsterCommerce's server rack and the café's ATM and stand: each card shows its screenshots in a window, a hashed file each, named and fetched when shown (Joe, 2026-10-01)", () => {

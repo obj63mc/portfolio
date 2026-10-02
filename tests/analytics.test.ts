@@ -33,9 +33,10 @@ test('consent at load: no id is off, GPC never loads, a stored choice stands, el
 
 test('contact clicks: the resume, email, LinkedIn, GitHub and Strava links, wherever a card has them; nothing else', () => {
 	const base = 'https://barmadden.com/';
-	// The welcome sign's copy carries the resume and the contacts since the signpost lost them (Joe, 2026-10-01).
-	const contacts = ['/resume.pdf', 'mailto:joe@example.com', 'https://www.linkedin.com/in/someone', 'https://github.com/obj63mc', 'https://www.strava.com/athletes/8703625'].map((href) => contactMethod(href, base));
-	assert.deepEqual(contacts, ['resume', 'email', 'linkedin', 'github', 'strava']);
+	// The welcome sign's copy carries the contacts since the signpost lost them (Joe, 2026-10-01), and links the resume page
+	// (Joe, 2026-10-02), which carries the PDF: the page and the PDF are each the resume.
+	const contacts = ['/resume.pdf', '/resume', '/resume/', 'mailto:joe@example.com', 'https://www.linkedin.com/in/someone', 'https://github.com/obj63mc', 'https://www.strava.com/athletes/8703625'].map((href) => contactMethod(href, base));
+	assert.deepEqual(contacts, ['resume', 'resume', 'resume', 'email', 'linkedin', 'github', 'strava']);
 	const cards = [...OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props)), ...SLU.props].flatMap((p) => p.links ?? []);
 	// The lab workstation's GitHub link and the ride sign's Strava link are in their copy alone (Joe, 2026-10-01).
 	assert.deepEqual(new Set(cards.map((l) => contactMethod(l.href, base))), new Set());

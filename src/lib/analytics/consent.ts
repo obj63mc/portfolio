@@ -47,8 +47,9 @@ export type ContactMethod = 'resume' | 'email' | 'linkedin' | 'github' | 'strava
 const on = (host: string, domain: string) => host === domain || host.endsWith(`.${domain}`);
 
 /**
- * The contact a link reaches, for `contact_click`: the resume PDF, email, LinkedIn, GitHub or Strava, from the signpost or
- * a card; null for every other link, the doors and the districts' fragments included. `base` resolves a relative href.
+ * The contact a link reaches, for `contact_click`: the resume, its page (Joe, 2026-10-02) or its PDF, email, LinkedIn,
+ * GitHub or Strava, from a card or the resume page; null for every other link, the doors and the districts' fragments
+ * included. `base` resolves a relative href.
  */
 export function contactMethod(href: string, base: string): ContactMethod | null {
 	let url: URL;
@@ -58,7 +59,7 @@ export function contactMethod(href: string, base: string): ContactMethod | null 
 		return null;
 	}
 	if (url.protocol === 'mailto:') return 'email';
-	if (url.origin === new URL(base).origin) return url.pathname.endsWith('.pdf') ? 'resume' : null;
+	if (url.origin === new URL(base).origin) return url.pathname.endsWith('.pdf') || url.pathname.replace(/\/+$/, '') === '/resume' ? 'resume' : null;
 	if (url.protocol !== 'https:') return null;
 	const host = url.hostname;
 	return on(host, 'linkedin.com') ? 'linkedin' : on(host, 'github.com') ? 'github' : on(host, 'strava.com') ? 'strava' : null;

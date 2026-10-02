@@ -26,6 +26,10 @@ _Avoid_: mini-game, Sushi Star, level
 The game behind the angler fishing the Mississippi from the Illinois bank, beside the grain elevator in Belleville's north: a lure sinks, steered left and right past fish and snags, and the first touch ends the cast, carried over from the Lunker Lake giveaway game. A page of its own with no scene or room, like Sushi Stand; the visitor's ten heaviest catches and the lure they have earned are kept on the device.
 _Avoid_: mini-game, Lunker Lake, level
 
+**Resume**:
+The printable page at `/resume` holding Joe's resume, a page of its own with no scene or room, like the games, reached from the welcome sign's card and printed by the browser to the PDF at `/resume.pdf`. Its copy is the page's own markup.
+_Avoid_: CV, resume card, resume prop
+
 **Cast**:
 One go at Big Muddy, from the lure entering the water to the catch or snag that ends it.
 _Avoid_: round, run, life
@@ -44,7 +48,7 @@ _Avoid_: viewport, scroll position, window
 ### Things
 
 **Prop**:
-An interactive object placed in a scene that reacts when a visitor hovers or clicks it. Props are the only way career facts, links, and resume content are surfaced.
+An interactive object placed in a scene that reacts when a visitor hovers or clicks it. Props are the only way career facts, links, and resume content are surfaced in a scene; the resume page, reached from the welcome sign's card, is the one page outside the scenes that carries them.
 _Avoid_: object, item, hotspot, element
 
 **Shared prop**:
