@@ -162,10 +162,11 @@
 				<p class="org">Network Solutions (MonsterCommerce until the 2005 acquisition) · Belleville, IL</p>
 				<ul>
 					<li>
-						Started on MonsterCommerce's help desk while finishing my degree.
+						Started on MonsterCommerce's help desk while finishing my Bachelor's degree.
 					</li>
 					<li>
-						Moved to QA with the Product team, testing and shaping the platform's special features projectesacross versions 3 to 5, learning web development on classic ASP and ASP.net.
+						Moved to QA with the Product team, testing and shaping the platform's special features projectes
+						across versions 3 to 5, learning web development on classic ASP and ASP.net.
 						Mid 2005, I transitioned to full-time development on the platform.
 					</li>
 					<li>
