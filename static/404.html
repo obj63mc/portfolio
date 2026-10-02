@@ -1,15 +1,133 @@
 <!doctype html>
+<!--
+	The page the host answers an unknown path with (wrangler.toml `not_found_handling`), a file of its own with no scripts:
+	the copy of src/routes/+error.svelte's 404 and the plain document's look (src/app.css), written out here by hand.
+	Keep the two in step. The build's fonts are hashed files this page can't name, so it falls back to the faces' stand-ins.
+-->
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="robots" content="noindex" />
-		<title>Not found, Joe Madden</title>
+		<meta name="theme-color" content="#1d2b3a" />
+		<link rel="icon" href="/favicon.ico" sizes="48x48" />
+		<title>Not found | BarMadden.com</title>
+		<style>
+			:root {
+				--headline: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+				--body: Montserrat, system-ui, sans-serif;
+				--night: #1d2b3a;
+				--night-hot: #2a3d51;
+				--ivory: #fff4d4;
+				--gold: #ffd34f;
+				--gold-hot: #ffe07a;
+				--gold-lip: #b8891a;
+				background: var(--night-hot);
+				color: var(--ivory);
+				font-family: var(--body);
+				line-height: 1.55;
+			}
+
+			body {
+				margin: 0;
+			}
+
+			main {
+				box-sizing: border-box;
+				inline-size: min(100% - 2rem, 56rem);
+				margin-inline: auto;
+				padding-block: 1.5rem 3rem;
+				text-wrap: pretty;
+			}
+
+			h1 {
+				margin-block: 0 1.25rem;
+				color: var(--gold);
+				font-family: var(--headline);
+				font-size: clamp(2.25rem, 1.5rem + 2.5vw, 3.25rem);
+				font-weight: 800;
+				letter-spacing: 0.03em;
+				line-height: 1.02;
+				text-transform: uppercase;
+			}
+
+			p {
+				margin-block: 0 0.75rem;
+				max-inline-size: 44rem;
+			}
+
+			.lead {
+				margin-block: 0 1rem;
+				font-size: 1.125rem;
+			}
+
+			ul {
+				margin-block: 0 1rem;
+				padding-inline-start: 1.25rem;
+
+				& li::marker {
+					color: var(--gold);
+				}
+			}
+
+			a {
+				color: var(--gold);
+				font-weight: 500;
+				text-decoration-thickness: 2px;
+				text-underline-offset: 5px;
+
+				&:focus-visible {
+					outline: 3px solid var(--ivory);
+					outline-offset: 3px;
+				}
+			}
+
+			/* The way back: the gold button at a card's size. */
+			.door {
+				display: inline-block;
+				margin-block-start: 1rem;
+				padding-block: 0.5rem 0.55rem;
+				padding-inline: 1.375rem;
+				border-radius: 0.5rem;
+				background: var(--gold);
+				box-shadow: 0 0.25rem 0 var(--gold-lip);
+				color: var(--night);
+				font-family: var(--headline);
+				font-size: 1.1875rem;
+				font-weight: 800;
+				letter-spacing: 0.06em;
+				line-height: 1.1;
+				text-decoration: none;
+				text-transform: uppercase;
+
+				&:hover {
+					background: var(--gold-hot);
+				}
+
+				&:active {
+					translate: 0 0.1875rem;
+					box-shadow: 0 0.0625rem 0 var(--gold-lip);
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<main>
-			<h1>Not found</h1>
-			<p>Nothing is painted here. <a href="/">Back to St. Louis</a></p>
+			<h1>Looks like you are lost</h1>
+			<p class="lead">Need help finding your way?</p>
+			<p>Hit one of the links below to continue your journey.</p>
+			<ul>
+				<li><a href="/resume">Resume</a></li>
+				<li><a href="/sushi-stand">The Sushi Stand</a></li>
+				<li><a href="/big-muddy">Big Muddy</a></li>
+				<li><a href="/moosylvania">Moosylvania</a></li>
+				<li><a href="/foundry">Foundry</a></li>
+				<li><a href="/side-project">Side Project</a></li>
+				<li><a href="/bread-co">Bread Co.</a></li>
+				<li><a href="/slu">SLU</a></li>
+				<li><a href="/brennans">Brennan's</a></li>
+			</ul>
+			<a class="door" href="/">Back to BarMadden</a>
 		</main>
 	</body>
 </html>
