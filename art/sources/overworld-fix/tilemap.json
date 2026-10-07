@@ -1,17 +1,29 @@
 {
- "round": 21,
- "base": "rounds/base-21.png",
+ "round": 22,
+ "base": "rounds/base-22.png",
  "tiles": [
   {
-   "name": "breadcolot",
+   "name": "midtown",
    "rect": [
-    254,
+    744,
+    268,
+    256,
+    256
+   ],
+   "loops": [],
+   "repaintPx": 3403,
+   "edit": true
+  },
+  {
+   "name": "belleville",
+   "rect": [
+    1727,
     372,
     256,
     256
    ],
    "loops": [],
-   "repaintPx": 968,
+   "repaintPx": 3027,
    "edit": true
   }
  ],

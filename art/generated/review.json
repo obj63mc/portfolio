@@ -3,7 +3,7 @@
     {
       "id": "overworld",
       "title": "Welcome to the Portfolio of Joseph Madden | BarMadden.com",
-      "description": "Explore the portfolio of Joseph Madden, showcasing his career, client work, resume, and contact details in an explorable St. Louis setting.",
+      "description": "Explore the portfolio of Joseph Madden, showcasing my career, client work, resume, and contact details in an explorable St. Louis setting.",
       "w": 6750,
       "h": 2700,
       "pushBand": 0.25,
@@ -168,12 +168,6 @@
                   "id": "ride-sign",
                   "name": "Ride sign",
                   "gist": "longest ride 160 miles",
-                  "links": [
-                    {
-                      "label": "Strava",
-                      "href": "https://www.strava.com/athletes/8703625"
-                    }
-                  ],
                   "rect": {
                     "x": 1992,
                     "y": 1806,
@@ -1342,12 +1336,6 @@
           "id": "ride-sign",
           "name": "Ride sign",
           "gist": "longest ride 160 miles",
-          "links": [
-            {
-              "label": "Strava",
-              "href": "https://www.strava.com/athletes/8703625"
-            }
-          ],
           "rect": {
             "x": 1992,
             "y": 1806,
@@ -1858,7 +1846,7 @@
     {
       "id": "moosylvania",
       "title": "Moosylvania, Maplewood",
-      "description": "Inside the Moosylvania lobby, a converted church in Maplewood: the agency where Joe Madden is Chief Architect and the frontend, backend, CMS and data stacks he leads.",
+      "description": "Scene inside the Moosylvania lobby, a converted church in Maplewood: the agency where Joe Madden is Chief Architect and the frontend, backend, CMS and data stacks he leads.",
       "venue": "Moosylvania",
       "district": "Maplewood",
       "w": 2400,
@@ -3667,7 +3655,7 @@
     {
       "id": "slu",
       "title": "Saint Louis University, Midtown",
-      "description": "Inside the Saint Louis University computer science lab: Joe Madden’s BS in Computer Science with Honors, 2005, his senior project and his GitHub.",
+      "description": "Scene inside the Saint Louis University computer science lab: Joe Madden’s BS in Computer Science with Honors, 2005, his senior project and his GitHub.",
       "venue": "Saint Louis University",
       "district": "Midtown",
       "w": 2845,
@@ -3701,12 +3689,6 @@
           "id": "workstation",
           "name": "Lab workstation",
           "gist": "Joe’s GitHub",
-          "links": [
-            {
-              "label": "GitHub",
-              "href": "https://github.com/obj63mc"
-            }
-          ],
           "rect": {
             "x": 793,
             "y": 1021,
@@ -4705,7 +4687,7 @@
     {
       "id": "foundry",
       "title": "The Foundry, Midtown",
-      "description": "Inside the Alamo Drafthouse theatre at City Foundry: three Universal Pictures Home Entertainment games Moosylvania built, on the screen and its posters.",
+      "description": "Scene inside the Alamo Drafthouse theatre at City Foundry: three Universal Pictures Home Entertainment games Moosylvania built, on the screen and its posters.",
       "venue": "The Foundry",
       "district": "Midtown",
       "w": 2845,
@@ -4755,6 +4737,23 @@
           "name": "Screen",
           "gist": "idle, pick a poster to start a reel",
           "kind": "status",
+          "reels": [
+            {
+              "name": "Fast Five",
+              "file": "fastfive-demo-full-1024x768.mp4",
+              "line": "A find-and-seek and safe-cracking game promoting the home video release."
+            },
+            {
+              "name": "Snow White and the Huntsman",
+              "file": "swath-demo-tour-1280x800.mp4",
+              "line": "Multiple mini games built from scenes in the film."
+            },
+            {
+              "name": "The Lorax",
+              "file": "lorax-demo-tour-1280x800.mp4",
+              "line": "A partnership with Words With Friends."
+            }
+          ],
           "rect": {
             "x": 1656,
             "y": 85,
@@ -5822,7 +5821,7 @@
     {
       "id": "side-project",
       "title": "Side Project Cellar, Maplewood",
-      "description": "Inside the Side Project Cellar bar, across the street from Moosylvania: the alcohol brands Joe Madden has built for, and his favourite brewery.",
+      "description": "Scene inside the Side Project Cellar bar, across the parking lot from Moosylvania: showcasing the alcohol brand projects Joe Madden has built, featuring his favourite brewery.",
       "venue": "Side Project Cellar",
       "district": "Maplewood",
       "w": 2845,
@@ -6487,7 +6486,7 @@
     {
       "id": "brennans",
       "title": "Brennan's, Central West End",
-      "description": "Inside Brennan's on North Euclid: the cigar brands Joe Madden has built for at Moosylvania.",
+      "description": "Scene inside Brennan's on North Euclid: the cigar brand websites Joe Madden has built at Moosylvania.",
       "venue": "Brennan's",
       "district": "Central West End",
       "w": 2845,
@@ -6976,8 +6975,8 @@
     },
     {
       "id": "bread-co",
-      "title": "St. Louis Bread Co., Maplewood",
-      "description": "Inside a St. Louis Bread Co. café: the work Joe Madden has done at Moosylvania for PayPal, Venmo and Panera.",
+      "title": "St. Louis Bread Co., Lindenwood Park",
+      "description": "Scene inside a St. Louis Bread Co. café: the work Joe Madden has done at Moosylvania for PayPal, Venmo and Panera.",
       "venue": "St. Louis Bread Co.",
       "district": "Maplewood",
       "w": 2845,
@@ -7616,7 +7615,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "87e37ced5a93feb637201870e0e9a3be5a86e40d94264a2aa0cd74b682752088"
+        "sha256": "6574a381faa41d106453b59db550071f4d649c15cca15adb49be46bd6a5ad38e"
       },
       "trim": {
         "x": 0,
@@ -19299,7 +19298,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "ce5e7d0500809dec0b97bc5af3cd2d889d7046ad844cb95bf008e97fca74741d"
+        "sha256": "e0ca4ba6711e9e03bce4e8b4dd9d46531eb0d1a34cf32b7ecc4afebedec52ef0"
       },
       "trim": {
         "x": 35,
@@ -19623,7 +19622,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "c608dd8b8431dc1f91a7c3abf124de2c4b69379a48eabe8ddb85ee45da1acade"
+        "sha256": "1636e600b952811411a7b4fa358ff5e2a6270d6e82f7e69ddb783a232c25b0a2"
       },
       "trim": {
         "x": 332,
@@ -19951,7 +19950,7 @@
       "source": {
         "w": 1720,
         "h": 520,
-        "sha256": "270ce1bfb6d6aca968385438e1e2dcd6778dfc0bcd0fb3a50913e0b6acaa3c61"
+        "sha256": "4fe0122dedb4a1a6d9b1682bf6d258e94ee5223d97a1ba8073eabe860e13030f"
       },
       "trim": {
         "x": 61,
@@ -20651,7 +20650,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "778841fd93498f52cca593618b27cf1c2ad89ce1e805e504dec07822d7eb2cd3"
+        "sha256": "baae00354e5612d3e4cef699f37c0fdad24ca98cda3186be361493b098f3109c"
       },
       "trim": {
         "x": 112,
@@ -21167,7 +21166,7 @@
       "source": {
         "w": 1024,
         "h": 1024,
-        "sha256": "cb8ee1042680cc8598922b8d245750748eaa273c3475c104cd34c566d1d3ff74"
+        "sha256": "629738156c05ec494fc5c54639f08c1a30558f5c79cfdba4c9d624ba4ed0dbaf"
       },
       "trim": {
         "x": 175,
@@ -30857,7 +30856,7 @@
       "source": {
         "w": 7932,
         "h": 3172,
-        "sha256": "fec96565d50e6a3af647619296f1973dc3729a777888623e78341a0385d7072e"
+        "sha256": "0c205099df6db2eca1278a87483e5a23eec9eb39e828eadbffc69e70963b7b13"
       },
       "trim": {
         "x": 0,
@@ -30916,7 +30915,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "8d7060bf439f79f3ebca5d550b7e1c55bdd04b5c15fedd75dc4f77cef2b43cab"
+        "sha256": "076c8db0f1c256a8d1868575a25de3fe7c4d2026a88995f100385931fc5bf90b"
       },
       "trim": {
         "x": 38,
@@ -30985,7 +30984,7 @@
       "source": {
         "w": 1536,
         "h": 1024,
-        "sha256": "f927fe71e3a14ef7cc4a1354bcca3bea712e4599074a4d13643ecd7aaf0a69ea"
+        "sha256": "4c1e14c6f70d11a0803d6ca51c2aece7beea1b617204e6011c355d20b9d9bafb"
       },
       "trim": {
         "x": 145,
@@ -31205,7 +31204,7 @@
       "source": {
         "w": 1983,
         "h": 793,
-        "sha256": "8420f31610151224213a7fd76309882388fb39247d9b4a6f31e32e23e012abc0"
+        "sha256": "1a0e32998682a4fd7855156c2c2c10cd755ac237831bbe156300be13c61037fe"
       },
       "trim": {
         "x": 15,
@@ -31297,7 +31296,7 @@
       "source": {
         "w": 1058,
         "h": 564,
-        "sha256": "fc97b892a4847a2bf5a3284fbe0044125d6374252983e13521cdd3fe78ecc67d"
+        "sha256": "8847ba0e327cc4f09062fc1865b412c5928c5797cda12f866729d991527393aa"
       },
       "trim": {
         "x": 0,

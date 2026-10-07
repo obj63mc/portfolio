@@ -1,3 +1,35 @@
+OVERWORLD MASTER DERIVATION, 2026-10-07 (round twenty-two, upscaled 4x for the background)
+
+Round twenty-two (rounds/round-22.json), 2026-10-07: the MIDTOWN and BELLEVILLE boards' front faces are relaid by hand as the MAPLEWOOD and CENTRAL WEST END boards' wood, flat red-brown with faint streaks, two plank seams and two nail heads (scripts/art/overworld/district-signs.py), the old lettering gone, and the names drawn back as white lettering decals; the FOREST PARK decal's lettering is pure white.
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-07 (round twenty-two, upscaled 4x for the background)
+
+Round twenty-two (rounds/round-22.json), 2026-10-07: the MIDTOWN and BELLEVILLE boards' front faces are relaid by hand as the MAPLEWOOD and CENTRAL WEST END boards' wood, flat red-brown with faint streaks, two plank seams and two nail heads (scripts/art/overworld/district-signs.py), the old lettering gone, and the names drawn back as white lettering decals; the FOREST PARK decal's lettering is pure white.
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-07 (round twenty-two, upscaled 4x for the background)
+
+Round twenty-two (rounds/round-22.json), 2026-10-07: the MIDTOWN and BELLEVILLE boards' front faces are relaid by hand as one gradient of their own wood (scripts/art/overworld/district-signs.py), the old lettering gone, and the names drawn back as white lettering decals; the FOREST PARK decal's lettering is pure white.
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-07 (round twenty-one, upscaled 4x for the background)
+
+Decals only, 2026-10-07: the MIDTOWN and BELLEVILLE signs' faces are lettered decals (scripts/art/overworld/district-signs.py), and the FOREST PARK decal's lettering is pure white. The native master is unchanged.
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
 OVERWORLD MASTER DERIVATION, 2026-10-01 (round twenty-one, upscaled 4x for the background)
 
 Round twenty-one relaid the ground round the St. Louis Bread Co. by hand (rounds/round-21.json, scripts/art/overworld/bread-co-lot.py): lawn to the patio and the building on the west with one straight edge to the paving, and lawn over the path on the east. The building is a decal, its parapet raised to take the logo Joe supplied and its cream outline recoloured to the ground beneath it (scripts/art/overworld/bread-co-sign.py).

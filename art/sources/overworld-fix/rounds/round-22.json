@@ -1,0 +1,71 @@
+{
+ "round": 22,
+ "base": "rounds/base-22.png",
+ "note": "Joe (2026-10-07): the MIDTOWN and BELLEVILLE signs' letters are not all clean like the other signs'; the lettering is to be white, FOREST PARK's too. Drawn by hand, scripts/art/overworld/district-signs.py (tiles/t-midtown-model.png, tiles/t-belleville-model.png): each board's whole front face is relaid as the MAPLEWOOD and CENTRAL WEST END boards' wood (flat red-brown, faint streaks, two plank seams, two nail heads), the old lettering gone. The names are drawn back as decals (midtown-sign.svg, belleville-sign.svg; decals.json).",
+ "tiles": {
+  "midtown": {
+   "rect": [
+    744,
+    268,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      812,
+      376
+     ],
+     [
+      924,
+      386.1
+     ],
+     [
+      924,
+      418
+     ],
+     [
+      812,
+      404
+     ]
+    ]
+   ],
+   "keep": "the board's top edge and ends, the bushes at its foot and everything round it",
+   "fixes": [
+    "Drawn by hand, not by a model (scripts/art/overworld/district-signs.py): the board's whole front face relaid as the MAPLEWOOD and CENTRAL WEST END boards' wood (flat red-brown, faint streaks, two plank seams, two nail heads), the MIDTOWN lettering gone, for the lettering decal."
+   ]
+  },
+  "belleville": {
+   "rect": [
+    1727,
+    372,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      1793,
+      476.2
+     ],
+     [
+      1896,
+      486.9
+     ],
+     [
+      1896,
+      516
+     ],
+     [
+      1793,
+      504
+     ]
+    ]
+   ],
+   "keep": "the board's top edge and ends, the bushes at its foot and everything round it",
+   "fixes": [
+    "Drawn by hand, not by a model (scripts/art/overworld/district-signs.py): the board's whole front face relaid as the MAPLEWOOD and CENTRAL WEST END boards' wood (flat red-brown, faint streaks, two plank seams, two nail heads), the BELLEVILLE lettering gone, for the lettering decal."
+   ]
+  }
+ }
+}

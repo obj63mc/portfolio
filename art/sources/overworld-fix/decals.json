@@ -17,7 +17,7 @@
     ],
     "height": 17,
     "shear": 0,
-    "note": "The FOREST PARK sign's face between its posts, with its lettering (Barlow Condensed 700, the site's headline face, as outlines; SIL OFL), 2026-09-30: at 9 native px the lettering came out of the 4x upscale wobbly. Drawn in native px (its viewBox is the master's own coordinates), the face inset about 1 px from the board's dark rims and the lettering skewed with the board's slope, so it is placed unsheared at its viewBox centre."
+    "note": "The FOREST PARK sign's face between its posts, with its lettering (Barlow Condensed 700, the site's headline face, as outlines; SIL OFL), 2026-09-30: at 9 native px the lettering came out of the 4x upscale wobbly. Drawn in native px (its viewBox is the master's own coordinates), the face inset about 1 px from the board's dark rims and the lettering skewed with the board's slope, so it is placed unsheared at its viewBox centre. Its lettering is pure white since 2026-10-07 (Joe), as the two below."
   },
   {
     "file": "picnic-tables.svg",
@@ -38,5 +38,25 @@
     "height": 42.04,
     "shear": 0,
     "note": "The St. Louis Bread Co. east of Ted Drewes, 2026-10-01: the building as Codex drew it (round twenty's attempt a, art/runs/overworld-fix-r20-breadcoa; the cut-out is bread-co-building-drawn.png), composited at the drawing's own resolution over the same cut-out that round twenty placed on the native master by hand, where its windows, patio and shrubs came out of the 4x upscale as blobs. scripts/art/overworld/bread-co-sign.py then raises its parapet by 34 of the drawing's px (4.9 native, 16.6 world), brick let in above the canopy with the roof and coping riding up whole, paints out the two blank olive panels, and sets the Saint Louis Bread Co. logo Joe supplied (bread-co-logo.webp; Panera's trademark, shown as the client's own sign) into the front wall on a sage board between the coping and the canopy, sheared to the wall's slope. So the decal stands 4.9 native px taller than its native twin underneath. Its centre and height are in native px."
+  },
+  {
+    "file": "midtown-sign.svg",
+    "center": [
+      868.0,
+      397.0
+    ],
+    "height": 42.0,
+    "shear": 0,
+    "note": "The MIDTOWN sign's lettering, 2026-10-07 (Joe): at 15 native px it came out of the 4x upscale uneven. Round twenty-two relays the native board's whole front face as the MAPLEWOOD and CENTRAL WEST END boards' wood (flat red-brown, faint streaks, two plank seams, two nail heads), the old lettering gone, and this draws the name back in white Barlow Condensed 700 outlines sheared with the board's slope (scripts/art/overworld/district-signs.py writes both). Drawn in native px (its viewBox is the master's own coordinates), so it is placed unsheared at its viewBox centre."
+  },
+  {
+    "file": "belleville-sign.svg",
+    "center": [
+      1844.5,
+      496.1
+    ],
+    "height": 39.8,
+    "shear": 0,
+    "note": "The BELLEVILLE sign's lettering, 2026-10-07 (Joe): at 15 native px it came out of the 4x upscale uneven. Round twenty-two relays the native board's whole front face as the MAPLEWOOD and CENTRAL WEST END boards' wood (flat red-brown, faint streaks, two plank seams, two nail heads), the old lettering gone, and this draws the name back in white Barlow Condensed 700 outlines sheared with the board's slope (scripts/art/overworld/district-signs.py writes both). Drawn in native px (its viewBox is the master's own coordinates), so it is placed unsheared at its viewBox centre."
   }
 ]

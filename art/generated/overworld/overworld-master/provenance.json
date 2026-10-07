@@ -1,11 +1,11 @@
 {
-  "sourceSha256": "fec96565d50e6a3af647619296f1973dc3729a777888623e78341a0385d7072e",
-  "run": "art/runs/overworld-master/2026-10-01T20-12-13.000Z-upscale-4x",
+  "sourceSha256": "0c205099df6db2eca1278a87483e5a23eec9eb39e828eadbffc69e70963b7b13",
+  "run": "art/runs/overworld-master/2026-10-07T16-31-39.000Z-upscale-4x",
   "provider": "derived",
   "derivation": {
     "operation": "real-esrgan-4x",
-    "base": "art/sources/overworld-fix/stitched.png (native 1983 x 793, tile-map round twenty-one)",
-    "baseSha256": "487f6f2121d52899e6a6391645893caaa872640ef975b309fc382e16bf4a61c4",
+    "base": "art/sources/overworld-fix/stitched.png (native 1983 x 793, tile-map round twenty-two)",
+    "baseSha256": "0e5a761d4eb73b4f9449cdd52f4f986522b3a0d5b127c39fd6fffeae596a6a4c",
     "upscaler": "Upscayl upscayl-bin, model digital-art-4x, scale 4",
     "script": "scripts/art/overworld/install-master.sh",
     "decals": [
@@ -15,7 +15,7 @@
       },
       {
         "file": "art/sources/overworld-fix/forest-park-sign.svg",
-        "sha256": "48049de136faf0721b9c50cefccae142c69a4cfec7ecffdd43e82299ad098091"
+        "sha256": "de6f24eb40833f16563e6f511f1ca5971f81906d5a04a49139ede861e59fb05e"
       },
       {
         "file": "art/sources/overworld-fix/picnic-tables.svg",
@@ -24,9 +24,17 @@
       {
         "file": "art/sources/overworld-fix/bread-co-building.png",
         "sha256": "7d0a2c28d5f4bdfe40ea25bfe940ad8d2e2cd0881ab545f352c7a7644e7557ce"
+      },
+      {
+        "file": "art/sources/overworld-fix/midtown-sign.svg",
+        "sha256": "c26c4aa52e2ca4aea47bf56397af3c8e35d4b107e27e43283ae9885912086ddb"
+      },
+      {
+        "file": "art/sources/overworld-fix/belleville-sign.svg",
+        "sha256": "d89fe378f09da1f1cc5f50e3cee2f27672056b2e0587dfe7b60dddb53a76ec22"
       }
     ],
-    "decalsSha256": "c3bc7abbf1bf7d1e114486434f7edb9051886786f6a11b1c03bbfb01bedb5e7e"
+    "decalsSha256": "13607b23f9ae309bb8d0596aea845cf9a55364de2928117a940a2148df89eaea"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."
 }
