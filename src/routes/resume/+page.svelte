@@ -208,6 +208,8 @@
 					<li>
 						Currently manage the
 						<a href="https://github.com/silverstripe/silverstripe-s3" target="_blank">Silverstripe AWS S3 module</a>
+						and
+						<a href="https://github.com/obj63mc/silverstripe-google-cloud-storage" target="_blank">Silverstripe Google Cloud Storage module</a>
 						for handling assets and file uploads.
 					</li>
 				</ul>
