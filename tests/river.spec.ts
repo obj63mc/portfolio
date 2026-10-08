@@ -56,7 +56,7 @@ const cursorAt = (page: Page, near: Point) =>
 	}, near);
 
 async function join(page: Page) {
-	const b = (await page.locator('dialog.join[open] button').boundingBox())!;
+	const b = (await page.locator('dialog.join[open] button.primary').boundingBox())!;
 	await page.mouse.click(b.x + 8, b.y + 8);
 	await expect(page.locator('dialog.join')).toBeHidden();
 }

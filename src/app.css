@@ -78,7 +78,8 @@ html:not(.engine):not(:has(.game, .resume)) {
 		padding: 0;
 	}
 
-	& :is(.presence, .controls, .joystick) {
+	/* The menu alone stays, top left (Joe, 2026-10-08): it opens without scripts (Menu.svelte). */
+	& :is(.presence, .controls:not(.menu), .joystick) {
 		display: none;
 	}
 
@@ -88,6 +89,11 @@ html:not(.engine):not(:has(.game, .resume)) {
 		inline-size: min(100% - 2rem, 56rem);
 		margin-inline: auto;
 		padding-block: 1.5rem 3rem;
+
+		/* Where the column reaches the window's edge, it starts clear of the menu's button. */
+		@media (width < 64rem) {
+			padding-block-start: 4.75rem;
+		}
 		line-height: 1.55;
 		text-wrap: pretty;
 
@@ -166,6 +172,16 @@ html:not(.engine):not(:has(.game, .resume)) {
 			margin-block-start: 2.25rem;
 			/* A link to it from the signpost lands clear of the window's edge. */
 			scroll-margin-block-start: 1rem;
+		}
+
+		/* The scene's write-up (About.svelte), under the headline: a column of copy, not a district's grid of venues. */
+		& > .about {
+			display: block;
+			margin-block: 0 1.5rem;
+
+			& li {
+				margin-block-end: 0.5rem;
+			}
 		}
 
 		& h2:not(dialog *) {
@@ -406,7 +422,8 @@ button.secondary {
 	display: flex;
 	gap: 0.625rem;
 
-	& button {
+	/* A tile is a button, or the label of the menu's checkbox (Menu.svelte). */
+	& :is(button, label) {
 		--fill: var(--night);
 		--fill-hot: var(--night-hot);
 		--ink: var(--ivory);
@@ -449,7 +466,7 @@ button.secondary {
 	}
 
 	/* Each is named for assistive tech by a hidden label; its icon says it on screen. */
-	& button > span {
+	& :is(button, label) > span {
 		position: absolute;
 		inline-size: 1px;
 		block-size: 1px;
@@ -532,9 +549,9 @@ html.engine {
 	 * engine under the lock or on touch, where hover is stale or sticks to the last tap. A button lifts to its lighter
 	 * fill, a link in a card lights gold.
 	 */
-	&:not([data-input='locked'], [data-input='touch']) :is(dialog, .controls, .consent) :is(a, button):not(:disabled):hover,
-	& :is(dialog, .controls, .consent) :is(a, button).hot:not(:disabled) {
-		&:is(button, .primary, .alternate, .secondary) {
+	&:not([data-input='locked'], [data-input='touch']) :is(dialog, .controls, .consent) :is(a, button, label):not(:disabled):hover,
+	& :is(dialog, .controls, .consent) :is(a, button, label).hot:not(:disabled) {
+		&:is(button, label, .primary, .alternate, .secondary) {
 			background: var(--fill-hot, var(--night-hot));
 			color: var(--ink-hot, var(--ink, var(--ivory)));
 		}
@@ -567,7 +584,9 @@ html.engine {
 		will-change: transform;
 		text-wrap:pretty;
 
-		& h1 {
+		/* The headline, the scene's write-up (About.svelte) and a heading placed on no art are the plain document's: here, a
+		   screen reader's only. */
+		& :is(h1, .about, h2:not(.at, dialog *)) {
 			position: absolute;
 			width: 1px;
 			height: 1px;
@@ -717,11 +736,11 @@ html.engine {
 		color: var(--gold);
 	}
 
-	/* The lap clock, top left, clear of the count; it dims while the cursor is off the course and the lap can still be saved. */
+	/* The lap clock, top left beside the menu button, clear of the count; it dims while the cursor is off the course and the lap can still be saved. */
 	& .lap {
 		position: fixed;
 		inset-block-start: 1rem;
-		inset-inline-start: 1rem;
+		inset-inline-start: 4.375rem;
 		margin: 0;
 		padding: 0.25rem 0.875rem;
 		border-radius: 1rem;

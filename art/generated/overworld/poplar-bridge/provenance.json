@@ -1,10 +1,10 @@
 {
-  "sourceSha256": "8847ba0e327cc4f09062fc1865b412c5928c5797cda12f866729d991527393aa",
-  "run": "art/runs/poplar-bridge/2026-10-07T16-33-47.217Z",
+  "sourceSha256": "812ce3e4dc25c97feca53c800932acb3de2c10d1e6cf05d880548f1230b8a0ff",
+  "run": "art/runs/poplar-bridge/2026-10-08T15-09-42.465Z",
   "provider": "derived",
   "derivation": {
     "asset": "overworld-master",
-    "referenceSha256": "4bc7bb8fcc710ee73dbd79a1c9de1ca236f91f7eecdc83482993591ec3180e0b",
+    "referenceSha256": "081790e4481811390ed47ca9d733dc5a5bbca3dc527739e073ae0c8d78ac9d26",
     "operation": "masked-composition-crop"
   },
   "note": "Prompt references use <repo> as the repository root. Run files and original PNG remain local."

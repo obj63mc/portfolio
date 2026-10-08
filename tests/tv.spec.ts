@@ -28,7 +28,7 @@ function refuseLock() {
 }
 
 async function joinScene(page: Page) {
-	await page.locator('dialog.join button').click();
+	await page.locator('dialog.join button.primary').click();
 	await expect(page.locator('dialog.join')).toBeHidden();
 }
 

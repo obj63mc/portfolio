@@ -23,8 +23,9 @@
 				.prop.status > p { display: none; }
 				/* A game is its header, the way out, over its own note of what it is: it needs scripts to play. */
 				.game > :not(header, noscript) { display: none !important; }
-				/* The room's count and the Sound toggle are the scripts' too, on a game as on a scene. */
-				.presence, .controls { display: none !important; }
+				/* The room's count and the Sound toggle are the scripts' too, on a game as on a scene; the menu opens without
+				   them (Menu.svelte), all but its toggle out of exploring, which has nothing to put away. */
+				.presence, .controls:not(.menu), .menu .mode { display: none !important; }
 				/* The document the engine would have taken (app.css), shown after all, on the plain document's background. */
 				html { background: #2a3d51 !important; }
 				body > div { visibility: visible !important; }

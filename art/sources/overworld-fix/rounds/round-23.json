@@ -1,0 +1,89 @@
+{
+ "round": 23,
+ "base": "rounds/base-23.png",
+ "note": "Joe (2026-10-08), from a screenshot of the Arch grounds' riverfront south of the riverboat: the wide levee promenade ended in a hard squared edge where the narrow cream shore path begins, and on the lawn beside it a tree was cut off and stretched (a dark green smear ran from one tree down to a half tree at the road's end). The promenade is to merge into the path and the trees and bushes are to be cleaned up. Codex drew the tile once from the fixes below (attempt a): a good taper and two whole trees, but it moved the shoreline about 4 px and added a lamp post, so the tile is drawn by hand (the README's third way), scripts/art/overworld/levee-merge.py (tiles/t-levee-model.png): the paving fades into the shore path's cream across the road's whole width, a little past the mid-road lamp, the road narrowing evenly to the path's width, the lawn is relaid over the smear and the half tree, and the round tree, keyed out of the base, stands in its place and again where the half tree stood. Amended the same day (Joe: the road then ran into the river, to a lamp over the water): the first hand tile widened the cream border strip while the paving pinched out to a point at the kerb lamp; now the paving ends 6 px short of where that lamp stood and the kerb takes the path's pale rim. A bank carried round the lamp's foot, so that it stood on the path, bumped out into the water (Joe again): the kerb lamp, the master's own at (1524, 265 to 275), is removed, post and light, and the shore from y 262 to 286 is one curve between the base's shore above and below, the levee's squared corner gone. The mid-road lamp and the lamp south of the curve keep their pixels; no lamp is added. The tile keeps no base water (keepBaseWater off): the hand tile's water is the base's own, and the lamp's light counts as water by colour.",
+ "tiles": {
+  "levee": {
+   "rect": [
+    1380,
+    140,
+    256,
+    256
+   ],
+   "polygons": [
+    [
+     [
+      1474,
+      243
+     ],
+     [
+      1474,
+      256
+     ],
+     [
+      1477,
+      261
+     ],
+     [
+      1489,
+      273
+     ],
+     [
+      1496,
+      280
+     ],
+     [
+      1502,
+      286
+     ],
+     [
+      1506,
+      294
+     ],
+     [
+      1516,
+      294
+     ],
+     [
+      1519,
+      287
+     ],
+     [
+      1533,
+      287
+     ],
+     [
+      1533,
+      276
+     ],
+     [
+      1531,
+      266
+     ],
+     [
+      1524,
+      258
+     ],
+     [
+      1512,
+      254
+     ],
+     [
+      1506,
+      250
+     ],
+     [
+      1500,
+      243
+     ]
+    ]
+   ],
+   "keep": "the riverboat and its dock, the Arch's leg, the ponds, the row of small round trees along the pond's path, the big round tree and the teal lamp post at the bottom of the outline, all the water",
+   "fixes": [
+    "Outline (the riverfront south of the white riverboat): the wide grey-beige paved promenade that runs along the water ends in a hard, squared-off edge, and a much narrower cream footpath carries on along the shore below it. Remove that hard end. The promenade's landward (left) edge curves gently toward the water over the lower half of the outline so the promenade narrows smoothly, like a road tapering, until it is exactly as wide as the cream footpath and joins it in one continuous ribbon along the shore: no step, no corner, no straight cut across it. Its colour passes from the promenade's grey-beige to the footpath's cream where the two widths meet, in one clean soft join. The thin pale kerb along the water continues unbroken down the shore. The water's edge does not move.",
+    "On the lawn left of the promenade inside the outline there is a broken tree: a round tree at the top, a long dark-green diagonal smear running down from it, and half a tree cut off at the promenade's end. Remove the smear and the half tree completely. In their place draw two whole small round trees in a row on the lawn beside the promenade, the same size, shape, leaf-green and short brown trunk as the small round trees along the pond's path just to the left, each standing on the lawn with a small soft shadow at its foot. The lawn around them is the lawn's own flat yellow-green, including the ground the promenade no longer covers.",
+    "Keep the thin dark lamp post that stands on the promenade near the top of the outline, the same size, standing on the paving."
+   ]
+  }
+ }
+}

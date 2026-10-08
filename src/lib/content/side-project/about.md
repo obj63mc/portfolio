@@ -1,0 +1,3 @@
+The Side Project Cellar scene, is from a brewery in Maplewood, Missouri, across the parking lot from Moosylvania. The scene includes Side Project Cellar's back bar where I display the beer and spirits brands I have worked on.
+
+Each bottle on the shelf represents a brand and opens a dialog with some work examples: Bud Light's "Big Game" site, built during COVID; Sapporo, with its promotions and minigames; Soonhari's relaunch for the American audience; Anchor Brewing's rebrand; the launch sites for Bacardi's Oakheart Spiced Rum and a new Grey Goose flavor; and sites for Pink Whitney, New Amsterdam, RumChata, E&J Brandy and Camarena Tequila.

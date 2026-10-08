@@ -553,6 +553,14 @@ export const sound = {
 		apply();
 		hush(true);
 	},
+	/**
+	 * Reading the site as a page (the menu's toggle, Joe, 2026-10-08): the context suspended while it is read, and, back
+	 * exploring, resumed inside that press if the visitor's own choice is sound on. The saved choice is never touched.
+	 */
+	quiet(on: boolean) {
+		if (on) suspend();
+		else if (joined && saved.sound) wake();
+	},
 	/** Whether a video with its own sound starts muted: the toggle off, or the tab hidden. */
 	get muted() {
 		return !saved.sound || document.hidden;

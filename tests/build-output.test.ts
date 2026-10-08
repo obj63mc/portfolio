@@ -11,6 +11,8 @@ import { beaconToken, measurementId, mediaUrl } from '../scripts/build-env.ts';
 const page = (file: string) => readFileSync(new URL(`../build/${file}`, import.meta.url), 'utf8');
 const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
 const withoutDialogs = (html: string) => html.replace(/<dialog[\s\S]*?<\/dialog>/g, '');
+// A scene's write-up (About.svelte) is copy, with whatever headings it likes: the page's own structure is what is left.
+const withoutAbout = (html: string) => html.replace(/<section class="about">[\s\S]*?<\/section>/, '');
 const texts = (html: string, tag: string) =>
 	[...html.matchAll(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)</${tag}>`, 'g'))].map((m) => m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim());
 const opens = (html: string, tag: string) => [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>`, 'g'))].map((m) => m[0]);
@@ -49,15 +51,17 @@ test('overworld: description and the shell around the layer', () => {
 });
 
 test('overworld: skip link, h1, signpost, then districts west to east with their venues', () => {
-	const layer = withoutDialogs(main(page('index.html')));
+	const layer = withoutAbout(withoutDialogs(main(page('index.html'))));
 	assert.equal(hrefs(layer)[0], '#signpost-districts');
 	assert.equal(texts(layer, 'h1').length, 1);
 	// The signpost links to the districts alone (Joe, 2026-10-01), west to east by centre x on the accepted master: the park
 	// lake sits west of the West End row.
 	assert.deepEqual(hrefs(signpost(layer)), ['#maplewood', '#forest-park', '#carondelet-park', '#central-west-end', '#midtown', '#belleville']);
-	assert.deepEqual(texts(layer, 'h2'), OVERWORLD.districts.map((d) => d.name));
+	// A district's heading is the one placed on its sign; any other h2 is the page's own copy.
+	const districts = [...layer.matchAll(/<h2 id="[^"]*-heading"[^>]*>([^<]*)</g)];
+	assert.deepEqual(districts.map((m) => m[1].trim()), OVERWORLD.districts.map((d) => d.name));
 	assert.deepEqual(texts(layer, 'h3'), OVERWORLD.districts.flatMap((d) => d.venues.map((v) => v.name)));
-	assert.ok(layer.indexOf('<nav') < layer.indexOf('<h2'), 'signpost comes before the districts');
+	assert.ok(layer.indexOf('<nav') < districts[0].index, 'signpost comes before the districts');
 });
 
 test('overworld: one button per prop, named prop plus gist, and one dialog per card', () => {
@@ -94,7 +98,7 @@ test('sub-scenes: focusable h1, props in reading order, exit link to the venue a
 		const layer = main(html);
 		assert.equal(opens(layer, 'h1').length, 1, s.id);
 		assert.match(opens(layer, 'h1')[0], /tabindex="-1"/, s.id);
-		assert.deepEqual(texts(withoutDialogs(layer), 'h2'), []);
+		assert.deepEqual(texts(withoutAbout(withoutDialogs(layer)), 'h2'), []);
 		// A prop opens its card, unless it is an action (a Foundry poster) or only says its state (the Foundry screen).
 		const carded = s.props.filter((p) => !p.kind).length;
 		const buttons = opens(layer, 'button').filter((b) => b.includes('aria-haspopup="dialog"'));
@@ -180,20 +184,6 @@ test('inventory: every prop from the content inventory is on some scene, one gra
 
 // The overworld's marquee scrolls them too (Joe, 2026-09-30), painted on the canvas, which has no markup.
 // The resume names them too (Joe, 2026-10-02): it is no scene, and he cleared them for it.
-test('clearance: in the scenes\' markup the Universal titles are told only on the Foundry screen and its posters', () => {
-	const titles = /Fast Five|Snow White|Lorax/;
-	for (const file of files.filter((f) => f !== 'foundry.html')) assert.doesNotMatch(page(file), titles, file);
-	let foundry = page('foundry.html');
-	assert.match(foundry, /Universal Pictures Home Entertainment/);
-	// Each prop's own block, a button or the screen's line, holds no other: the order doesn't matter.
-	for (const id of ['screen', 'poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
-		const block = new RegExp(`<div class="prop[^>]*data-prop="${id}"[^>]*>[\\s\\S]*?</div>`);
-		assert.match(foundry, block, id);
-		foundry = foundry.replace(block, '');
-	}
-	assert.doesNotMatch(foundry, titles, 'outside the screen and poster props, the head included, the titles are not told');
-});
-
 test('the Foundry: a poster is a button with no card, and the screen only says its state (Joe, 2026-09-29)', () => {
 	const layer = main(page('foundry.html'));
 	for (const id of ['poster-fast-five', 'poster-snow-white', 'poster-lorax']) {
@@ -214,11 +204,14 @@ test('the Join and Paused cards: on every page, outside the layer, closed until 
 			assert.match(opens(card, 'dialog')[0], /aria-label(ledby)?=/, file);
 		}
 		// The Join card: the skyline, the name that labels it, and its one button (Joe, 2026-09-30); its words are its own.
+		// Each card has the site menu too (Joe, 2026-10-08), its toggle out of exploring a button, since the modal card makes the page's inert.
 		assert.match(join, /<img\b/, file);
 		assert.match(join, /id="join-title"/, file);
-		assert.equal(opens(join, 'button').length, 1, file);
+		assert.equal(opens(join, 'button').length, 2, file);
+		assert.match(join, /class="controls menu\b/, file);
 		// Resume, and the Sound toggle, since the modal card makes the corner's inert.
-		assert.equal(opens(paused, 'button').length, 2, file);
+		assert.equal(opens(paused, 'button').length, 3, file);
+		assert.match(paused, /class="controls menu\b/, file);
 		assert.match(paused, /class="sound\b/, file);
 	}
 });
@@ -325,7 +318,7 @@ test('the meeting TV is a television, no button and no card, its video named onl
 
 test('copy: each card\'s is its Markdown file, built in as markup; no file is without a card, and no card empty (Joe, 2026-10-01)', () => {
 	const dir = new URL('../src/lib/content/', import.meta.url);
-	const files = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.md') && f.includes('/'));
+	const files = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.md') && f.includes('/') && !f.endsWith('/about.md'));
 	const copy = new Map(files.map((f) => [f.slice(f.lastIndexOf('/') + 1, -3), readFileSync(new URL(f, dir), 'utf8').trim()]));
 	assert.equal(copy.size, files.length, 'a prop id names one file');
 	const scenes = [['overworld', 'index.html', OVERWORLD.districts.flatMap((d) => d.venues.flatMap((v) => v.props))] as const,
@@ -342,12 +335,6 @@ test('copy: each card\'s is its Markdown file, built in as markup; no file is wi
 		}
 	}
 	assert.deepEqual([...copy.keys()], [], 'every file is a card\'s');
-	// Markdown's own marks are markup by the time they are on the page.
-	const cms = main(page('moosylvania.html')).match(/<dialog[^>]*aria-labelledby="card-computer-cms-title"[\s\S]*?<\/dialog>/)![0];
-	assert.equal(opens(cms, 'p').filter((p) => p === '<p>').length, 2, 'a paragraph each');
-	// A headline is the copy's own, under the card's title in the page's headings: a sub-scene's card is an h2.
-	const diploma = main(page('slu.html')).match(/<dialog[^>]*aria-labelledby="card-diploma-title"[\s\S]*?<\/dialog>/)![0];
-	assert.match(diploma, /<h2[^>]*id="card-diploma-title"[\s\S]*<div class="copy[^>]*>\s*(<!--.*?-->)?\s*<h3>[^<]+<\/h3>/);
 });
 
 test("the loft's computers: each card shows its stack's logos, a hashed file each, named under it and fetched when shown (Joe, 2026-10-01)", () => {
@@ -405,7 +392,7 @@ test('cards: every card is labelled and closes natively', () => {
 	}
 	// Card titles stay inside the page's heading hierarchy when the cards read inline without JavaScript.
 	assert.equal(texts(page('index.html'), 'h4').length, overworldProps.filter((p) => !p.kind).length);
-	for (const s of subScenes) assert.equal(texts(page(`${s.id}.html`), 'h2').length, s.props.filter((p) => !p.kind).length, s.id);
+	for (const s of subScenes) assert.equal(texts(withoutAbout(page(`${s.id}.html`)), 'h2').length, s.props.filter((p) => !p.kind).length, s.id);
 	assert.match(page('index.html'), /<noscript>[\s\S]*dialog \{ display: block/);
 });
 

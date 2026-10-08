@@ -12,5 +12,7 @@ The words on each prop's card, one Markdown file per prop: `<scene>/<prop id>.md
   with the window's back and forward buttons.
 - Plain Markdown: headlines, paragraphs, `**bold**`, `*italic*`, `[links](https://example.com)` and lists. A link to
   another site opens in a new tab.
+- `<scene>/about.md` is not a card: it is the scene's write-up, what the place is and what is in it, read under the
+  headline when the page is read without the scene (no JavaScript, or the menu's toggle out of exploring).
 - A prop that is not a card (a poster, the moose, the TV) has no file. `npm test` fails on a file no card owns and on a
   card with neither copy nor media.

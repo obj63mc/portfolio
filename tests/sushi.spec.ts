@@ -17,7 +17,7 @@ const engine = (page: Page) => page.evaluate(() => document.documentElement.clas
 
 test('the koi opens Sushi Stand over the whole window, and its exit lands back at the koi', async ({ page }) => {
 	await page.goto('/#sushi-stand');
-	await page.locator('dialog.join button').click();
+	await page.locator('dialog.join button.primary').click();
 	const koi = page.locator('#sushi-stand .door');
 	await expect(koi).toHaveAttribute('href', '/sushi-stand');
 	await page.waitForTimeout(800);

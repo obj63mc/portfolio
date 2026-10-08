@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { OVERWORLD as overworld } from '#lib/scenes/overworld.ts';
 	import { at, leftToRight } from '#lib/scenes/index.ts';
+	import About from '#lib/About.svelte';
 	import PropCard from '#lib/Prop.svelte';
 	import skyline from '#lib/brand/skyline.webp?no-inline';
 </script>
@@ -15,8 +16,11 @@
 <!-- The plain document's masthead (Joe, 2026-09-30): the Join card's skyline over the site's name; with the engine the h1 is
 	hidden (app.css), its picture with it. -->
 <h1><img src={skyline} alt="" width="1600" height="640" />BarMadden.com, the portfolio of Joseph Madden</h1>
+<About scene="overworld" />
 <!-- The directory board's six plaques, a district each (Joe, 2026-10-01): the resume and the contacts are in the welcome
 	sign's copy. -->
+<h2>Scene Navigation</h2>
+<br/>
 <nav id="signpost" class="at" style={at(overworld.signpost.rect)} aria-label="Signpost">
 	<ul id="signpost-districts">
 		{#each overworld.districts as d (d.id)}

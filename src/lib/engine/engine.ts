@@ -54,7 +54,7 @@ type Input =
 	| { is: 'touch' }
 	| { is: 'released' }
 	| { is: 'paused'; relock: boolean }
-	| { is: 'away'; relock: boolean };
+	| { is: 'away'; relock: boolean; join: boolean };
 
 /** A slider clicked by the locked cursor at `x`, CSS px: set to the value there, as a click on its track sets it. */
 const slide = (el: HTMLInputElement, x: number) => {
@@ -371,8 +371,10 @@ export class Engine {
 		this.loader.warm(tilesOf(scene, this.density, c));
 		const landing ={ x: (c.x - this.cam.x) * this.view.s, y: (c.y - this.cam.y) * this.view.s };
 		if (door || this.iris.is !== 'open') this.iris = this.reducedMotion.matches ? OPEN : { is: 'shut', at: landing, t0: performance.now(), landed: true };
-		// A locked cursor waits behind the Paused card, since only a click can take the lock back.
-		if (this.input.is === 'away') this.enter(this.input.relock ? { is: 'paused', relock: true } : { is: this.fine.matches ? 'unlocked' : 'touch' });
+		// A locked cursor waits behind the Paused card, since only a click can take the lock back. A visitor who left before
+		// Join, to read the page (the menu's toggle), comes back to the Join card.
+		if (this.input.is === 'away')
+			this.enter(this.input.join ? { is: 'join' } : this.input.relock ? { is: 'paused', relock: true } : { is: this.fine.matches ? 'unlocked' : 'touch' });
 		if (!door) return;
 		// Before Join there is no cursor. The unlocked mouse's cursor stays at the OS pointer, where its clicks land. Push
 		// waits for the cursor to move, so a door near the scene's edge doesn't carry the camera off it.
@@ -421,7 +423,7 @@ export class Engine {
 		this.keys.clear();
 		this.goal = null;
 		this.iris = OPEN;
-		this.enter({ is: 'away', relock: i.is === 'paused' ? i.relock : i.is === 'locked' || i.is === 'released' });
+		this.enter({ is: 'away', relock: i.is === 'paused' ? i.relock : i.is === 'locked' || i.is === 'released', join: i.is === 'join' });
 		if (document.pointerLockElement === this.canvas) document.exitPointerLock();
 		this.cursors.hidePopover();
 		this.hot?.classList.remove('hot');
@@ -678,7 +680,7 @@ export class Engine {
 	 */
 	private under() {
 		const touch = this.input.is === 'touch', c = (this.input.is === 'locked' || (touch && !document.querySelector('dialog[open]'))) && this.cursor;
-		const hit = c ? document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button, input[type="range"]') : null;
+		const hit = c ? document.elementFromPoint(c.x, c.y)?.closest<HTMLElement>('a, button, label, input[type="range"]') : null;
 		return hit && !(touch && hit.closest(CONTROLS)) && !hit.matches('.prop.behind > button') ? hit : null;
 	}
 
@@ -689,7 +691,7 @@ export class Engine {
 	private get pointing() {
 		const c = this.cursor;
 		if (this.input.is !== 'unlocked') return !!this.hot;
-		return !!c && !!document.elementFromPoint(c.x, c.y)?.closest('a, button, input[type="range"]');
+		return !!c && !!document.elementFromPoint(c.x, c.y)?.closest('a, button, label, input[type="range"]');
 	}
 
 	/** Every change of input goes through here: the card it calls for is open and any other is closed. */

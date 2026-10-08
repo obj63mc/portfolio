@@ -55,7 +55,7 @@ const TIP = { x: 600, y: 500 };
 const HEAD = { x: TIP.x - 8 * U, y: TIP.y - 12 * U, w: 26 * U, h: 11 * U };
 
 async function join(page: Page) {
-	const b = (await page.locator('dialog.join[open] button').boundingBox())!;
+	const b = (await page.locator('dialog.join[open] button.primary').boundingBox())!;
 	await page.mouse.click(b.x + 8, b.y + 8);
 	await expect(page.locator('dialog.join')).toBeHidden();
 	await page.mouse.move(TIP.x, TIP.y);

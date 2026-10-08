@@ -84,7 +84,7 @@ const depthAt = async (page: Page, p: Point) =>
 
 /** Joins with a click near the Join button's corner, the lock refused, so the drawn cursor follows the mouse. */
 async function joinScene(page: Page) {
-	const b = (await page.locator('dialog.join[open] button').boundingBox())!;
+	const b = (await page.locator('dialog.join[open] button.primary').boundingBox())!;
 	await page.mouse.click(b.x + 8, b.y + 8);
 	await expect(page.locator('dialog.join')).toBeHidden();
 }

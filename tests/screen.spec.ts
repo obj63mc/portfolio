@@ -31,7 +31,7 @@ function refuseLock() {
 }
 
 async function joinScene(page: Page) {
-	await page.locator('dialog.join button').click();
+	await page.locator('dialog.join button.primary').click();
 	await expect(page.locator('dialog.join')).toBeHidden();
 }
 
@@ -236,7 +236,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 	test('offline, a tapped poster seats its clicker; a drag moves neither the camera nor the cursor until the reel ends', async ({ page }) => {
 		await page.clock.install();
 		await page.goto('/foundry');
-		await page.locator('dialog.join button').tap();
+		await page.locator('dialog.join button.primary').tap();
 		// The Lorax poster's right edge, in view beside the exit door where a phone opens.
 		const at = await onScreen(page, { x: 1030, y: 300 });
 		await page.touchscreen.tap(at.x, at.y);

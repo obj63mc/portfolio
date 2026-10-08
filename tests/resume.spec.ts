@@ -28,7 +28,7 @@ test('the resume shows at once without a script, with the engine away, and its e
 	await expect(page.locator('canvas.scene')).toBeHidden();
 	// Neither the room's count nor the engine's controls, the Sound toggle and the joystick, on a plain document (Joe, 2026-10-02).
 	await expect(page.locator('.presence')).toBeHidden();
-	await expect(page.locator('.controls:not(dialog *)')).toBeHidden();
+	await expect(page.locator('.controls:not(dialog *)').first()).toBeHidden();
 	await expect(page.locator('.joystick')).toBeHidden();
 	await page.locator('a.exit').click();
 	await page.waitForURL((u) => u.pathname === '/');
@@ -42,7 +42,7 @@ test('the resume shows at once without a script, with the engine away, and its e
 test("the welcome sign's card links the resume: the hop lands with the engine away, and the exit brings it back", async ({ page }) => {
 	await refuseLock(page);
 	await page.goto('/');
-	await page.locator('dialog.join button').click();
+	await page.locator('dialog.join button.primary').click();
 	await page.locator('[data-prop="welcome"] > button').evaluate((b: HTMLElement) => b.click());
 	const link = page.locator('[data-prop="welcome"] dialog a[href="/resume"]');
 	await expect(link).toBeVisible();
@@ -67,7 +67,7 @@ test("printed, it is two Letter pages in the site's type, with none of the chrom
 	expect(loaded).toContain('Montserrat 400');
 	await page.emulateMedia({ media: 'print' });
 	await expect(page.locator('.bar')).toBeHidden();
-	await expect(page.locator('.controls:not(dialog *)')).toBeHidden();
+	await expect(page.locator('.controls:not(dialog *)').first()).toBeHidden();
 	await expect(page.locator('.sheet')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
 	const pdf = await page.pdf({ format: 'Letter', printBackground: false });
 	if (process.env.RESUME_PDF) writeFileSync(process.env.RESUME_PDF, pdf);

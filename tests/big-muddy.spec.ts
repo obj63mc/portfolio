@@ -54,7 +54,7 @@ test('the angler opens Big Muddy over the whole window, and its exit lands back 
 		};
 	});
 	await page.goto('/#big-muddy');
-	await page.locator('dialog.join button').click();
+	await page.locator('dialog.join button.primary').click();
 	const angler = page.locator('#big-muddy .door');
 	await expect(angler).toHaveAttribute('href', '/big-muddy');
 	await page.waitForTimeout(800);

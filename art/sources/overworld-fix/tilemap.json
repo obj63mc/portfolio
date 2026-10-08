@@ -1,29 +1,17 @@
 {
- "round": 22,
- "base": "rounds/base-22.png",
+ "round": 23,
+ "base": "rounds/base-23.png",
  "tiles": [
   {
-   "name": "midtown",
+   "name": "levee",
    "rect": [
-    744,
-    268,
+    1380,
+    140,
     256,
     256
    ],
    "loops": [],
-   "repaintPx": 3403,
-   "edit": true
-  },
-  {
-   "name": "belleville",
-   "rect": [
-    1727,
-    372,
-    256,
-    256
-   ],
-   "loops": [],
-   "repaintPx": 3027,
+   "repaintPx": 1919,
    "edit": true
   }
  ],

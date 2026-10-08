@@ -174,7 +174,7 @@ const unfocused = (page: Page) => page.evaluate(() => document.activeElement ===
  * cursor to be drawn there, unless scenery there covers it (`seen` false: a desk in the SLU lab, ticket 19).
  */
 async function join(page: Page, seen = true) {
-	const b = (await page.locator('dialog.join[open] button').boundingBox())!, at = { x: b.x + b.width - 8, y: b.y + 8 };
+	const b = (await page.locator('dialog.join[open] button.primary').boundingBox())!, at = { x: b.x + b.width - 8, y: b.y + 8 };
 	await page.mouse.click(at.x, at.y);
 	await expect(page.locator('dialog.join')).toBeHidden();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
@@ -187,11 +187,11 @@ test.beforeEach(({ page }) => page.addInitScript(fakeLock));
 test('before Join only the Join card takes input, nothing moves and no cursor is drawn', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.locator('dialog.join')).toBeVisible();
-	await expect(page.locator('dialog.join button')).toBeFocused();
+	await expect(page.locator('dialog.join button.primary')).toBeFocused();
 	const camera = await page.locator('main').getAttribute('style');
 	for (let i = 0; i < 4; i++) {
 		await page.keyboard.press('Tab');
-		expect(await page.evaluate(() => !!document.activeElement?.closest('main, .controls'))).toBe(false);
+		expect(await page.evaluate(() => !!document.activeElement?.closest('main, .controls:not(dialog *)'))).toBe(false);
 	}
 	await page.keyboard.press('Escape'); // before any gesture, when Chrome won't let a page refuse the cancel
 	await page.keyboard.press('Escape');
@@ -248,6 +248,47 @@ test.describe('the locked cursor in the SLU lab, the whole height in view', () =
 		await expect(await tab).toHaveURL('https://github.com/obj63mc');
 		await expect(page.locator('dialog.paused'), 'this tab pauses').toBeVisible();
 	});
+
+	test('the menu, top left: the drawn cursor opens it, its GitHub and LinkedIn open new tabs and a scene link is followed', async ({ page }) => {
+		await page.goto('/slu');
+		let at = await join(page, false);
+		const moveTo = async (p: Point) => {
+			await nudge(page, p.x - at.x, p.y - at.y);
+			await expect.poll(() => off(page, p)).toBeLessThan(5);
+			at = p;
+		};
+		const button = page.locator('.menu:not(dialog *) > label'), panel = page.locator('.menu:not(dialog *) .panel');
+		await expect(panel).toBeHidden();
+		await moveTo(await centre(button));
+		await expect(button).toHaveClass(/(^|\s)hot(\s|$)/);
+		await lockedClick(page);
+		await expect(button.locator('input')).toBeChecked();
+		await expect(panel.locator('.mode'), 'the toggle between exploring and reading; its words are its own').toBeVisible();
+		await expect(panel.locator('.icons a').first()).toHaveAttribute('href', '/');
+		for (const host of ['github.com', 'linkedin.com']) await expect(panel.locator(`a[href*="${host}"]`)).toHaveAttribute('target', '_blank');
+		await moveTo(await centre(panel.locator('a[href="/moosylvania"]')));
+		await lockedClick(page);
+		await expect(page).toHaveURL('/moosylvania');
+		await expect(panel, 'a navigation closes it').toBeHidden();
+	});
+
+	test("the menu is in the Join card too: it puts the scene away to read its page, which scrolls, and explores again", async ({ page }) => {
+		await page.goto('/brennans');
+		const card = page.locator('dialog.join'), html = page.locator('html'), menu = page.locator('.menu:not(dialog *)');
+		await card.locator('.menu > label').click();
+		await card.locator('.menu .mode').click();
+		await expect(card).toBeHidden();
+		await expect(html).toHaveClass(/(^|\s)reading(\s|$)/);
+		await expect(html).not.toHaveClass(/(^|\s)engine(\s|$)/);
+		await expect(page.locator('main .about')).toBeVisible();
+		expect(await page.evaluate(() => document.documentElement.scrollHeight > innerHeight), 'the page scrolls').toBe(true);
+		await expect(page.locator('.controls .sound').first()).toBeHidden();
+		await menu.locator('> label').click();
+		await menu.locator('.mode').click();
+		await expect(html).toHaveClass(/(^|\s)engine(\s|$)/);
+		await expect(html).not.toHaveClass(/(^|\s)reading(\s|$)/);
+		await expect(card, 'never joined, so back to the Join card').toBeVisible();
+	});
 });
 
 test('Esc, blur and a hidden tab pause; Resume re-locks with the cursor where it froze, or says to try again', async ({ page }) => {
@@ -295,7 +336,7 @@ test('Esc, blur and a hidden tab pause; Resume re-locks with the cursor where it
 test('a refused lock at Join leaves the unlocked mouse: the drawn cursor follows the OS pointer', async ({ page }) => {
 	await page.goto('/');
 	await page.evaluate(() => ((window as Stand).refuseLock = true));
-	await page.locator('dialog.join button').click();
+	await page.locator('dialog.join button.primary').click();
 	await expect(page.locator('dialog.join')).toBeHidden();
 	await page.mouse.move(400, 300);
 	await expect.poll(() => off(page, { x: 400, y: 300 })).toBeLessThan(5);
@@ -373,8 +414,8 @@ test("a card's screenshots: the locked cursor's click goes to the next, round fr
 
 test('the keyboard joins with the lock; Esc in a card closes it without pausing, and a mouse click takes the lock back', async ({ page }) => {
 	await page.goto('/');
-	await expect(page.locator('dialog.join button')).toBeFocused();
-	const start = await centre(page.locator('dialog.join button'));
+	await expect(page.locator('dialog.join button.primary')).toBeFocused();
+	const start = await centre(page.locator('dialog.join button.primary'));
 	await page.keyboard.press('Enter');
 	await expect(page.locator('dialog.join')).toBeHidden();
 	await expect.poll(() => lockHolder(page)).toBe('scene');
@@ -504,7 +545,7 @@ test('a back or forward hop behind the Join or Paused card lands at the door and
 	await expect(page).toHaveURL('/');
 	await expect.poll(() => offCentre(page, door)).toBeLessThan(1);
 	await page.waitForTimeout(100);
-	await expect(page.locator('dialog.join button')).toBeFocused();
+	await expect(page.locator('dialog.join button.primary')).toBeFocused();
 	expect(await tip(page)).toBeNull();
 
 	// Paused in the lobby, back hops behind the Paused card; Resume re-locks with the cursor on the door.
@@ -587,7 +628,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		expect(post.x >= 0 && post.y >= 0 && post.x + post.width <= 390 && post.y + post.height <= 844, 'the signpost in the first frame').toBe(true);
 
 		// The Join button's right end, clear of the foreground tree south of the church.
-		const b = (await page.locator('dialog.join[open] button').boundingBox())!, pressed = { x: b.x + b.width - 8, y: b.y + 8 };
+		const b = (await page.locator('dialog.join[open] button.primary').boundingBox())!, pressed = { x: b.x + b.width - 8, y: b.y + 8 };
 		await page.touchscreen.tap(pressed.x, pressed.y);
 		await expect(page.locator('dialog.join')).toBeHidden();
 		await expect.poll(() => off(page, pressed)).toBeLessThan(5);
@@ -677,7 +718,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 
 	test('the joystick scrolls down and right even where the controls line the bottom edge', async ({ page }) => {
 		await page.goto('/');
-		await page.locator('dialog.join button').tap();
+		await page.locator('dialog.join button.primary').tap();
 		const f = await finger(page), hub = await centre(page.locator('.joystick'));
 		/** The camera's travel, CSS px, with the joystick held pulled (dx, dy) for 2.5 s. */
 		const hold = async (dx: number, dy: number) => {
@@ -697,7 +738,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 		// Midtown, where no prop is near the toggles once the cursor is on them. Dragging the view down carries the cursor
 		// down with the scene, so the drag is as long as the Join tap is above the toggles.
 		await page.goto('/#midtown');
-		const toggles = (await page.locator('.controls:not(dialog *)').boundingBox())!, join = (await page.locator('dialog.join[open] button').boundingBox())!;
+		const toggles = (await page.locator('.controls:not(dialog *, .menu)').boundingBox())!, join = (await page.locator('dialog.join[open] button.primary').boundingBox())!;
 		// The Join button's top left corner: the drag carries the cursor down level with the toggles, just right of them,
 		// and the joystick steers it left onto them.
 		const at = { x: join.x + 4, y: join.y + 4 }, down = toggles.y + toggles.height / 2 - at.y;
@@ -731,7 +772,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 	test('a door tapped hops to its sub-scene and back with the joystick still there, cut under reduced motion', async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await page.goto('/');
-		await page.locator('dialog.join button').tap();
+		await page.locator('dialog.join button.primary').tap();
 		const door = page.locator('main a[href="/moosylvania"]'), exit = page.locator('main a[href="/#moosylvania"]');
 		const stick = page.locator('.joystick');
 		const fade = landing(page, 'main a[href="/#moosylvania"]'), c = await centre(door);
@@ -751,7 +792,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 
 	test("a card's video keeps its controls put away while it plays: a tap calls them up, and a tap or three seconds puts them away", async ({ page }) => {
 		await page.goto('/side-project');
-		await page.locator('dialog.join button').tap();
+		await page.locator('dialog.join button.primary').tap();
 		await page.locator('[data-prop="bottle-anchor"] > button').evaluate((b: HTMLElement) => b.click());
 		const player = page.locator('[data-prop="bottle-anchor"] dialog .player'), video = player.locator('video'), bar = player.locator('.bar');
 		const state = () => video.evaluate((v: HTMLVideoElement) => ({ paused: v.paused, muted: v.muted }));
@@ -786,7 +827,7 @@ test.describe('a phone, with no mouse or trackpad', () => {
 
 	test('a hidden tab pauses; the Resume tap goes back to touch without a lock', async ({ page }) => {
 		await page.goto('/');
-		await page.locator('dialog.join button').tap();
+		await page.locator('dialog.join button.primary').tap();
 		await expect(page.locator('.joystick')).toBeVisible();
 		await page.evaluate(() => {
 			Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });

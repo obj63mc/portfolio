@@ -12,9 +12,11 @@
 	import Consent from '#lib/Consent.svelte';
 	import type { Engine } from '#lib/engine/engine.ts';
 	import LapBoard from '#lib/LapBoard.svelte';
+	import Menu from '#lib/Menu.svelte';
 	import SoundToggle from '#lib/SoundToggle.svelte';
 	import skyline from '#lib/brand/skyline.webp?no-inline';
 	import { sceneAt } from '#lib/scenes/index.ts';
+	import { sound } from '#lib/sound.svelte.ts';
 
 	let { children } = $props();
 	let scene: HTMLCanvasElement, layer: HTMLElement, cursors: HTMLCanvasElement, joystick: HTMLElement, join: HTMLDialogElement, paused: HTMLDialogElement;
@@ -26,6 +28,8 @@
 	let hop: 'closing' | 'going' | null = null;
 	/** The engine couldn't start, so every page stays the plain document. */
 	let failed = false;
+	/** The scene put away and its page read as the plain document (the menu's toggle, Joe, 2026-10-08), until toggled back. */
+	let reading = $state(false);
 
 	// The engine loads once the page has mounted (afterNavigate's first call), out of the prerender and the first paint,
 	// and never re-renders the layer; each navigation hands it the new scene, in order. If it can't start (no canvas, the
@@ -34,11 +38,15 @@
 		if (!to) return;
 		// A scene entered, the first load included, counts for analytics (ticket 23); a fragment on the same scene doesn't.
 		pageView(to.url);
-		// A game has no scene: the engine, if it is running, steps away until the next one (Joe, 2026-09-30).
-		const shown = sceneAt(to.url.pathname);
+		present(to.url);
+	});
+	function present(url: URL) {
+		// A game has no scene: the engine, if it is running, steps away until the next one (Joe, 2026-09-30). So it does
+		// from a scene being read as a page.
+		const shown = reading ? undefined : sceneAt(url.pathname);
 		// A page with no scene, or an engine that can't start, is the plain document, shown (app.css).
 		document.documentElement.classList.toggle('plain', !shown || failed);
-		if (!shown) return void started?.suspend(to.url.pathname);
+		if (!shown) return void started?.suspend(url.pathname);
 		engine ??= import('#lib/engine/engine.ts')
 			.then(({ Engine }) => (started = new Engine(scene, layer, cursors, joystick, { join, paused }, { here, live, lap })))
 			.catch((err) => {
@@ -47,8 +55,17 @@
 				console.error(err);
 				return undefined;
 			});
-		engine.then((e) => e?.show(shown, to.url.hash));
-	});
+		engine.then((e) => e?.show(shown, url.hash));
+	}
+	// The menu's toggle: the page read as the plain document, scrolling from its top and silent, or explored again, the
+	// sound back as the visitor had it. `reading` on the root keeps the menu on the plain document (app.css).
+	function read(on: boolean) {
+		reading = on;
+		document.documentElement.classList.toggle('reading', on);
+		sound.quiet(on);
+		present(new URL(location.href));
+		scrollTo(0, 0);
+	}
 	// A hop to another scene waits for the iris to close on the door (Joe, 2026-09-30); a fragment on the same scene pans.
 	// It waits before it starts, called off and sent again once the iris is shut: a door's link by goto, the back or
 	// forward button by the same step through history, which the router undid. The router's own wait (onNavigate) takes
@@ -86,6 +103,7 @@
 <!-- The Carondelet lap timer's clock (buildout ticket 18), written by the engine; the live region announces each finish. -->
 <p class="lap" aria-hidden="true" hidden bind:this={lap}></p>
 <LapBoard />
+<Menu {reading} onread={read} />
 <div class="controls">
 	<SoundToggle />
 	<!-- It reopens the consent bar (ticket 23), only where the bar is offered: a build with GA and a European timezone. -->
@@ -116,6 +134,9 @@
 	{#if GA_ID}
 		<Consent gate />
 	{/if}
+	<!-- The modal card makes the page's menu inert: its own stands in its place, over it, as the Paused card's Sound toggle does.
+		Last, so Tab goes from Join to the consent bar first. -->
+	<Menu {reading} onread={read} />
 </dialog>
 <dialog class="gate paused" aria-labelledby="paused-title" bind:this={paused}>
 	<p id="paused-title">Paused, click to resume</p>
@@ -125,5 +146,6 @@
 	<div class="controls">
 		<SoundToggle />
 	</div>
+	<Menu {reading} onread={read} />
 </dialog>
 <canvas class="cursors" popover="manual" aria-hidden="true" bind:this={cursors}></canvas>

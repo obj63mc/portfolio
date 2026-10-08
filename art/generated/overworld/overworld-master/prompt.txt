@@ -1,3 +1,27 @@
+OVERWORLD MASTER DERIVATION, 2026-10-08 (round twenty-three, upscaled 4x for the background)
+
+Round twenty-three merged the Arch levee's promenade into the shore path, removed the kerb lamp off its corner, relaid the shore there as one curve and replaced the smeared and cut-off trees beside it with two whole ones, by hand (rounds/round-23.json, scripts/art/overworld/levee-merge.py).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-08 (round twenty-three, upscaled 4x for the background)
+
+Round twenty-three merged the Arch levee's promenade into the shore path, carried the bank round the kerb lamp's foot and replaced the smeared and cut-off trees beside it with two whole ones, by hand (rounds/round-23.json, scripts/art/overworld/levee-merge.py).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-08 (round twenty-three, upscaled 4x for the background)
+
+Round twenty-three merged the Arch levee's promenade into the shore path and replaced the smeared and cut-off trees beside it with two whole ones, by hand (rounds/round-23.json, scripts/art/overworld/levee-merge.py).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
 OVERWORLD MASTER DERIVATION, 2026-10-07 (round twenty-two, upscaled 4x for the background)
 
 Round twenty-two (rounds/round-22.json), 2026-10-07: the MIDTOWN and BELLEVILLE boards' front faces are relaid by hand as the MAPLEWOOD and CENTRAL WEST END boards' wood, flat red-brown with faint streaks, two plank seams and two nail heads (scripts/art/overworld/district-signs.py), the old lettering gone, and the names drawn back as white lettering decals; the FOREST PARK decal's lettering is pure white.
