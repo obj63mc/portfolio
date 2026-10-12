@@ -1,17 +1,17 @@
 {
- "round": 23,
- "base": "rounds/base-23.png",
+ "round": 24,
+ "base": "rounds/base-24.png",
  "tiles": [
   {
-   "name": "levee",
+   "name": "shopfront",
    "rect": [
-    1380,
-    140,
+    440,
+    400,
     256,
     256
    ],
    "loops": [],
-   "repaintPx": 1919,
+   "repaintPx": 2538,
    "edit": true
   }
  ],

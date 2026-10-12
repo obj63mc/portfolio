@@ -1,3 +1,35 @@
+OVERWORLD MASTER DERIVATION, 2026-10-12 (round twenty-four, upscaled 4x for the background)
+
+Round twenty-four replaced the cream shop with the green awning on the Maplewood road south of the moose, whose front had a rack of bicycles smeared into it and whose angles were off, with Codex's redraw of the whole building and its bushes on the same footprint (rounds/round-24.json, attempt b).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-12 (round twenty-four, upscaled 4x for the background)
+
+Round twenty-four painted the rack of bicycles out of the cream shop's front on the Maplewood road south of the moose, relaid it as a plain storefront, straightened the awning's right end and the corner beside it and painted the slanting arch out of the east wing's receding face, all by hand (scripts/art/overworld/shop-front.py, rounds/round-24.json).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-12 (round twenty-four, upscaled 4x for the background)
+
+Round twenty-four painted the rack of bicycles out of the cream shop's front on the Maplewood road south of the moose, relaid it as a plain storefront, straightened the awning's right end and the corner beside it and squared the east wing's ground-floor window, all by hand (scripts/art/overworld/shop-front.py, rounds/round-24.json).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
+OVERWORLD MASTER DERIVATION, 2026-10-12 (round twenty-four, upscaled 4x for the background)
+
+Round twenty-four painted the rack of bicycles out of the cream shop's front on the Maplewood road south of the moose and relaid it as a plain storefront by hand (scripts/art/overworld/shop-front.py, rounds/round-24.json).
+
+The retained image is art/sources/overworld-fix/stitched.png, the native 1983 x 793 master after the tile-map rounds (round specs in art/sources/overworld-fix/rounds/), upscaled 4x by Real-ESRGAN: Upscayl upscayl-bin, model digital-art-4x. No model redraw; the upscaler only adds resolution. The overworld plate, its tiles and the master-derived mattes are cut from this 4x source. Every later fix is made on the native stitched.png and re-upscaled.
+
+After the upscale, the decals in art/sources/overworld-fix/decals.json (logos, lettering and props too fine for the native master) are composited onto the 4x source at full resolution.
+
 OVERWORLD MASTER DERIVATION, 2026-10-08 (round twenty-three, upscaled 4x for the background)
 
 Round twenty-three merged the Arch levee's promenade into the shore path, removed the kerb lamp off its corner, relaid the shore there as one curve and replaced the smeared and cut-off trees beside it with two whole ones, by hand (rounds/round-23.json, scripts/art/overworld/levee-merge.py).
