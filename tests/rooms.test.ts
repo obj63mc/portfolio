@@ -336,20 +336,19 @@ test('rooms are on the WebSocket Hibernation API, so a still room bills no durat
 	await a.take('pong');
 });
 
-test('neither object ever touches Durable Object storage', () => {
-	// Every path, statically: the objects' source has no way into their storage (SQL, get, put, delete, setAlarm), which
-	// the local runtime types in worker/cloudflare.d.ts also leave off the object state, so a call fails the type-check.
-	assert.doesNotMatch(code(), /storage|\bsql\b|alarm/i);
+test("neither object ever touches Durable Object storage, but for the alarm that watches the remote's holder", () => {
+	// Every path, statically: the objects' source has no way into their storage (SQL, get, put, delete) but setAlarm, all
+	// the local runtime types in worker/cloudflare.d.ts give the object state, so any other call fails the type-check.
+	assert.doesNotMatch(code().replaceAll('this.ctx.storage.setAlarm(', ''), /storage|\bsql\b/i);
 	// Every path the tests above took, at run time: each object's local database holds only wrangler's record of the
-	// object's name, and no alarm is set. A put or any SQL would add a table, and setAlarm a row.
+	// object's name and the lobby's alarm (the runtime's own `_cf_` tables). A put or any SQL would add a table.
 	const dir = join(persist, 'v3/do');
 	const files = readdirSync(dir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.sqlite'));
 	assert.ok(files.length >= 8, 'the directory and seven rooms');
 	for (const file of files) {
 		const db = new DatabaseSync(join(dir, file), { readOnly: true });
 		const tables = db.prepare("select name from sqlite_master where type = 'table'").all().map((row) => row.name);
-		const alarms = tables.includes('_cf_ALARM') ? db.prepare('select * from _cf_ALARM').all() : [];
-		assert.deepEqual([tables.filter((t) => t !== '__miniflare_do_name' && t !== '_cf_ALARM'), alarms], [[], []], file);
+		assert.deepEqual(tables.filter((t) => !['__miniflare_do_name', '_cf_ALARM', '_cf_METADATA'].includes(t)), [], file);
 		db.close();
 	}
 });

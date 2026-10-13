@@ -3,8 +3,12 @@
 // the engine copies them here each frame (engine/tv.ts), and Prop.svelte and Remote.svelte draw from here.
 import { TV } from './videos.ts';
 
-/** A press-less minute and a held remote goes back on the table, ms: nobody leaves the room without one. */
-export const IDLE = 60_000;
+/**
+ * A held remote goes back on the table this long, ms, after its last press and the playing video's length (Joe,
+ * 2026-10-13): a minute and 30 s of grace, so a visitor watching a channel through keeps it, and nobody leaves the room
+ * without one.
+ */
+export const IDLE = 90_000;
 /** A channel is shown once it has been still this long, ms, the screen dark meanwhile: surfing starts one download, not one a press. */
 export const SETTLE = 400;
 
@@ -17,5 +21,7 @@ export const tv = $state({
 	/** Who holds the remote: this visitor, another in the room, or nobody while it lies on the table. */
 	held: null as 'me' | 'other' | null,
 	/** This visitor has changed the channel: under reduced motion the TV plays only from then on. */
-	tuned: false
+	tuned: false,
+	/** The showing channel's length, seconds; 0 until its video says. */
+	length: 0
 });

@@ -46,7 +46,7 @@ export class Remote {
 		this.card = this.layer.querySelector('dialog.remote');
 	}
 
-	/** Puts the remote back if this visitor holds it: its card closed, the engine paused, a minute without a press. */
+	/** Puts the remote back if this visitor holds it: its card closed, the engine paused, IDLE past its last press and the video's length. */
 	put() {
 		this.opened = false;
 		if (this.net.tv.holder === this.net.id) this.net.remote({ t: 'tv.put' });
@@ -58,6 +58,7 @@ export class Remote {
 		if (tv.held !== held) tv.held = held;
 		if (tv.channel !== channel) {
 			tv.channel = channel;
+			tv.length = 0;
 			// The holder's own press has tuned it: under reduced motion the TV plays from here on. The page lets go of the
 			// old channel's video now, before this frame's props could ask it to play.
 			if (held === 'me') tv.tuned = true;
@@ -74,7 +75,7 @@ export class Remote {
 			this.opened = true;
 			this.pressed = now;
 		} else if (card?.open && !mine) card.close();
-		if (mine && now - this.pressed > IDLE) this.put();
+		if (mine && now - this.pressed > IDLE + tv.length * 1000) this.put();
 	}
 
 	destroy() {

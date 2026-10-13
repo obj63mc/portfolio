@@ -94,7 +94,7 @@
 	<div class="prop status at" data-prop={prop.id} style={at(prop.rect)}>
 		{#if prop.video}
 			<p>{prop.name}: {prop.gist}, channel {tv.channel + 1} of {TV.length}</p>
-			<video bind:this={television} hidden muted loop playsinline preload="none"></video>
+			<video bind:this={television} hidden muted loop playsinline preload="none" onloadedmetadata={(e) => (tv.length = e.currentTarget.duration || 0)}></video>
 		{:else}
 			<p>{prop.name}: {prop.gist}</p>
 		{/if}

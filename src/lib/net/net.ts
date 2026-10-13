@@ -3,7 +3,7 @@
 // When it is down the scene carries on single-player with no reconnecting UI; the next `hello` overwrites what this
 // client knew without animation. Rates, sizes and the wire format are protocol.ts's.
 import type { ScreenTitle } from '../scenes/foundry.ts';
-import { KEEPALIVE, RATE, RATE_LIMITED, decodeFrame, encodeMove, readServer, samePresence, type ClientMessage, type Peer, type Presence, type Tv } from './protocol.ts';
+import { KEEPALIVE, RATE, RATE_LIMITED, STALE, decodeFrame, encodeMove, readServer, samePresence, type ClientMessage, type Peer, type Presence, type Tv } from './protocol.ts';
 import { record, type Snap } from './peers.ts';
 import { playing, type Screen } from './screen.ts';
 
@@ -33,7 +33,7 @@ export interface Status {
 }
 
 /** A hidden tab gives up its place after this long, ms, and reconnects when it shows again. */
-const HIDDEN = 60_000;
+const HIDDEN = 180_000;
 /** A socket closed sooner than this after its `hello`, ms, is an ordinary drop: the backoff keeps growing. */
 const SETTLED = 1000;
 /** The retry backoff's first and longest wait, seconds. */
@@ -76,7 +76,9 @@ export class Net {
 	/** What this visitor wears, as the room last heard it or will on the next `hello`; none before Join, when nothing is sent. */
 	private mine: Presence | null = null;
 	private hiddenClose: ReturnType<typeof setTimeout> | undefined;
-	private keepalive = setInterval(() => this.link.is === 'live' && this.link.ws.send('ping'), KEEPALIVE);
+	/** When the room was last heard, a `pong` included (performance.now() ms). */
+	private heard = 0;
+	private keepalive = setInterval(() => this.beat(), KEEPALIVE);
 	private status: Status;
 
 	constructor(status: Status) {
@@ -158,6 +160,16 @@ export class Net {
 		this.tell();
 	}
 
+	/**
+	 * The keepalive, and its watchdog: a socket that has gone STALE without a word from the room, not even a `pong`, is
+	 * dead without having closed (a lost signal, a tab back from suspension), so it is dropped here and retried.
+	 */
+	private beat() {
+		if (this.link.is !== 'live') return;
+		if (performance.now() - this.heard > STALE) this.down();
+		else this.link.ws.send('ping');
+	}
+
 	private tell() {
 		if (this.mine && this.link.is === 'live') this.link.ws.send(JSON.stringify({ t: 'presence', ...this.mine } satisfies ClientMessage));
 	}
@@ -187,6 +199,7 @@ export class Net {
 		const current = () => 'ws' in this.link && this.link.ws === ws;
 		ws.onmessage = (e) => {
 			if (!current()) return;
+			this.heard = performance.now();
 			if (typeof e.data === 'string') this.message(e.data, ws);
 			else if (e.data instanceof ArrayBuffer) this.frame(e.data);
 		};
@@ -199,8 +212,8 @@ export class Net {
 	private close() {
 		if (this.link.is === 'down') clearTimeout(this.link.retry);
 		if ('ws' in this.link && this.link.ws.readyState <= WebSocket.OPEN) this.link.ws.close(1000);
-		// With the room gone nobody else holds the remote; this visitor keeps it if they had it.
-		if (this.tv.holder !== this.id) this.tv = { ch: this.tv.ch, holder: null };
+		// With the room gone nobody holds the remote, this visitor included: it is back on the table, as the room puts it.
+		this.tv = { ch: this.tv.ch, holder: null };
 		this.peers.clear();
 		this.status.count(1);
 	}
@@ -220,7 +233,7 @@ export class Net {
 		if (on !== this.solo) this.status.solo((this.solo = on));
 	}
 
-	/** A hidden tab stops sending at once (`move`) and closes after a minute; showing it reconnects. */
+	/** A hidden tab stops sending at once (`move`) and closes after HIDDEN; showing it reconnects, at once if its socket died meanwhile. */
 	private visibility = () => {
 		clearTimeout(this.hiddenClose);
 		if (document.hidden) {
@@ -231,7 +244,7 @@ export class Net {
 		} else if (this.link.is === 'down' && !this.link.retry) {
 			this.backoff = BACKOFF.first;
 			this.open();
-		}
+		} else this.beat();
 	};
 
 	private message(text: string, ws: WebSocket) {

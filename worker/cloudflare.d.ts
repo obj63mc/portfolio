@@ -1,6 +1,6 @@
 // The few Workers runtime types this Worker uses, declared here instead of installing @cloudflare/workers-types, whose
-// globals clash with the DOM library the site's type-check loads. The object state deliberately has no `storage`: the rooms
-// never touch it (spec: "Rooms"), so any call to it fails the type-check.
+// globals clash with the DOM library the site's type-check loads. The object state's `storage` deliberately has only
+// `setAlarm`: the rooms keep nothing in it (spec: "Rooms"), so any other call to it fails the type-check.
 
 declare module 'cloudflare:workers' {
 	export abstract class DurableObject<Env = unknown> {
@@ -27,6 +27,7 @@ interface WorkerExports {
 
 interface DurableObjectState {
 	exports: WorkerExports;
+	storage: { setAlarm(at: number): Promise<void> };
 	acceptWebSocket(ws: WebSocket): void;
 	getWebSockets(): WebSocket[];
 	setWebSocketAutoResponse(pair: WebSocketRequestResponsePair): void;

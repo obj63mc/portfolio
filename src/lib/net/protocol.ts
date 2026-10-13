@@ -18,9 +18,14 @@ import type { Screen } from './screen.ts';
 export const RATE = 20;
 /**
  * Keepalive, ms: the client's `ping`, which the room's auto-response answers without waking it. A visitor only watching
- * (a video of a few minutes, no move) keeps their place by it; a room drops a socket that goes three of them without one.
+ * (a video of a few minutes, no move) keeps their place by it.
  */
 export const KEEPALIVE = 30_000;
+/**
+ * A socket this long without a word, ms, five keepalives, has gone without closing: a sleeping laptop, a lost signal.
+ * The room drops one it hasn't heard a ping or a message from, and the client one that has sent it no pong.
+ */
+export const STALE = KEEPALIVE * 5;
 /** Visitors per room (ADR 0005). */
 export const CAP = 60;
 /** The longest control message a room reads; anything longer is dropped unparsed. */

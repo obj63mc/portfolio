@@ -8,6 +8,7 @@ import {
 	KEEPALIVE,
 	RATE,
 	RATE_LIMITED,
+	STALE,
 	decodeMove,
 	encodeFrame,
 	readControl,
@@ -28,7 +29,7 @@ export { default } from './index.ts';
 interface Attachment {
 	room: string;
 	peer: Peer;
-	/** When they joined, epoch ms: a socket's keepalive clock until its first ping. */
+	/** When they joined or last sent a message, epoch ms: a socket's keepalive clock beside its pings. */
 	at: number;
 	screen: Screen;
 	tv: Tv;
@@ -43,8 +44,6 @@ interface Visitor {
 
 // The per-socket token bucket refills at twice the rate and holds four seconds' worth at the rate; past it, close 4008.
 const BURST = RATE * 4;
-/** A socket this long without a ping, ms, three keepalives, has gone without closing: a sleeping laptop, a lost signal. */
-const STALE = KEEPALIVE * 3;
 
 const send = (ws: WebSocket, data: string | ArrayBuffer) => {
 	try {
@@ -128,10 +127,11 @@ export class Room extends DurableObject<Env> {
 	}
 
 	async webSocketMessage(ws: WebSocket, msg: string | ArrayBuffer) {
-		const now = Date.now();
-		if (now - this.swept >= KEEPALIVE) await this.sweep(now);
-		const v = this.visitors.get(ws);
+		const now = Date.now(), v = this.visitors.get(ws);
 		if (!v) return;
+		// A message is as good as a ping: its sender is never swept by it.
+		v.at = now;
+		if (now - this.swept >= KEEPALIVE) await this.sweep(now);
 		v.tokens = Math.min(BURST, v.tokens + ((now - v.refill) / 1000) * RATE * 2);
 		v.refill = now;
 		if (--v.tokens < 0) {
@@ -165,6 +165,8 @@ export class Room extends DurableObject<Env> {
 			// anything else, or any of it outside the lobby, is dropped.
 			const { ch, holder } = this.tv;
 			if (!this.name.startsWith('moosylvania:') || (m.t === 'tv.take' ? holder !== null : holder !== p.id)) return;
+			// A held remote is watched by the alarm, so a holder whose socket dies without closing gives it back.
+			if (m.t === 'tv.take') void this.ctx.storage.setAlarm(now + KEEPALIVE);
 			return this.tune(m.t === 'tv.take' ? { ch, holder: p.id } : m.t === 'tv.put' ? { ch, holder: null } : { ch: ch + m.by, holder });
 		}
 		// Presence goes out when it changes, never in the tick's frame.
@@ -190,6 +192,16 @@ export class Room extends DurableObject<Env> {
 		await this.leave(ws);
 	}
 
+	/**
+	 * Every keepalive while the remote is held, and waking the room if it sleeps: a holder gone STALE is dropped, which
+	 * puts the remote back on the table. The object's only use of its storage (ADR 0005).
+	 */
+	async alarm() {
+		const now = Date.now();
+		await this.sweep(now);
+		if (this.tv.holder !== null) await this.ctx.storage.setAlarm(now + KEEPALIVE);
+	}
+
 	/** One tick: a frame of the cursors that moved, to everyone. After two still seconds it stops, so the room can hibernate. */
 	private step = () => {
 		if (this.moved.size) {
@@ -207,8 +219,8 @@ export class Room extends DurableObject<Env> {
 	};
 
 	/**
-	 * Drops every socket gone STALE without a ping, whose cursor would otherwise hold a place and count toward the cap.
-	 * Only a join or a message calls it, at most once a keepalive for messages, so it never wakes a hibernating room.
+	 * Drops every socket gone STALE without a ping or a message, whose cursor would otherwise hold a place and count
+	 * toward the cap. A join, a message (at most once a keepalive) or the held remote's alarm calls it.
 	 */
 	private async sweep(now: number) {
 		this.swept = now;

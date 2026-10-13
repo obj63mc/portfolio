@@ -11,5 +11,6 @@ Each room is its own Cloudflare Durable Object, named by scene and number (`over
 - Changing scene closes one socket and opens another, as the cursor sync prototype first built and verified. With Turnstile dropped (deploy pipeline ticket), a reconnect is only socket setup.
 - Visitors are never moved between rooms. Rooms consolidate as visitors change scene or reconnect, since every placement is fill first.
 - Duration is billed per awake room. About 30 visitors online around the clock is roughly $11 a month; 5,000 online around the clock for a whole month would be about $1,400, which is what the ceiling and kill switch are for.
+- The rooms keep nothing in storage, with one exception (Joe, 2026-10-13): while a visitor holds the lobby TV's remote, the room sets an alarm every keepalive to drop a holder whose socket died without closing. A timer would keep the room awake and billed for as long as the remote is held; the alarm wakes it for a moment, at one storage write a firing.
 - The spectator socket (shared props ticket) is retired: nobody waits for a slot.
 - Each room's Foundry screen is its own shared prop state.
