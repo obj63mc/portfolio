@@ -347,7 +347,7 @@ test("neither object ever touches Durable Object storage, but for the alarm that
 	assert.ok(files.length >= 8, 'the directory and seven rooms');
 	for (const file of files) {
 		const db = new DatabaseSync(join(dir, file), { readOnly: true });
-		const tables = db.prepare("select name from sqlite_master where type = 'table'").all().map((row) => row.name);
+		const tables = db.prepare("select name from sqlite_master where type = 'table'").all().map((row) => String(row.name));
 		assert.deepEqual(tables.filter((t) => !['__miniflare_do_name', '_cf_ALARM', '_cf_METADATA'].includes(t)), [], file);
 		db.close();
 	}
