@@ -1,4 +1,10 @@
-import type { SubScene } from './types';
+import type { Rect, SubScene } from './types';
+
+/**
+ * What the camera frames while a visitor holds the TV's remote (Joe, 2026-10-14): the TV on the wall and the remote's place
+ * on the meeting table below it, with 40 px to spare, so the set a channel button tunes is in view whatever the device.
+ */
+export const TV_FRAME: Rect = { x: 747, y: 3394, w: 908, h: 966 };
 
 // Measured on the accepted master (art/sources/moosylvania-fix/stitched.png, 887 x 1774 on Codex's 1:2 canvas, installed 4x as
 // moosylvania-master; buildout ticket 05, 2026-09-28). The lobby is one tall scene scrolled like the overworld, looking up
@@ -118,8 +124,9 @@ export const MOOSYLVANIA: SubScene = {
 			name: 'TV remote',
 			gist: 'changes the channel on the meeting TV',
 			// One remote for the room (Joe, 2026-10-01): whoever clicks it holds it, their cursor carrying it and its place
-			// on the table bare for everyone, until they put it back. Its card is the remote in hand (Remote.svelte). A
-			// standalone cut-out, not in the plate, at its `world` rect in art/manifest.json.
+			// on the table bare for everyone, until they put it back. Its card is the remote in hand (Remote.svelte), and the
+			// camera frames the TV meanwhile (TV_FRAME). A standalone cut-out, not in the plate, at its `world` rect in
+			// art/manifest.json.
 			rect: { x: 1000, y: 4262, w: 100, h: 58 },
 			tunes: 'meeting-tv'
 		}

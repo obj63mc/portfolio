@@ -115,7 +115,7 @@ export class Net {
 	/**
 	 * The lobby TV's remote: taken from the table, tuned a channel up or down, and put back. The room decides, the first
 	 * take winning and only the holder tuning, and a take or a tune changes nothing here until it echoes. Offline the
-	 * remote is on the table for this visitor alone, until a `hello` overwrites it.
+	 * remote is on the table for this visitor alone, until a `hello` overwrites it, asking the room for one held here.
 	 */
 	remote(m: Extract<ClientMessage, { t: `tv.${string}` }>) {
 		const { ch, holder } = this.tv, live = this.link.is === 'live';
@@ -213,7 +213,9 @@ export class Net {
 		if (this.link.is === 'down') clearTimeout(this.link.retry);
 		if ('ws' in this.link && this.link.ws.readyState <= WebSocket.OPEN) this.link.ws.close(1000);
 		// With the room gone nobody holds the remote, this visitor included: it is back on the table, as the room puts it.
-		this.tv = { ch: this.tv.ch, holder: null };
+		// A room never reached leaves it where it is (Joe, 2026-10-14): offline, a bot's page or a refused socket, it is this
+		// visitor's alone, and a retry that fails must not take it out of their hand.
+		if (this.link.is === 'live') this.tv = { ch: this.tv.ch, holder: null };
 		this.peers.clear();
 		this.status.count(1);
 	}
@@ -253,19 +255,27 @@ export class Net {
 		const t = performance.now();
 		const known = ({ id, cc, cos, gold, river, x, y }: Peer): NetPeer => ({ id, cc, cos, gold, river, snaps: x >= 0 ? [{ t, x, y }] : [], wornAt: -Infinity });
 		switch (m.t) {
-			case 'hello':
+			case 'hello': {
+				// A remote taken offline is asked of the room now it is here, and kept in hand meanwhile (Joe, 2026-10-14):
+				// the first take wins, so the echo either confirms it or hands it to whoever has it.
+				const holding = this.tv.holder !== null && this.tv.holder === this.id;
 				this.id = m.id;
 				this.cc = m.cc;
 				this.offset = m.now - Date.now();
 				this.peers = new Map(m.peers.map((p) => [p.id, known(p)]));
 				this.screen = m.screen;
 				this.tv = m.tv;
+				if (holding && m.tv.holder === null) {
+					ws.send(JSON.stringify({ t: 'tv.take' } satisfies ClientMessage));
+					this.tv = { ch: m.tv.ch, holder: m.id };
+				}
 				this.putting = false;
 				this.link = { is: 'live', ws, at: t };
 				this.sent = -1; // the new room hears where this cursor is at once
 				this.tell(); // and, once joined, what it wears; the room drops it if that's nothing
 				this.setSolo(false);
 				break;
+			}
 			case 'in':
 				this.peers.set(m.id, known(m));
 				break;

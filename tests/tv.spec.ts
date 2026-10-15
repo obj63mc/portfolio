@@ -1,11 +1,12 @@
 // Seam 4 for the Moosylvania lobby TV and its remote (Joe, 2026-10-01), over the built site. Against vite preview, which
 // has no /ws, the visitor is alone: the TV, no button, asks for no video until it is in view and then for its first
 // channel; the remote on the meeting table opens as a card of three buttons, tunes up and down round the playlist, one
-// download for a run of presses, and is put back by power, Esc or a pause; the cursor carries it meanwhile; and under
-// reduced motion the TV waits for a press. Two browsers on `wrangler dev` share one channel and one remote: taken by one
-// it is nothing to press for the other until it is put back or its holder leaves. `npm run build` first.
+// download for a run of presses, and is put back by power, Esc or a pause; the cursor carries it and the camera frames the
+// TV meanwhile; and under reduced motion the TV waits for a press. Two browsers on `wrangler dev` share one channel and
+// one remote: taken by one it is nothing to press for the other until it is put back or its holder leaves. `npm run build`
+// first.
 // Playwright's Chromium has no H.264, so no frame is drawn here: what is asked for and what is paused are checked.
-import { test, expect, type Browser, type Page } from '@playwright/test';
+import { test, expect, type Browser, type Locator, type Page } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { createServer, type AddressInfo } from 'node:net';
@@ -152,6 +153,31 @@ test.describe('without a room', () => {
 		await paused.locator('button.primary').click();
 		await expect.poll(playing).toBe(true);
 		await expect(card(page)).toBeHidden();
+	});
+
+	test('taken on a phone, the remote frames the whole TV, clear of its card, and put back lets the camera go', async ({ browser }) => {
+		// A phone held upright, at the 0.6 scale a screen this size renders at: the TV is wider than the view, so centred on
+		// the remote by its focus the camera cuts the set off. Taking the remote eases out to frame the TV and the remote's
+		// table (TV_FRAME), as the Foundry's reel does (Joe, 2026-10-14), and putting it back eases in again.
+		const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+		await page.addInitScript(refuseLock);
+		await page.goto('/moosylvania');
+		await joinScene(page);
+		const box = (l: Locator) => l.evaluate((el) => el.getBoundingClientRect().toJSON() as DOMRect);
+		const within = (r: DOMRect) => r.left >= 0 && r.top >= 0 && r.right <= 390 && r.bottom <= 844;
+		await page.keyboard.press('Tab');
+		await button(page).focus();
+		await page.waitForTimeout(600);
+		expect(within(await box(set(page))), 'centred on the remote, the TV runs off the view').toBe(false);
+		await page.keyboard.press('Enter');
+		await expect(card(page)).toBeVisible();
+		await expect.poll(() => box(set(page)).then(within), 'the whole set in view').toBe(true);
+		const tv = await box(set(page)), hand = await box(card(page));
+		expect(tv.bottom <= hand.top || tv.right <= hand.left, 'the card is clear of the set').toBe(true);
+		await key(page, 'Power').click();
+		await expect(card(page)).toBeHidden();
+		await expect.poll(() => box(set(page)).then((r) => r.width), 'back at the session scale').toBeGreaterThan(390);
+		await page.close();
 	});
 
 	test('under reduced motion the TV stays dark until the visitor presses a channel button', async ({ page }) => {

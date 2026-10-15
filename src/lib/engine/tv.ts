@@ -2,9 +2,12 @@
 // table or in one visitor's hand. A click on its prop asks the room for it; whoever the room says holds it has its card
 // open, the remote itself, whose channel buttons ask the room for the next channel and whose closing puts it back. The
 // channel and the holder are copied each frame to tv.svelte.ts, which the TV's video and the remote's card draw from.
+// While this visitor holds it the camera frames the TV (engine.ts `reframe`), as it does the Foundry's reel.
 import { flushSync } from 'svelte';
 import { cardOpen } from '../analytics.svelte.ts';
 import type { Net } from '../net/net.ts';
+import { TV_FRAME } from '../scenes/moosylvania.ts';
+import type { Overworld, Rect, SubScene } from '../scenes/types';
 import { IDLE, channelOf, tv } from '../tv.svelte.ts';
 
 export class Remote {
@@ -12,6 +15,8 @@ export class Remote {
 	private net: Net;
 	/** The remote's card in this scene, if it has a remote. */
 	private card: HTMLDialogElement | null = null;
+	/** What the camera frames while this visitor holds the remote: the TV and the remote's table, in the scene that has them. */
+	private frame: Rect | null = null;
 	/** The card was opened for this visitor, its holder: closed again, by its power button or Esc, the remote goes back. */
 	private opened = false;
 	/** When its holder here took it or last pressed a button, performance.now() ms. */
@@ -42,8 +47,14 @@ export class Remote {
 	}
 
 	/** A new scene's remote, if it has one. */
-	show() {
+	show(scene: Overworld | SubScene) {
 		this.card = this.layer.querySelector('dialog.remote');
+		this.frame = scene.id === 'moosylvania' ? TV_FRAME : null;
+	}
+
+	/** The world rect the camera frames while this visitor holds the remote (Joe, 2026-10-14); null while nobody or another does. */
+	get framing(): Rect | null {
+		return this.net.tv.holder === this.net.id ? this.frame : null;
 	}
 
 	/** Puts the remote back if this visitor holds it: its card closed, the engine paused, IDLE past its last press and the video's length. */

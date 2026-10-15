@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readingOrder, SUB_SCENES } from '../src/lib/scenes/index.ts';
 import { POSTER_LAMPS, PROJECTOR_LENS, REEL_FRAME, SCREEN_SURFACE, SCREEN_TITLES, SEATS, inSeats, type ScreenTitle } from '../src/lib/scenes/foundry.ts';
+import { TV_FRAME } from '../src/lib/scenes/moosylvania.ts';
 import type { Point, Prop, Rect } from '../src/lib/scenes/types.ts';
 
 const inside = (a: Rect, b: Rect) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
@@ -257,6 +258,11 @@ test('Moosylvania: a tall lobby scrolled like the overworld, the loft computers 
 	// a cursor from the remote: it is in reach from every side.
 	assert.ok(!lobby.walkBehind.some((w) => w.key === 'moosylvania-meeting-table' || w.props.includes('tv-remote')));
 	assert.ok(bottom(remote.rect) < 4355 && remote.rect.x + remote.rect.w < 1150, 'on the tabletop, left of the plant');
+	// While a visitor holds the remote the camera frames the TV and the remote's place on the table, with room to spare,
+	// inside the scene (Joe, 2026-10-14): the set they tune is in view, whatever the device.
+	const grown = (r: Rect, d: number) => ({ x: r.x - d, y: r.y - d, w: r.w + 2 * d, h: r.h + 2 * d });
+	for (const r of [set.rect, remote.rect]) assert.ok(inside(grown(r, 40), TV_FRAME), `${JSON.stringify(r)} in the frame`);
+	assert.ok(inside(TV_FRAME, { x: 0, y: 0, w: lobby.w, h: lobby.h }));
 	// The round sofas face the coffee table between them, and the armchairs the meeting table.
 	const unit = (key: string) => lobby.walkBehind.find((w) => w.key === `moosylvania-${key}`)!;
 	faces(unit('sofa-left'), 'right');

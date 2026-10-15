@@ -346,7 +346,7 @@ export class Engine {
 		this.doors = doorsOf(scene);
 		this.props.show(scene, this.density);
 		this.projector.show(scene);
-		this.remote.show();
+		this.remote.show(scene);
 		// Every cursor enters the new scene afresh: the own takes the depth and sides of where it lands, and peers are a new room's.
 		this.scenery.show(scene, this.density);
 		this.follow = null;
@@ -997,21 +997,27 @@ export class Engine {
 		return c && { x: this.cam.x + c.x / this.view.s, y: this.cam.y + c.y / this.view.s };
 	}
 
-	/** The camera is framing the Foundry's reel, or easing to or from it. */
+	/** The camera is framing the Foundry's reel or the Moosylvania TV, or easing to or from it. */
 	private get zooming() {
-		return !!this.projector.framing(this.own, this.cursor) || this.view.s !== this.base;
+		return !!this.framed || this.view.s !== this.base;
+	}
+
+	/** What holds the camera this frame: the Foundry's reel while the visitor sits for it, or the TV while they hold its remote. */
+	private get framed(): Rect | null {
+		return this.projector.framing(this.own, this.cursor) ?? this.remote.framing;
 	}
 
 	/**
 	 * While the Foundry's reel plays and the visitor sits in its seats, the camera eases out to frame the projector and the
 	 * whole screen, whatever the device (Joe, 2026-09-29), and back to the session's scale on the visitor's cursor when it
-	 * ends or they leave the seats; a cut under reduced motion.
+	 * ends or they leave the seats; a cut under reduced motion. The Moosylvania TV and the remote's table the same while the
+	 * visitor holds the remote (Joe, 2026-10-14), so the set they tune is in view.
 	 * The cursor keeps its world place, except the unlocked mouse's, which is the OS pointer's. It runs paused too, and
 	 * nothing else moves the camera meanwhile. True while it holds the camera.
 	 */
 	private reframe(dt: number) {
 		if (!this.zooming) return false;
-		const scene = this.scene!, v = this.view, world = this.own, r = this.projector.framing(world, this.cursor);
+		const scene = this.scene!, v = this.view, world = this.own, r = this.framed;
 		// A shot's centre as the clamp leaves it, so that an eased shot arrives exactly.
 		const clamped = (s: number, p: Point) => {
 			const cam = centreOn(p, { ...v, s }, scene);

@@ -319,7 +319,8 @@
 
 		/*
 		 * A remote's card is the remote itself (Remote.svelte; Joe, 2026-10-01): small, in the viewport's bottom corner, with
-		 * the scene undimmed behind it, so the TV it tunes stays in sight.
+		 * the scene undimmed behind it, so the TV it tunes stays in sight; the camera frames the set meanwhile (engine.ts
+		 * `reframe`, Joe, 2026-10-14).
 		 */
 		&.remote {
 			inline-size: fit-content;
